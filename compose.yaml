@@ -11,8 +11,19 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - ./src:/usr/src/app/src
-      - /home/node/app/node_modules
+      - ./back/:/usr/src/app
+      - /usr/src/app/node_modules
+
+  front:
+    container_name: front
+    build:
+      context: ./front/
+      target: dev
+    ports:
+      - 5173:5173
+    volumes:
+      - ./front/:/usr/src/app
+      - /usr/src/app/node_modules
 
   db:
     image: postgres:17
