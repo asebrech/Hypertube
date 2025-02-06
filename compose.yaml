@@ -1,0 +1,35 @@
+services:
+  back:
+    container_name: back
+    build:
+      context: ./back/
+      target: dev
+    ports:
+      - 3333:3333
+      # - 9229:9229
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./src:/usr/src/app/src
+      - /home/node/app/node_modules
+
+  db:
+    image: postgres:17
+    container_name: postgres
+    user: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=database
+      - POSTGRES_PASSWORD=root
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db-data:
