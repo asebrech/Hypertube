@@ -12,7 +12,6 @@ services:
         condition: service_healthy
     volumes:
       - ./back/:/usr/src/app
-      - /usr/src/app/node_modules
 
   front:
     container_name: front
@@ -23,7 +22,6 @@ services:
       - 5173:5173
     volumes:
       - ./front/:/usr/src/app
-      - /usr/src/app/node_modules
 
   db:
     image: postgres:17

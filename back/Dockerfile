@@ -3,17 +3,21 @@
 ARG NODE_VERSION=22.9.0
 
 FROM node:${NODE_VERSION}-alpine as base
-WORKDIR /usr/src/app
+WORKDIR /usr/src/cache
 EXPOSE 3333
+
+RUN apk add --no-cache rsync
 
 FROM base as dev
 RUN --mount=type=bind,source=package.json,target=package.json \
   --mount=type=bind,source=package-lock.json,target=package-lock.json \
   --mount=type=cache,target=/root/.npm \
   npm ci --include=dev
-USER node
+# USER node
+
+WORKDIR /usr/src/app
 COPY . .
-CMD ["node", "ace", "serve", "--hmr"]
+CMD ["sh", "-c", "rsync -arv /usr/src/cache/node_modules/. /usr/src/app/node_modules && node ace serve --hmr"]
 
 
 # FROM base as prod
