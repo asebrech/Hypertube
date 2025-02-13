@@ -7,7 +7,6 @@
 </script>
 
 <div>
-	<!-- commentzkaejhkjazhe -->
 	<!-- <Input type="email" placeholder="email" class="max-w-xs" /> -->
 	<Button onclick={toggleMode} size="icon">
 		<Sun
@@ -18,4 +17,5 @@
 		/>
 		<span class="sr-only">Toggle theme</span>
 	</Button>
+	<!-- kdkzjkldekzh -->
 </div>
