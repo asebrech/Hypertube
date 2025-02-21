@@ -8,8 +8,8 @@
 
 <form action="?/login" method="POST" use:enhance>
 	<div>
-		<label for="username">Username</label>
-		<input id="username" name="username" type="text" required />
+		<label for="email">Username</label>
+		<input id="email" name="email" type="text" required />
 	</div>
 
 	<div>

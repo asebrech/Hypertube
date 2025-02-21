@@ -1,79 +1,60 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { fail, redirect, type RequestEvent } from '@sveltejs/kit';
 import axios from 'axios';
-// import bcrypt from 'bcrypt'
-//
-// import { db } from '$lib/database'
 
-export const load = async ({ locals }) => {
+export const load = async ({ locals }: { locals: App.Locals }) => {
   if (locals.user) {
     redirect(302, '/');
   }
 };
 
-const login = async ({ cookies, request }) => {
+const login = async ({ cookies, request }: RequestEvent) => {
   const data = await request.formData();
-  const username = data.get('username');
+  const email = data.get('email');
   const password = data.get('password');
 
-  if (typeof username !== 'string' || typeof password !== 'string' || !username || !password) {
+  if (typeof email !== 'string' || typeof password !== 'string' || !email || !password) {
     return fail(400, { invalid: true });
   }
 
-  // const user = await db.user.findUnique({ where: { username } })
-
-  // if (!user) {
-  //   return fail(400, { credentials: true })
-  // }
-
-  // const userPassword = await bcrypt.compare(password, user.passwordHash)
-
-  // if (!userPassword) {
-  //   return fail(400, { credentials: true })
-  // }
-
-  // generate new auth token just in case
-  // const authenticatedUser = await db.user.update({
-  //   where: { username: user.username },
-  //   data: { userAuthToken: crypto.randomUUID() },
-  // })
-  //
-
-  const raw = JSON.stringify({
-    email: username,
-    password: password
+  const payload = JSON.stringify({
+    email,
+    password
   });
 
   const config = {
     method: 'post',
-    maxBodyLength: Infinity,
-    url: 'http://back:3333/user/login',
+    url: `${process.env.BACK_URL}/user/login`,
     headers: {
       'Content-Type': 'application/json'
     },
-    data: raw
+    data: payload
   };
 
-  const response = await axios.request(config);
-
-  const token = response.data.token.token;
-
-  cookies.set('session', token, {
-    // send cookie for every page
-    path: '/',
-    // server side only cookie so you can't use `document.cookie`
-    httpOnly: true,
-    // only requests from same site can send cookies
-    // https://developer.mozilla.org/en-US/docs/Glossary/CSRF
-    sameSite: 'strict',
-    // only sent over HTTPS in production
-    // secure: process.env.NODE_ENV === 'production',
-    secure: true,
-    // set cookie to expire after a month
-    maxAge: 60 * 60 * 24 * 30
-  });
-  //
-  // // redirect the user
-  redirect(302, '/');
+  try {
+    const response = await axios.request(config);
+    const token = response.data.token.token;
+    cookies.set('session', token, {
+      path: '/',
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: true,
+      maxAge: 60 * 60 * 24 * 30
+    });
+    redirect(302, '/');
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      switch (error.response.status) {
+        case 400:
+          return fail(400, { credentials: true });
+        case 422:
+          return fail(400, { invalid: true });
+        default:
+          throw error;
+      }
+    } else {
+      throw error;
+    }
+  }
 };
 
 export const actions = { login };

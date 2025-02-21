@@ -1,5 +1,4 @@
-// get `locals.user` and pass it to the `page` store
-export const load = async ({ locals }) => {
+export const load = async ({ locals }: { locals: App.Locals }) => {
   return {
     user: locals.user
   };

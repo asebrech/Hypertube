@@ -7,8 +7,8 @@
 
 <form action="?/register" method="POST" use:enhance>
 	<div>
-		<label for="username">Username</label>
-		<input id="username" name="username" type="text" required />
+		<label for="email">email</label>
+		<input id="email" name="email" type="text" required />
 	</div>
 
 	<div>
@@ -16,8 +16,8 @@
 		<input id="password" name="password" type="password" required />
 	</div>
 
-	{#if form?.user}
-		<p class="error">Username is taken.</p>
+	{#if form?.invalid}
+		<p class="error">Invalid credentials</p>
 	{/if}
 
 	<button type="submit">Register</button>
