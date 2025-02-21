@@ -1,6 +1,7 @@
 import { fail, redirect, type RequestEvent } from '@sveltejs/kit';
+import axios from 'axios';
 
-export const load = async ({ locals }) => {
+export const load = async ({ locals }: { locals: App.Locals }) => {
   if (locals.user) {
     redirect(302, '/');
   }
@@ -8,30 +9,37 @@ export const load = async ({ locals }) => {
 
 const register = async ({ request }: RequestEvent) => {
   const data = await request.formData();
-  const username = data.get('username');
+  const email = data.get('email');
   const password = data.get('password');
 
-  if (typeof username !== 'string' || typeof password !== 'string' || !username || !password) {
+  if (typeof email !== 'string' || typeof password !== 'string' || !email || !password) {
     return fail(400, { invalid: true });
   }
 
-  const response = await fetch('http://back:3333/user/register', {
-    method: 'POST',
+  const payload = JSON.stringify({
+    email,
+    password
+  });
+
+  const config = {
+    method: 'post',
+    url: `${process.env.BACK_URL}/user/register`,
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ email: username, password, fullName: 'John Doe', name: 'john' })
-  });
+    data: payload
+  };
 
-  if (!response.ok) {
-    return fail(400, { user: true });
+  try {
+    await axios.request(config);
+    redirect(303, '/login');
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response && error.response.status === 422) {
+      return fail(400, { invalid: true });
+    } else {
+      throw error;
+    }
   }
-
-  const user = await response.json();
-
-  console.log(user);
-
-  redirect(303, '/login');
 };
 
 export const actions = { register };

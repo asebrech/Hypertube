@@ -1,20 +1,33 @@
-import { redirect } from '@sveltejs/kit';
+import { redirect, type RequestEvent } from '@sveltejs/kit';
+import axios from 'axios';
 
 export const load = async () => {
-  // we only use this endpoint for the api
-  // and don't need to see the page
   redirect(302, '/');
 };
 
-export const actions = {
-  default({ cookies }) {
-    // eat the cookie
-    cookies.set('session', '', {
-      path: '/',
-      expires: new Date(0)
-    });
+const logout = async ({ cookies }: RequestEvent) => {
+  const session = cookies.get('session');
 
-    // redirect the user
-    redirect(302, '/login');
+  if (!session) {
+    redirect(303, '/');
   }
+
+  const config = {
+    method: 'post',
+    url: `${process.env.BACK_URL}/user/logout`,
+    headers: {
+      Authorization: `Bearer ${session}`
+    }
+  };
+
+  await axios.request(config);
+
+  cookies.set('session', '', {
+    path: '/',
+    expires: new Date(0)
+  });
+
+  redirect(303, '/');
 };
+
+export const actions = { default: logout };

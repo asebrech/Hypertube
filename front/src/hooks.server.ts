@@ -10,8 +10,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   const config = {
     method: 'get',
-    maxBodyLength: Infinity,
-    url: 'http://back:3333/me',
+    url: `${process.env.BACK_URL}/me`,
     headers: {
       Authorization: `Bearer ${session}`
     }
@@ -19,12 +18,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   try {
     const response = await axios.request(config);
-
-    const data = response.data;
-
+    const { email, id } = response.data;
     event.locals.user = {
-      email: data.email,
-      id: data.id
+      email,
+      id
     };
   } catch (error) {
     if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
