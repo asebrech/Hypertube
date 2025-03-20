@@ -1,5 +1,6 @@
 import { fail, redirect, type RequestEvent } from '@sveltejs/kit';
 import axios from 'axios';
+import { SECRET_BACK_URL } from '$env/static/private';
 
 export const load = async ({ locals }: { locals: App.Locals }) => {
   if (locals.user) {
@@ -23,7 +24,7 @@ const register = async ({ request }: RequestEvent) => {
 
   const config = {
     method: 'post',
-    url: `${process.env.BACK_URL}/user/register`,
+    url: `${SECRET_BACK_URL}/user/register`,
     headers: {
       'Content-Type': 'application/json'
     },
