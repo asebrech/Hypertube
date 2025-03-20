@@ -7,6 +7,11 @@
 
 <form action="?/register" method="POST" use:enhance>
 	<div>
+		<label for="usename">Username</label>
+		<input id="username" name="username" type="text" required />
+	</div>
+
+	<div>
 		<label for="email">email</label>
 		<input id="email" name="email" type="text" required />
 	</div>
