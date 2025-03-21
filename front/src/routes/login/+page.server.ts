@@ -43,15 +43,8 @@ const login = async ({ cookies, request }: RequestEvent) => {
 		});
 		redirect(302, '/');
 	} catch (error) {
-		if (axios.isAxiosError(error) && error.response) {
-			switch (error.response.status) {
-				case 400:
-					return fail(400, { credentials: true });
-				case 422:
-					return fail(400, { invalid: true });
-				default:
-					throw error;
-			}
+		if (axios.isAxiosError(error) && error.response && error.response.status) {
+			return fail(400, { credentials: true });
 		} else {
 			throw error;
 		}
