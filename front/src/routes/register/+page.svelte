@@ -16,6 +16,9 @@
 	<Card.Content>
 		<form action="?/register" method="POST" use:enhance>
 			<div class="grid gap-4">
+				{#if form?.invalid}
+					<p class="error">password too short or email already in use</p>
+				{/if}
 				<div class="grid grid-cols-2 gap-4">
 					<div class="grid gap-2">
 						<Label for="first-name">First name</Label>
