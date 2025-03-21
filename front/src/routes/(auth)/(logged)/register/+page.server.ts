@@ -2,12 +2,6 @@ import { fail, redirect, type RequestEvent } from '@sveltejs/kit';
 import axios from 'axios';
 import { SECRET_BACK_URL } from '$env/static/private';
 
-export const load = async ({ locals }: { locals: App.Locals }) => {
-	if (locals.user) {
-		redirect(302, '/');
-	}
-};
-
 const register = async ({ request }: RequestEvent) => {
 	const data = await request.formData();
 	const username = data.get('username');
