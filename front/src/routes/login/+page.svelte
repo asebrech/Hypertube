@@ -16,6 +16,9 @@
 		<form action="?/login" method="POST" use:enhance>
 			<div class="grid gap-4">
 				<div class="grid gap-2">
+					{#if form?.credentials}
+						<p class="error">You have entered the wrong credentials.</p>
+					{/if}
 					<Label for="email">Email</Label>
 					<Input id="email" type="email" name="email" placeholder="m@example.com" required />
 				</div>
