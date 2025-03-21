@@ -15,6 +15,7 @@ export default class extends BaseSchema {
     this.schema.alterTable(this.tableName, (table) => {
       table.renameColumn('firstName', 'full_name')
       table.dropColumn('lastName')
+      table.dropColumn('username')
     })
   }
 }
