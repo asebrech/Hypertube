@@ -1,6 +1,5 @@
 <script lang="ts">
 	let { children } = $props();
-	import { ModeWatcher } from 'mode-watcher';
 	import { page } from '$app/stores';
 
 	import { enhance } from '$app/forms';
@@ -10,14 +9,16 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 </script>
 
-<ModeWatcher defaultMode={'dark'} />
-
-<Card.Root>
+<Card.Root class="mb-5">
 	<Card.Content class="flex items-center justify-between">
-		<Icon />
+		<a href="/">
+			<Icon />
+		</a>
 		<div>
 			{#if !$page.data.user}
-				<Button href="/login">Sign in</Button>
+				<a href="/login">
+					<Button>Sign in</Button>
+				</a>
 			{/if}
 
 			{#if $page.data.user}
