@@ -1,1 +1,1 @@
-<div>Hello World</div>
+<div>Profile page</div>
