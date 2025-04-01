@@ -36,3 +36,45 @@ router
     }
   })
   .use(middleware.auth())
+
+router
+  .get('/:provider/redirect', ({ ally, params }) => {
+    const driverInstance = ally.use(params.provider)
+    return driverInstance.redirect()
+  })
+  .where('provider', /github|google/)
+
+router.get('/:provider/callback', async ({ ally, params }) => {
+  const driverInstance = ally.use(params.provider)
+
+  /**
+   * User has denied access by canceling
+   * the login flow
+   */
+  if (driverInstance.accessDenied()) {
+    return 'You have cancelled the login process'
+  }
+
+  /**
+   * OAuth state verification failed. This happens when the
+   * CSRF cookie gets expired.
+   */
+  if (driverInstance.stateMisMatch()) {
+    return 'We are unable to verify the request. Please try again'
+  }
+
+  /**
+   * GitHub responded with some error
+   */
+  if (driverInstance.hasError()) {
+    return driverInstance.getError()
+  }
+
+  /**
+   * Access user info
+   */
+  const user = await driverInstance.user()
+
+  console.log(user.original)
+  return user
+})
