@@ -42,7 +42,7 @@
 			</div>
 			<div class="mt-4 text-center text-sm">
 				Already have an account?
-				<a href="##" class="underline"> Sign in </a>
+				<a href="/login" class="underline"> Sign in </a>
 			</div>
 		</form>
 	</Card.Content>
