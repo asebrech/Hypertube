@@ -9,6 +9,7 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+import User from '#models/user'
 
 const AuthController = () => import('#controllers/auth_controller')
 
@@ -45,7 +46,7 @@ router
   .where('provider', /github|google/)
 
 router
-  .get('/:provider/callback', async ({ ally, params }) => {
+  .get('/:provider/callback', async ({ ally, params, response }) => {
     const driverInstance = ally.use(params.provider)
 
     /**
@@ -76,7 +77,29 @@ router
      */
     const user = await driverInstance.user()
 
-    console.log(user.original)
-    return user
+    let dbUser = await User.findBy('id', user.id)
+    if (!dbUser) {
+      dbUser = await User.create({
+        id: user.id,
+        email: user.email,
+        username: user.nickname,
+        password: '',
+      })
+    }
+
+    const accessToken = await User.accessTokens.create(dbUser)
+    const token = accessToken.toJSON().token
+    console.log(token)
+
+    response.plainCookie('session', token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30,
+      encode: false,
+    })
+
+    return response.redirect('http://localhost:5173/')
   })
   .where('provider', /github|google/)

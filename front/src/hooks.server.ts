@@ -9,6 +9,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 		return await resolve(event);
 	}
 
+	console.log(session);
+
 	const config = {
 		method: 'get',
 		url: `${SECRET_BACK_URL}/me`,
