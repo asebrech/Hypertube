@@ -5,7 +5,7 @@ const allyConfig = defineConfig({
   github: services.github({
     clientId: env.get('GITHUB_CLIENT_ID'),
     clientSecret: env.get('GITHUB_CLIENT_SECRET'),
-    callbackUrl: 'http://localhost:3333/github/redirect',
+    callbackUrl: 'http://localhost:3333/github/callback',
   }),
   google: services.google({
     clientId: env.get('GOOGLE_CLIENT_ID'),
@@ -17,5 +17,5 @@ const allyConfig = defineConfig({
 export default allyConfig
 
 declare module '@adonisjs/ally/types' {
-  interface SocialProviders extends InferSocialProviders<typeof allyConfig> {}
+  interface SocialProviders extends InferSocialProviders<typeof allyConfig> { }
 }
