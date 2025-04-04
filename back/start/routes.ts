@@ -77,19 +77,16 @@ router
      */
     const user = await driverInstance.user()
 
-    let dbUser = await User.findBy('id', user.id)
+    let dbUser = await User.findBy('email', user.email)
     if (!dbUser) {
       dbUser = await User.create({
-        id: user.id,
         email: user.email,
-        username: user.nickname,
-        password: '',
+        username: user.name,
       })
     }
 
     const accessToken = await User.accessTokens.create(dbUser)
     const token = accessToken.toJSON().token
-    console.log(token)
 
     response.plainCookie('session', token, {
       httpOnly: true,

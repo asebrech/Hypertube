@@ -14,36 +14,43 @@
 		<Card.Description>Enter your information to create an account</Card.Description>
 	</Card.Header>
 	<Card.Content>
-		<form action="?/register" method="POST" use:enhance>
-			<div class="grid gap-4">
-				{#if form?.invalid}
-					<p class="error">password too short or email already in use</p>
-				{/if}
-				<div class="grid grid-cols-2 gap-4">
-					<div class="grid gap-2">
-						<Label for="first-name">First name</Label>
-						<Input id="first-name" placeholder="Max" required />
+		<div class="grid gap-4">
+			<form action="?/register" method="POST" use:enhance>
+				<div class="grid gap-4">
+					{#if form?.invalid}
+						<p class="error">password too short or email already in use</p>
+					{/if}
+					<div class="grid grid-cols-2 gap-4">
+						<div class="grid gap-2">
+							<Label for="first-name">First name</Label>
+							<Input id="first-name" placeholder="Max" required />
+						</div>
+						<div class="grid gap-2">
+							<Label for="last-name">Last name</Label>
+							<Input id="last-name" placeholder="Robinson" required />
+						</div>
 					</div>
 					<div class="grid gap-2">
-						<Label for="last-name">Last name</Label>
-						<Input id="last-name" placeholder="Robinson" required />
+						<Label for="email">Email</Label>
+						<Input id="email" type="email" name="email" placeholder="m@example.com" required />
 					</div>
+					<div class="grid gap-2">
+						<Label for="password">Password</Label>
+						<Input id="password" name="password" type="password" />
+					</div>
+					<Button type="submit" class="w-full">Create an account</Button>
 				</div>
-				<div class="grid gap-2">
-					<Label for="email">Email</Label>
-					<Input id="email" type="email" name="email" placeholder="m@example.com" required />
-				</div>
-				<div class="grid gap-2">
-					<Label for="password">Password</Label>
-					<Input id="password" name="password" type="password" />
-				</div>
-				<Button type="submit" class="w-full">Create an account</Button>
-				<Button variant="outline" class="w-full">Sign up with GitHub</Button>
-			</div>
-			<div class="mt-4 text-center text-sm">
-				Already have an account?
-				<a href="/login" class="underline"> Sign in </a>
-			</div>
-		</form>
+			</form>
+			<form method="POST" action="/login/google" use:enhance>
+				<Button variant="outline" class="w-full" type="submit">Login with Google</Button>
+			</form>
+			<form method="POST" action="/login/github" use:enhance>
+				<Button variant="outline" class="w-full" type="submit">Login with Gihub</Button>
+			</form>
+		</div>
+		<div class="mt-4 text-center text-sm">
+			Already have an account?
+			<a href="/login" class="underline"> Sign in </a>
+		</div>
 	</Card.Content>
 </Card.Root>
