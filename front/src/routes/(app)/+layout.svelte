@@ -7,6 +7,22 @@
 
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
+	import * as Select from '$lib/components/ui/select/index.js';
+	import { locale, locales } from 'svelte-i18n';
+	import { _ } from 'svelte-i18n';
+
+	const getLangName = (lang: string | null | undefined) => {
+		switch (lang) {
+			case 'fr-FR':
+				return 'Français';
+			case 'en-GB':
+				return 'English';
+			case 'zh-CN':
+				return '简体中文';
+			default:
+				return lang;
+		}
+	};
 </script>
 
 <Card.Root class="mb-5">
@@ -14,16 +30,26 @@
 		<a href="/">
 			<Icon />
 		</a>
-		<div>
+		<div class="flex items-center gap-4">
+			<Select.Root bind:value={$locale} type="single">
+				<Select.Trigger class="flex gap-2"
+					><img src="/icons/langage.svg" class="w-[13px]" />{getLangName($locale)}</Select.Trigger
+				>
+				<Select.Content>
+					{#each $locales as locale_item}
+						<Select.Item value={locale_item}>{getLangName(locale_item)}</Select.Item>
+					{/each}
+				</Select.Content>
+			</Select.Root>
 			{#if !$page.data.user}
 				<a href="/login">
-					<Button>Sign in</Button>
+					<Button>{$_('sign_in')}</Button>
 				</a>
 			{/if}
 
 			{#if $page.data.user}
 				<form action="/logout" method="POST" use:enhance>
-					<Button type="submit">Log out</Button>
+					<Button type="submit">{$_('log_out')}</Button>
 				</form>
 			{/if}
 		</div>
