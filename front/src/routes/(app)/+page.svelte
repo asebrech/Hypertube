@@ -19,7 +19,7 @@
 					<Carousel.Item class="basis-auto pl-1">
 						<div class="p-1">
 							<Card.Root>
-								<Card.Content class="flex aspect-square h-45 w-75 items-center justify-center p-6">
+								<Card.Content class="h-45 w-75 flex aspect-square items-center justify-center p-6">
 									<span class="text-2xl font-semibold">{j + 1}</span>
 								</Card.Content>
 							</Card.Root>
