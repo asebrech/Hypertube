@@ -42,10 +42,10 @@
 				</div>
 			</form>
 			<form method="POST" action="/login/google" use:enhance>
-				<Button variant="outline" class="w-full" type="submit">Login with Google</Button>
+				<Button variant="outline" class="w-full" type="submit">Register with Google</Button>
 			</form>
 			<form method="POST" action="/login/github" use:enhance>
-				<Button variant="outline" class="w-full" type="submit">Login with Gihub</Button>
+				<Button variant="outline" class="w-full" type="submit">Register with Gihub</Button>
 			</form>
 		</div>
 		<div class="mt-4 text-center text-sm">
