@@ -35,10 +35,10 @@
 					<Button type="submit" class="w-full">Login</Button>
 				</div>
 			</form>
-			<form method="POST" action="?/google" use:enhance>
+			<form method="POST" action="/login/google" use:enhance>
 				<Button variant="outline" class="w-full" type="submit">Login with Google</Button>
 			</form>
-			<form method="POST" action="?/github" use:enhance>
+			<form method="POST" action="/login/github" use:enhance>
 				<Button variant="outline" class="w-full" type="submit">Login with Gihub</Button>
 			</form>
 		</div>
