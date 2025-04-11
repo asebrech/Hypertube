@@ -36,3 +36,12 @@ router
     }
   })
   .use(middleware.auth())
+
+router
+  .get('/:provider/redirect', ({ ally, params }) => {
+    const driverInstance = ally.use(params.provider)
+    return driverInstance.redirect()
+  })
+  .where('provider', /github|google/)
+
+router.get('/:provider/callback', [AuthController, 'callback']).where('provider', /github|google/)
