@@ -4,21 +4,54 @@
 	import axios from 'axios';
 	import { onMount } from 'svelte';
 	import { PUBLIC_BACK_URL } from '$env/static/public';
+	import { locale } from 'svelte-i18n';
 
 	const getRandomNumber = () => Math.floor(Math.random() * 30) + 1;
 
+	//create type for movies_genres
+	type MovieGenre = {
+		id: number;
+		name: number;
+		movies: {
+			id: number;
+			title: string;
+			overview: string;
+			poster_path: string;
+			release_date: string;
+			vote_average: number;
+		}[];
+	};
 	export let hasMorePages: boolean;
 	export let currentPage: number = 1;
 	export let isLoading: boolean;
-	export let movies: any[] = [];
+	export let movies_genres: MovieGenre[] = [];
 
 	const getMovies = async (page_to_load: number) => {
 		const config = {
 			method: 'get',
 			url: `${PUBLIC_BACK_URL}/movies`,
 			params: {
-				limit: 10,
-				page: page_to_load
+				page: page_to_load,
+				lang: $locale
+			}
+		};
+		try {
+			const response = await axios(config);
+			console.log('response', response.data);
+			return response.data;
+		} catch (error) {
+			console.error('Error fetching movies:', error);
+			throw error;
+		}
+	};
+
+	const getBackdropImage = async (movieId: any) => {
+		const config = {
+			method: 'get',
+			url: `${PUBLIC_BACK_URL}/movies/backdropImage`,
+			params: {
+				tmdb_movie_id: movieId,
+				lang: $locale
 			}
 		};
 		try {
@@ -35,11 +68,11 @@
 		try {
 			isLoading = true;
 			const moviePage = await getMovies(page);
-			movies = movies.concat(moviePage.data.movies);
-			hasMorePages = moviePage.data.hasMorePages;
+			movies_genres = movies_genres.concat(moviePage);
+			// hasMorePages = moviePage.data.hasMorePages;
 			isLoading = false;
-		} catch {
-			console.error('Error loading movies');
+		} catch (error) {
+			console.error('Error loading movies', error);
 		}
 	};
 
@@ -56,9 +89,9 @@
 	<div>Loading...</div>
 {/if}
 
-{#each Array(15) as _, i (i)}
+{#each movies_genres as genre}
 	<div class="mb-8">
-		<h2 class="mb-4 ml-4 text-xl font-bold">Carousel {i + 1}</h2>
+		<h2 class="mb-4 ml-4 text-xl font-bold">{genre.name}</h2>
 		<Carousel.Root
 			opts={{
 				align: 'start',
@@ -66,12 +99,21 @@
 			}}
 		>
 			<Carousel.Content>
-				{#each Array(getRandomNumber()) as _, j (j)}
+				{#each genre.movies as movie}
 					<Carousel.Item class="basis-auto pl-1">
 						<div class="p-1">
 							<Card.Root>
-								<Card.Content class="flex aspect-square h-45 w-75 items-center justify-center p-6">
-									<span class="text-2xl font-semibold">{j + 1}</span>
+								<Card.Content class="h-45 w-75 flex aspect-square items-center justify-center p-6">
+									{#await getBackdropImage(movie.id) then backdropImage}
+										<img
+											src={backdropImage.url}
+											alt="{movie.title} backdrop"
+											class="h-full w-full object-cover"
+										/>
+										<p class="mt-2 block text-center text-2xl font-semibold">{movie.title}</p>
+									{:catch error}
+										<span class="text-2xl font-semibold">{movie.title}</span>
+									{/await}
 								</Card.Content>
 							</Card.Root>
 						</div>
