@@ -98,11 +98,7 @@
 		try {
 			isLoading = true;
 			const getMovieResponse = await getMovies(page);
-			console.log('moviePage', getMovieResponse.movies);
-			console.log('hasMorePagesResponse', getMovieResponse.hasMorePages);
-			movies_genres = [...movies_genres, ...getMovieResponse.movies];
-			console.log('movies_genres', movies_genres);
-			// movies_genres = movies_genres.concat(getMovieResponse.movies);
+			movies_genres = movies_genres.concat(getMovieResponse.movies);
 			hasMorePages = getMovieResponse.hasMorePages;
 			if (hasMorePages) {
 				currentPage = page + 1;
