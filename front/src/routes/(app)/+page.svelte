@@ -18,13 +18,12 @@
 	import { onMount } from 'svelte';
 	import { PUBLIC_BACK_URL } from '$env/static/public';
 	import { locale } from 'svelte-i18n';
-
-	const getRandomNumber = () => Math.floor(Math.random() * 30) + 1;
+	import { Skeleton } from '@/components/ui/skeleton';
 
 	//create type for movies_genres
 	type MovieGenre = {
 		id: number;
-		name: number;
+		name: string;
 		movies: {
 			id: number;
 			title: string;
@@ -70,7 +69,6 @@
 		};
 		try {
 			const response = await axios(config);
-			console.log('response', response.data);
 			return response.data;
 		} catch (error) {
 			console.error('Error fetching movies:', error);
@@ -117,7 +115,15 @@
 			<CarouselContent class="ml-0 flex gap-[6px]">
 				{#each genre.movies as movie}
 					<CarouselItem class="basis-auto p-0">
-						{#await getBackdropImage(movie.id, 'small') then backdropImage}
+						{#await getBackdropImage(movie.id, 'small')}
+							<!-- Pending: show skeleton -->
+							<Card class="flex h-[123px] w-[218px] flex-row rounded-[2px] border-none p-0">
+								<div class="h-full w-full">
+									<!-- Simulate image loading -->
+									<Skeleton class="h-full w-full rounded-[2px]" />
+								</div>
+							</Card>
+						{:then backdropImage}
 							<Card
 								class="jystify-end flex h-[123px] w-[218px] flex-row rounded-[2px] border-none p-0"
 								style="background-size: cover; background-position: center; background-image: url({backdropImage.url});"
