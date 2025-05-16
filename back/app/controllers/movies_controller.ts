@@ -7,26 +7,27 @@ export default class MoviesController {
 
   async index({ request, response }: HttpContext) {
     const page = request.input('page', 1)
+    const limit = 4
+    const offset = (page - 1) * limit
     const lang = request.input('lang', 'en')
-    console.log('TMDB Service initialized:', this.tmdbService)
-    // const limit = 10
-    // const offset = (page - 1) * limit
-    TorrentSearchApi.disableAllProviders()
-    // console.log('Yts : ', TorrentSearchApi.isProviderActive('Yts'))
-    // console.log('ThePirateBay : ', TorrentSearchApi.isProviderActive('ThePirateBay'))
-    TorrentSearchApi.enableProvider('Yts')
-    TorrentSearchApi.enableProvider('ThePirateBay')
-    // console.log('Yts : ', TorrentSearchApi.isProviderActive('Yts'))
-    // console.log('ThePirateBay : ', TorrentSearchApi.isProviderActive('ThePirateBay'))
-    const torrents = await TorrentSearchApi.search('tt0133093', 'All', 100)
-    const activeTorrentProviders = TorrentSearchApi.getActiveProviders()
-    // console.log('Active Torrent Providers:', activeTorrentProviders)
-    // console.log('Torrents:', torrents)
+    // // const limit = 10
+    // // const offset = (page - 1) * limit
+    // TorrentSearchApi.disableAllProviders()
+    // // console.log('Yts : ', TorrentSearchApi.isProviderActive('Yts'))
+    // // console.log('ThePirateBay : ', TorrentSearchApi.isProviderActive('ThePirateBay'))
+    // TorrentSearchApi.enableProvider('Yts')
+    // TorrentSearchApi.enableProvider('ThePirateBay')
+    // // console.log('Yts : ', TorrentSearchApi.isProviderActive('Yts'))
+    // // console.log('ThePirateBay : ', TorrentSearchApi.isProviderActive('ThePirateBay'))
+    // const torrents = await TorrentSearchApi.search('tt0133093', 'All', 100)
+    // const activeTorrentProviders = TorrentSearchApi.getActiveProviders()
+    // // console.log('Active Torrent Providers:', activeTorrentProviders)
+    // // console.log('Torrents:', torrents)
     // console.log('Page:', page)
+
+
     const genresList = await this.tmdbService.getGenresList(lang)
-    console.log('Genres List:', genresList)
     const popularMovies = await this.tmdbService.getPopularMovies(lang, page)
-    // console.log('Popular Movies:', popularMovies)
     const movieListByGenre = genresList.genres.map(async (genre: any) => {
       const movies = await this.tmdbService.getMovieListByGenre(genre.id, lang, page)
       return {
@@ -36,8 +37,7 @@ export default class MoviesController {
       }
     })
     const movieListByGenreResults = await Promise.all(movieListByGenre)
-    // console.log('Movie List by Genre:', JSON.stringify(movieListByGenreResults, null, 2))
-    return [
+    const finalMovieListByGenre = [
       {
         id: 0,
         name: "TOP 10",
@@ -45,6 +45,9 @@ export default class MoviesController {
       },
       ...movieListByGenreResults,
     ]
+    const slicedResponse = finalMovieListByGenre.slice(offset, offset + limit)
+    const hasMorePages = finalMovieListByGenre.length > offset + limit
+    return {movies: slicedResponse, hasMorePages}
   }
 
   async backdropImage ({ request, response }: HttpContext) {

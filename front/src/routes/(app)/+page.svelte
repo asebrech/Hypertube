@@ -20,7 +20,11 @@
 	import { locale } from 'svelte-i18n';
 	import { Skeleton } from '@/components/ui/skeleton';
 
-	//create type for movies_genres
+	type BackDropImage = {
+		url: string;
+		langFound: boolean;
+	};
+
 	type MovieGenre = {
 		id: number;
 		name: string;
@@ -31,6 +35,7 @@
 			poster_path: string;
 			release_date: string;
 			vote_average: number;
+			backdrop_image: BackDropImage | null | undefined;
 		}[];
 	};
 	export let hasMorePages: boolean;
@@ -76,12 +81,32 @@
 		}
 	};
 
+	const loadBackdropImage = async (movieId: any, size: string): Promise<BackDropImage> => {
+		const backdrop_image_data = await getBackdropImage(movieId, size);
+		if (backdrop_image_data)
+			movies_genres.forEach((genre) => {
+				genre.movies.forEach((movie) => {
+					if (movie.id === movieId) {
+						movie.backdrop_image = backdrop_image_data;
+					}
+				});
+			});
+		return backdrop_image_data;
+	};
+
 	const loadMoviePage = async (page: number) => {
 		try {
 			isLoading = true;
-			const moviePage = await getMovies(page);
-			movies_genres = movies_genres.concat(moviePage);
-			// hasMorePages = moviePage.data.hasMorePages;
+			const getMovieResponse = await getMovies(page);
+			console.log('moviePage', getMovieResponse.movies);
+			console.log('hasMorePagesResponse', getMovieResponse.hasMorePages);
+			movies_genres = [...movies_genres, ...getMovieResponse.movies];
+			console.log('movies_genres', movies_genres);
+			// movies_genres = movies_genres.concat(getMovieResponse.movies);
+			hasMorePages = getMovieResponse.hasMorePages;
+			if (hasMorePages) {
+				currentPage = page + 1;
+			}
 			isLoading = false;
 		} catch (error) {
 			console.error('Error loading movies', error);
@@ -94,6 +119,26 @@
 			await loadMoviePage(1);
 			isLoading = false;
 		}
+	});
+
+	let sentinel: HTMLDivElement;
+
+	const observeSentinel = () => {
+		const observer = new IntersectionObserver(
+			async (entries) => {
+				if (entries[0].isIntersecting && hasMorePages && !isLoading) {
+					await loadMoviePage(currentPage);
+				}
+			},
+			{ rootMargin: '200px' }
+		);
+		if (sentinel) {
+			observer.observe(sentinel);
+		}
+	};
+
+	onMount(() => {
+		observeSentinel();
 	});
 </script>
 
@@ -115,39 +160,38 @@
 			<CarouselContent class="ml-0 flex gap-[6px]">
 				{#each genre.movies as movie}
 					<CarouselItem class="basis-auto p-0">
-						{#await getBackdropImage(movie.id, 'small')}
-							<!-- Pending: show skeleton -->
-							<Card class="flex h-[123px] w-[218px] flex-row rounded-[2px] border-none p-0">
-								<div class="h-full w-full">
-									<!-- Simulate image loading -->
-									<Skeleton class="h-full w-full rounded-[2px]" />
-								</div>
-							</Card>
-						{:then backdropImage}
+						{#if movie.backdrop_image}
 							<Card
 								class="jystify-end flex h-[123px] w-[218px] flex-row rounded-[2px] border-none p-0"
-								style="background-size: cover; background-position: center; background-image: url({backdropImage.url});"
+								style="background-size: cover; background-position: center; background-image: url({movie
+									.backdrop_image.url});"
 							>
-								{#if !backdropImage.langFound}
+								{#if !movie.backdrop_image.langFound}
 									<CardHeader class="bg-black bg-opacity-50 p-4">
 										<CardTitle>{movie.title}</CardTitle>
-										<!-- <CardDescription>{movie.overview}</CardDescription> -->
 									</CardHeader>
 								{/if}
 							</Card>
-						{:catch error}
-							<Card
-								class="h-[123px] w-[218px] rounded-sm border-none p-0"
-								style="background-size: cover; background-position: center; background-image: url('/fallback-image.jpg');"
-							>
-								<CardHeader
-									class="relative flex flex-col items-start justify-between bg-black bg-opacity-50 p-4"
+						{:else}
+							{#await loadBackdropImage(movie.id, 'small')}
+								<Card class="flex h-[123px] w-[218px] flex-row rounded-[2px] border-none p-0">
+									<div class="h-full w-full">
+										<Skeleton class="h-full w-full rounded-[2px]" />
+									</div>
+								</Card>
+							{:then updatedBackdropImage}
+								<Card
+									class="jystify-end flex h-[123px] w-[218px] flex-row rounded-[2px] border-none p-0"
+									style="background-size: cover; background-position: center; background-image: url({updatedBackdropImage?.url});"
 								>
-									<CardTitle>{movie.title}</CardTitle>
-									<!-- <CardDescription>{movie.overview}</CardDescription> -->
-								</CardHeader>
-							</Card>
-						{/await}
+									{#if !updatedBackdropImage?.langFound}
+										<CardHeader class="bg-black bg-opacity-50 p-4">
+											<CardTitle>{movie.title}</CardTitle>
+										</CardHeader>
+									{/if}
+								</Card>
+							{/await}
+						{/if}
 					</CarouselItem>
 				{/each}
 			</CarouselContent>
@@ -158,3 +202,5 @@
 		</Carousel>
 	</div>
 {/each}
+
+<div bind:this={sentinel}></div>
