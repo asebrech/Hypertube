@@ -1,6 +1,15 @@
 import axios from 'axios'
 import env from '#start/env'
 
+export type ImageSize =
+  | 'w92'
+  | 'w154'
+  | 'w185'
+  | 'w342'
+  | 'w500'
+  | 'w780'
+  | 'w1280'
+  | 'original';
 
 export class TMDBService {
   private apiKey: string | undefined
@@ -63,26 +72,43 @@ export class TMDBService {
     if (data.backdrops && data.backdrops.length > 0) {
       return data.backdrops[0].file_path
     }
-    if (data.posters && data.posters.length > 0) {
-      return data.posters[0].file_path
-    }
-    if (data.logos && data.logos.length > 0) {
-      return data.logos[0].file_path
-    }
+    // if (data.posters && data.posters.length > 0) {
+    //   return data.posters[0].file_path
+    // }
+    // if (data.logos && data.logos.length > 0) {
+    //   return data.logos[0].file_path
+    // }
     return null
   }
 
-  async getBackdropImageUrl(tmdb_movie_id: number, lang: string = 'en') {
-    let langageFound = true
+  private getSize(size: string) : ImageSize {
+    switch (size) {
+      case 'small':
+        return 'w342'
+      case 'medium':
+        return 'w500'
+      case 'large':
+        return 'w780'
+      case 'original':
+        return 'original'
+      default:
+        return 'original'
+  }}
+
+  async getBackdropImageUrl(tmdb_movie_id: number, size: string, lang: string = 'en') {
     const endpoint = `/movie/${tmdb_movie_id}/images?language=${lang.split('-')[0]}`
+    let langFound = true
     let data = await this.getSomething(endpoint)
     let imageUrl = this.getBackdropImageUrlFromData(data)
     if (!imageUrl) {
-      langageFound = false
-      console.log('No image found, trying without language', endpoint)
+      data = await this.getSomething(`/movie/${tmdb_movie_id}/images?language=en`)
+      imageUrl = this.getBackdropImageUrlFromData(data)
+    }
+    if (!imageUrl) {
+      langFound = false
       data = await this.getSomething(`/movie/${tmdb_movie_id}/images`)
       imageUrl = this.getBackdropImageUrlFromData(data)
     }
-    return {url : `https://image.tmdb.org/t/p/original${imageUrl}`, langageFound: langageFound}
+    return {url: `https://image.tmdb.org/t/p/${this.getSize(size)}${imageUrl}`, langFound: langFound}
   }
 }

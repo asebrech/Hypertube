@@ -49,11 +49,11 @@ export default class MoviesController {
 
   async backdropImage ({ request, response }: HttpContext) {
     const tmdb_movie_id = request.input('tmdb_movie_id')
-    const lang = request.input('lang')
-    console.log('lang', lang)
-    const imageUrl = await this.tmdbService.getBackdropImageUrl(tmdb_movie_id, lang)
-    if (imageUrl) {
-      return imageUrl
+    const lang = request.input('lang', 'en')
+    const size = request.input('size', 'original')
+    const backdropImageFoundBoolean = await this.tmdbService.getBackdropImageUrl(tmdb_movie_id, size, lang)
+    if (backdropImageFoundBoolean) {
+      return backdropImageFoundBoolean
     } else {
       return response.notFound({ error: 'Image not found' })
     }

@@ -1,6 +1,19 @@
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card/index.js';
-	import * as Carousel from '$lib/components/ui/carousel/index.js';
+	import {
+		Card,
+		CardContent,
+		CardDescription,
+		CardFooter,
+		CardHeader,
+		CardTitle
+	} from '@/components/ui/card';
+	import {
+		Carousel,
+		CarouselContent,
+		CarouselItem,
+		CarouselPrevious,
+		CarouselNext
+	} from '@/components/ui/carousel';
 	import axios from 'axios';
 	import { onMount } from 'svelte';
 	import { PUBLIC_BACK_URL } from '$env/static/public';
@@ -45,12 +58,13 @@
 		}
 	};
 
-	const getBackdropImage = async (movieId: any) => {
+	const getBackdropImage = async (movieId: any, size: string) => {
 		const config = {
 			method: 'get',
 			url: `${PUBLIC_BACK_URL}/movies/backdropImage`,
 			params: {
 				tmdb_movie_id: movieId,
+				size: size,
 				lang: $locale
 			}
 		};
@@ -90,38 +104,51 @@
 {/if}
 
 {#each movies_genres as genre}
-	<div class="mb-8">
-		<h2 class="mb-4 ml-4 text-xl font-bold">{genre.name}</h2>
-		<Carousel.Root
+	<div class="flex flex-col gap-[15px] pb-[46px] pt-[20px]">
+		<h2 class="text-l ml-[58px] font-medium">{genre.name}</h2>
+		<Carousel
 			opts={{
 				align: 'start',
-				loop: true
+				loop: true,
+				slidesToScroll: 5
 			}}
+			class="w-[calc(100vw + 160px)] ml-[-160px]"
 		>
-			<Carousel.Content>
+			<CarouselContent class="ml-0 flex gap-[6px]">
 				{#each genre.movies as movie}
-					<Carousel.Item class="basis-auto pl-1">
-						<div class="p-1">
-							<Card.Root>
-								<Card.Content class="h-45 w-75 flex aspect-square items-center justify-center p-6">
-									{#await getBackdropImage(movie.id) then backdropImage}
-										<img
-											src={backdropImage.url}
-											alt="{movie.title} backdrop"
-											class="h-full w-full object-cover"
-										/>
-										<p class="mt-2 block text-center text-2xl font-semibold">{movie.title}</p>
-									{:catch error}
-										<span class="text-2xl font-semibold">{movie.title}</span>
-									{/await}
-								</Card.Content>
-							</Card.Root>
-						</div>
-					</Carousel.Item>
+					<CarouselItem class="basis-auto p-0">
+						{#await getBackdropImage(movie.id, 'small') then backdropImage}
+							<Card
+								class="jystify-end flex h-[123px] w-[218px] flex-row rounded-[2px] border-none p-0"
+								style="background-size: cover; background-position: center; background-image: url({backdropImage.url});"
+							>
+								{#if !backdropImage.langFound}
+									<CardHeader class="bg-black bg-opacity-50 p-4">
+										<CardTitle>{movie.title}</CardTitle>
+										<!-- <CardDescription>{movie.overview}</CardDescription> -->
+									</CardHeader>
+								{/if}
+							</Card>
+						{:catch error}
+							<Card
+								class="h-[123px] w-[218px] rounded-sm border-none p-0"
+								style="background-size: cover; background-position: center; background-image: url('/fallback-image.jpg');"
+							>
+								<CardHeader
+									class="relative flex flex-col items-start justify-between bg-black bg-opacity-50 p-4"
+								>
+									<CardTitle>{movie.title}</CardTitle>
+									<!-- <CardDescription>{movie.overview}</CardDescription> -->
+								</CardHeader>
+							</Card>
+						{/await}
+					</CarouselItem>
 				{/each}
-			</Carousel.Content>
-			<!-- <Carousel.Previous /> -->
-			<!-- <Carousel.Next /> -->
-		</Carousel.Root>
+			</CarouselContent>
+			<CarouselPrevious
+				class="left-[160px] h-[123px] w-[58px] rounded-[0] border-none opacity-75"
+			/>
+			<CarouselNext class="right-0 h-[123px] w-[58px] rounded-[0] border-none opacity-75" />
+		</Carousel>
 	</div>
 {/each}
