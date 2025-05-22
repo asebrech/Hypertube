@@ -52,7 +52,7 @@ export class TMDBService {
   }
 
   public async getPopularMovies(language: string, page: number) {
-    const endpoint = `/movie/popular?language=${language}&page=${page}`
+    const endpoint = `/movie/popular?language=${language}&page=${page}&region=${language}`
     const data = await this.getSomething(endpoint)
     return data
   }
@@ -110,5 +110,9 @@ export class TMDBService {
       imageUrl = this.getBackdropImageUrlFromData(data)
     }
     return {url: `https://image.tmdb.org/t/p/${this.getSize(size)}${imageUrl}`, langFound: langFound}
+  }
+
+  async getMovieDetails(tmdb_movie_id: number, lang: string = 'en') {
+    return this.getSomething(`/movie/${tmdb_movie_id}?language=${lang}`)
   }
 }
