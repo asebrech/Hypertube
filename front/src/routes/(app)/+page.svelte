@@ -234,7 +234,7 @@
 				{#each genre.movies as movie}
 					<CarouselItem class="basis-auto p-0">
 						<HoverCard openDelay={100} closeDelay={100}>
-							<HoverCardTrigger href="/movie/{movie.id}" rel="noreferrer noopener">
+							<HoverCardTrigger href="/movie/{movie.id}" target="_blank" rel="noreferrer noopener">
 								{#if movie.backdrop_image}
 									<Card
 										class="jystify-end flex h-[123px] w-[218px] flex-row rounded-[2px] border-none p-0"
@@ -275,40 +275,42 @@
 								sideOffset={-231}
 								class="mt-0 w-[300px] overflow-hidden rounded-[8px] border-none p-0"
 							>
-								{#await loadMovieDetails(movie.id)}
-									<Skeleton class="h-full w-full" />
-								{:then movieDetails}
-									<div class="flex flex-col items-center">
-										{#if movieDetails.backdrop_path}
-											<img
-												src={`https://image.tmdb.org/t/p/w500${movieDetails.backdrop_path}`}
-												alt={movieDetails.title}
-												class="w-[300px] rounded-[2px] object-cover"
-											/>
-										{/if}
-										<div class="m-2 p-4">
-											<h3 class="line-clamp-1 font-medium">{movieDetails.title}</h3>
-											<p class="line-clamp-3 text-sm text-gray-500">{movieDetails.overview}</p>
-											{#if movieDetails.runtime}
-												<p class="text-sm text-gray-500">
-													{Math.floor(movieDetails.runtime / 60)}h {movieDetails.runtime % 60}m
-												</p>
+								<a href="/movie/{movie.id}" target="_blank" rel="noreferrer noopener" class="block">
+									{#await loadMovieDetails(movie.id)}
+										<Skeleton class="h-full w-full" />
+									{:then movieDetails}
+										<div class="flex flex-col items-center">
+											{#if movieDetails.backdrop_path}
+												<img
+													src={`https://image.tmdb.org/t/p/w500${movieDetails.backdrop_path}`}
+													alt={movieDetails.title}
+													class="w-[300px] rounded-[2px] object-cover"
+												/>
 											{/if}
-											{#if movieDetails.genres.length > 0}
-												<div class="flex flex-wrap justify-center">
-													{#each movieDetails.genres as genre}
-														<Badge
-															class="m-1 rounded-[2px] bg-gray-200 px-2 py-1 text-sm text-gray-700"
-															key={genre.id}
-														>
-															{genre.name}
-														</Badge>
-													{/each}
-												</div>
-											{/if}
+											<div class="m-2 p-4">
+												<h3 class="line-clamp-1 font-medium">{movieDetails.title}</h3>
+												<p class="line-clamp-3 text-sm text-gray-500">{movieDetails.overview}</p>
+												{#if movieDetails.runtime}
+													<p class="text-sm text-gray-500">
+														{Math.floor(movieDetails.runtime / 60)}h {movieDetails.runtime % 60}m
+													</p>
+												{/if}
+												{#if movieDetails.genres.length > 0}
+													<div class="flex flex-wrap justify-center">
+														{#each movieDetails.genres as genre}
+															<Badge
+																class="m-1 rounded-[2px] bg-gray-200 px-2 py-1 text-sm text-gray-700"
+																key={genre.id}
+															>
+																{genre.name}
+															</Badge>
+														{/each}
+													</div>
+												{/if}
+											</div>
 										</div>
-									</div>
-								{/await}
+									{/await}
+								</a>
 							</HoverCardContent>
 						</HoverCard>
 					</CarouselItem>
