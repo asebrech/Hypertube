@@ -61,4 +61,15 @@ export default class MoviesController {
       return response.notFound({ error: 'Image not found' })
     }
   }
+
+  async movieDetails ({ request, response }: HttpContext) {
+    const tmdb_movie_id = request.param('id')
+    const lang = request.input('lang', 'en')
+    const movieDetails = await this.tmdbService.getMovieDetails(tmdb_movie_id, lang)
+    if (movieDetails) {
+      return movieDetails
+    } else {
+      return response.notFound({ error: 'Movie not found' })
+    }
+  }
 }
