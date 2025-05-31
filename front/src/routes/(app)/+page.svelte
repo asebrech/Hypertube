@@ -233,7 +233,7 @@
 {/if}
 
 {#each movies_genres as genre}
-	<div class="flex flex-col gap-[15px] pb-[46px] pt-[20px]">
+	<div class="flex flex-col gap-[15px] pt-[20px] pb-[46px]">
 		<h2 class="text-l ml-[58px] font-medium">{genre.name}</h2>
 		<Carousel
 			opts={{
@@ -268,7 +268,7 @@
 												.backdrop_image.url});"
 										>
 											{#if !movie.backdrop_image.langFound}
-												<CardHeader class="bg-black bg-opacity-50 p-4">
+												<CardHeader class="bg-opacity-50 bg-black p-4">
 													<CardTitle>{movie.title}</CardTitle>
 												</CardHeader>
 											{/if}
@@ -286,7 +286,7 @@
 												style="background-size: cover; background-position: center; background-image: url({updatedBackdropImage?.url});"
 											>
 												{#if !updatedBackdropImage?.langFound}
-													<CardHeader class="bg-black bg-opacity-50 p-4">
+													<CardHeader class="bg-opacity-50 bg-black p-4">
 														<CardTitle>{movie.title}</CardTitle>
 													</CardHeader>
 												{/if}
