@@ -33,7 +33,9 @@
 		<div class="flex items-center gap-4">
 			<Select.Root bind:value={$locale} type="single">
 				<Select.Trigger class="flex gap-2"
-					><img src="/icons/langage.svg" class="w-[13px]" />{getLangName($locale)}</Select.Trigger
+					><img src="/icons/langage.svg" class="w-[13px]" alt="language" />{getLangName(
+						$locale
+					)}</Select.Trigger
 				>
 				<Select.Content>
 					{#each $locales as locale_item}
