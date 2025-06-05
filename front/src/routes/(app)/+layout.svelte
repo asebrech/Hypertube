@@ -25,13 +25,13 @@
 	};
 </script>
 
-<Card.Root class="mb-5">
+<Card.Root class="">
 	<Card.Content class="flex items-center justify-between">
 		<a href="/">
 			<Icon />
 		</a>
 		<div class="flex items-center gap-4">
-			<Select.Root bind:value={$locale} type="single">
+			<Select.Root bind:value={$locale!} type="single">
 				<Select.Trigger class="flex gap-2"
 					><img src="/icons/langage.svg" class="w-[13px]" alt="language" />{getLangName(
 						$locale
