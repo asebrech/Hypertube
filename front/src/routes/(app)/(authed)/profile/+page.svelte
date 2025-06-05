@@ -1,1 +1,0 @@
-<div>Profile page</div>
