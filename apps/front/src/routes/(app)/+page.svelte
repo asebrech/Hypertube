@@ -7,15 +7,14 @@
 		CarouselPrevious,
 		CarouselNext
 	} from '@/components/ui/carousel';
-	import axios from 'axios';
 	import { onMount } from 'svelte';
-	import { PUBLIC_BACK_URL } from '$env/static/public';
-	import { locale } from 'svelte-i18n';
 	import { Skeleton } from '@/components/ui/skeleton';
 	import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card';
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import type { Action } from 'svelte/action';
 	import { writable } from 'svelte/store';
+	import type { BackDropImage, MovieDetails, MovieGenre } from '@hypertube/shared';
+	import { getBackdropImage, getMovieDetails, getMovies } from '@/services/api';
 
 	export const visibleSlides = writable<number[]>([]);
 
@@ -37,134 +36,12 @@
 		if (visible) visibleSlides.update((visibleSlides) => [...visibleSlides, index]);
 	}
 
-	type BackDropImage = {
-		url: string;
-		langFound: boolean;
-	};
-
-	type MovieGenre = {
-		id: number;
-		name: string;
-		movies: {
-			id: number;
-			title: string;
-			overview: string;
-			poster_path: string;
-			release_date: string;
-			vote_average: number;
-			backdrop_image: BackDropImage | null | undefined;
-		}[];
-	};
-
-	type MovieDetails = {
-		adult: boolean;
-		backdrop_path: string | null;
-		belongs_to_collection?: {
-			id: number;
-			name: string;
-			poster_path: string | null;
-			backdrop_path: string | null;
-		};
-		budget: number;
-		genres: {
-			id: number;
-			name: string;
-		}[];
-		homepage: string | null;
-		id: number;
-		imdb_id: string | null;
-		origin_country: string[];
-		original_language: string;
-		original_title: string;
-		overview: string;
-		popularity: number;
-		poster_path: string | null;
-		production_companies: {
-			id: number;
-			logo_path: string | null;
-			name: string;
-			origin_country: string;
-		}[];
-		production_countries: {
-			iso_3166_1: string;
-			name: string;
-		}[];
-		release_date: string;
-		revenue: number;
-		runtime: number | null;
-		spoken_languages: {
-			english_name: string;
-			iso_639_1: string;
-			name: string;
-		}[];
-		status: string;
-		tagline: string;
-		title: string;
-		video: boolean;
-		vote_average: number;
-		vote_count: number;
-	};
-
 	export let hasMorePages: boolean;
 	export let currentPage: number = 1;
 	export let isLoading: boolean;
-	export let isLoadingDetails: boolean;
+	let isLoadingDetails: boolean;
 	export let movies_genres: MovieGenre[] = [];
-	export let movieDetails: MovieDetails[];
-
-	const getMovies = async (page_to_load: number) => {
-		const config = {
-			method: 'get',
-			url: `${PUBLIC_BACK_URL}/movies`,
-			params: {
-				page: page_to_load,
-				lang: $locale
-			}
-		};
-		try {
-			const response = await axios(config);
-			return response.data;
-		} catch (error) {
-			console.error('Error fetching movies:', error);
-			throw error;
-		}
-	};
-
-	const getMovieDetails = async (movieId: number) => {
-		const config = {
-			method: 'get',
-			url: `${PUBLIC_BACK_URL}/movies/${movieId}`,
-			params: {
-				lang: $locale
-			}
-		};
-		try {
-			const response = await axios(config);
-			return response.data;
-		} catch (error) {
-			console.error('Error fetching movie details:', error);
-			throw error;
-		}
-	};
-
-	const getBackdropImage = async (movieId: any, size: string) => {
-		const config = {
-			method: 'get',
-			url: `${PUBLIC_BACK_URL}/movies/backdropImage`,
-			params: {
-				tmdb_movie_id: movieId,
-				size: size,
-				lang: $locale
-			}
-		};
-		try {
-			const response = await axios(config);
-			return response.data;
-		} catch (error) {
-			console.error('Error fetching movies:', error);
-			throw error;
-		}
-	};
+	let movieDetails: MovieDetails[];
 
 	const loadBackdropImage = async (movieId: any, size: string): Promise<BackDropImage> => {
 		const backdrop_image_data = await getBackdropImage(movieId, size);

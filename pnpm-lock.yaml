@@ -39,6 +39,9 @@ importers:
       '@adonisjs/lucid':
         specifier: ^21.5.1
         version: 21.6.1(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@adonisjs/core@6.18.0(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@vinejs/vine@3.0.1))(@vinejs/vine@3.0.1)(luxon@3.6.1)(pg@8.16.0)
+      '@hypertube/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       '@vinejs/vine':
         specifier: ^3.0.0
         version: 3.0.1
@@ -115,6 +118,9 @@ importers:
 
   apps/front:
     dependencies:
+      '@hypertube/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       axios:
         specifier: ^1.8.4
         version: 1.9.0
@@ -236,6 +242,8 @@ importers:
       typescript-eslint:
         specifier: ^8.32.0
         version: 8.33.1(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.2)
+
+  packages/shared: {}
 
   packages/typescript-config: {}
 
