@@ -1,8 +1,3 @@
-// shared/index.ts
-export interface Testos {
-  tata: string;
-}
-
 export type BackDropImage = {
   url: string;
   langFound: boolean;
