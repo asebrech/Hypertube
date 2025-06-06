@@ -1,7 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { registerValidator, loginValidator } from '#validators/auth'
 import User from '#models/user'
-import { Testos } from '@hypertube/shared'
 import env from '#start/env'
 
 export default class AuthController {
