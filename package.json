@@ -19,5 +19,9 @@
   },
   "dependencies": {
     "acorn-typescript": "^1.4.13"
-  }
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
 }

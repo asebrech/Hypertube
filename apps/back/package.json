@@ -30,7 +30,8 @@
     "#database/*": "./database/*.js",
     "#start/*": "./start/*.js",
     "#tests/*": "./tests/*.js",
-    "#config/*": "./config/*.js"
+    "#config/*": "./config/*.js",
+    "#shared": "workspace:*"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^7.8.2",
@@ -63,7 +64,8 @@
     "luxon": "^3.5.0",
     "pg": "^8.13.1",
     "reflect-metadata": "^0.2.2",
-    "torrent-search-api": "^2.1.4"
+    "torrent-search-api": "^2.1.4",
+    "@hypertube/shared": "workspace:*"
   },
   "hotHook": {
     "boundaries": [
