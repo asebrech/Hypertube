@@ -15,7 +15,9 @@
 
 	export const visibleSlides = writable<number[]>([]);
 	function handleVisibility(index: number, visible: boolean) {
-		if (visible) visibleSlides.update((visibleSlides) => [...visibleSlides, index]);
+		visibleSlides.update((list) =>
+			visible ? (list.includes(index) ? list : [...list, index]) : list.filter((i) => i !== index)
+		);
 	}
 
 	export let movies: MovieGenre['movies'];
@@ -24,15 +26,18 @@
 		const observer = new IntersectionObserver(([entry]) => {
 			callback(entry.isIntersecting);
 		});
-
 		observer.observe(node);
-
-		return {
-			destroy() {
-				observer.unobserve(node);
-			}
-		};
+		return { destroy: () => observer.unobserve(node) };
 	};
+
+	function computeAlign(index: number, visible: number[]) {
+		const sorted = [...visible].sort((a, b) => a - b);
+		const first = sorted[1];
+		const last = sorted[sorted.length - 2];
+		if (index === first) return 'start';
+		if (index === last) return 'end';
+		return 'center';
+	}
 </script>
 
 <Carousel
@@ -42,11 +47,10 @@
 		slidesToScroll: 2,
 		startIndex: 0,
 		breakpoints: {
-			// Tailwind's breakpoints in pixels
-			'(min-width: 640px)': { slidesToScroll: 3 }, // sm
-			'(min-width: 768px)': { slidesToScroll: 4 }, // md
-			'(min-width: 1024px)': { slidesToScroll: 5 }, // lg
-			'(min-width: 1280px)': { slidesToScroll: 6 } // xl
+			'(min-width: 640px)': { slidesToScroll: 3 },
+			'(min-width: 768px)': { slidesToScroll: 4 },
+			'(min-width: 1024px)': { slidesToScroll: 5 },
+			'(min-width: 1280px)': { slidesToScroll: 6 }
 		}
 	}}
 	class="
@@ -55,7 +59,7 @@
 		md:ml-[-16.667%] md:w-[133.333%]
 		lg:ml-[-13.636%] lg:w-[127.273%]
 		xl:ml-[-11.538%] xl:w-[123.077%]
-		"
+	"
 >
 	<CarouselContent class="ml-0 flex gap-[0px]">
 		{#each movies as movie, index}
@@ -72,6 +76,7 @@
 						<HoverCardContent
 							hideWhenDetached={true}
 							avoidCollisions={false}
+							align={computeAlign(index, $visibleSlides)}
 							side="bottom"
 							sideOffset={-231}
 							class="mt-0 w-[300px] overflow-hidden rounded-[8px] border-none p-0"
@@ -83,6 +88,7 @@
 			</CarouselItem>
 		{/each}
 	</CarouselContent>
+
 	<CarouselPrevious
 		class="
 		left-[calc(75%/4)]
