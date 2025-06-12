@@ -21,7 +21,7 @@ router.get('/', async () => {
 })
 
 router.get('home', [TorrentController, 'torrent'])
-// router.get('stream', [TorrentController, 'stream'])
+router.get('stream', [TorrentController, 'stream'])
 
 router
   .group(() => {
