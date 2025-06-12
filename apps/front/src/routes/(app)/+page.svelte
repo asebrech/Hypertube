@@ -53,9 +53,9 @@
 {/if}
 
 {#each movies_genres as genre}
-	<div class="flex w-full flex-col gap-[15px] pb-[46px] pt-[20px]">
+	<div class="flex w-full flex-col gap-[15px] overflow-hidden pb-[46px] pt-[20px]">
 		<h2 class="text-l ml-[58px] font-medium">{genre.name}</h2>
-		<MovieCarousel {genre} {movies_genres} />
+		<MovieCarousel movies={genre.movies} />
 	</div>
 {/each}
 
