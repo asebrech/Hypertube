@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import TorrentSearchApi from 'torrent-search-api'
 import { TMDBService } from '#services/tmdb_service'
+import { BackDropImage } from '@hypertube/shared'
 
 export default class MoviesController {
   private tmdbService: TMDBService = new TMDBService()
@@ -50,7 +51,7 @@ export default class MoviesController {
     return {movies: slicedResponse, hasMorePages}
   }
 
-  async backdropImage ({ request, response }: HttpContext) {
+  async backdropImage ({ request, response }: HttpContext): Promise<BackDropImage | void> {
     const tmdb_movie_id = request.input('tmdb_movie_id')
     const lang = request.input('lang', 'en')
     const size = request.input('size', 'original')
