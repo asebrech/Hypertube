@@ -9,10 +9,9 @@
 	} from '@/components/ui/carousel';
 	import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card';
 	import { Skeleton } from '@/components/ui/skeleton';
-	import { Badge } from '@/components/ui/badge';
 
-	import { getBackdropImage, getMovieDetails } from '@/services/api';
-	import type { BackDropImage, MovieDetails, MovieGenre } from '@hypertube/shared';
+	import { getBackdropImage } from '@/services/api';
+	import type { BackDropImage, MovieGenre } from '@hypertube/shared';
 	import type { Action } from 'svelte/action';
 
 	import { writable } from 'svelte/store';
@@ -23,7 +22,6 @@
 		if (visible) visibleSlides.update((visibleSlides) => [...visibleSlides, index]);
 	}
 
-	// Props
 	export let movies_genres: MovieGenre[] = [];
 	export let genre: MovieGenre;
 
@@ -38,11 +36,6 @@
 				});
 			});
 		return backdrop_image_data;
-	};
-
-	const loadMovieDetails = async (movieId: number): Promise<MovieDetails> => {
-		const movieDetailsResponse = await getMovieDetails(movieId);
-		return movieDetailsResponse;
 	};
 
 	export const inView: Action<HTMLElement, (visible: boolean) => void> = (node, callback) => {
@@ -74,17 +67,23 @@
 			'(min-width: 1280px)': { slidesToScroll: 6 } // xl
 		}
 	}}
-	class="w-[calc(100% + 160px)] ml-[-160px]"
+	class="
+  ml-[-30%] w-[160%]
+  sm:ml-[-21.429%] sm:w-[142.857%]
+  md:ml-[-16.667%] md:w-[133.333%]
+  lg:ml-[-13.636%] lg:w-[127.273%]
+  xl:ml-[-11.538%] xl:w-[123.077%]
+"
 >
-	<CarouselContent class="ml-0 flex gap-[6px]">
+	<CarouselContent class="ml-0 flex gap-[0px]">
 		{#each genre.movies as movie, index}
-			<CarouselItem class="basis-auto p-0">
+			<CarouselItem class="lg:basis-1/7 xl:basis-1/8 basis-1/4 p-[3px] sm:basis-1/5 md:basis-1/6">
 				<div use:inView={(visible) => handleVisibility(index, visible)}>
 					<HoverCard openDelay={100} closeDelay={100}>
 						<HoverCardTrigger href="/movie/{movie.id}" target="_blank" rel="noreferrer noopener">
 							{#if movie.backdrop_image}
 								<Card
-									class="jystify-end flex h-[123px] w-[218px] flex-row rounded-[2px] border-none p-0"
+									class="jystify-end flex aspect-[5/3] flex-row rounded-[2px] border-none p-0"
 									style="background-size: cover; background-position: center; background-image: url({movie
 										.backdrop_image.url});"
 								>
@@ -96,14 +95,14 @@
 								</Card>
 							{:else if $visibleSlides.includes(index)}
 								{#await loadBackdropImage(movie.id, 'small')}
-									<Card class="flex h-[123px] w-[218px] flex-row rounded-[2px] border-none p-0">
+									<Card class="flex aspect-[5/3] flex-row rounded-[2px] border-none p-0">
 										<div class="h-full w-full">
 											<Skeleton class="h-full w-full rounded-[2px]" />
 										</div>
 									</Card>
 								{:then updatedBackdropImage}
 									<Card
-										class="jystify-end flex h-[123px] w-[218px] flex-row rounded-[2px] border-none p-0"
+										class="jystify-end flex aspect-[5/3] flex-row rounded-[2px] border-none p-0"
 										style="background-size: cover; background-position: center; background-image: url({updatedBackdropImage?.url});"
 									>
 										{#if !updatedBackdropImage?.langFound}
@@ -114,7 +113,7 @@
 									</Card>
 								{/await}
 							{:else}
-								<Card class="flex h-[123px] w-[218px] flex-row rounded-[2px] border-none p-0">
+								<Card class="flex aspect-[5/3] flex-row rounded-[2px] border-none p-0">
 									<div class="h-full w-full">
 										<Skeleton class="h-full w-full rounded-[2px]" />
 									</div>
@@ -135,6 +134,36 @@
 			</CarouselItem>
 		{/each}
 	</CarouselContent>
-	<CarouselPrevious class="left-[160px] h-[123px] w-[58px] rounded-[0] border-none opacity-75" />
-	<CarouselNext class="right-0 h-[123px] w-[58px] rounded-[0] border-none opacity-75" />
+	<CarouselPrevious
+		class="left-[calc(75%/4)] h-[100%]
+			w-[calc(100%/16)] 
+			rounded-[0]
+			border-none
+			p-[3px]
+			opacity-75 
+			sm:left-[calc(75%/5)]
+			sm:w-[calc(100%/20)]
+			md:left-[calc(75%/6)]
+			md:w-[calc(100%/24)]
+			lg:left-[calc(75%/7)]
+			lg:w-[calc(100%/28)]
+			xl:left-[75%/8]
+			xl:w-[calc(100%/32)]"
+	/>
+	<CarouselNext
+		class="right-[calc(75%/4)] h-[100%]
+			w-[calc(100%/16)] 
+			rounded-[0]
+			border-none
+			p-[3px]
+			opacity-75 
+			sm:right-[calc(75%/5)]
+			sm:w-[calc(100%/20)]
+			md:right-[calc(75%/6)]
+			md:w-[calc(100%/24)]
+			lg:right-[calc(75%/7)]
+			lg:w-[calc(100%/28)]
+			xl:right-[75%/8]
+			xl:w-[calc(100%/32)]"
+	/>
 </Carousel>
