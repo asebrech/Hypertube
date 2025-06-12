@@ -12,12 +12,16 @@ import { middleware } from './kernel.js'
 
 const AuthController = () => import('#controllers/auth_controller')
 const MoviesController = () => import('#controllers/movies_controller')
+const TorrentController = () => import('#controllers/torrent_controller')
 
 router.get('/', async () => {
   return {
     hello: 'world',
   }
 })
+
+router.get('home', [TorrentController, 'torrent'])
+// router.get('stream', [TorrentController, 'stream'])
 
 router
   .group(() => {
