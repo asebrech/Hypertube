@@ -32,8 +32,20 @@
 
 	function computeAlign(index: number, visible: number[]) {
 		const sorted = [...visible].sort((a, b) => a - b);
-		const first = sorted[1];
-		const last = sorted[sorted.length - 2];
+		const pivotlast =
+			sorted.findIndex((value, index, obj) => {
+				return obj[index + 1] != value + 1;
+			}) || sorted.length - 1;
+		const pivotfirst =
+			sorted.findIndex((value, index, obj) => {
+				return obj[index - 1] != value - 1;
+			}) || 0;
+		console.log('sorted', sorted);
+		console.log('pivotfirst', pivotfirst);
+		console.log('pivotlast', pivotlast);
+		console.log('index', index);
+		const first = sorted[pivotfirst + 1];
+		const last = sorted[pivotlast - 1];
 		if (index === first) return 'start';
 		if (index === last) return 'end';
 		return 'center';
