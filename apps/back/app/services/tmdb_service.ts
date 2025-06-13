@@ -115,4 +115,8 @@ export class TMDBService {
   async getMovieDetails(tmdb_movie_id: number, lang: string = 'en') {
     return this.getSomething(`/movie/${tmdb_movie_id}?language=${lang}`)
   }
+
+  async getMovieVideos(tmdb_movie_id: number, lang: string = 'en') {
+    return this.getSomething(`/movie/${tmdb_movie_id}/videos?language=${lang}`)
+  }
 }

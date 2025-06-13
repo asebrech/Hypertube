@@ -73,4 +73,14 @@ export default class MoviesController {
       return response.notFound({ error: 'Movie not found' })
     }
   }
+
+  async movieVideos ({ request, response }: HttpContext) {
+    const tmdb_movie_id = request.param('id')
+    const lang = request.input('lang', 'en')
+    const movieVideos = await this.tmdbService.getMovieVideos(tmdb_movie_id, lang)
+    if (!movieVideos)
+      return response.notFound({ error: 'Movie videos not found' })
+    const movieVideo = movieVideos.results.find((video: any) => video.site === 'YouTube' && video.type === 'Trailer')
+    return movieVideo;
+  }
 }
