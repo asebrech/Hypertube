@@ -82,11 +82,12 @@
 						</HoverCardTrigger>
 						<HoverCardContent
 							hideWhenDetached={true}
+							collisionPadding={0}
 							avoidCollisions={false}
 							align={computeAlign(index, $visibleSlides)}
 							side="bottom"
 							sideOffset={-200}
-							class="mt-0 w-[300px] overflow-hidden rounded-[8px] border-none p-0"
+							class="m-0 w-[300px] overflow-hidden rounded-[8px] border-none p-0"
 						>
 							<MoviePreview movieId={movie.id} />
 						</HoverCardContent>
