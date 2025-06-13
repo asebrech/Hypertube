@@ -32,20 +32,15 @@
 
 	function computeAlign(index: number, visible: number[]) {
 		const sorted = [...visible].sort((a, b) => a - b);
-		const pivotlast =
-			sorted.findIndex((value, index, obj) => {
-				return obj[index + 1] != value + 1;
-			}) || sorted.length - 1;
-		const pivotfirst =
-			sorted.findIndex((value, index, obj) => {
-				return obj[index - 1] != value - 1;
-			}) || 0;
-		console.log('sorted', sorted);
-		console.log('pivotfirst', pivotfirst);
-		console.log('pivotlast', pivotlast);
-		console.log('index', index);
-		const first = sorted[pivotfirst + 1];
-		const last = sorted[pivotlast - 1];
+		while (true) {
+			if (sorted[0] + 1 === sorted[1]) sorted.push(sorted.shift()!);
+			else {
+				sorted.push(sorted.shift()!);
+				break;
+			}
+		}
+		const first = sorted[1];
+		const last = sorted[sorted.length - 2];
 		if (index === first) return 'start';
 		if (index === last) return 'end';
 		return 'center';
@@ -116,7 +111,7 @@
 			md:w-[calc(-3px+100%/24)]
 			lg:left-[calc(75%/7)]
 			lg:w-[calc(-3px+100%/28)]
-			xl:left-[75%/8]
+			xl:left-[calc(75%/8)]
 			xl:w-[calc(-3px+100%/32)]"
 	/>
 	<CarouselNext
@@ -133,7 +128,7 @@
 			md:w-[calc(-3px+100%/24)]
 			lg:right-[calc(75%/7)]
 			lg:w-[calc(-3px+100%/28)]
-			xl:right-[75%/8]
+			xl:right-[calc(75%/8)]
 			xl:w-[calc(-3px+100%/32)]"
 	/>
 </Carousel>
