@@ -70,7 +70,7 @@
 			</div>
 		{:else if movie?.backdrop_path}
 			<div
-				class="flex aspect-[5/3] w-[300px] items-end rounded-[2px] bg-cover bg-center"
+				class="flex aspect-[6/3] w-[300px] items-end rounded-[2px] bg-cover bg-center"
 				style="background-image: url('https://image.tmdb.org/t/p/w500{movie.backdrop_path}');"
 			>
 				<div class="w-full rounded-b-[2px] bg-gradient-to-t from-black/60 to-transparent p-4">
