@@ -63,6 +63,19 @@ export default class MoviesController {
     }
   }
 
+  async posterImage ({ request, response }: HttpContext): Promise<BackDropImage | void> {
+    const tmdb_movie_id = request.input('tmdb_movie_id')
+    const lang = request.input('lang', 'en')
+    const size = request.input('size', 'original')
+    console.log('Poster Image Request:', { tmdb_movie_id, lang, size })
+    const backdropImageFoundBoolean = await this.tmdbService.getBackdropImageUrl(tmdb_movie_id, size, lang)
+    if (backdropImageFoundBoolean) {
+      return backdropImageFoundBoolean
+    } else {
+      return response.notFound({ error: 'Image not found' })
+    }
+  }
+
   async movieDetails ({ request, response }: HttpContext) {
     const tmdb_movie_id = request.param('id')
     const lang = request.input('lang', 'en')
