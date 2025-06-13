@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 	import {
 		Carousel,
 		CarouselContent,
@@ -8,56 +7,44 @@
 		CarouselNext
 	} from '@/components/ui/carousel';
 	import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card';
-	import { Skeleton } from '@/components/ui/skeleton';
-	import { Badge } from '@/components/ui/badge';
-
-	import { getBackdropImage, getMovieDetails } from '@/services/api';
-	import type { BackDropImage, MovieDetails, MovieGenre } from '@hypertube/shared';
+	import type { MovieGenre } from '@hypertube/shared';
 	import type { Action } from 'svelte/action';
-
 	import { writable } from 'svelte/store';
-	import { MovieCard } from '$lib/components/tadflix/movie-card.svelte';
+	import { MoviePreview } from '@/components/tadflix/movie-preview';
+	import { MovieCard } from '@/components/tadflix/movie-card';
 
 	export const visibleSlides = writable<number[]>([]);
 	function handleVisibility(index: number, visible: boolean) {
-		if (visible) visibleSlides.update((visibleSlides) => [...visibleSlides, index]);
+		visibleSlides.update((list) =>
+			visible ? (list.includes(index) ? list : [...list, index]) : list.filter((i) => i !== index)
+		);
 	}
 
-	// Props
-	export let movies_genres: MovieGenre[] = [];
-	export let genre: MovieGenre;
-
-	const loadBackdropImage = async (movieId: any, size: string): Promise<BackDropImage> => {
-		const backdrop_image_data = await getBackdropImage(movieId, size);
-		if (backdrop_image_data)
-			movies_genres.forEach((genre) => {
-				genre.movies.forEach((movie) => {
-					if (movie.id === movieId) {
-						movie.backdrop_image = backdrop_image_data;
-					}
-				});
-			});
-		return backdrop_image_data;
-	};
-
-	const loadMovieDetails = async (movieId: number): Promise<MovieDetails> => {
-		const movieDetailsResponse = await getMovieDetails(movieId);
-		return movieDetailsResponse;
-	};
+	export let movies: MovieGenre['movies'];
 
 	export const inView: Action<HTMLElement, (visible: boolean) => void> = (node, callback) => {
 		const observer = new IntersectionObserver(([entry]) => {
 			callback(entry.isIntersecting);
 		});
-
 		observer.observe(node);
-
-		return {
-			destroy() {
-				observer.unobserve(node);
-			}
-		};
+		return { destroy: () => observer.unobserve(node) };
 	};
+
+	function computeAlign(index: number, visible: number[]) {
+		const sorted = [...visible].sort((a, b) => a - b);
+		while (true) {
+			if (sorted[0] + 1 === sorted[1]) sorted.push(sorted.shift()!);
+			else {
+				sorted.push(sorted.shift()!);
+				break;
+			}
+		}
+		const first = sorted[1];
+		const last = sorted[sorted.length - 2];
+		if (index === first) return 'start';
+		if (index === last) return 'end';
+		return 'center';
+	}
 </script>
 
 <Carousel
@@ -67,74 +54,81 @@
 		slidesToScroll: 2,
 		startIndex: 0,
 		breakpoints: {
-			// Tailwind's breakpoints in pixels
-			'(min-width: 640px)': { slidesToScroll: 3 }, // sm
-			'(min-width: 768px)': { slidesToScroll: 4 }, // md
-			'(min-width: 1024px)': { slidesToScroll: 5 }, // lg
-			'(min-width: 1280px)': { slidesToScroll: 6 } // xl
+			'(min-width: 640px)': { slidesToScroll: 3 },
+			'(min-width: 768px)': { slidesToScroll: 4 },
+			'(min-width: 1024px)': { slidesToScroll: 5 },
+			'(min-width: 1280px)': { slidesToScroll: 6 }
 		}
 	}}
-	class="w-[calc(100% + 160px)] ml-[-160px]"
+	class="
+		ml-[-30%] w-[160%]
+		sm:ml-[-21.429%] sm:w-[142.857%]
+		md:ml-[-16.667%] md:w-[133.333%]
+		lg:ml-[-13.636%] lg:w-[127.273%]
+		xl:ml-[-11.538%] xl:w-[123.077%]
+	"
 >
-	<CarouselContent class="ml-0 flex gap-[6px]">
-		{#each genre.movies as movie, index}
-			<CarouselItem class="basis-auto p-0">
+	<CarouselContent class="ml-0 flex gap-[0px]">
+		{#each movies as movie, index}
+			<CarouselItem class="lg:basis-1/7 xl:basis-1/8 basis-1/4 p-[3px] sm:basis-1/5 md:basis-1/6">
 				<div use:inView={(visible) => handleVisibility(index, visible)}>
 					<HoverCard openDelay={100} closeDelay={100}>
 						<HoverCardTrigger href="/movie/{movie.id}" target="_blank" rel="noreferrer noopener">
-							{#if movie.backdrop_image}
-								<Card
-									class="jystify-end flex h-[123px] w-[218px] flex-row rounded-[2px] border-none p-0"
-									style="background-size: cover; background-position: center; background-image: url({movie
-										.backdrop_image.url});"
-								>
-									{#if !movie.backdrop_image.langFound}
-										<CardHeader class="bg-black bg-opacity-50 p-4">
-											<CardTitle>{movie.title}</CardTitle>
-										</CardHeader>
-									{/if}
-								</Card>
-							{:else if $visibleSlides.includes(index)}
-								{#await loadBackdropImage(movie.id, 'small')}
-									<Card class="flex h-[123px] w-[218px] flex-row rounded-[2px] border-none p-0">
-										<div class="h-full w-full">
-											<Skeleton class="h-full w-full rounded-[2px]" />
-										</div>
-									</Card>
-								{:then updatedBackdropImage}
-									<Card
-										class="jystify-end flex h-[123px] w-[218px] flex-row rounded-[2px] border-none p-0"
-										style="background-size: cover; background-position: center; background-image: url({updatedBackdropImage?.url});"
-									>
-										{#if !updatedBackdropImage?.langFound}
-											<CardHeader class="bg-black bg-opacity-50 p-4">
-												<CardTitle>{movie.title}</CardTitle>
-											</CardHeader>
-										{/if}
-									</Card>
-								{/await}
-							{:else}
-								<Card class="flex h-[123px] w-[218px] flex-row rounded-[2px] border-none p-0">
-									<div class="h-full w-full">
-										<Skeleton class="h-full w-full rounded-[2px]" />
-									</div>
-								</Card>
-							{/if}
+							<MovieCard
+								movie_id={movie.id}
+								isVisible={$visibleSlides.includes(index)}
+								title={movie.title}
+							/>
 						</HoverCardTrigger>
 						<HoverCardContent
 							hideWhenDetached={true}
 							avoidCollisions={false}
+							align={computeAlign(index, $visibleSlides)}
 							side="bottom"
 							sideOffset={-231}
 							class="mt-0 w-[300px] overflow-hidden rounded-[8px] border-none p-0"
 						>
-							<MovieCard {movie} />
+							<MoviePreview movieId={movie.id} />
 						</HoverCardContent>
 					</HoverCard>
 				</div>
 			</CarouselItem>
 		{/each}
 	</CarouselContent>
-	<CarouselPrevious class="left-[160px] h-[123px] w-[58px] rounded-[0] border-none opacity-75" />
-	<CarouselNext class="right-0 h-[123px] w-[58px] rounded-[0] border-none opacity-75" />
+
+	<CarouselPrevious
+		class="
+		left-[calc(75%/4)]
+			h-[calc(100%-6px)]
+			w-[calc(-3px+100%/16)]
+			rounded-l-none
+			rounded-r-[2px]
+			border-none
+			opacity-75 
+			sm:left-[calc(75%/5)]
+			sm:w-[calc(-3px+100%/20)]
+			md:left-[calc(75%/6)]
+			md:w-[calc(-3px+100%/24)]
+			lg:left-[calc(75%/7)]
+			lg:w-[calc(-3px+100%/28)]
+			xl:left-[calc(75%/8)]
+			xl:w-[calc(-3px+100%/32)]"
+	/>
+	<CarouselNext
+		class="right-[calc(75%/4)]
+		h-[calc(100%-6px)]
+			w-[calc(-3px+100%/16)]
+			rounded-l-[2px]
+			rounded-r-none
+			border-none
+			opacity-75 
+			sm:right-[calc(75%/5)]
+			sm:w-[calc(-3px+100%/20)]
+			md:right-[calc(75%/6)]
+			md:w-[calc(-3px+100%/24)]
+			lg:right-[calc(75%/7)]
+			lg:w-[calc(-3px+100%/28)]
+			xl:right-[calc(75%/8)]
+			xl:w-[calc(-3px+100%/32)]"
+	/>
 </Carousel>
