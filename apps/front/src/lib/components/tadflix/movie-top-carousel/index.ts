@@ -1,0 +1,1 @@
+export { default as MovieTopCarousel } from "./movie-top-carousel.svelte";
