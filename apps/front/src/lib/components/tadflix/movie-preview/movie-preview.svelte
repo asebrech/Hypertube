@@ -47,7 +47,7 @@
 				<Skeleton class="h-full w-full rounded-[2px]" />
 			</div>
 		{/if}
-		<div class="flex w-full flex-col gap-2 px-4">
+		<div class="flex w-full flex-col gap-2 p-4">
 			{#if isLoading}
 				<div class="mt-2">
 					<Skeleton class="h-6 w-24" />
@@ -69,9 +69,14 @@
 			{/if}
 			<!-- <p class="line-clamp-3 text-sm text-gray-500">{movie?.overview}</p> -->
 			{#if movie?.runtime}
-				<p class="text-sm text-gray-500">
-					{Math.floor(movie?.runtime / 60)}h {movie?.runtime % 60}m
-				</p>
+				<div class="flex items-center gap-2">
+					<p class="text-sm text-gray-300">
+						{Math.floor(movie?.runtime / 60)} h {movie?.runtime % 60} min
+					</p>
+					<p class="border border-gray-300 px-[4px] py-[0px] text-[12px] uppercase text-gray-300">
+						{movie.original_language}
+					</p>
+				</div>
 			{/if}
 			{#if movie?.genres.length > 0}
 				<div class="flex flex-wrap items-center">
