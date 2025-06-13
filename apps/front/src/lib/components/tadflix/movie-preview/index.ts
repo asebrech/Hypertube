@@ -1,0 +1,1 @@
+export { default as MoviePreview } from "./movie-preview.svelte";
