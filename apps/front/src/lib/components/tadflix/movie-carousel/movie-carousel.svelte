@@ -85,7 +85,7 @@
 							avoidCollisions={false}
 							align={computeAlign(index, $visibleSlides)}
 							side="bottom"
-							sideOffset={-231}
+							sideOffset={-200}
 							class="mt-0 w-[300px] overflow-hidden rounded-[8px] border-none p-0"
 						>
 							<MoviePreview movieId={movie.id} />
