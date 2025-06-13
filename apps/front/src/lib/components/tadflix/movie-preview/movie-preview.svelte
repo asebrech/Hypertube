@@ -5,9 +5,11 @@
 	import type { MovieDetails } from '@hypertube/shared';
 	import { onMount } from 'svelte';
 	import ButtonPreview from '$lib/components/tadflix/buttons/button-preview/button-preview.svelte';
-	import { Play, Plus, ChevronDown } from 'lucide-svelte';
+	import { Play, Plus, ChevronDown, Languages } from 'lucide-svelte';
 	import Icon from '$lib/assets/tadflix-small.svelte';
 	import { Dot } from 'lucide-svelte';
+	import { locale } from 'svelte-i18n';
+	import { get } from 'svelte/store';
 
 	export let movieId: number;
 	let isLoading = true;
@@ -16,6 +18,7 @@
 	const loadMovieDetails = async (movieId: number): Promise<MovieDetails> => {
 		const movieDetailsResponse = await getMovieDetails(movieId);
 		movie = movieDetailsResponse;
+		console.log('Movie details loaded:', movie);
 		return movieDetailsResponse;
 	};
 
@@ -70,6 +73,15 @@
 			<!-- <p class="line-clamp-3 text-sm text-gray-500">{movie?.overview}</p> -->
 			{#if movie?.runtime}
 				<div class="flex items-center gap-2">
+					<p class="border border-gray-300 px-[4px] py-[0px] text-[12px] uppercase text-gray-300">
+						{movie.release_date
+							? new Date(movie.release_date).toLocaleDateString(get(locale) as string, {
+									year: 'numeric',
+									month: 'long',
+									day: 'numeric'
+								})
+							: 'Unknown Release Date'}
+					</p>
 					<p class="text-sm text-gray-300">
 						{Math.floor(movie?.runtime / 60)} h {movie?.runtime % 60} min
 					</p>
