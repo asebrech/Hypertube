@@ -132,7 +132,6 @@ export class TMDBService {
   async getPosterImageUrl(tmdb_movie_id: number, size: string, lang: string = 'en') {
     const endpoint = `/movie/${tmdb_movie_id}/images?language=${lang.split('-')[0]}`
     let langFound = true
-    console.log('TMDBService.getBackdropImageUrl', endpoint)
     let data = await this.getSomething(endpoint)
     let imageUrl = this.getPosterImageUrlFromData(data)
     if (!imageUrl) {
