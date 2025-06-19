@@ -39,9 +39,13 @@
 		<div class="absolute left-0 top-0 h-full w-[50%]">
 			<Rank {orderNumber} />
 		</div>
-		<div
-			class="absolute right-0 top-0 h-full w-[50%]"
-			style="background-size: cover; background-position: center; background-image: url({poster_image?.url});"
-		></div>
+		{#if isLoading}
+			<Skeleton class="absolute right-0 top-0 h-full w-[50%]" />
+		{:else}
+			<div
+				class="absolute right-0 top-0 h-full w-[50%]"
+				style="background-size: cover; background-position: center; background-image: url({poster_image?.url});"
+			></div>
+		{/if}
 	</div>
 </Card>
