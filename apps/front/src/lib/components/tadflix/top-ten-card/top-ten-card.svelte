@@ -3,10 +3,13 @@
 	import { Skeleton } from '@/components/ui/skeleton';
 	import { getPosterImage } from '@/services/api';
 	import type { BackDropImage } from '@hypertube/shared';
+	import Rank from './rank.svelte';
 
 	export let movie_id: number;
 	export let isVisible: boolean;
 	export let title: string;
+	export let orderNumber: number;
+
 	let poster_image: BackDropImage | null = null;
 	let isLoading = true;
 
@@ -31,17 +34,14 @@
 	}
 </script>
 
-<Card
-	class="jystify-end flex aspect-[5/3] flex-row rounded-[2px] border-none p-0"
-	style="background-size: cover; background-position: center; background-image: url({poster_image?.url});"
->
-	{#if isLoading}
-		<div class="h-full w-full">
-			<Skeleton class="h-full w-full rounded-[2px]" />
+<Card class="flex aspect-[5/4] flex-row rounded-[2px] border-none bg-transparent p-1">
+	<div class="relative inline-block h-full w-full font-bold">
+		<div class="absolute left-0 top-0 h-full w-[50%]">
+			<Rank {orderNumber} />
 		</div>
-	{:else if !poster_image?.langFound}
-		<CardHeader class="bg-black bg-opacity-50 p-4">
-			<CardTitle>{title}</CardTitle>
-		</CardHeader>
-	{/if}
+		<div
+			class="absolute right-0 top-0 h-full w-[50%]"
+			style="background-size: cover; background-position: center; background-image: url({poster_image?.url});"
+		></div>
+	</div>
 </Card>

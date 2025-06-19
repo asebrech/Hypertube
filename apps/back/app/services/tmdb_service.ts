@@ -132,16 +132,17 @@ export class TMDBService {
   async getPosterImageUrl(tmdb_movie_id: number, size: string, lang: string = 'en') {
     const endpoint = `/movie/${tmdb_movie_id}/images?language=${lang.split('-')[0]}`
     let langFound = true
+    console.log('TMDBService.getBackdropImageUrl', endpoint)
     let data = await this.getSomething(endpoint)
-    let imageUrl = this.getBackdropImageUrlFromData(data)
+    let imageUrl = this.getPosterImageUrlFromData(data)
     if (!imageUrl) {
       data = await this.getSomething(`/movie/${tmdb_movie_id}/images?language=en`)
-      imageUrl = this.getBackdropImageUrlFromData(data)
+      imageUrl = this.getPosterImageUrlFromData(data)
     }
     if (!imageUrl) {
       langFound = false
       data = await this.getSomething(`/movie/${tmdb_movie_id}/images`)
-      imageUrl = this.getBackdropImageUrlFromData(data)
+      imageUrl = this.getPosterImageUrlFromData(data)
     }
     return {url: `https://image.tmdb.org/t/p/${this.getSize(size)}${imageUrl}`, langFound: langFound}
   }
