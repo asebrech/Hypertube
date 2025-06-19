@@ -4,7 +4,6 @@
 	import { getMovies } from '@/services/api';
 
 	import { MovieCarousel } from '@/components/tadflix/movie-carousel';
-	import { MovieTopCarousel } from '@/components/tadflix/movie-top-carousel';
 
 	export let hasMorePages: boolean = true;
 	export let currentPage: number = 1;
@@ -17,7 +16,6 @@
 			isLoading = true;
 			const getMovieResponse = await getMovies(currentPage);
 			movies_genres = movies_genres.concat(getMovieResponse.movies);
-			console.log('Loaded movies:', movies_genres);
 			hasMorePages = getMovieResponse.hasMorePages;
 			currentPage++;
 			isLoading = false;
@@ -58,7 +56,7 @@
 	<div class="flex w-full flex-col gap-[15px] overflow-hidden pb-[46px] pt-[20px]">
 		<h2 class="text-l ml-[58px] font-medium">{genre.name}</h2>
 		{#if genre.id == 0}
-			<MovieTopCarousel movies={genre.movies} />
+			<MovieCarousel movies={genre.movies} variant={'top-ten'} />
 		{:else}
 			<MovieCarousel movies={genre.movies} />
 		{/if}
