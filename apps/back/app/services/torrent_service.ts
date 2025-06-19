@@ -2,45 +2,78 @@ import torrentStream from 'torrent-stream'
 import fs from 'node:fs'
 import { PassThrough } from 'node:stream'
 import Ffmpeg from 'fluent-ffmpeg'
+import { HttpContext } from '@adonisjs/core/http'
 
 export default class EchoService {
   getConvertedStream = (inputStream: any, fileExtension: any) => {
     const pass = new PassThrough()
 
-    if (fileExtension !== 'mp4' && fileExtension !== 'webm') {
-      Ffmpeg()
-        .input(inputStream)
-        .outputOptions([
-          '-f hls',
-          '-deadline realtime',
-          '-preset ultrafast',
-          '-start_number 0',
-          '-hls_time 2',
-          '-hls_list_size 0',
-          '-movflags frag_keyframe+empty_moov',
-          '-g 52',
-        ])
-        .outputFormat('mp4')
-        .on('error', () => pass.end())
-        .pipe(pass)
-    } else {
-      inputStream.pipe(pass)
-    }
+    Ffmpeg()
+      .input(inputStream)
+      .outputOptions([
+        '-f hls',
+        '-deadline realtime',
+        '-preset ultrafast',
+        '-start_number 0',
+        '-hls_time 2',
+        '-hls_list_size 0',
+        '-movflags frag_keyframe+empty_moov',
+        '-g 52',
+      ])
+      .outputFormat('mp4')
+      .on('error', (_) => pass.end())
+      .pipe(pass)
     return pass
   }
 
-  stream() {
-    const filePath = `./downloads/test.mp4`
+  stream({ request, response }: HttpContext) {
+    const filePath = `./downloads/test.mkv`
 
     if (!fs.existsSync(filePath)) {
       throw new Error(`File not found: ${filePath}`)
     }
 
-    const fileStream = fs.createReadStream(filePath)
-    const passThrough = new PassThrough()
+    const stat = fs.statSync(filePath)
+    const fileSize = stat.size
+    const range = request.header('range') || 'bytes=0-'
 
-    fileStream.pipe(passThrough)
-    return passThrough
+    const parts = range.replace(/bytes=/, '').split('-')
+    const start = Number.parseInt(parts[0], 10)
+    const end = parts[1] ? Number.parseInt(parts[1], 10) : fileSize - 1
+
+    if (start >= fileSize) {
+      return response.status(416).send('Range Not Satisfiable')
+    }
+
+    const chunkSize = end - start + 1
+    const file = fs.createReadStream(filePath, { start, end })
+
+    response
+      .status(206)
+      .header('Content-Range', `bytes ${start}-${end}/${fileSize}`)
+      .header('Accept-Ranges', 'bytes')
+      .header('Content-Length', chunkSize)
+      .header('Content-Type', 'video/mp4')
+
+    const pass = this.getConvertedStream(file, 'mp4')
+    response.stream(pass)
+    //
+    // const passThrough = new PassThrough()
+    //
+    // file.pipe(passThrough) // Pipe ReadStream into PassThrough
+    // Ffmpeg(passThrough)
+    //   .on('start', () =>
+    //     console.log(3, 'hypertube-server', 'movies.controller.js', 'conversion started...')
+    //   )
+    //   .on('error', (error) =>
+    //     console.log(5, 'hypertube-server', 'movies.controller.js', error.message)
+    //   )
+    //   .format('webm')
+    //   .audioBitrate(128)
+    //   .audioCodec('libvorbis')
+    //   .videoBitrate(1024)
+    //   .videoCodec('libvpx')
+    //   .stream(response.response)
   }
 
   respond() {
