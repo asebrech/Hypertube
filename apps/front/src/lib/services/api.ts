@@ -56,3 +56,20 @@ export async function getBackdropImage(movieId: any, size: string) {
 		throw error;
 	}
 }
+
+export async function getMovieVideos(movieId: number) {
+	const config = {
+		method: 'get',
+		url: `${PUBLIC_BACK_URL}/movies/${movieId}/videos`,
+		params: {
+			lang: get(locale)
+		}
+	};
+	try {
+		const response = await axios(config);
+		return response.data;
+	} catch (error) {
+		console.error('Error fetching movie videos:', error);
+		throw error;
+	}
+}
