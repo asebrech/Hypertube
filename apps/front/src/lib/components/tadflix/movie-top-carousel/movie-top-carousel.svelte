@@ -79,6 +79,7 @@
 								movie_id={movie.id}
 								isVisible={$visibleSlides.includes(index)}
 								title={movie.title}
+								orderNumber={index ? index : 10}
 							/>
 						</HoverCardTrigger>
 						<HoverCardContent
