@@ -34,7 +34,7 @@
 	}
 </script>
 
-<Card class="flex aspect-[5/4] flex-row rounded-[2px] border-none bg-transparent p-1">
+<Card class="flex aspect-[5/4] flex-row rounded-[2px] border-none bg-transparent">
 	<div class="relative inline-block h-full w-full font-bold">
 		<div class="absolute left-0 top-0 h-full w-[50%]">
 			<Rank {orderNumber} />
