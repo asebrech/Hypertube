@@ -22,6 +22,8 @@ router.get('/', async () => {
 
 router.get('home', [TorrentController, 'torrent'])
 router.get('stream', [TorrentController, 'stream'])
+router.get('/hls/:videoId/*', [TorrentController, 'stream'])
+router.get('convert', [TorrentController, 'convert'])
 
 router
   .group(() => {

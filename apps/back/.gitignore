@@ -1,4 +1,5 @@
 downloads/
+hls-output
 
 # Dependencies and AdonisJS build
 node_modules
