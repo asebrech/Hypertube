@@ -1,0 +1,1 @@
+export { default as TopTenCard } from "./top-ten-card.svelte";
