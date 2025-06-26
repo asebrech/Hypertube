@@ -7,6 +7,7 @@ import env from '#start/env'
 import { exec } from 'node:child_process'
 import path, { join } from 'node:path'
 import app from '@adonisjs/core/services/app'
+import { Transcoder } from 'simple-hls'
 
 @inject()
 export default class TorrentController {
@@ -28,16 +29,28 @@ export default class TorrentController {
     )
     console.log(filePath)
 
-    if (filePath.endsWith('.m3u8')) {
-      response.type('application/x-mpegurl')
-    } else if (filePath.endsWith('.ts')) {
-      response.type('video/MP2T')
-    }
+    // if (filePath.endsWith('.m3u8')) {
+    //   response.type('application/x-mpegurl')
+    // } else if (filePath.endsWith('.ts')) {
+    //   response.type('video/MP2T')
+    // }
 
     return response.download(filePath)
   }
 
-  convert({ request, response }: HttpContext) {
+  async convert({ request, response }: HttpContext) {
+    const t = new Transcoder(`./downloads/test3.mp4`, `./hls-output/test3`, {
+      showLogs: false,
+    })
+    try {
+      const hlsPath = await t.transcode()
+      console.log('Successfully Transcoded Video')
+    } catch (e) {
+      console.log('Something went wrong')
+    }
+  }
+
+  convert_test({ request, response }: HttpContext) {
     // if (!req.file) {
     //   return res.status(400).send('Video not sent!')
     // }
@@ -51,25 +64,25 @@ export default class TorrentController {
 
     const outputFolderSubDirectoryPath = {
       '360p': `${outputFolderRootPath}/360p`,
-      '480p': `${outputFolderRootPath}/480p`,
-      '720p': `${outputFolderRootPath}/720p`,
-      '1080p': `${outputFolderRootPath}/1080p`,
+      // '480p': `${outputFolderRootPath}/480p`,
+      // '720p': `${outputFolderRootPath}/720p`,
+      // '1080p': `${outputFolderRootPath}/1080p`,
     }
 
     // Create directories for storing output video
     if (!fs.existsSync(outputFolderRootPath)) {
       fs.mkdirSync(outputFolderSubDirectoryPath['360p'], { recursive: true })
-      fs.mkdirSync(outputFolderSubDirectoryPath['480p'], { recursive: true })
-      fs.mkdirSync(outputFolderSubDirectoryPath['720p'], { recursive: true })
-      fs.mkdirSync(outputFolderSubDirectoryPath['1080p'], { recursive: true })
+      // fs.mkdirSync(outputFolderSubDirectoryPath['480p'], { recursive: true })
+      // fs.mkdirSync(outputFolderSubDirectoryPath['720p'], { recursive: true })
+      // fs.mkdirSync(outputFolderSubDirectoryPath['1080p'], { recursive: true })
     }
 
     // Commands to convert video to HLS format for 360p, 480p, 720p, 1080p resolutions
     const ffmpegCommands = [
       `ffmpeg -i ${uploadedVideoPath} -vf "scale=w=640:h=360" -c:v libx264 -b:v 800k -c:a aac -b:a 96k -f hls -hls_time 15 -hls_playlist_type vod -hls_segment_filename "${outputFolderSubDirectoryPath['360p']}/segment%03d.ts" -start_number 0 "${outputFolderSubDirectoryPath['360p']}/index.m3u8"`,
-      `ffmpeg -i ${uploadedVideoPath} -vf "scale=w=854:h=480" -c:v libx264 -b:v 1400k -c:a aac -b:a 128k -f hls -hls_time 15 -hls_playlist_type vod -hls_segment_filename "${outputFolderSubDirectoryPath['480p']}/segment%03d.ts" -start_number 0 "${outputFolderSubDirectoryPath['480p']}/index.m3u8"`,
-      `ffmpeg -i ${uploadedVideoPath} -vf "scale=w=1280:h=720" -c:v libx264 -b:v 2800k -c:a aac -b:a 128k -f hls -hls_time 15 -hls_playlist_type vod -hls_segment_filename "${outputFolderSubDirectoryPath['720p']}/segment%03d.ts" -start_number 0 "${outputFolderSubDirectoryPath['720p']}/index.m3u8"`,
-      `ffmpeg -i ${uploadedVideoPath} -vf "scale=w=1920:h=1080" -c:v libx264 -b:v 5000k -c:a aac -b:a 192k -f hls -hls_time 15 -hls_playlist_type vod -hls_segment_filename "${outputFolderSubDirectoryPath['1080p']}/segment%03d.ts" -start_number 0 "${outputFolderSubDirectoryPath['1080p']}/index.m3u8"`,
+      // `ffmpeg -i ${uploadedVideoPath} -vf "scale=w=854:h=480" -c:v libx264 -b:v 1400k -c:a aac -b:a 128k -f hls -hls_time 15 -hls_playlist_type vod -hls_segment_filename "${outputFolderSubDirectoryPath['480p']}/segment%03d.ts" -start_number 0 "${outputFolderSubDirectoryPath['480p']}/index.m3u8"`,
+      // `ffmpeg -i ${uploadedVideoPath} -vf "scale=w=1280:h=720" -c:v libx264 -b:v 2800k -c:a aac -b:a 128k -f hls -hls_time 15 -hls_playlist_type vod -hls_segment_filename "${outputFolderSubDirectoryPath['720p']}/segment%03d.ts" -start_number 0 "${outputFolderSubDirectoryPath['720p']}/index.m3u8"`,
+      // `ffmpeg -i ${uploadedVideoPath} -vf "scale=w=1920:h=1080" -c:v libx264 -b:v 5000k -c:a aac -b:a 192k -f hls -hls_time 15 -hls_playlist_type vod -hls_segment_filename "${outputFolderSubDirectoryPath['1080p']}/segment%03d.ts" -start_number 0 "${outputFolderSubDirectoryPath['1080p']}/index.m3u8"`,
     ]
 
     // run the ffmpeg command in a queue
@@ -90,8 +103,8 @@ export default class TorrentController {
       .then(() => {
         const videoUrls = {
           '360p': `http://localhost:${port}/hls-output/${videoId}/360p/index.m3u8`,
-          '480p': `http://localhost:${port}/hls-output/${videoId}/480p/index.m3u8`,
-          '720p': `http://localhost:${port}/hls-output/${videoId}/720p/index.m3u8`,
+          // '480p': `http://localhost:${port}/hls-output/${videoId}/480p/index.m3u8`,
+          // '720p': `http://localhost:${port}/hls-output/${videoId}/720p/index.m3u8`,
         }
 
         return response.status(200).json({ videoId, videoUrls })
