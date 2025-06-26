@@ -11,20 +11,20 @@ export default class MoviesController {
     const limit = 4
     const offset = (page - 1) * limit
     const lang = request.input('lang', 'en')
-    // // const limit = 10
-    // // const offset = (page - 1) * limit
+    // // // const limit = 10
+    // // // const offset = (page - 1) * limit
     // TorrentSearchApi.disableAllProviders()
     // // console.log('Yts : ', TorrentSearchApi.isProviderActive('Yts'))
     // // console.log('ThePirateBay : ', TorrentSearchApi.isProviderActive('ThePirateBay'))
     // TorrentSearchApi.enableProvider('Yts')
     // TorrentSearchApi.enableProvider('ThePirateBay')
-    // // console.log('Yts : ', TorrentSearchApi.isProviderActive('Yts'))
-    // // console.log('ThePirateBay : ', TorrentSearchApi.isProviderActive('ThePirateBay'))
-    // const torrents = await TorrentSearchApi.search('tt0133093', 'All', 100)
-    // const activeTorrentProviders = TorrentSearchApi.getActiveProviders()
+    // console.log('Yts : ', TorrentSearchApi.isProviderActive('Yts'))
+    // console.log('ThePirateBay : ', TorrentSearchApi.isProviderActive('ThePirateBay'))
+    // const torrents = await TorrentSearchApi.search('tt0111161', 'All', 100)
+    // // const activeTorrentProviders = TorrentSearchApi.getActiveProviders()
     // // console.log('Active Torrent Providers:', activeTorrentProviders)
-    // // console.log('Torrents:', torrents)
-    // console.log('Page:', page)
+    // console.log('Torrents:', torrents)
+    // // console.log('Page:', page)
 
 
     const genresList = await this.tmdbService.getGenresList(lang)
@@ -42,7 +42,7 @@ export default class MoviesController {
       {
         id: 0,
         name: "TOP 10",
-        movies: popularMovies.results,
+        movies: popularMovies.results.slice(0, 10),
       },
       ...movieListByGenreResults,
     ]
@@ -56,6 +56,18 @@ export default class MoviesController {
     const lang = request.input('lang', 'en')
     const size = request.input('size', 'original')
     const backdropImageFoundBoolean = await this.tmdbService.getBackdropImageUrl(tmdb_movie_id, size, lang)
+    if (backdropImageFoundBoolean) {
+      return backdropImageFoundBoolean
+    } else {
+      return response.notFound({ error: 'Image not found' })
+    }
+  }
+
+  async posterImage ({ request, response }: HttpContext): Promise<BackDropImage | void> {
+    const tmdb_movie_id = request.input('tmdb_movie_id')
+    const lang = request.input('lang', 'en')
+    const size = request.input('size', 'original')
+    const backdropImageFoundBoolean = await this.tmdbService.getPosterImageUrl(tmdb_movie_id, size, lang)
     if (backdropImageFoundBoolean) {
       return backdropImageFoundBoolean
     } else {
