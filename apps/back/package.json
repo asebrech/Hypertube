@@ -59,13 +59,14 @@
     "@adonisjs/core": "^6.17.0",
     "@adonisjs/cors": "^2.2.1",
     "@adonisjs/lucid": "^21.5.1",
+    "@gmehdevi/ally-intra": "^1.1.0",
+    "@hypertube/shared": "workspace:*",
     "@vinejs/vine": "^3.0.0",
     "axios": "^1.8.4",
     "luxon": "^3.5.0",
     "pg": "^8.13.1",
     "reflect-metadata": "^0.2.2",
-    "torrent-search-api": "^2.1.4",
-    "@hypertube/shared": "workspace:*"
+    "torrent-search-api": "^2.1.4"
   },
   "hotHook": {
     "boundaries": [

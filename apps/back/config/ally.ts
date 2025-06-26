@@ -1,5 +1,6 @@
 import env from '#start/env'
 import { defineConfig, services } from '@adonisjs/ally'
+import { intra } from '@gmehdevi/ally-intra'
 
 const allyConfig = defineConfig({
   github: services.github({
@@ -12,6 +13,12 @@ const allyConfig = defineConfig({
     clientSecret: env.get('GOOGLE_CLIENT_SECRET'),
     callbackUrl: `${env.get('BACK_URL')}/google/callback`,
   }),
+  fortyTwo: intra({
+    clientId:     env.get('INTRA_CLIENT_ID')!,
+    clientSecret: env.get('INTRA_CLIENT_SECRET')!,
+    callbackUrl:  `${env.get('BACK_URL')}/fortyTwo/callback`,
+  }),
+
 })
 
 export default allyConfig
