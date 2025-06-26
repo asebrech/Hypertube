@@ -3,6 +3,11 @@ export type BackDropImage = {
   langFound: boolean;
 };
 
+export enum UserMovieAction {
+  WATCHED = 'watched',
+  BOOKMARKED = 'bookmarked',
+}
+
 export type MovieGenre = {
   id: number;
   name: string;
@@ -14,6 +19,7 @@ export type MovieGenre = {
     release_date: string;
     vote_average: number;
     backdrop_image: BackDropImage | null | undefined;
+    user_action?: UserMovieAction | null;
   }[];
 };
 

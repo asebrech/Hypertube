@@ -10,7 +10,8 @@ export async function getMovies(page_to_load: number) {
 		params: {
 			page: page_to_load,
 			lang: get(locale)
-		}
+		},
+		withCredentials: true
 	};
 	try {
 		const response = await axios(config);

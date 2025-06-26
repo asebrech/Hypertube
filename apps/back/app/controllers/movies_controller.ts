@@ -1,12 +1,12 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import TorrentSearchApi from 'torrent-search-api'
 import { TMDBService } from '#services/tmdb_service'
-import { BackDropImage } from '@hypertube/shared'
+import { BackDropImage, UserMovieAction } from '@hypertube/shared'
 
 export default class MoviesController {
   private tmdbService: TMDBService = new TMDBService()
 
-  async index({ request, response }: HttpContext) {
+  async index({ request, response, auth }: HttpContext) {
     const page = request.input('page', 1)
     const limit = 4
     const offset = (page - 1) * limit
@@ -47,8 +47,40 @@ export default class MoviesController {
       ...movieListByGenreResults,
     ]
     const slicedResponse = finalMovieListByGenre.slice(offset, offset + limit)
+
+    const moviesFinalResult = await Promise.all(slicedResponse.map(async (genre: any) => {
+      return {
+        id: genre.id,
+        name: genre.name,
+        movies: await Promise.all(genre.movies.map(async (movie: any) => {
+          movie.user_action = null
+          let user = null
+
+          if (await auth.check()) {
+            // user = auth.user
+            // // OR for stricter validation:
+            user = await auth.authenticate()
+          }
+          // console.log('User:', user)
+          if (user) {
+            const movieTable = await user
+              .related('movies')
+              .query()
+              .where('movies.tmdbId', movie.id)
+              .first()
+            if (!movieTable) {
+              console.log('No movie found in user movies for tmdbId:', movie.id)
+            }
+            if (movieTable) {
+              const action = movieTable.$extras.users_action as UserMovieAction
+              movie.user_action = action
+              console.log('Action:', action)
+            }
+          }
+          return movie
+        }))}}))
     const hasMorePages = finalMovieListByGenre.length > offset + limit
-    return {movies: slicedResponse, hasMorePages}
+    return {movies: moviesFinalResult, hasMorePages}
   }
 
   async backdropImage ({ request, response }: HttpContext): Promise<BackDropImage | void> {
