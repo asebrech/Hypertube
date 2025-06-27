@@ -55,6 +55,7 @@ export default class MoviesController {
         movies: await Promise.all(genre.movies.map(async (movie: any) => {
           movie.user_action = null
           let user = null
+          console.log("auth:", auth)
 
           if (await auth.check()) {
             // user = auth.user

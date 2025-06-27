@@ -4,6 +4,7 @@ import { PUBLIC_BACK_URL } from '$env/static/public';
 import { get } from 'svelte/store';
 
 export async function getMovies(page_to_load: number) {
+	// const token = localStorage.getItem('token')
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies`,
