@@ -53,9 +53,13 @@
 {/if}
 
 {#each movies_genres as genre}
-	<div class="flex w-full flex-col gap-[15px] overflow-hidden pb-[46px] pt-[20px]">
+	<div class="flex w-full flex-col gap-[15px] overflow-hidden pt-[30px]">
 		<h2 class="text-l ml-[58px] font-medium">{genre.name}</h2>
-		<MovieCarousel movies={genre.movies} />
+		{#if genre.id == 0}
+			<MovieCarousel movies={genre.movies} variant={'top-ten'} />
+		{:else}
+			<MovieCarousel movies={genre.movies} />
+		{/if}
 	</div>
 {/each}
 

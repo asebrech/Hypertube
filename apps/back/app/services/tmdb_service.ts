@@ -81,6 +81,13 @@ export class TMDBService {
     return null
   }
 
+  private getPosterImageUrlFromData(data: any) {
+    if (data.posters && data.posters.length > 0) {
+      return data.posters[0].file_path
+    }
+    return null
+  }
+
   private getSize(size: string) : ImageSize {
     switch (size) {
       case 'small':
@@ -119,4 +126,23 @@ export class TMDBService {
   async getMovieVideos(tmdb_movie_id: number, lang: string = 'en') {
     return this.getSomething(`/movie/${tmdb_movie_id}/videos?language=${lang}`)
   }
+
+  
+  async getPosterImageUrl(tmdb_movie_id: number, size: string, lang: string = 'en') {
+    const endpoint = `/movie/${tmdb_movie_id}/images?language=${lang.split('-')[0]}`
+    let langFound = true
+    let data = await this.getSomething(endpoint)
+    let imageUrl = this.getPosterImageUrlFromData(data)
+    if (!imageUrl) {
+      data = await this.getSomething(`/movie/${tmdb_movie_id}/images?language=en`)
+      imageUrl = this.getPosterImageUrlFromData(data)
+    }
+    if (!imageUrl) {
+      langFound = false
+      data = await this.getSomething(`/movie/${tmdb_movie_id}/images`)
+      imageUrl = this.getPosterImageUrlFromData(data)
+    }
+    return {url: `https://image.tmdb.org/t/p/${this.getSize(size)}${imageUrl}`, langFound: langFound}
+  }
+
 }
