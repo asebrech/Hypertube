@@ -41,6 +41,9 @@
 			<form method="POST" action="/login/github" use:enhance>
 				<Button variant="outline" class="w-full" type="submit">Login with Gihub</Button>
 			</form>
+			<form method="POST" action="/login/fortyTwo" use:enhance>
+			<Button variant="outline" class="w-full" type="submit">Login with 42</Button>
+			</form>
 		</div>
 		<div class="mt-4 text-center text-sm">
 			Don&apos;t have an account?
