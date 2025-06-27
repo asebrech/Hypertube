@@ -1,0 +1,10 @@
+export { default as Rank1 } from "./rank-1.svelte";
+export { default as Rank2 } from "./rank-2.svelte";
+export { default as Rank3 } from "./rank-3.svelte";
+export { default as Rank4 } from "./rank-4.svelte";
+export { default as Rank5 } from "./rank-5.svelte";
+export { default as Rank6 } from "./rank-6.svelte";
+export { default as Rank7 } from "./rank-7.svelte";
+export { default as Rank8 } from "./rank-8.svelte";
+export { default as Rank9 } from "./rank-9.svelte";
+export { default as Rank10 } from "./rank-10.svelte";

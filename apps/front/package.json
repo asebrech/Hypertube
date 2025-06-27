@@ -22,6 +22,7 @@
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
 		"@tailwindcss/vite": "^4.0.0",
 		"@types/node": "^22.13.4",
+		"@types/youtube": "^0.1.2",
 		"bits-ui": "^1.5.3",
 		"clsx": "^2.1.1",
 		"embla-carousel-svelte": "^8.5.2",
@@ -43,11 +44,11 @@
 		"vite": "^6.0.0"
 	},
 	"dependencies": {
+		"@hypertube/shared": "workspace:*",
 		"axios": "^1.8.4",
 		"lucide-svelte": "^0.475.0",
 		"mode-watcher": "^0.5.1",
 		"shadcn-ui": "^0.9.5",
-		"svelte-i18n": "^4.0.1",
-		"@hypertube/shared": "workspace:*"
+		"svelte-i18n": "^4.0.1"
 	}
 }
