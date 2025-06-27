@@ -59,6 +59,25 @@ export async function getBackdropImage(movieId: any, size: string) {
 	}
 }
 
+export async function getPosterImage(movieId: any, size: string) {
+	const config = {
+		method: 'get',
+		url: `${PUBLIC_BACK_URL}/movies/posterImage`,
+		params: {
+			tmdb_movie_id: movieId,
+			size: size,
+			lang: get(locale)
+		}
+	};
+	try {
+		const response = await axios(config);
+		return response.data;
+	} catch (error) {
+		console.error('Error fetching movies:', error);
+		throw error;
+	}
+}
+
 export async function getMovieVideos(movieId: number) {
 	const config = {
 		method: 'get',

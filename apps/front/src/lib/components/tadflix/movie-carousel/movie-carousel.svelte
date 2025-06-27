@@ -12,6 +12,7 @@
 	import { writable } from 'svelte/store';
 	import { MoviePreview } from '@/components/tadflix/movie-preview';
 	import { MovieCard } from '@/components/tadflix/movie-card';
+	import { TopTenCard } from '@/components/tadflix/top-ten-card';
 
 	export const visibleSlides = writable<number[]>([]);
 	function handleVisibility(index: number, visible: boolean) {
@@ -21,6 +22,7 @@
 	}
 
 	export let movies: MovieGenre['movies'];
+	export let variant: 'default' | 'top-ten' = 'default';
 
 	export const inView: Action<HTMLElement, (visible: boolean) => void> = (node, callback) => {
 		const observer = new IntersectionObserver(([entry]) => {
@@ -74,11 +76,20 @@
 				<div use:inView={(visible) => handleVisibility(index, visible)}>
 					<HoverCard openDelay={100} closeDelay={100}>
 						<HoverCardTrigger href="/movie/{movie.id}" target="_blank" rel="noreferrer noopener">
-							<MovieCard
-								movie_id={movie.id}
-								isVisible={$visibleSlides.includes(index)}
-								title={movie.title}
-							/>
+							{#if variant === 'top-ten'}
+								<TopTenCard
+									movie_id={movie.id}
+									isVisible={$visibleSlides.includes(index)}
+									title={movie.title}
+									orderNumber={index ? index : 10}
+								/>
+							{:else}
+								<MovieCard
+									movie_id={movie.id}
+									isVisible={$visibleSlides.includes(index)}
+									title={movie.title}
+								/>
+							{/if}
 						</HoverCardTrigger>
 						<HoverCardContent
 							hideWhenDetached={true}
