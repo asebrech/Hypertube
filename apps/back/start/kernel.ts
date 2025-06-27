@@ -21,7 +21,6 @@ server.errorHandler(() => import('#exceptions/handler'))
  * Custom middleware to extract token from cookie and inject it into Authorization header
  */
 server.use([
-  () => import('#middleware/token_cookie_to_auth_header'),
   () => import('#middleware/container_bindings_middleware'),
   () => import('#middleware/force_json_response_middleware'),
   () => import('@adonisjs/cors/cors_middleware'),
