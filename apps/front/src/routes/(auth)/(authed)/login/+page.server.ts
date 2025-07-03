@@ -28,7 +28,8 @@ const login = async ({ cookies, request }: RequestEvent) => {
 	try {
 		const response = await axios.request(config);
 		const token = response.data.token.token;
-		localStorage.setItem('token', token);
+		// localStorage.setItem('token', token);
+		console.log('Token set in localStorage:', token);
 		cookies.set('session', token, {
 			path: '/',
 			httpOnly: true,
