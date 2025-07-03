@@ -18,5 +18,6 @@
 	<MovieBanner movie={data.movie} />
 	<div class="flex w-full flex-col p-6 md:p-12">
 		<CommentContainer title={data.movie.title} comments={data.comments.data}></CommentContainer>
+		<CommentInput />
 	</div>
 </div>
