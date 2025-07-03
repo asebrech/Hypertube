@@ -8,6 +8,16 @@ import { exec } from 'node:child_process'
 import path, { join } from 'node:path'
 import app from '@adonisjs/core/services/app'
 import { Transcoder } from 'simple-hls'
+import ffmpeg from 'fluent-ffmpeg'
+import pathToFfmpeg from 'ffmpeg-static' // Use import instead of require
+
+// if (typeof pathToFfmpeg === 'string') {
+//   console.log(pathToFfmpeg)
+//   ffmpeg.setFfmpegPath(pathToFfmpeg)
+// } else {
+//   console.log(pathToFfmpeg)
+//   throw new Error('Invalid path to ffmpeg binary')
+// }
 
 @inject()
 export default class TorrentController {
@@ -38,10 +48,23 @@ export default class TorrentController {
     return response.download(filePath)
   }
 
-  async convert({ request, response }: HttpContext) {
-    const t = new Transcoder(`./downloads/test3.mp4`, `./hls-output/test3`, {
-      showLogs: false,
-    })
+  async convert_tmp({ request, response }: HttpContext) {
+    const customRenditions = [
+      {
+        width: 640,
+        height: 360,
+        profile: 'main',
+        hlsTime: '4', // Segment duration in seconds
+        bv: '800k', // Video bitrate
+        maxrate: '856k', // Maximum video bitrate
+        bufsize: '1200k', // Buffer size
+        ba: '128k', // Increase audio bitrate for better compatibility
+        ts_title: '360p',
+        master_title: '360p',
+      },
+    ]
+
+    const t = new Transcoder(`./downloads/test/ladyGa.mkv`, `./hls-output/test`, {})
     try {
       const hlsPath = await t.transcode()
       console.log('Successfully Transcoded Video')
@@ -50,7 +73,39 @@ export default class TorrentController {
     }
   }
 
-  convert_test({ request, response }: HttpContext) {
+  convert_test() {
+    const width = 360
+    ffmpeg(`./downloads/test/rick.mkv`)
+      .outputOptions([
+        '-c:v libx264', // Video codec
+        '-c:a copy',
+        '-preset veryfast', // Fast encoding with reasonable quality and file size
+        '-movflags +faststart', // Optimize for web streaming
+        '-crf 27', // Constant Rate Factor for quality
+        '-tag:v avc1', // Tag for QuickTime compatibility
+        '-f hls', // Output format
+        '-hls_time 10', // Segment duration
+        '-hls_list_size 0', // Include all segments in playlist
+        // '-hls_flags independent_segments', // Each segment can be decoded independently
+        '-hls_playlist_type event',
+        '-hls_flags append_list+temp_file',
+        '-start_number 0',
+      ])
+      .output(path.join('./hls-output/test', `${width}.m3u8`))
+      .videoFilter(`scale=${width}:-2`) // Scale width and maintain aspect ratio
+      .on('progress', () => {
+        console.log(`An HLS ${width}p segment has been generated successfully!`)
+      })
+      .on('end', () => {
+        console.log(`All HLS segments for ${width}p has been generated successfully!`)
+      })
+      .on('error', (err) => {
+        console.log(`Error: ${err.message}`)
+      })
+      .run()
+  }
+
+  convert({ request, response }: HttpContext) {
     // if (!req.file) {
     //   return res.status(400).send('Video not sent!')
     // }
@@ -58,7 +113,7 @@ export default class TorrentController {
     const port = env.get('PORT')
 
     const videoId = '117'
-    const uploadedVideoPath = './downloads/test.mp4'
+    const uploadedVideoPath = './downloads/test/ladyGa.mkv'
 
     const outputFolderRootPath = `./hls-output/${videoId}`
 

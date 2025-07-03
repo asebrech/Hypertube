@@ -10,7 +10,7 @@
 	let container;
 
 	// const masterFileSrc = `http://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8`;
-	const masterFileSrc = `${BASE_URL}/test3/360.m3u8`;
+	const masterFileSrc = `${BASE_URL}/117/360p/index.m3u8`;
 	// const masterFileSrc = `${BASE_URL}/test-vtt/playlist.m3u8`;
 	const availableResolutions = [
 		{ label: '360p', src: `${BASE_URL}/117/360p/index.m3u8` },
@@ -45,15 +45,14 @@
 			videojs.log('Player is ready');
 		});
 
-		// add resolution buttons
-		// const controlBar = player.getChild('ControlBar');
-		// availableResolutions.forEach((res, i) => {
-		// 	const btn = controlBar.addChild('button', {
-		// 		controlText: res.label,
-		// 		className: 'vjs-visible-text'
-		// 	});
-		// 	btn.on('click', () => switchResolution(i));
-		// });
+		const controlBar = player.getChild('ControlBar');
+		availableResolutions.forEach((res, i) => {
+			const btn = controlBar.addChild('button', {
+				controlText: res.label,
+				className: 'vjs-visible-text'
+			});
+			btn.on('click', () => switchResolution(i));
+		});
 		return () => {
 			if (player && !player.isDisposed()) {
 				player.dispose();
