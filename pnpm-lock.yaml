@@ -39,6 +39,9 @@ importers:
       '@adonisjs/lucid':
         specifier: ^21.5.1
         version: 21.6.1(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@adonisjs/core@6.18.0(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@vinejs/vine@3.0.1))(@vinejs/vine@3.0.1)(luxon@3.6.1)(pg@8.16.0)
+      '@gmehdevi/ally-intra':
+        specifier: 1.1.0
+        version: 1.1.0(@adonisjs/ally@5.1.0(@adonisjs/core@6.18.0(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@vinejs/vine@3.0.1)))(@adonisjs/core@6.18.0(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@vinejs/vine@3.0.1))
       '@hypertube/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -864,6 +867,12 @@ packages:
 
   '@formatjs/intl-localematcher@0.6.1':
     resolution: {integrity: sha512-ePEgLgVCqi2BBFnTMWPfIghu6FkbZnnBVhO2sSxvLfrdFw7wCHAHiDoM2h4NRgjbaY7+B7HgOLZGkK187pZTZg==}
+
+  '@gmehdevi/ally-intra@1.1.0':
+    resolution: {integrity: sha512-T4QVkGPoz0Si9C2KlMk7cWugohZjOUMR47hWrI9b8MROeep1XqLk8BdTdjqlwGUiVvoUmSwLYWJYLlE3gh0x1A==}
+    peerDependencies:
+      '@adonisjs/ally': ^5.0.0
+      '@adonisjs/core': ^6.0.0
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -5425,6 +5434,11 @@ snapshots:
   '@formatjs/intl-localematcher@0.6.1':
     dependencies:
       tslib: 2.8.1
+
+  '@gmehdevi/ally-intra@1.1.0(@adonisjs/ally@5.1.0(@adonisjs/core@6.18.0(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@vinejs/vine@3.0.1)))(@adonisjs/core@6.18.0(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@vinejs/vine@3.0.1))':
+    dependencies:
+      '@adonisjs/ally': 5.1.0(@adonisjs/core@6.18.0(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@vinejs/vine@3.0.1))
+      '@adonisjs/core': 6.18.0(@adonisjs/assembler@7.8.2(typescript@5.7.3))(@vinejs/vine@3.0.1)
 
   '@humanfs/core@0.19.1': {}
 
