@@ -73,12 +73,12 @@ export default class TorrentController {
     }
   }
 
-  convert_test() {
+  convert_hello() {
     const width = 360
     ffmpeg(`./downloads/test/rick.mkv`)
       .outputOptions([
         '-c:v libx264', // Video codec
-        '-c:a copy',
+        '-c:a aac',
         '-preset veryfast', // Fast encoding with reasonable quality and file size
         '-movflags +faststart', // Optimize for web streaming
         '-crf 27', // Constant Rate Factor for quality
@@ -88,8 +88,11 @@ export default class TorrentController {
         '-hls_list_size 0', // Include all segments in playlist
         // '-hls_flags independent_segments', // Each segment can be decoded independently
         '-hls_playlist_type event',
-        '-hls_flags append_list+temp_file',
+        '-hls_flags append_list',
         '-start_number 0',
+        '-ac 6',
+        '-ar 48000',
+        '-b:a 384k',
       ])
       .output(path.join('./hls-output/test', `${width}.m3u8`))
       .videoFilter(`scale=${width}:-2`) // Scale width and maintain aspect ratio
@@ -113,7 +116,7 @@ export default class TorrentController {
     const port = env.get('PORT')
 
     const videoId = '117'
-    const uploadedVideoPath = './downloads/test/ladyGa.mkv'
+    const uploadedVideoPath = './downloads/test/rick.mkv'
 
     const outputFolderRootPath = `./hls-output/${videoId}`
 
@@ -134,7 +137,7 @@ export default class TorrentController {
 
     // Commands to convert video to HLS format for 360p, 480p, 720p, 1080p resolutions
     const ffmpegCommands = [
-      `ffmpeg -i ${uploadedVideoPath} -vf "scale=w=640:h=360" -c:v libx264 -b:v 800k -c:a aac -b:a 96k -f hls -hls_time 15 -hls_playlist_type vod -hls_segment_filename "${outputFolderSubDirectoryPath['360p']}/segment%03d.ts" -start_number 0 "${outputFolderSubDirectoryPath['360p']}/index.m3u8"`,
+      `ffmpeg -i ${uploadedVideoPath} -vf "scale=w=640:h=360" -c:v libx264 -b:v 800k -c:a aac -ac 6 -ar 48000 -b:a 384k -f hls -hls_list_size 0 -hls_flags append_list+temp_file -hls_time 15  -hls_segment_filename "${outputFolderSubDirectoryPath['360p']}/segment%03d.ts" -start_number 0 "${outputFolderSubDirectoryPath['360p']}/index.m3u8"`,
       // `ffmpeg -i ${uploadedVideoPath} -vf "scale=w=854:h=480" -c:v libx264 -b:v 1400k -c:a aac -b:a 128k -f hls -hls_time 15 -hls_playlist_type vod -hls_segment_filename "${outputFolderSubDirectoryPath['480p']}/segment%03d.ts" -start_number 0 "${outputFolderSubDirectoryPath['480p']}/index.m3u8"`,
       // `ffmpeg -i ${uploadedVideoPath} -vf "scale=w=1280:h=720" -c:v libx264 -b:v 2800k -c:a aac -b:a 128k -f hls -hls_time 15 -hls_playlist_type vod -hls_segment_filename "${outputFolderSubDirectoryPath['720p']}/segment%03d.ts" -start_number 0 "${outputFolderSubDirectoryPath['720p']}/index.m3u8"`,
       // `ffmpeg -i ${uploadedVideoPath} -vf "scale=w=1920:h=1080" -c:v libx264 -b:v 5000k -c:a aac -b:a 192k -f hls -hls_time 15 -hls_playlist_type vod -hls_segment_filename "${outputFolderSubDirectoryPath['1080p']}/segment%03d.ts" -start_number 0 "${outputFolderSubDirectoryPath['1080p']}/index.m3u8"`,

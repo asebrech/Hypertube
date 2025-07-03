@@ -21,7 +21,7 @@
 	console.log(masterFileSrc);
 
 	const options = {
-		// autoplay: true,
+		autoplay: true,
 		controls: true,
 		responsive: true,
 		fluid: true,
