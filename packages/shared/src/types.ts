@@ -67,15 +67,30 @@ export type MovieDetails = {
 };
 
 export type MovieVideo = {
-    id: string;
-    iso_639_1: string;
-    iso_3166_1: string;
-    key: string;
-    name: string;
-    site: string;
-    size: number;
-    type: string;
-    official: boolean;
-    published_at: string;
-    updated_at: string;
+  id: string;
+  iso_639_1: string;
+  iso_3166_1: string;
+  key: string;
+  name: string;
+  site: string;
+  size: number;
+  type: string;
+  official: boolean;
+  published_at: string;
+  updated_at: string;
 };
+
+export interface PaginationType<T> {
+  meta: {
+    total: number;
+    perPage: number;
+    currentPage: number;
+    lastPage: number;
+    firstPage: number;
+    firstPageUrl: string;
+    lastPageUrl: string;
+    nextPageUrl: string | null;
+    previousPageUrl: string | null;
+  };
+  data: T[];
+}

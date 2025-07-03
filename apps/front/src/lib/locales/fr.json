@@ -1,5 +1,13 @@
 {
-    "sign_in": "S'enregistrer",
-    "sign_up": "Se connecter",
-    "log_out": "Déconnexion"
-  }
+	"sign_in": "S'enregistrer",
+	"sign_up": "Se connecter",
+	"log_out": "Déconnexion",
+	"navbar": {
+		"home": "Acceuil",
+		"shows": "Shows",
+		"movies": "Movies",
+		"news-popular": "Nouveau et populaire",
+		"my-list": "Mes listes",
+		"by-language": "Browse By Language"
+	}
+}
