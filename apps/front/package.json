@@ -46,6 +46,7 @@
 	"dependencies": {
 		"@hypertube/shared": "workspace:*",
 		"axios": "^1.8.4",
+		"js-cookie": "^3.0.5",
 		"lucide-svelte": "^0.475.0",
 		"mode-watcher": "^0.5.1",
 		"shadcn-ui": "^0.9.5",
