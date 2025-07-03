@@ -45,14 +45,15 @@
 	</div>
 	<div class="flex items-center gap-4">
 		<LanguageSelector />
-		{#if data.user}
-			<form action="/logout" method="POST" use:enhance>
-				<Button type="submit" class="text-white">{$_('log_out')}</Button>
-			</form>
-		{:else}
+		{#if !page.data.user}
 			<a href="/login">
 				<Button>{$_('sign_in')}</Button>
 			</a>
+		{/if}
+		{#if page.data.user}
+			<form action="/logout" method="POST" use:enhance>
+				<Button type="submit">{$_('log_out')}</Button>
+			</form>
 		{/if}
 	</div>
 </div>
