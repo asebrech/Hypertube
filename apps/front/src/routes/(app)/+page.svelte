@@ -5,17 +5,17 @@
 
 	import { MovieCarousel } from '@/components/tadflix/movie-carousel';
 
-	export let hasMorePages: boolean = true;
-	export let currentPage: number = 1;
-	export let isLoading: boolean;
-	export let movies_genres: MovieGenre[] = [];
+	let hasMorePages: boolean = $state(true);
+	let currentPage: number = $state(1);
+	let isLoading: boolean = $state(false);
+	let movieGenres: MovieGenre[] = $state([]);
 
 	const loadMoviePage = async () => {
 		if (!hasMorePages) return;
 		try {
 			isLoading = true;
 			const getMovieResponse = await getMovies(currentPage);
-			movies_genres = movies_genres.concat(getMovieResponse.movies);
+			movieGenres = movieGenres.concat(getMovieResponse.movies);
 			hasMorePages = getMovieResponse.hasMorePages;
 			currentPage++;
 			isLoading = false;
@@ -52,15 +52,17 @@
 	<div>Loading...</div>
 {/if}
 
-{#each movies_genres as genre}
-	<div class="flex w-full flex-col gap-[15px] overflow-hidden pt-[30px]">
-		<h2 class="text-l ml-[58px] font-medium">{genre.name}</h2>
-		{#if genre.id == 0}
-			<MovieCarousel movies={genre.movies} variant={'top-ten'} />
-		{:else}
-			<MovieCarousel movies={genre.movies} />
-		{/if}
-	</div>
-{/each}
+<div class="flex flex-col py-16 gap-8">
+	{#each movieGenres as genre}
+		<div class="flex w-full flex-col gap-[15px] overflow-hidden">
+			<h2 class="text-l ml-[58px] font-medium">{genre.name}</h2>
+			{#if genre.id == 0}
+				<MovieCarousel movies={genre.movies} variant={'top-ten'} />
+			{:else}
+				<MovieCarousel movies={genre.movies} />
+			{/if}
+		</div>
+	{/each}
+</div>
 
 <div bind:this={sentinel}></div>
