@@ -10,25 +10,27 @@
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 
-const AuthController   = () => import('#controllers/auth_controller')
+const AuthController = () => import('#controllers/auth_controller')
 const MoviesController = () => import('#controllers/movies_controller')
+const CommentsController = () => import('#controllers/comments_controller')
 
 router.get('/', async () => ({ hello: 'world' }))
 
 router
   .group(() => {
     router.post('register', [AuthController, 'register'])
-    router.post('login',    [AuthController, 'login'])
-    router.post('logout',   [AuthController, 'logout']).use(middleware.auth())
+    router.post('login', [AuthController, 'login'])
+    router.post('logout', [AuthController, 'logout']).use(middleware.auth())
   })
   .prefix('user')
 
 router.group(() => {
-  router.get('movies',               [MoviesController, 'index'])
+  router.get('movies', [MoviesController, 'index'])
   router.get('movies/backdropImage', [MoviesController, 'backdropImage'])
   router.get('movies/posterImage', [MoviesController, 'posterImage'])
   router.get('movies/:id', [MoviesController, 'movieDetails'])
   router.get('movies/:id/videos', [MoviesController, 'movieVideos'])
+  router.get('comments/:tmdbId', [CommentsController, 'index'])
 })
 
 router

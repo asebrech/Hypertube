@@ -2,6 +2,7 @@ import axios from 'axios';
 import { locale } from 'svelte-i18n';
 import { PUBLIC_BACK_URL } from '$env/static/public';
 import { get } from 'svelte/store';
+import type { Comment, MovieDetails, PaginationType } from '@hypertube/shared';
 
 export async function getMovies(page_to_load: number) {
 	const config = {
@@ -21,7 +22,7 @@ export async function getMovies(page_to_load: number) {
 	}
 }
 
-export async function getMovieDetails(movieId: number) {
+export async function getMovieDetails(movieId: number): Promise<MovieDetails> {
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies/${movieId}`,
@@ -89,6 +90,20 @@ export async function getMovieVideos(movieId: number) {
 		return response.data;
 	} catch (error) {
 		console.error('Error fetching movie videos:', error);
+		throw error;
+	}
+}
+
+export async function getMovieComments(imdbId: number): Promise<PaginationType<Comment>> {
+	const config = {
+		method: 'get',
+		url: `${PUBLIC_BACK_URL}/comments/${imdbId}`
+	};
+	try {
+		const response = await axios(config);
+		return response.data;
+	} catch (error) {
+		console.error('Error fetching movie comments:', error);
 		throw error;
 	}
 }

@@ -72,7 +72,7 @@
 >
 	<CarouselContent class="ml-0 flex gap-[0px]">
 		{#each movies as movie, index}
-			<CarouselItem class="lg:basis-1/7 xl:basis-1/8 basis-1/4 p-[3px] sm:basis-1/5 md:basis-1/6">
+			<CarouselItem class="basis-1/4 p-[3px] sm:basis-1/5 md:basis-1/6 lg:basis-1/7 xl:basis-1/8">
 				<div use:inView={(visible) => handleVisibility(index, visible)}>
 					<HoverCard openDelay={100} closeDelay={100}>
 						<HoverCardTrigger href="/movie/{movie.id}" target="_blank" rel="noreferrer noopener">
