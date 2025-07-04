@@ -1,12 +1,15 @@
 <script lang="ts">
+	import { Badge } from '@/components/ui/badge';
 	import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 	import { Skeleton } from '@/components/ui/skeleton';
 	import { getBackdropImage } from '@/services/api';
-	import type { BackDropImage } from '@hypertube/shared';
+	import { UserMovieAction, type BackDropImage } from '@hypertube/shared';
 
 	export let movie_id: number;
 	export let isVisible: boolean;
 	export let title: string;
+	export let user_action: UserMovieAction | null = null;
+
 	let backdrop_image: BackDropImage | null = null;
 	let isLoading = true;
 
@@ -42,5 +45,12 @@
 		<CardHeader class="bg-black bg-opacity-50 p-4">
 			<CardTitle>{title}</CardTitle>
 		</CardHeader>
+	{/if}
+	{#if user_action}
+		<div class="absolute bottom-0 flex w-full justify-center p-[3px]">
+			<Badge variant={'red'}>
+				{user_action}
+			</Badge>
+		</div>
 	{/if}
 </Card>

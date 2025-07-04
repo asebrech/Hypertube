@@ -80,14 +80,15 @@
 								<TopTenCard
 									movie_id={movie.id}
 									isVisible={$visibleSlides.includes(index)}
-									title={movie.title}
 									orderNumber={index ? index : 10}
+									user_action={movie.user_action}
 								/>
 							{:else}
 								<MovieCard
 									movie_id={movie.id}
 									isVisible={$visibleSlides.includes(index)}
 									title={movie.title}
+									user_action={movie.user_action}
 								/>
 							{/if}
 						</HoverCardTrigger>

@@ -5,16 +5,18 @@
 
 	import { MovieCarousel } from '@/components/tadflix/movie-carousel';
 
-	export let hasMorePages: boolean = true;
-	export let currentPage: number = 1;
-	export let isLoading: boolean;
-	export let movies_genres: MovieGenre[] = [];
+	export let data;
+
+	let hasMorePages: boolean = true;
+	let currentPage: number = 1;
+	let isLoading: boolean;
+	let movies_genres: MovieGenre[] = [];
 
 	const loadMoviePage = async () => {
 		if (!hasMorePages) return;
 		try {
 			isLoading = true;
-			const getMovieResponse = await getMovies(currentPage);
+			const getMovieResponse = await getMovies(currentPage, data.token);
 			movies_genres = movies_genres.concat(getMovieResponse.movies);
 			hasMorePages = getMovieResponse.hasMorePages;
 			currentPage++;

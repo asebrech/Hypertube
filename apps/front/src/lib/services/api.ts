@@ -2,18 +2,8 @@ import axios from 'axios';
 import { locale } from 'svelte-i18n';
 import { PUBLIC_BACK_URL } from '$env/static/public';
 import { get } from 'svelte/store';
-import Cookies from 'js-cookie';
 
-export async function getMovies(page_to_load: number) {
-	// const token = localStorage.getItem('token')
-
-	// If you need to access cookies, use document.cookie or a library like js-cookie.
-	// Example with js-cookie:
-	// import Cookies from 'js-cookie';
-	// const token2 = Cookies.get('session'); // Uncomment if you use js-cookie
-	// To access cookies on the client, use document.cookie or a library like js-cookie.
-	const token = Cookies.get('session'); // Uncomment if you use js-cookie
-
+export async function getMovies(page_to_load: number, token: string | null = null) {
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies`,
@@ -24,7 +14,6 @@ export async function getMovies(page_to_load: number) {
 		headers: {
 			Authorization: token ? `Bearer ${token}` : ''
 		},
-		// withCredentials: true
 	};
 	try {
 		const response = await axios(config);

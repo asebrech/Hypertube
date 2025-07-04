@@ -47,6 +47,10 @@ export default class MoviesController {
       ...movieListByGenreResults,
     ]
     const slicedResponse = finalMovieListByGenre.slice(offset, offset + limit)
+    let user = null
+    if (await auth.check()) {
+      user = await auth.authenticate()
+    }
 
     const moviesFinalResult = await Promise.all(slicedResponse.map(async (genre: any) => {
       return {
@@ -54,28 +58,15 @@ export default class MoviesController {
         name: genre.name,
         movies: await Promise.all(genre.movies.map(async (movie: any) => {
           movie.user_action = null
-          let user = null
-          console.log("auth:", auth)
-
-          if (await auth.check()) {
-            // user = auth.user
-            // // OR for stricter validation:
-            user = await auth.authenticate()
-          }
-          // console.log('User:', user)
           if (user) {
             const movieTable = await user
               .related('movies')
               .query()
               .where('movies.tmdbId', movie.id)
               .first()
-            if (!movieTable) {
-              console.log('No movie found in user movies for tmdbId:', movie.id)
-            }
-            if (movieTable) {
-              const action = movieTable.$extras.users_action as UserMovieAction
-              movie.user_action = action
-              console.log('Action:', action)
+            if (!!movieTable) {
+              const action = movieTable.$extras.pivot_usersAction as UserMovieAction
+              movie.user_action = action || null
             }
           }
           return movie
