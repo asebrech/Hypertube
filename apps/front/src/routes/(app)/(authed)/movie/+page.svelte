@@ -10,13 +10,13 @@
 	let container;
 
 	// const masterFileSrc = `http://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8`;
-	const masterFileSrc = `${BASE_URL}/117/1080.m3u8`;
+	const masterFileSrc = `${BASE_URL}/117/1080p/output.m3u8`;
 	// const masterFileSrc = `${BASE_URL}/test-vtt/playlist.m3u8`;
 	const availableResolutions = [
 		// { label: '360p', src: `${BASE_URL}/117/360.m3u8` },
-		{ label: '480p', src: `${BASE_URL}/117/480.m3u8` },
-		{ label: '720p', src: `${BASE_URL}/117/720.m3u8` },
-		{ label: '1080p', src: `${BASE_URL}/117/1080.m3u8` }
+		{ label: '480p', src: `${BASE_URL}/117/480p/output.m3u8` },
+		{ label: '720p', src: `${BASE_URL}/117/720p/output.m3u8` },
+		{ label: '1080p', src: `${BASE_URL}/117/1080p/output.m3u8` }
 	];
 	console.log(masterFileSrc);
 

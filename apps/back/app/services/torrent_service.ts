@@ -4,6 +4,9 @@ import { PassThrough } from 'node:stream'
 import ffmpeg from 'fluent-ffmpeg'
 import { HttpContext } from '@adonisjs/core/http'
 import path from 'node:path'
+import ffmpegInstaller from '@ffmpeg-installer/ffmpeg'
+
+ffmpeg.setFfmpegPath(ffmpegInstaller.path)
 
 export default class EchoService {
   respond() {
@@ -15,56 +18,54 @@ export default class EchoService {
     engine.on('ready', () => {
       engine.files.forEach((file) => {
         console.log('filename:', file.name)
-
         const stream = file.createReadStream()
-
-        const videoId = '117'
-        const resolutions = [480, 720, 1080]
-        const outputFolderRootPath = `./hls-output/${videoId}`
-
-        if (!fs.existsSync(outputFolderRootPath)) {
-          fs.mkdirSync(outputFolderRootPath, { recursive: true })
-        }
-
-        resolutions.forEach((width) => {
-          const outputFilePath = path.join(outputFolderRootPath, `${width}.m3u8`)
-
-          ffmpeg(stream)
-            .outputOptions([
-              '-c:v libx264', // Video codec
-              '-c:a aac',
-              '-preset veryfast', // Fast encoding with reasonable quality and file size
-              '-movflags +faststart', // Optimize for web streaming
-              '-crf 27', // Constant Rate Factor for quality
-              '-tag:v avc1', // Tag for QuickTime compatibility
-              '-f hls', // Output format
-              '-hls_time 10', // Segment duration
-              '-hls_list_size 0', // Include all segments in playlist
-              '-hls_playlist_type event',
-              '-hls_flags append_list',
-              '-start_number 0',
-              '-ac 6',
-              '-ar 48000',
-              '-b:a 384k',
-            ])
-            .output(outputFilePath)
-            .videoFilter(`scale=${width}:-2`) // Scale width and maintain aspect ratio
-            .on('progress', () => {
-              console.log(`An HLS ${width}p segment has been generated successfully!`)
-            })
-            .on('end', () => {
-              console.log(`All HLS segments for ${width}p have been generated successfully!`)
-            })
-            .on('error', (err) => {
-              console.log(`Error: ${err.message}`)
-            })
-            .run()
-        })
-
-        console.log(`Streaming file: ${file.name}`)
+        this.convert(stream, '117')
       })
     })
 
     return 'Streaming started'
+  }
+
+  convert(stream: any, videoId: string) {
+    const resolutions = [480, 720, 1080]
+
+    resolutions.forEach((width) => {
+      const outputFolderRootPath = `./hls-output/${videoId}/${width}p`
+      if (!fs.existsSync(outputFolderRootPath)) {
+        fs.mkdirSync(outputFolderRootPath, { recursive: true })
+      }
+      const outputFilePath = path.join(outputFolderRootPath, `output.m3u8`)
+
+      ffmpeg(stream)
+        .outputOptions([
+          '-c:v libx264', // Video codec
+          '-c:a aac',
+          '-preset veryfast', // Fast encoding with reasonable quality and file size
+          '-movflags +faststart', // Optimize for web streaming
+          '-crf 27', // Constant Rate Factor for quality
+          '-tag:v avc1', // Tag for QuickTime compatibility
+          '-f hls', // Output format
+          '-hls_time 10', // Segment duration
+          '-hls_list_size 0', // Include all segments in playlist
+          '-hls_playlist_type event',
+          '-hls_flags append_list',
+          '-start_number 0',
+          '-ac 6',
+          '-ar 48000',
+          '-b:a 384k',
+        ])
+        .output(outputFilePath)
+        .videoFilter(`scale = ${width}: -2`) // Scale width and maintain aspect ratio
+        // .on('progress', () => {
+        //   console.log(`An HLS ${width}p segment has been generated successfully!`)
+        // })
+        .on('end', () => {
+          console.log(`All HLS segments for ${width}p have been generated successfully!`)
+        })
+        .on('error', (err) => {
+          console.log(`Error: ${err.message} `)
+        })
+        .run()
+    })
   }
 }
