@@ -27,23 +27,8 @@ export default class TorrentController {
     return this.torrentService.respond()
   }
 
-  // stream(ctx: HttpContext) {
-  //   this.torrentService.stream(ctx)
-  // }
   stream({ response, params }: any) {
-    const filePath = join(
-      app.makePath(), // This resolves to the root of the Adonis app
-      'hls-output',
-      params.videoId,
-      ...params['*']
-    )
-    console.log(filePath)
-
-    // if (filePath.endsWith('.m3u8')) {
-    //   response.type('application/x-mpegurl')
-    // } else if (filePath.endsWith('.ts')) {
-    //   response.type('video/MP2T')
-    // }
+    const filePath = join(app.makePath(), 'hls-output', params.videoId, ...params['*'])
 
     return response.download(filePath)
   }
@@ -73,42 +58,56 @@ export default class TorrentController {
     }
   }
 
-  convert_hello() {
-    const width = 360
-    ffmpeg(`./downloads/test/rick.mkv`)
-      .outputOptions([
-        '-c:v libx264', // Video codec
-        '-c:a aac',
-        '-preset veryfast', // Fast encoding with reasonable quality and file size
-        '-movflags +faststart', // Optimize for web streaming
-        '-crf 27', // Constant Rate Factor for quality
-        '-tag:v avc1', // Tag for QuickTime compatibility
-        '-f hls', // Output format
-        '-hls_time 10', // Segment duration
-        '-hls_list_size 0', // Include all segments in playlist
-        // '-hls_flags independent_segments', // Each segment can be decoded independently
-        '-hls_playlist_type event',
-        '-hls_flags append_list',
-        '-start_number 0',
-        '-ac 6',
-        '-ar 48000',
-        '-b:a 384k',
-      ])
-      .output(path.join('./hls-output/test', `${width}.m3u8`))
-      .videoFilter(`scale=${width}:-2`) // Scale width and maintain aspect ratio
-      .on('progress', () => {
-        console.log(`An HLS ${width}p segment has been generated successfully!`)
-      })
-      .on('end', () => {
-        console.log(`All HLS segments for ${width}p has been generated successfully!`)
-      })
-      .on('error', (err) => {
-        console.log(`Error: ${err.message}`)
-      })
-      .run()
+  convert() {
+    const videoId = '117'
+    const resolutions = [480, 720, 1080]
+    const inputFilePath = './downloads/test/rick.mkv'
+    const outputFolderRootPath = `./hls-output/${videoId}`
+
+    if (!fs.existsSync(outputFolderRootPath)) {
+      fs.mkdirSync(outputFolderRootPath, { recursive: true })
+    }
+
+    resolutions.forEach((width) => {
+      const outputFilePath = path.join(outputFolderRootPath, `${width}.m3u8`)
+      ffmpeg(inputFilePath)
+        .outputOptions([
+          '-c:v libx264', // Video codec
+          '-c:a aac',
+          '-preset veryfast', // Fast encoding with reasonable quality and file size
+          '-movflags +faststart', // Optimize for web streaming
+          '-crf 27', // Constant Rate Factor for quality
+          '-tag:v avc1', // Tag for QuickTime compatibility
+          '-f hls', // Output format
+          '-hls_time 10', // Segment duration
+          '-hls_list_size 0', // Include all segments in playlist
+          '-hls_playlist_type event',
+          '-hls_flags append_list',
+          '-start_number 0',
+          '-ac 6',
+          '-ar 48000',
+          '-b:a 384k',
+        ])
+        .output(outputFilePath)
+        .videoFilter(`scale=${width}:-2`) // Scale width and maintain aspect ratio
+        .on('progress', () => {
+          console.log(`An HLS ${width}p segment has been generated successfully!`)
+
+          const customContent = `#EXT-X-ENDLIST\n# Custom content for ${width}p resolution`
+          fs.appendFileSync(outputFilePath, `\n${customContent}`)
+          console.log(`Custom content appended to ${outputFilePath}`)
+        })
+        .on('end', () => {
+          console.log(`All HLS segments for ${width}p have been generated successfully!`)
+        })
+        .on('error', (err) => {
+          console.log(`Error: ${err.message}`)
+        })
+        .run()
+    })
   }
 
-  convert({ request, response }: HttpContext) {
+  convert_hello({ request, response }: HttpContext) {
     // if (!req.file) {
     //   return res.status(400).send('Video not sent!')
     // }
