@@ -2,13 +2,14 @@
 	import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 	import { Skeleton } from '@/components/ui/skeleton';
 	import { getPosterImage } from '@/services/api';
-	import type { BackDropImage } from '@hypertube/shared';
+	import { UserMovieAction, type BackDropImage } from '@hypertube/shared';
 	import Rank from './rank.svelte';
+	import { Badge } from '@/components/ui/badge';
 
 	export let movie_id: number;
 	export let isVisible: boolean;
-	export let title: string;
 	export let orderNumber: number;
+	export let user_action: UserMovieAction | null = null;
 
 	let poster_image: BackDropImage | null = null;
 	let isLoading = true;
@@ -45,7 +46,15 @@
 			<div
 				class="absolute right-0 top-0 h-full w-[50%]"
 				style="background-size: cover; background-position: center; background-image: url({poster_image?.url});"
-			></div>
+			>
+				{#if user_action}
+					<div class="absolute bottom-0 flex w-full justify-center">
+						<Badge variant={'red'}>
+							{user_action}
+						</Badge>
+					</div>
+				{/if}
+			</div>
 		{/if}
 	</div>
 </Card>

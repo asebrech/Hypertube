@@ -5,10 +5,10 @@ export default class MovieUser extends BaseModel {
   public static table = 'movie_user'
 
   @column()
-  declare userId: number
+  declare user_id: number
 
   @column()
-  declare movieId: number
+  declare movie_id: number
 
   @column()
   declare usersAction: UserMovieAction

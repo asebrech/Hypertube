@@ -7,10 +7,10 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
 
-      table.string('imdb_id').nullable()
-      table.integer('tmdb_id').notNullable()
+      table.string('imdbId').nullable()
+      table.integer('tmdbId').notNullable()
       table.string('title').notNullable()
-      table.string('magic_link').nullable()
+      table.string('magicLink').nullable()
 
       table.timestamp('created_at', { useTz: true }).notNullable()
       table.timestamp('updated_at', { useTz: true }).notNullable()
