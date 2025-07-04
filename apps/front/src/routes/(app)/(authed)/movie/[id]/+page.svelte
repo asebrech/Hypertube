@@ -3,7 +3,7 @@
 	import CommentInput from '@/components/tadflix/comments/CommentInput.svelte';
 	import CommentItem from '@/components/tadflix/comments/CommentItem.svelte';
 	import MovieBanner from '@/components/tadflix/movie-banner/MovieBanner.svelte';
-	import type { Comment, MovieDetails, PaginationType } from '@hypertube/shared';
+	import type { MovieDetails, PaginationType } from '@hypertube/shared';
 
 	interface MoviePageProps {
 		data: {

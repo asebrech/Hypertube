@@ -3,18 +3,20 @@ export type BackDropImage = {
   langFound: boolean;
 };
 
+export type Movie = {
+  id: number;
+  title: string;
+  overview: string;
+  poster_path: string;
+  release_date: string;
+  vote_average: number;
+  backdrop_image: BackDropImage | null | undefined;
+};
+
 export type MovieGenre = {
   id: number;
   name: string;
-  movies: {
-    id: number;
-    title: string;
-    overview: string;
-    poster_path: string;
-    release_date: string;
-    vote_average: number;
-    backdrop_image: BackDropImage | null | undefined;
-  }[];
+  movies: Movie[];
 };
 
 export type MovieDetails = {
