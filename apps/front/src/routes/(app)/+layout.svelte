@@ -10,6 +10,21 @@
 	import * as Select from '$lib/components/ui/select/index.js';
 	import { locale, locales } from 'svelte-i18n';
 	import { _ } from 'svelte-i18n';
+	import { tick } from 'svelte';
+
+	let previousLocale = $locale;
+
+	$effect(() => {
+		if ($locale !== previousLocale) {
+			previousLocale = $locale;
+			// Persist the new language
+			localStorage.setItem('lang', $locale ?? 'en-GB');
+			// Wait for DOM to update, then reload the page
+			tick().then(() => {
+				location.reload();
+			});
+		}
+	});
 
 	const getLangName = (lang: string | null | undefined) => {
 		switch (lang) {
