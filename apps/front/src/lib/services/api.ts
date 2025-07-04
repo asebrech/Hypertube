@@ -2,7 +2,7 @@ import axios from 'axios';
 import { locale } from 'svelte-i18n';
 import { PUBLIC_BACK_URL } from '$env/static/public';
 import { get } from 'svelte/store';
-import type { Comment, MovieDetails, PaginationType } from '@hypertube/shared';
+import type { MovieDetails, PaginationType } from '@hypertube/shared';
 
 export async function getMovies(page_to_load: number) {
 	const config = {

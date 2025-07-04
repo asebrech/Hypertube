@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { Button } from '@/components/ui/button';
-	import type { MovieDetails } from '@hypertube/shared';
+	import type { BackDropImage, MovieDetails } from '@hypertube/shared';
 
 	interface Props {
 		movie: MovieDetails;
+		logo?: BackDropImage;
 	}
 
 	let expanded = $state(false);
@@ -17,7 +18,7 @@
 		}
 	});
 
-	let { movie }: Props = $props();
+	let { movie, logo }: Props = $props();
 </script>
 
 <div class="relative max-h-[80vh] w-full">
@@ -28,9 +29,16 @@
 	/>
 	<div class="absolute top-1/2 left-1/2 w-full -translate-x-1/2 -translate-y-1/2 transform pl-12">
 		<div class="flex w-full flex-col gap-5 text-white">
-			<span class="text-center text-7xl leading-14 font-extrabold text-wrap uppercase md:max-w-44">
-				{movie.title}
-			</span>
+			{#if logo}
+				<img src={logo.url} alt="movie-background" class="max-w-[40%] object-cover" />
+			{:else}
+				<span
+					class="text-center text-7xl leading-14 font-extrabold text-wrap uppercase md:max-w-44"
+				>
+					{movie.title}
+				</span>
+			{/if}
+
 			<div class="hidden md:block md:max-w-[40%]">
 				<p bind:this={contentEl} class={`${expanded ? '' : 'line-clamp-3'}`}>
 					{movie.overview}

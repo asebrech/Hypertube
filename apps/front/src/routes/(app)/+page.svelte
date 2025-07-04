@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { MovieDetails, MovieGenre } from '@hypertube/shared';
-	import { getMovieDetails, getMovies } from '@/services/api';
+	import type { BackDropImage, MovieDetails, MovieGenre } from '@hypertube/shared';
+	import { getLogoImage, getMovieDetails, getMovies } from '@/services/api';
 
 	import { MovieCarousel } from '@/components/tadflix/movie-carousel';
 	import { Loader2 } from 'lucide-svelte';
@@ -12,6 +12,7 @@
 	let isLoading: boolean = $state(false);
 	let movieGenres: MovieGenre[] = $state([]);
 	let movieBanner: MovieDetails | undefined = $state();
+	let movieLogo: BackDropImage | undefined = $state();
 
 	const loadMoviePage = async () => {
 		if (!hasMorePages) return;
@@ -19,8 +20,6 @@
 			isLoading = true;
 			const getMovieResponse = await getMovies(currentPage);
 			movieGenres = movieGenres.concat(getMovieResponse.movies);
-			movieBanner = await getMovieDetails(movieGenres[0].movies[0].id);
-
 			hasMorePages = getMovieResponse.hasMorePages;
 			currentPage++;
 			isLoading = false;
@@ -32,6 +31,10 @@
 	onMount(async () => {
 		isLoading = true;
 		await loadMoviePage();
+		let idx = parseInt(((Math.random() * 100) % 10).toFixed());
+		console.log(idx);
+		movieBanner = await getMovieDetails(movieGenres[0].movies[idx].id);
+		movieLogo = await getLogoImage(movieGenres[0].movies[idx].id, 'small');
 		isLoading = false;
 		observeSentinel();
 	});
@@ -55,7 +58,7 @@
 
 <div class="flex flex-col gap-8">
 	{#if movieBanner}
-		<MovieBanner movie={movieBanner} />
+		<MovieBanner logo={movieLogo} movie={movieBanner} />
 	{:else}
 		<Loader2 />
 	{/if}
