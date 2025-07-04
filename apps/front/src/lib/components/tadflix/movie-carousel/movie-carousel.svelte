@@ -85,14 +85,14 @@
 							{#if variant === 'top-ten'}
 								<TopTenCard
 									movie_id={movie.id}
-									isVisible={loadedSlides.includes(index)}
+									isVisible={visibleSlides.includes(index)}
 									title={movie.title}
 									orderNumber={index ? index : 10}
 								/>
 							{:else}
 								<MovieCard
 									movieId={movie.id}
-									isVisible={loadedSlides.includes(index)}
+									isVisible={visibleSlides.includes(index)}
 									title={movie.title}
 								/>
 							{/if}

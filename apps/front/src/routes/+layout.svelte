@@ -9,7 +9,7 @@
 	import { page } from '$app/state';
 	import { locale } from 'svelte-i18n';
 	import { i18nReady } from '$lib/i18n';
-
+	
 	let ready = $state(false);
 
 	// Set initial locale from localStorage before rendering
@@ -25,11 +25,7 @@
 
 <ModeWatcher defaultMode={'dark'} />
 
-{#if $isLoading || !ready}
-	<Loader2 class="size-4 animate-spin" />
-{:else}
-	<Navbar data={page.data} />
-{/if}
+<Navbar data={page.data} showSkeleton={$isLoading || !ready} />
 
 <main class="flex h-full min-h-screen w-full flex-col">
 	{#if $isLoading || !ready}

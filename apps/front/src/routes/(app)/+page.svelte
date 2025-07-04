@@ -1,14 +1,17 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { MovieGenre } from '@hypertube/shared';
-	import { getMovies } from '@/services/api';
+	import type { MovieDetails, MovieGenre } from '@hypertube/shared';
+	import { getMovieDetails, getMovies } from '@/services/api';
 
 	import { MovieCarousel } from '@/components/tadflix/movie-carousel';
+	import { Loader2 } from 'lucide-svelte';
+	import MovieBanner from '@/components/tadflix/movie-banner/MovieBanner.svelte';
 
 	let hasMorePages: boolean = $state(true);
 	let currentPage: number = $state(1);
 	let isLoading: boolean = $state(false);
 	let movieGenres: MovieGenre[] = $state([]);
+	let movieBanner: MovieDetails | undefined = $state();
 
 	const loadMoviePage = async () => {
 		if (!hasMorePages) return;
@@ -16,6 +19,8 @@
 			isLoading = true;
 			const getMovieResponse = await getMovies(currentPage);
 			movieGenres = movieGenres.concat(getMovieResponse.movies);
+			movieBanner = await getMovieDetails(movieGenres[0].movies[0].id);
+
 			hasMorePages = getMovieResponse.hasMorePages;
 			currentPage++;
 			isLoading = false;
@@ -48,11 +53,12 @@
 	};
 </script>
 
-{#if isLoading}
-	<div>Loading...</div>
-{/if}
-
-<div class="flex flex-col py-16 gap-8">
+<div class="flex flex-col gap-8">
+	{#if movieBanner}
+		<MovieBanner movie={movieBanner} />
+	{:else}
+		<Loader2 />
+	{/if}
 	{#each movieGenres as genre}
 		<div class="flex w-full flex-col gap-[15px] overflow-hidden">
 			<h2 class="text-l ml-[58px] font-medium">{genre.name}</h2>

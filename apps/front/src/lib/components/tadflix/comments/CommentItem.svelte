@@ -1,8 +1,6 @@
 <script lang="ts">
-	import type { Comment } from "@hypertube/shared";
-
 	interface CommentItemProps {
-		comment: Comment
+		comment: any
 	}
 
 	const { comment }: CommentItemProps = $props();

@@ -1,11 +1,9 @@
 <script lang="ts">
-	import type { Comment } from '@hypertube/shared';
-	import type { Snippet } from 'svelte';
 	import CommentItem from './CommentItem.svelte';
 
 	interface CommentContainerProps {
 		title: string;
-		comments: Comment[];
+		comments: any[];
 	}
 
 	let { title, comments }: CommentContainerProps = $props();
