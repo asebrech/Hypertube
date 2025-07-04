@@ -75,6 +75,18 @@ export default class MoviesController {
     }
   }
 
+  async logoImage ({ request, response }: HttpContext): Promise<BackDropImage | void> {
+    const tmdb_movie_id = request.input('tmdb_movie_id')
+    const lang = request.input('lang', 'en')
+    const size = request.input('size', 'original')
+    const logoImageFoundBoolean = await this.tmdbService.getLogoImageUrl(tmdb_movie_id, size, lang)
+    if (logoImageFoundBoolean) {
+      return logoImageFoundBoolean
+    } else {
+      return response.notFound({ error: 'Image not found' })
+    }
+  }
+
   async movieDetails ({ request, response }: HttpContext) {
     const tmdb_movie_id = request.param('id')
     const lang = request.input('lang', 'en')
