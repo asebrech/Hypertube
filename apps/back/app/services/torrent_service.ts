@@ -5,21 +5,27 @@ import ffmpeg from 'fluent-ffmpeg'
 import { HttpContext } from '@adonisjs/core/http'
 import path from 'node:path'
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg'
+import SearchTorrentService from './search_torrent_service.js'
 
 ffmpeg.setFfmpegPath(ffmpegInstaller.path)
 
 export default class EchoService {
-  respond() {
-    const filePath =
-      'magnet:?xt=urn:btih:52DB7C1686A8D3C22F70F3187061FE1737AA0258&dn=Rick+and+Morty+S08E03+1080p+WEB+H264-SuccessfulCrab&tr=http%3A%2F%2Fp4p.arenabg.com%3A1337%2Fannounce&tr=udp%3A%2F%2F47.ip-51-68-199.eu%3A6969%2Fannounce&tr=udp%3A%2F%2F9.rarbg.me%3A2780%2Fannounce&tr=udp%3A%2F%2F9.rarbg.to%3A2710%2Fannounce&tr=udp%3A%2F%2F9.rarbg.to%3A2730%2Fannounce&tr=udp%3A%2F%2F9.rarbg.to%3A2920%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&tr=udp%3A%2F%2Fopentracker.i2p.rocks%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.cyberia.is%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.dler.org%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.internetwarriors.net%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=udp%3A%2F%2Ftracker.pirateparty.gr%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.tiny-vps.com%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce'
+  private searchTorrentService: SearchTorrentService = new SearchTorrentService()
 
+  async respond(tmdbId: number) {
+    console.log('Searching for torrents for TMDB ID:', tmdbId)
+    const torrent = await this.searchTorrentService.search(tmdbId, 'All', 100)
+    
+    // const filePath =
+    //   'magnet:?xt=urn:btih:52DB7C1686A8D3C22F70F3187061FE1737AA0258&dn=Rick+and+Morty+S08E03+1080p+WEB+H264-SuccessfulCrab&tr=http%3A%2F%2Fp4p.arenabg.com%3A1337%2Fannounce&tr=udp%3A%2F%2F47.ip-51-68-199.eu%3A6969%2Fannounce&tr=udp%3A%2F%2F9.rarbg.me%3A2780%2Fannounce&tr=udp%3A%2F%2F9.rarbg.to%3A2710%2Fannounce&tr=udp%3A%2F%2F9.rarbg.to%3A2730%2Fannounce&tr=udp%3A%2F%2F9.rarbg.to%3A2920%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&tr=udp%3A%2F%2Fopentracker.i2p.rocks%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.cyberia.is%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.dler.org%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.internetwarriors.net%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=udp%3A%2F%2Ftracker.pirateparty.gr%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.tiny-vps.com%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce'
+    const filePath = torrent.magnetLink
     const engine = torrentStream(filePath)
 
     engine.on('ready', () => {
       engine.files.forEach((file) => {
         console.log('filename:', file.name)
         const stream = file.createReadStream()
-        this.convert(stream, '117')
+        this.convert(stream, tmdbId.toString())
       })
     })
 
@@ -67,5 +73,10 @@ export default class EchoService {
         })
         .run()
     })
+  }
+
+  isMovieConverted(imdbId: string): boolean {
+    const outputFolderRootPath = `./hls-output/${imdbId}`
+    return fs.existsSync(outputFolderRootPath)
   }
 }

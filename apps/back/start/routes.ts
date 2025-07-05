@@ -20,7 +20,7 @@ router.get('/', async () => {
   }
 })
 
-router.get('home', [TorrentController, 'torrent'])
+router.get('/torrent', [TorrentController, 'torrent'])
 router.get('/hls/*', [TorrentController, 'stream'])
 
 router

@@ -7,8 +7,15 @@ import app from '@adonisjs/core/services/app'
 export default class TorrentController {
   constructor(protected torrentService: TorrentService) {}
 
-  torrent() {
-    return this.torrentService.respond()
+  async torrent({ request }) {
+    const tmdb = request.qs().tmdbId
+    console.log('TorrentController:tmdb', tmdb)
+    //if imdb movie aleady converted return nothing 
+    if (this.torrentService.isMovieConverted(tmdb)) {
+      console.log('TorrentController:tmdb', tmdb, 'already converted')
+      return { message: 'Movie already converted' }
+    }
+    return await this.torrentService.respond(tmdb)
   }
 
   stream({ response, params }: any) {
