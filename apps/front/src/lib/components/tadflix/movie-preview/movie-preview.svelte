@@ -41,7 +41,7 @@
 	});
 </script>
 
-<a href="/movie/{movieId}" target="_blank" rel="noreferrer noopener" class="block">
+<a href="/movie/{movieId}" class="block">
 	<div class="bg-secondary flex flex-col items-center gap-2 pb-2">
 		{#if movieVideo?.key}
 			<div

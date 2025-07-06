@@ -104,7 +104,9 @@ export default class MoviesController {
     const movieVideos = await this.tmdbService.getMovieVideos(tmdb_movie_id, lang)
     if (!movieVideos)
       return response.notFound({ error: 'Movie videos not found' })
-    const movieVideo = movieVideos.results.find((video: any) => video.site === 'YouTube' && video.type === 'Trailer')
+    let movieVideo = movieVideos.results.find((video: any) => video.site === 'YouTube' && video.type === 'Clip')
+    if (!movieVideo)
+      movieVideo = movieVideos.results.find((video: any) => video.site === 'YouTube' && video.type === 'Trailer')
     return movieVideo;
   }
 }
