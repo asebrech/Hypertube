@@ -2,7 +2,7 @@ import axios from 'axios';
 import { locale } from 'svelte-i18n';
 import { PUBLIC_BACK_URL } from '$env/static/public';
 import { get } from 'svelte/store';
-import type { MovieDetails, PaginationType } from '@hypertube/shared';
+import type { ImageSizeType, MovieDetails, PaginationType } from '@hypertube/shared';
 
 export async function getMovies(page_to_load: number) {
 	const config = {
@@ -39,7 +39,7 @@ export async function getMovieDetails(movieId: number): Promise<MovieDetails> {
 	}
 }
 
-export async function getBackdropImage(movieId: any, size: string) {
+export async function getBackdropImage(movieId: any, size: ImageSizeType) {
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies/backdropImage`,
@@ -58,7 +58,7 @@ export async function getBackdropImage(movieId: any, size: string) {
 	}
 }
 
-export async function getPosterImage(movieId: any, size: string) {
+export async function getPosterImage(movieId: any, size: ImageSizeType) {
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies/posterImage`,
@@ -77,7 +77,7 @@ export async function getPosterImage(movieId: any, size: string) {
 	}
 }
 
-export async function getLogoImage(movieId: any, size: string) {
+export async function getLogoImage(movieId: any, size: ImageSizeType) {
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies/logoImage`,
