@@ -112,17 +112,3 @@ export async function getMovieVideos(movieId: number) {
 		throw error;
 	}
 }
-
-export async function getMovieComments(imdbId: number): Promise<PaginationType<Comment>> {
-	const config = {
-		method: 'get',
-		url: `${PUBLIC_BACK_URL}/comments/${imdbId}`
-	};
-	try {
-		const response = await axios(config);
-		return response.data;
-	} catch (error) {
-		console.error('Error fetching movie comments:', error);
-		throw error;
-	}
-}
