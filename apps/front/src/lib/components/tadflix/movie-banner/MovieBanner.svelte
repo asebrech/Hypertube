@@ -2,8 +2,10 @@
 	import { Button } from '@/components/ui/button';
 	import type { BackDropImage, MovieDetails, MovieVideo } from '@hypertube/shared';
 	import { onMount } from 'svelte';
-	import { Info, Play } from 'lucide-svelte';
+	import { Info, Play, Volume2, VolumeOff } from 'lucide-svelte';
 	import { _ } from 'svelte-i18n';
+	import { Skeleton } from '@/components/ui/skeleton';
+	import ButtonPreview from '../buttons/button-preview/button-preview.svelte';
 
 	interface Props {
 		movie: MovieDetails;
@@ -14,6 +16,7 @@
 	let expanded = $state(false);
 	let contentEl: HTMLParagraphElement;
 	let isClamped = $state(false);
+	let isMuted = $state(true);
 
 	$effect(() => {
 		if (contentEl) {
@@ -64,15 +67,15 @@
 		}
 	}
 
-	// function toggleMute() {
-	// 	if (!player) return;
-	// 	if (isMuted) {
-	// 		player.unMute();
-	// 	} else {
-	// 		player.mute();
-	// 	}
-	// 	isMuted = !isMuted;
-	// }
+	function toggleMute() {
+		if (!player) return;
+		if (isMuted) {
+			player.unMute();
+		} else {
+			player.mute();
+		}
+		isMuted = !isMuted;
+	}
 
 	onMount(() => {
 		console.log('key', movieVideo?.key);
@@ -121,17 +124,29 @@
 		</div>
 		<div class="bg-red relative left-0 top-0 h-full w-full"></div>
 	</div>
-	{#if movie.backdrop_path && (!playerReady || videoEnded)}
+	{#if movie?.backdrop_path && (!playerReady || videoEnded)}
 		<img
 			src={`https://image.tmdb.org/t/p/original/${movie.backdrop_path}`}
 			alt="movie-background"
 			class="h-full w-full object-cover"
 		/>
+	{:else if !movie?.backdrop_path! && (playerReady || videoEnded)}
+		<Skeleton class="h-[80vh] w-full" />
 	{/if}
-	<div class="absolute left-1/2 top-1/2 w-full -translate-x-1/2 -translate-y-1/2 transform pl-12">
-		<div class="flex w-full flex-col gap-5 text-white">
+
+	<div class="absolute left-0 top-0 h-full w-full transform pb-24 pl-12 pr-0 pt-24">
+		<div class="flex h-full w-full flex-col justify-end gap-5 text-white">
 			{#if logo}
-				<img src={logo.url} alt="movie-background" class="max-w-[40%] object-cover" />
+				<img
+					src={logo.url}
+					alt="movie-background"
+					class="object-cover"
+					style="max-width: {logo.aspect_ratio >= 2
+						? '40%'
+						: logo.aspect_ratio >= 1.5
+							? '33%'
+							: '25%'}"
+				/>
 			{:else}
 				<span
 					class="leading-14 text-wrap text-center text-7xl font-extrabold uppercase md:max-w-44"
@@ -165,6 +180,7 @@
 				<div class="flex gap-2">
 					<Button
 						class="bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer rounded-[4px]"
+						href={`/movie/${movie.id}`}
 					>
 						<Play fill={'black'} />{$_('movie-banner.play')}
 					</Button>
@@ -176,9 +192,19 @@
 				</div>
 				{#if movie.vote_average}
 					<div class="flex items-center gap-5">
-						<div>RE</div>
+						{#if playerReady && !videoEnded}
+							<button onclick={toggleMute}>
+								<ButtonPreview variant="outline" size="default">
+									{#if isMuted}
+										<VolumeOff onclick={toggleMute} />
+									{:else}
+										<Volume2 onclick={toggleMute} />
+									{/if}
+								</ButtonPreview>
+							</button>
+						{/if}
 						<div class="flex h-full items-center text-nowrap border-l-4 bg-purple-300 pl-3 pr-8">
-							TV-{movie.revenue}
+							Score - {movie.vote_average}
 						</div>
 					</div>
 				{/if}

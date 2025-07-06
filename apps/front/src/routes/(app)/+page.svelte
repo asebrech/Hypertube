@@ -4,7 +4,6 @@
 	import { getLogoImage, getMovieDetails, getMovies, getMovieVideos } from '@/services/api';
 
 	import { MovieCarousel } from '@/components/tadflix/movie-carousel';
-	import { Loader2 } from 'lucide-svelte';
 	import MovieBanner from '@/components/tadflix/movie-banner/MovieBanner.svelte';
 	import Skeleton from '@/components/ui/skeleton/skeleton.svelte';
 

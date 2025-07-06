@@ -1,8 +1,8 @@
 import axios from 'axios'
 import env from '#start/env'
+import { ImageSizeType } from '@hypertube/shared'
 
 export type ImageSize = 'w92' | 'w154' | 'w185' | 'w342' | 'w500' | 'w780' | 'w1280' | 'original'
-type ImageSizeType = 'small' | 'medium' | 'large' | 'original'
 
 export class TMDBService {
   private apiKey: string | undefined
@@ -63,7 +63,7 @@ export class TMDBService {
 
   private getBackdropImageUrlFromData(data: any) {
     if (data.backdrops && data.backdrops.length > 0) {
-      return data.backdrops[0].file_path
+      return data.backdrops[0]
     }
     // if (data.posters && data.posters.length > 0) {
     //   return data.posters[0].file_path
@@ -76,14 +76,14 @@ export class TMDBService {
 
   private getPosterImageUrlFromData(data: any) {
     if (data.posters && data.posters.length > 0) {
-      return data.posters[0].file_path
+      return data.posters[0]
     }
     return null
   }
 
   private getLogoImageUrlFromData(data: any) {
     if (data.logos && data.logos.length > 0) {
-      return data.logos[0].file_path
+      return data.logos[0]
     }
     return null
   }
@@ -107,21 +107,22 @@ export class TMDBService {
     const endpoint = `/movie/${tmdb_movie_id}/images?language=${lang.split('-')[0]}`
     let langFound = true
     let data = await this.getSomething(endpoint)
-    let imageUrl = this.getBackdropImageUrlFromData(data)
-    if (!imageUrl) {
+    let image = this.getBackdropImageUrlFromData(data)
+    if (!image) {
       data = await this.getSomething(`/movie/${tmdb_movie_id}/images?language=en`)
-      imageUrl = this.getBackdropImageUrlFromData(data)
+      image = this.getBackdropImageUrlFromData(data)
     }
-    if (!imageUrl) {
+    if (!image) {
       langFound = false
       data = await this.getSomething(`/movie/${tmdb_movie_id}/images`)
-      imageUrl = this.getBackdropImageUrlFromData(data)
+      image = this.getBackdropImageUrlFromData(data)
     }
-    if (!imageUrl) {
+    if (!image) {
       return null
     }
     return {
-      url: `https://image.tmdb.org/t/p/${this.getSize(size)}${imageUrl}`,
+      url: `https://image.tmdb.org/t/p/${this.getSize(size)}${image.file_path}`,
+      ...image,
       langFound: langFound,
     }
   }
@@ -139,21 +140,22 @@ export class TMDBService {
     const endpoint = `/movie/${tmdb_movie_id}/images?language=${lang.split('-')[0]}`
     let langFound = true
     let data = await this.getSomething(endpoint)
-    let imageUrl = this.getPosterImageUrlFromData(data)
-    if (!imageUrl) {
+    let image = this.getPosterImageUrlFromData(data)
+    if (!image) {
       data = await this.getSomething(`/movie/${tmdb_movie_id}/images?language=en`)
-      imageUrl = this.getPosterImageUrlFromData(data)
+      image = this.getPosterImageUrlFromData(data)
     }
-    if (!imageUrl) {
+    if (!image) {
       langFound = false
       data = await this.getSomething(`/movie/${tmdb_movie_id}/images`)
-      imageUrl = this.getPosterImageUrlFromData(data)
+      image = this.getPosterImageUrlFromData(data)
     }
-    if (!imageUrl) {
+    if (!image) {
       return null
     }
     return {
-      url: `https://image.tmdb.org/t/p/${this.getSize(size)}${imageUrl}`,
+      url: `https://image.tmdb.org/t/p/${this.getSize(size)}${image.file_path}`,
+      ...image,
       langFound: langFound,
     }
   }
@@ -162,21 +164,22 @@ export class TMDBService {
     const endpoint = `/movie/${tmdb_movie_id}/images?language=${lang.split('-')[0]}`
     let langFound = true
     let data = await this.getSomething(endpoint)
-    let imageUrl = this.getLogoImageUrlFromData(data)
-    if (!imageUrl) {
+    let image = this.getLogoImageUrlFromData(data)
+    if (!image) {
       data = await this.getSomething(`/movie/${tmdb_movie_id}/images?language=en`)
-      imageUrl = this.getLogoImageUrlFromData(data)
+      image = this.getLogoImageUrlFromData(data)
     }
-    if (!imageUrl) {
+    if (!image) {
       langFound = false
       data = await this.getSomething(`/movie/${tmdb_movie_id}/images`)
-      imageUrl = this.getLogoImageUrlFromData(data)
+      image = this.getLogoImageUrlFromData(data)
     }
-    if (!imageUrl) {
+    if (!image) {
       return null
     }
     return {
-      url: `https://image.tmdb.org/t/p/${this.getSize(size)}${imageUrl}`,
+      url: `https://image.tmdb.org/t/p/${this.getSize(size)}${image.file_path}`,
+      ...image,
       langFound: langFound,
     }
   }
