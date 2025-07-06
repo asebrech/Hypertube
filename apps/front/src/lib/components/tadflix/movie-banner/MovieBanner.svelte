@@ -130,13 +130,30 @@
 			</div>
 		</div>
 		<div class="bg-red relative left-0 top-0 h-full w-full"></div>
+		<!-- Fade effect: bottom gradient overlay -->
+		<div class="pointer-events-none absolute inset-0">
+			<div
+				class="absolute bottom-0 left-0 w-full"
+				style="height: 40%; background: linear-gradient(to top, #121212, transparent);"
+			></div>
+		</div>
 	</div>
 	{#if movie?.backdrop_path && (!playerReady || videoEnded)}
-		<img
-			src={`https://image.tmdb.org/t/p/original/${movie.backdrop_path}`}
-			alt="movie-background"
-			class="h-full w-full object-cover"
-		/>
+		<div class="relative h-full w-full" style="min-height: 400px;">
+			<img
+				src={`https://image.tmdb.org/t/p/original/${movie.backdrop_path}`}
+				alt="movie-background"
+				class="h-full w-full object-cover"
+				style="display: block; height: 100%; width: 100%;"
+			/>
+			<!-- Fade effect: bottom gradient overlay -->
+			<div class="pointer-events-none absolute inset-0">
+				<div
+					class="absolute bottom-0 left-0 w-full"
+					style="height: 40%; background: linear-gradient(to top, #121212, transparent);"
+				></div>
+			</div>
+		</div>
 	{:else if !movie?.backdrop_path! && (playerReady || videoEnded)}
 		<Skeleton class="h-[80vh] w-full" />
 	{/if}
