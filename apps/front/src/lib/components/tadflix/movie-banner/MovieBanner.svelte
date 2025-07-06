@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { Button } from '@/components/ui/button';
-	import type { BackDropImage, MovieDetails } from '@hypertube/shared';
+	import type { BackDropImage, MovieDetails, MovieVideo } from '@hypertube/shared';
+	import { onMount } from 'svelte';
 
 	interface Props {
 		movie: MovieDetails;
 		logo?: BackDropImage;
+		movieVideo?: MovieVideo;
 	}
 
 	let expanded = $state(false);
@@ -18,22 +20,120 @@
 		}
 	});
 
-	let { movie, logo }: Props = $props();
+	let { movie, logo, movieVideo }: Props = $props();
+
+	let player: YT.Player;
+	let isApiLoaded = false;
+	let playerReady = $state(false);
+	let videoEnded = $state(false);
+	let playerElement: HTMLDivElement;
+
+	function createPlayer(id: string) {
+		if (!id || !isApiLoaded || !playerElement) return;
+
+		if (!player) {
+			player = new YT.Player(playerElement, {
+				videoId: movieVideo?.key,
+				events: {
+					onReady: () => {
+						playerReady = true;
+						player.mute();
+						player.playVideo();
+					},
+					onStateChange: (event) => {
+						if (event.data === YT.PlayerState.ENDED) {
+							console.log('Video ended');
+							videoEnded = true;
+						}
+					}
+				},
+				playerVars: {
+					autoplay: 1,
+					controls: 0,
+					loop: 0,
+					rel: 0,
+					showinfo: 0,
+					disablekb: 1
+				}
+			});
+		} else {
+			player.loadVideoById(id);
+		}
+	}
+
+	// function toggleMute() {
+	// 	if (!player) return;
+	// 	if (isMuted) {
+	// 		player.unMute();
+	// 	} else {
+	// 		player.mute();
+	// 	}
+	// 	isMuted = !isMuted;
+	// }
+
+	onMount(() => {
+		console.log('key', movieVideo?.key);
+		// @ts-ignore
+		window.onYouTubeIframeAPIReady = () => {
+			isApiLoaded = true;
+			if (movieVideo?.key) createPlayer(movieVideo?.key);
+		};
+
+		if (!window.YT) {
+			const tag = document.createElement('script');
+			tag.src = 'https://www.youtube.com/iframe_api';
+			document.body.appendChild(tag);
+		} else {
+			// Already loaded
+			isApiLoaded = true;
+			if (movieVideo?.key) createPlayer(movieVideo?.key);
+		}
+	});
+
+	$effect(() => {
+		console.log('key', movieVideo?.key);
+		if (movieVideo?.key) {
+			createPlayer(movieVideo?.key);
+		}
+	});
 </script>
 
 <div class="relative max-h-[80vh] w-full">
-	<img
-		src={`https://image.tmdb.org/t/p/original/${movie.backdrop_path}`}
-		alt="movie-background"
-		class="h-full w-full object-cover"
-	/>
-	<div class="absolute top-1/2 left-1/2 w-full -translate-x-1/2 -translate-y-1/2 transform pl-12">
+	<!-- <div id="player" bind:this={playerElement}></div> -->
+	<!-- {#if movieVideo?.key} -->
+	<div
+		class="relative flex aspect-[6/3] w-full items-end overflow-hidden rounded-[2px] bg-black {playerReady &&
+		!videoEnded
+			? ''
+			: 'hidden'}"
+	>
+		<div class="absolute h-full w-full">
+			<div
+				class="absolute left-1/2 top-1/2 min-h-[155%] min-w-[155%] -translate-x-1/2 -translate-y-1/2"
+			>
+				<div
+					id="player"
+					bind:this={playerElement}
+					class="absolute left-0 top-0 h-full w-full overflow-hidden"
+				></div>
+			</div>
+		</div>
+		<div class="bg-red relative left-0 top-0 z-30 h-full w-full"></div>
+	</div>
+	{#if movie.backdrop_path && videoEnded}
+		<img
+			src={`https://image.tmdb.org/t/p/original/${movie.backdrop_path}`}
+			alt="movie-background"
+			class="h-full w-full object-cover"
+		/>
+	{/if}
+	<div class="absolute left-1/2 top-1/2 w-full -translate-x-1/2 -translate-y-1/2 transform pl-12">
 		<div class="flex w-full flex-col gap-5 text-white">
 			{#if logo}
 				<img src={logo.url} alt="movie-background" class="max-w-[40%] object-cover" />
 			{:else}
 				<span
-					class="text-center text-7xl leading-14 font-extrabold text-wrap uppercase md:max-w-44"
+					class="leading-14 text-wrap text-center text-7xl font-extrabold uppercase md:max-w-44"
 				>
 					{movie.title}
 				</span>
@@ -60,7 +160,7 @@
 				{#if movie.vote_average}
 					<div class="flex items-center gap-5">
 						<div>RE</div>
-						<div class="flex h-full items-center border-l-4 bg-purple-300 pr-8 pl-3 text-nowrap">
+						<div class="flex h-full items-center text-nowrap border-l-4 bg-purple-300 pl-3 pr-8">
 							TV-{movie.revenue}
 						</div>
 					</div>

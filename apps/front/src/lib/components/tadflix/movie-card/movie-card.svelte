@@ -40,7 +40,7 @@
 </script>
 
 <Card
-	class="flex aspect-[5/3] flex-row justify-end rounded-[2px] border-none p-0"
+	class="jystify-end flex aspect-[5/3] flex-row rounded-[2px] border-none p-0"
 	style="background-size: cover; background-position: center; background-image: url({backgropImage?.url});"
 >
 	{#if isLoading}
@@ -48,7 +48,7 @@
 			<Skeleton class="h-full w-full rounded-[2px]" />
 		</div>
 	{:else if !backgropImage?.langFound}
-		<CardHeader class="bg-opacity-50 bg-black p-4">
+		<CardHeader class="bg-black bg-opacity-50 p-4">
 			<CardTitle>{title}</CardTitle>
 		</CardHeader>
 	{/if}
