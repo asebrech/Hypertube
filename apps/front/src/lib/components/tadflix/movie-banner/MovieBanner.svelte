@@ -2,7 +2,7 @@
 	import { Button } from '@/components/ui/button';
 	import type { BackDropImage, MovieDetails, MovieVideo } from '@hypertube/shared';
 	import { onMount } from 'svelte';
-	import { Info, Play, Volume2, VolumeOff } from 'lucide-svelte';
+	import { Info, Play, Volume2, VolumeOff, TrendingUp } from 'lucide-svelte';
 	import { _ } from 'svelte-i18n';
 	import { Skeleton } from '@/components/ui/skeleton';
 	import ButtonPreview from '../buttons/button-preview/button-preview.svelte';
@@ -203,8 +203,11 @@
 								</ButtonPreview>
 							</button>
 						{/if}
-						<div class="flex h-full items-center text-nowrap border-l-4 bg-purple-300 pl-3 pr-8">
-							Score - {movie.vote_average}
+						<div
+							class="bg-secondary/50 flex items-center gap-1 text-nowrap border-l-4 py-1 pl-3 pr-8 font-light"
+						>
+							<TrendingUp size="15px" />
+							{movie.vote_average}
 						</div>
 					</div>
 				{/if}
