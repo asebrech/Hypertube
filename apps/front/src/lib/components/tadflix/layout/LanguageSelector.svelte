@@ -37,7 +37,7 @@
 
 {#if $isLoading}{:else}
 	<Select.Root bind:value={$locale!} type="single">
-		<Select.Trigger class="flex gap-2"
+		<Select.Trigger class="bg-secondary/20 flex gap-2"
 			><img src="/icons/langage.svg" class="w-[13px]" alt="language" />{language}</Select.Trigger
 		>
 		<Select.Content>
