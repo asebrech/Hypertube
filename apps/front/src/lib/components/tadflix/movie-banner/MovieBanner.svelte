@@ -2,6 +2,7 @@
 	import { Button } from '@/components/ui/button';
 	import type { BackDropImage, MovieDetails, MovieVideo } from '@hypertube/shared';
 	import { onMount } from 'svelte';
+	import { Info, Play } from 'lucide-svelte';
 
 	interface Props {
 		movie: MovieDetails;
@@ -118,7 +119,7 @@
 				></div>
 			</div>
 		</div>
-		<div class="bg-red relative left-0 top-0 z-30 h-full w-full"></div>
+		<div class="bg-red relative left-0 top-0 h-full w-full"></div>
 	</div>
 	{#if movie.backdrop_path && videoEnded}
 		<img
@@ -154,8 +155,13 @@
 			{/if}
 			<div class="relative flex w-full justify-between gap-2">
 				<div class="flex gap-2">
-					<Button class="bg-white">PLAY</Button>
-					<Button class="bg-[#6D6D6EB3]">MORE INFO</Button>
+					<Button class="bg-primary text-primary-foreground hover:bg-primary/90 rounded-[4px]"
+						><Play fill={'black'} />Lecture</Button
+					>
+					<Button
+						class="text-secondary-foreground bg-secondary hover:bg-secondary hover:text-accent-foreground rounded-[4px] brightness-150 hover:brightness-100"
+						><Info />Plus d'infos</Button
+					>
 				</div>
 				{#if movie.vote_average}
 					<div class="flex items-center gap-5">
