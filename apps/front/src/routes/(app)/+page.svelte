@@ -6,6 +6,7 @@
 	import { MovieCarousel } from '@/components/tadflix/movie-carousel';
 	import { Loader2 } from 'lucide-svelte';
 	import MovieBanner from '@/components/tadflix/movie-banner/MovieBanner.svelte';
+	import Skeleton from '@/components/ui/skeleton/skeleton.svelte';
 
 	let hasMorePages: boolean = $state(true);
 	let currentPage: number = $state(1);
@@ -62,7 +63,7 @@
 	{#if movieBanner}
 		<MovieBanner logo={movieLogo} movie={movieBanner} movieVideo={movieVideoResponse} />
 	{:else}
-		<Loader2 />
+		<Skeleton class="h-[80vh]" />
 	{/if}
 	{#each movieGenres as genre}
 		<div class="flex w-full flex-col gap-[15px] overflow-hidden">
