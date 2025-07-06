@@ -134,7 +134,7 @@
 		<div class="pointer-events-none absolute inset-0">
 			<div
 				class="absolute bottom-0 left-0 w-full"
-				style="height: 40%; background: linear-gradient(to top, #121212, transparent);"
+				style="height: 30%; background: linear-gradient(to top, #121212, transparent);"
 			></div>
 		</div>
 	</div>
@@ -150,7 +150,7 @@
 			<div class="pointer-events-none absolute inset-0">
 				<div
 					class="absolute bottom-0 left-0 w-full"
-					style="height: 40%; background: linear-gradient(to top, #121212, transparent);"
+					style="height: 30%; background: linear-gradient(to top, #121212, transparent);"
 				></div>
 			</div>
 		</div>
