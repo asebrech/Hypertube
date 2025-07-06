@@ -12,7 +12,6 @@ import { middleware } from './kernel.js'
 
 const AuthController = () => import('#controllers/auth_controller')
 const MoviesController = () => import('#controllers/movies_controller')
-const CommentsController = () => import('#controllers/comments_controller')
 
 router.get('/', async () => ({ hello: 'world' }))
 
@@ -31,7 +30,6 @@ router.group(() => {
   router.get('movies/logoImage', [MoviesController, 'logoImage'])
   router.get('movies/:id', [MoviesController, 'movieDetails'])
   router.get('movies/:id/videos', [MoviesController, 'movieVideos'])
-  router.get('comments/:tmdbId', [CommentsController, 'index'])
 })
 
 router
