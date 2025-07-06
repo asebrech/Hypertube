@@ -1,5 +1,18 @@
 {
     "sign_in": "登录",
     "sign_up": "注册",
-    "log_out": "登出"
+    "log_out": "登出",
+    "navbar": {
+        "home": "首页",
+        "shows": "电视剧",
+        "movies": "电影",
+        "news-popular": "新闻与热门",
+        "my-list": "我的列表",
+        "by-language": "按语言浏览"
+    },
+    "movie-banner": {
+        "play": "播放",
+        "more-info": "更多信息",
+        "see-more": "查看更多"
+    }
   }

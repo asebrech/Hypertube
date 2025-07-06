@@ -9,5 +9,10 @@
 		"news-popular": "News & Popular",
 		"my-list": "My Lists",
 		"by-language": "Browse By Language"
+	},
+	"movie-banner": {
+		"play": "Play",
+		"more-info": "More Info",
+		"see-more": "See More"
 	}
 }

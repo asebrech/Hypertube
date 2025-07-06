@@ -3,6 +3,7 @@
 	import type { BackDropImage, MovieDetails, MovieVideo } from '@hypertube/shared';
 	import { onMount } from 'svelte';
 	import { Info, Play } from 'lucide-svelte';
+	import { _ } from 'svelte-i18n';
 
 	interface Props {
 		movie: MovieDetails;
@@ -37,6 +38,7 @@
 				videoId: movieVideo?.key,
 				events: {
 					onReady: () => {
+						console.log('Player ready');
 						playerReady = true;
 						player.mute();
 						player.playVideo();
@@ -100,8 +102,6 @@
 </script>
 
 <div class="relative max-h-[80vh] w-full">
-	<!-- <div id="player" bind:this={playerElement}></div> -->
-	<!-- {#if movieVideo?.key} -->
 	<div
 		class="relative flex aspect-[6/3] w-full items-end overflow-hidden rounded-[2px] bg-black {playerReady &&
 		!videoEnded
@@ -121,7 +121,7 @@
 		</div>
 		<div class="bg-red relative left-0 top-0 h-full w-full"></div>
 	</div>
-	{#if movie.backdrop_path && videoEnded}
+	{#if movie.backdrop_path && (!playerReady || videoEnded)}
 		<img
 			src={`https://image.tmdb.org/t/p/original/${movie.backdrop_path}`}
 			alt="movie-background"
@@ -140,28 +140,39 @@
 				</span>
 			{/if}
 
-			<div class="hidden md:block md:max-w-[40%]">
+			<div
+				class="hidden overflow-hidden transition-all duration-[2000ms] ease-in-out md:block md:max-w-[40%]"
+				style="
+					opacity: {playerReady && !videoEnded ? 0 : 1};
+					max-height: {playerReady && !videoEnded ? '0px' : '500px'};
+					pointer-events: {playerReady && !videoEnded ? 'none' : 'auto'};
+					visibility: {playerReady && !videoEnded ? 'hidden' : 'visible'};
+				"
+			>
 				<p bind:this={contentEl} class={`${expanded ? '' : 'line-clamp-3'}`}>
 					{movie.overview}
 				</p>
+				{#if isClamped}
+					<button
+						onclick={() => (expanded = !expanded)}
+						class="hidden self-start text-xs text-blue-600 hover:underline md:block"
+					>
+						{expanded ? 'See less' : 'See more'}
+					</button>
+				{/if}
 			</div>
-			{#if isClamped}
-				<button
-					onclick={() => (expanded = !expanded)}
-					class="hidden self-start text-xs text-blue-600 hover:underline md:block"
-				>
-					{expanded ? 'See less' : 'See more'}
-				</button>
-			{/if}
 			<div class="relative flex w-full justify-between gap-2">
 				<div class="flex gap-2">
-					<Button class="bg-primary text-primary-foreground hover:bg-primary/90 rounded-[4px]"
-						><Play fill={'black'} />Lecture</Button
-					>
 					<Button
-						class="text-secondary-foreground bg-secondary hover:bg-secondary hover:text-accent-foreground rounded-[4px] brightness-150 hover:brightness-100"
-						><Info />Plus d'infos</Button
+						class="bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer rounded-[4px]"
 					>
+						<Play fill={'black'} />{$_('movie-banner.play')}
+					</Button>
+					<Button
+						class="text-secondary-foreground bg-secondary hover:bg-secondary hover:text-accent-foreground cursor-pointer rounded-[4px] brightness-150 hover:brightness-100"
+					>
+						<Info />{$_('movie-banner.more-info')}
+					</Button>
 				</div>
 				{#if movie.vote_average}
 					<div class="flex items-center gap-5">
