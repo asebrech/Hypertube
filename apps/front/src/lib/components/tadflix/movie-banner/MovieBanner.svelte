@@ -2,7 +2,7 @@
 	import { Button } from '@/components/ui/button';
 	import type { BackDropImage, MovieDetails, MovieVideo } from '@hypertube/shared';
 	import { onMount } from 'svelte';
-	import { Info, Play, Volume2, VolumeOff, TrendingUp } from 'lucide-svelte';
+	import { Info, Play, Volume2, VolumeOff, TrendingUp, RotateCw } from 'lucide-svelte';
 	import { _ } from 'svelte-i18n';
 	import { Skeleton } from '@/components/ui/skeleton';
 	import ButtonPreview from '../buttons/button-preview/button-preview.svelte';
@@ -75,6 +75,13 @@
 			player.mute();
 		}
 		isMuted = !isMuted;
+	}
+
+	function replayVideo() {
+		if (!player) return;
+		player.seekTo(0, false);
+		player.playVideo();
+		videoEnded = false;
 	}
 
 	onMount(() => {
@@ -200,6 +207,12 @@
 									{:else}
 										<Volume2 onclick={toggleMute} />
 									{/if}
+								</ButtonPreview>
+							</button>
+						{:else if videoEnded}
+							<button onclick={replayVideo}>
+								<ButtonPreview variant="outline" size="default">
+									<RotateCw />
 								</ButtonPreview>
 							</button>
 						{/if}
