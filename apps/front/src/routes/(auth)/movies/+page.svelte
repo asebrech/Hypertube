@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { BackDropImage, MovieDetails, MovieGenre, MovieVideo } from '@hypertube/shared';
+	import type {
+		BackDropImage,
+		MovieDetails,
+		MovieGenre,
+		MovieType,
+		MovieVideo
+	} from '@hypertube/shared';
 	import { getLogoImage, getMovieDetails, getMovies, getMovieVideos } from '@/services/api';
 
 	import { MovieCarousel } from '@/components/tadflix/movie-carousel';
@@ -36,7 +42,7 @@
 		console.log(idx);
 		movieBanner = await getMovieDetails(movieGenres[0].movies[idx].id, 'movie');
 		movieLogo = await getLogoImage(movieGenres[0].movies[idx].id, 'small', 'movie');
-		movieVideoResponse = await getMovieVideos(movieGenres[0].movies[idx].id 'movie');
+		movieVideoResponse = await getMovieVideos(movieGenres[0].movies[idx].id, 'movie');
 		isLoading = false;
 		observeSentinel();
 	});

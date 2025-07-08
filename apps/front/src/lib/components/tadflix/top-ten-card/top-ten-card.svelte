@@ -2,20 +2,21 @@
 	import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 	import { Skeleton } from '@/components/ui/skeleton';
 	import { getPosterImage } from '@/services/api';
-	import type { BackDropImage, ImageSizeType } from '@hypertube/shared';
+	import type { BackDropImage, ImageSizeType, MovieType } from '@hypertube/shared';
 	import Rank from './rank.svelte';
 
 	export let movie_id: number;
 	export let isVisible: boolean;
 	export let title: string;
 	export let orderNumber: number;
+	export let type: MovieType = 'movie';
 
 	let poster_image: BackDropImage | null = null;
 	let isLoading = true;
 
 	const loadPosterImage = async (movieId: any, size: ImageSizeType): Promise<BackDropImage> => {
 		console.log('Loading poster image for movieId:', movieId, 'with size:', size);
-		const poster_image_data = await getPosterImage(movieId, size);
+		const poster_image_data = await getPosterImage(movieId, size, type);
 		poster_image = poster_image_data;
 		return poster_image_data;
 	};

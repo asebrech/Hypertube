@@ -9,7 +9,7 @@
 	import { page } from '$app/state';
 	import { locale } from 'svelte-i18n';
 	import { i18nReady } from '$lib/i18n';
-	
+
 	let ready = $state(false);
 
 	// Set initial locale from localStorage before rendering

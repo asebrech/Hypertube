@@ -1,6 +1,6 @@
 import axios from 'axios'
 import env from '#start/env'
-import { ImageSizeType } from '@hypertube/shared'
+import { ImageSizeType, MovieType } from '@hypertube/shared'
 
 export type ImageSize = 'w92' | 'w154' | 'w185' | 'w342' | 'w500' | 'w780' | 'w1280' | 'original'
 
@@ -38,14 +38,14 @@ export class TMDBService {
     return data.imdb_id
   }
 
-  public async getGenresList(language: string) {
-    const endpoint = `/genre/movie/list?language=${language}`
+  public async getGenresList(language: string, movieType: MovieType = 'movie') {
+    const endpoint = `/genre/${movieType}/list?language=${language}`
     const data = await this.getSomething(endpoint)
     return data
   }
 
-  public async getPopularMovies(language: string, page: number) {
-    const endpoint = `/movie/popular?language=${language}&page=${page}&region=${language}`
+  public async getPopularMovies(language: string, page: number, movieType: MovieType = 'movie') {
+    const endpoint = `/${movieType}/popular?language=${language}&page=${page}&region=${language}`
     const data = await this.getSomething(endpoint)
     return data
   }
@@ -54,9 +54,10 @@ export class TMDBService {
     genreId: number,
     language: string = 'en',
     page: number = 1,
+    movieType: MovieType = 'movie',
     region: string = 'en'
   ) {
-    const endpoint = `/discover/movie?with_genres=${genreId}&language=${language}&page=${page}&sort_by=popularity.desc&region=${region}`
+    const endpoint = `/discover/${movieType}?with_genres=${genreId}&language=${language}&page=${page}&sort_by=popularity.desc&region=${region}`
     const data = await this.getSomething(endpoint)
     return data
   }
@@ -103,18 +104,18 @@ export class TMDBService {
     }
   }
 
-  async getBackdropImageUrl(tmdb_movie_id: number, size: ImageSizeType, lang: string = 'en') {
-    const endpoint = `/movie/${tmdb_movie_id}/images?language=${lang.split('-')[0]}`
+  async getBackdropImageUrl(tmdb_movie_id: number, size: ImageSizeType, lang: string = 'en', movieType: MovieType = 'movie') {
+    const endpoint = `/${movieType}/${tmdb_movie_id}/images?language=${lang.split('-')[0]}`
     let langFound = true
     let data = await this.getSomething(endpoint)
     let image = this.getBackdropImageUrlFromData(data)
     if (!image) {
-      data = await this.getSomething(`/movie/${tmdb_movie_id}/images?language=en`)
+      data = await this.getSomething(`/${movieType}/${tmdb_movie_id}/images?language=en`)
       image = this.getBackdropImageUrlFromData(data)
     }
     if (!image) {
       langFound = false
-      data = await this.getSomething(`/movie/${tmdb_movie_id}/images`)
+      data = await this.getSomething(`/${movieType}/${tmdb_movie_id}/images`)
       image = this.getBackdropImageUrlFromData(data)
     }
     if (!image) {
@@ -127,27 +128,27 @@ export class TMDBService {
     }
   }
 
-  async getMovieDetails(tmdb_movie_id: number, lang: string = 'en') {
-    let movie = await this.getSomething(`/movie/${tmdb_movie_id}?language=${lang}`)
+  async getMovieDetails(tmdb_movie_id: number, lang: string = 'en', movieType: MovieType = 'movie') {
+    let movie = await this.getSomething(`/${movieType}/${tmdb_movie_id}?language=${lang}`)
     return movie
   }
 
-  async getMovieVideos(tmdb_movie_id: number, lang: string = 'en') {
-    return this.getSomething(`/movie/${tmdb_movie_id}/videos?language=${lang}`)
+  async getMovieVideos(tmdb_movie_id: number, lang: string = 'en', movieType: MovieType = 'movie') {
+    return this.getSomething(`/${movieType}/${tmdb_movie_id}/videos?language=${lang}`)
   }
 
-  async getPosterImageUrl(tmdb_movie_id: number, size: ImageSizeType, lang: string = 'en') {
-    const endpoint = `/movie/${tmdb_movie_id}/images?language=${lang.split('-')[0]}`
+  async getPosterImageUrl(tmdb_movie_id: number, size: ImageSizeType, lang: string = 'en', movieType: MovieType = 'movie') {
+    const endpoint = `/${movieType}/${tmdb_movie_id}/images?language=${lang.split('-')[0]}`
     let langFound = true
     let data = await this.getSomething(endpoint)
     let image = this.getPosterImageUrlFromData(data)
     if (!image) {
-      data = await this.getSomething(`/movie/${tmdb_movie_id}/images?language=en`)
+      data = await this.getSomething(`/${movieType}/${tmdb_movie_id}/images?language=en`)
       image = this.getPosterImageUrlFromData(data)
     }
     if (!image) {
       langFound = false
-      data = await this.getSomething(`/movie/${tmdb_movie_id}/images`)
+      data = await this.getSomething(`/${movieType}/${tmdb_movie_id}/images`)
       image = this.getPosterImageUrlFromData(data)
     }
     if (!image) {
@@ -160,18 +161,18 @@ export class TMDBService {
     }
   }
 
-  async getLogoImageUrl(tmdb_movie_id: number, size: ImageSizeType, lang: string = 'en') {
-    const endpoint = `/movie/${tmdb_movie_id}/images?language=${lang.split('-')[0]}`
+  async getLogoImageUrl(tmdb_movie_id: number, size: ImageSizeType, lang: string = 'en', movieType: MovieType = 'movie') {
+    const endpoint = `/${movieType}/${tmdb_movie_id}/images?language=${lang.split('-')[0]}`
     let langFound = true
     let data = await this.getSomething(endpoint)
     let image = this.getLogoImageUrlFromData(data)
     if (!image) {
-      data = await this.getSomething(`/movie/${tmdb_movie_id}/images?language=en`)
+      data = await this.getSomething(`/${movieType}/${tmdb_movie_id}/images?language=en`)
       image = this.getLogoImageUrlFromData(data)
     }
     if (!image) {
       langFound = false
-      data = await this.getSomething(`/movie/${tmdb_movie_id}/images`)
+      data = await this.getSomething(`/${movieType}/${tmdb_movie_id}/images`)
       image = this.getLogoImageUrlFromData(data)
     }
     if (!image) {
