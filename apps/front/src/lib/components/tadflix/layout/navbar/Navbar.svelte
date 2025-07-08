@@ -27,11 +27,11 @@
 	}
 
 	let links: Link[] = [
-		{ label: 'home', href: '/' },
-		{ label: 'shows', href: '/shows' },
-		{ label: 'movies', href: '/movies' },
-		{ label: 'news-popular', href: '/news' },
-		{ label: 'my-list', href: '/my-list' }
+		{ label: 'navbar.home', href: '/' },
+		{ label: 'navbar.shows', href: '/shows' },
+		{ label: 'navbar.movies', href: '/movies' },
+		{ label: 'navbar.news-popular', href: '/news' },
+		{ label: 'navbar.my-list', href: '/my-list' }
 	];
 
 	// Track scroll position and direction
@@ -92,10 +92,7 @@
 							isLinkCurrentPage(link) ? 'font-bold' : 'font-medium'
 						)}
 					>
-						{link.label
-							.split('-')
-							.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-							.join(' ')}
+						{$_(link.label)}
 					</a>
 				{/each}
 			</div>
@@ -122,7 +119,7 @@
 			{:else}
 				<a href="/account">
 					<div
-						class="flex h-8 w-8 items-center justify-center rounded bg-red-500 font-bold text-white uppercase"
+						class="flex h-8 w-8 items-center justify-center rounded bg-red-500 font-bold uppercase text-white"
 					>
 						:)
 					</div>

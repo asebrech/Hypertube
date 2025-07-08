@@ -32,7 +32,7 @@
 	onMount(async () => {
 		isLoading = true;
 		await loadMoviePage();
-		let idx = parseInt(((Math.random() * 100) % 10).toFixed());
+		let idx = Math.floor(Math.random() * 10);
 		console.log(idx);
 		movieBanner = await getMovieDetails(movieGenres[0].movies[idx].id);
 		movieLogo = await getLogoImage(movieGenres[0].movies[idx].id, 'small');
