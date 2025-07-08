@@ -11,6 +11,7 @@ export type BackDropImage = {
 };
 
 export type ImageSizeType = 'small' | 'medium' | 'large' | 'original'
+export type MovieType = 'movie'| 'tv'
 
 export type Movie = {
   id: number;

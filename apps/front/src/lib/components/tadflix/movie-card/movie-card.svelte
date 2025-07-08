@@ -2,7 +2,7 @@
 	import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 	import { Skeleton } from '@/components/ui/skeleton';
 	import { getBackdropImage } from '@/services/api';
-	import type { BackDropImage, ImageSizeType } from '@hypertube/shared';
+	import type { BackDropImage, ImageSizeType, MovieType } from '@hypertube/shared';
 	import { onMount } from 'svelte';
 
 	let backgropImage: BackDropImage | null = $state(null);
@@ -12,12 +12,13 @@
 		movieId: number;
 		isVisible: boolean;
 		title: string;
+		type: MovieType;
 	}
 
-	let { movieId, isVisible, title }: Props = $props();
+	let { movieId, isVisible, title, type }: Props = $props();
 
 	const loadBackdropImage = async (movieId: any, size: ImageSizeType): Promise<BackDropImage> => {
-		const backdrop_image_data = await getBackdropImage(movieId, size);
+		const backdrop_image_data = await getBackdropImage(movieId, size, type);
 		backgropImage = backdrop_image_data;
 		return backdrop_image_data;
 	};

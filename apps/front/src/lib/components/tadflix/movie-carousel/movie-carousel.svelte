@@ -7,7 +7,7 @@
 		CarouselNext
 	} from '@/components/ui/carousel';
 	import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card';
-	import type { MovieGenre } from '@hypertube/shared';
+	import type { MovieGenre, MovieType } from '@hypertube/shared';
 	import type { Action } from 'svelte/action';
 	import { MoviePreview } from '@/components/tadflix/movie-preview';
 	import { MovieCard } from '@/components/tadflix/movie-card';
@@ -27,8 +27,9 @@
 
 	let {
 		movies,
-		variant = 'default'
-	}: { movies: MovieGenre['movies']; variant?: 'default' | 'top-ten' } = $props();
+		variant = 'default',
+		type = 'movie'
+	}: { movies: MovieGenre['movies']; variant?: 'default' | 'top-ten'; type: MovieType } = $props();
 
 	export const inView: Action<HTMLElement, (visible: boolean) => void> = (node, callback) => {
 		const observer = new IntersectionObserver(([entry]) => {
@@ -88,12 +89,14 @@
 									isVisible={visibleSlides.includes(index)}
 									title={movie.title}
 									orderNumber={index ? index : 10}
+									{type}
 								/>
 							{:else}
 								<MovieCard
 									movieId={movie.id}
 									isVisible={visibleSlides.includes(index)}
 									title={movie.title}
+									{type}
 								/>
 							{/if}
 						</HoverCardTrigger>
@@ -106,7 +109,7 @@
 							sideOffset={-200}
 							class="m-0 w-[300px] overflow-hidden rounded-[8px] border-none p-0"
 						>
-							<MoviePreview movieId={movie.id} />
+							<MoviePreview movieId={movie.id} {type} />
 						</HoverCardContent>
 					</HoverCard>
 				</div>

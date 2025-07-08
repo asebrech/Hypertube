@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Skeleton } from '@/components/ui/skeleton';
 	import { getMovieDetails, getMovieVideos } from '@/services/api';
-	import type { MovieDetails, MovieVideo } from '@hypertube/shared';
+	import type { MovieDetails, MovieType, MovieVideo } from '@hypertube/shared';
 	import { onMount } from 'svelte';
 	import ButtonPreview from '$lib/components/tadflix/buttons/button-preview/button-preview.svelte';
 	import { Play, Plus, ChevronDown, Languages } from 'lucide-svelte';
@@ -11,18 +11,19 @@
 	import { get } from 'svelte/store';
 
 	export let movieId: number;
+	export let type: MovieType = 'movie';
 	let isLoading = true;
 	let movie: MovieDetails;
 	let movieVideo: MovieVideo;
 
 	const loadMovieDetails = async (movieId: number): Promise<MovieDetails> => {
-		const movieDetailsResponse = await getMovieDetails(movieId);
+		const movieDetailsResponse = await getMovieDetails(movieId, type);
 		movie = movieDetailsResponse;
 		return movieDetailsResponse;
 	};
 
 	const loadMovieVideo = async (movieId: number): Promise<string> => {
-		const movieVideoResponse = await getMovieVideos(movieId);
+		const movieVideoResponse = await getMovieVideos(movieId, type);
 		movieVideo = movieVideoResponse;
 		return movieVideoResponse;
 	};
