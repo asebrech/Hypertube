@@ -26,7 +26,6 @@ export default class MoviesController {
     // console.log('Torrents:', torrents)
     // // console.log('Page:', page)
 
-    console.log('movie Type', movieType)
     const genresList = await this.tmdbService.getGenresList(lang, movieType)
     const popularMovies = await this.tmdbService.getPopularMovies(lang, page, movieType)
     const movieListByGenre = genresList.genres.map(async (genre: any) => {
