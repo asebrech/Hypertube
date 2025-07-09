@@ -4,7 +4,7 @@
 	import type { MovieDetails, MovieType, MovieVideo } from '@hypertube/shared';
 	import { onMount } from 'svelte';
 	import ButtonPreview from '$lib/components/tadflix/buttons/button-preview/button-preview.svelte';
-	import { Play, Plus, ChevronDown, Languages } from 'lucide-svelte';
+	import { Play, Plus, ChevronDown, Languages, VolumeOff, Volume2, RotateCw } from 'lucide-svelte';
 	import Icon from '$lib/assets/tadflix-small.svelte';
 	import { Dot } from 'lucide-svelte';
 	import { locale } from 'svelte-i18n';
@@ -151,6 +151,17 @@
 					<Icon />
 					<h3 class="line-clamp-1 font-medium">{movie?.title}</h3>
 				</div>
+				{#if playerReady && !videoEnded}
+					<button onclick={toggleMute} class="absolute bottom-0 right-0 z-20 p-4">
+						<ButtonPreview variant="outline" size="default">
+							{#if isMuted}
+								<VolumeOff onclick={toggleMute} />
+							{:else}
+								<Volume2 onclick={toggleMute} />
+							{/if}
+						</ButtonPreview>
+					</button>
+				{/if}
 			</div>
 			<div class="bg-red relative left-0 top-0 h-full w-full"></div>
 		</div>
