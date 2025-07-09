@@ -42,7 +42,6 @@
 				events: {
 					onReady: () => {
 						console.log('Player ready');
-						playerReady = true;
 						player.mute();
 						player.playVideo();
 					},
@@ -50,6 +49,10 @@
 						if (event.data === YT.PlayerState.ENDED) {
 							console.log('Video ended');
 							videoEnded = true;
+						}
+						if (event.data === YT.PlayerState.PLAYING) {
+							console.log('Video playing');
+							playerReady = true;
 						}
 					}
 				},
