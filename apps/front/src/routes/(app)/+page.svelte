@@ -36,7 +36,7 @@
 		console.log(idx);
 		movieBanner = await getMovieDetails(movieGenres[0].movies[idx].id, 'movie');
 		movieLogo = await getLogoImage(movieGenres[0].movies[idx].id, 'small', 'movie');
-		movieVideoResponse = await getMovieVideos(movieGenres[0].movies[idx].id 'movie');
+		movieVideoResponse = await getMovieVideos(movieGenres[0].movies[idx].id, 'movie');
 		isLoading = false;
 		observeSentinel();
 	});
