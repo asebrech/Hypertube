@@ -102,7 +102,7 @@
 					bind:this={triggerWrapper}
 					class="w-full"
 				>
-					<HoverCard openDelay={100} closeDelay={100} open={movie.id === 1061474 ? true : false}>
+					<HoverCard openDelay={100} closeDelay={100}>
 						<HoverCardTrigger>
 							{#if variant === 'top-ten'}
 								<TopTenCard
