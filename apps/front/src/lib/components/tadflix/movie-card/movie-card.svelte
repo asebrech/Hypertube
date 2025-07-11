@@ -3,9 +3,8 @@
 	import { Skeleton } from '@/components/ui/skeleton';
 	import { getBackdropImage } from '@/services/api';
 	import type { BackDropImage, ImageSizeType, MovieType } from '@hypertube/shared';
-	import { onMount } from 'svelte';
 
-	let backgropImage: BackDropImage | null = $state(null);
+	let backdropImage: BackDropImage | null = $state(null);
 	let isLoading = $state(true);
 
 	interface Props {
@@ -19,7 +18,7 @@
 
 	const loadBackdropImage = async (movieId: any, size: ImageSizeType): Promise<BackDropImage> => {
 		const backdrop_image_data = await getBackdropImage(movieId, size, type);
-		backgropImage = backdrop_image_data;
+		backdropImage = backdrop_image_data;
 		return backdrop_image_data;
 	};
 
@@ -31,7 +30,7 @@
 			loadBackdropImage(movieId, 'small')
 				.catch((error) => {
 					console.error('Error loading backdrop image:', error);
-					backgropImage = null;
+					backdropImage = null;
 				})
 				.finally(() => {
 					isLoading = false;
@@ -41,14 +40,14 @@
 </script>
 
 <Card
-	class="jystify-end flex aspect-[5/3] flex-row rounded-[2px] border-none p-0"
-	style="background-size: cover; background-position: center; background-image: url({backgropImage?.url});"
+	class="flex aspect-[5/3] flex-row rounded-[2px] border-none p-0"
+	style="background-size: cover; background-position: center; background-image: url({backdropImage?.url});"
 >
 	{#if isLoading}
 		<div class="h-full w-full">
 			<Skeleton class="h-full w-full rounded-[2px]" />
 		</div>
-	{:else if !backgropImage?.langFound}
+	{:else if !backdropImage?.langFound}
 		<CardHeader class="bg-black bg-opacity-50 p-4">
 			<CardTitle>{title}</CardTitle>
 		</CardHeader>
