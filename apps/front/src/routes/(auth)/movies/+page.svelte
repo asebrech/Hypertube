@@ -1,13 +1,17 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { BackDropImage, MovieDetails, MovieGenre, MovieVideo } from '@hypertube/shared';
+	import type {
+		BackDropImage,
+		MovieDetails,
+		MovieGenre,
+		MovieType,
+		MovieVideo
+	} from '@hypertube/shared';
 	import { getLogoImage, getMovieDetails, getMovies, getMovieVideos } from '@/services/api';
 
 	import { MovieCarousel } from '@/components/tadflix/movie-carousel';
 	import MovieBanner from '@/components/tadflix/movie-banner/MovieBanner.svelte';
 	import Skeleton from '@/components/ui/skeleton/skeleton.svelte';
-
-	const { data } = $props();
 
 	let hasMorePages: boolean = $state(true);
 	let currentPage: number = $state(1);
@@ -21,7 +25,7 @@
 		if (!hasMorePages) return;
 		try {
 			isLoading = true;
-			const getMovieResponse = await getMovies(currentPage, 'movie', data.token);
+			const getMovieResponse = await getMovies(currentPage, 'movie');
 			movieGenres = movieGenres.concat(getMovieResponse.movies);
 			hasMorePages = getMovieResponse.hasMorePages;
 			currentPage++;

@@ -1,5 +1,12 @@
 export type BackDropImage = {
   url: string;
+  aspect_ratio: number;
+  height: number;
+  iso_639_1: string;
+  file_path: string;
+  vote_average: number;
+  vote_count: number;
+  width: number;
   langFound: boolean;
 };
 
@@ -7,20 +14,24 @@ export enum UserMovieAction {
   WATCHED = 'watched',
   BOOKMARKED = 'bookmarked',
 }
+export type ImageSizeType = 'small' | 'medium' | 'large' | 'original'
+export type MovieType = 'movie'| 'tv'
+
+export type Movie = {
+  id: number;
+  title: string;
+  overview: string;
+  poster_path: string;
+  release_date: string;
+  vote_average: number;
+  backdrop_image: BackDropImage | null | undefined;
+  user_action?: UserMovieAction | null;
+};
 
 export type MovieGenre = {
   id: number;
   name: string;
-  movies: {
-    id: number;
-    title: string;
-    overview: string;
-    poster_path: string;
-    release_date: string;
-    vote_average: number;
-    backdrop_image: BackDropImage | null | undefined;
-    user_action?: UserMovieAction | null;
-  }[];
+  movies: Movie[];
 };
 
 export type MovieDetails = {
@@ -73,15 +84,30 @@ export type MovieDetails = {
 };
 
 export type MovieVideo = {
-    id: string;
-    iso_639_1: string;
-    iso_3166_1: string;
-    key: string;
-    name: string;
-    site: string;
-    size: number;
-    type: string;
-    official: boolean;
-    published_at: string;
-    updated_at: string;
+  id: string;
+  iso_639_1: string;
+  iso_3166_1: string;
+  key: string;
+  name: string;
+  site: string;
+  size: number;
+  type: string;
+  official: boolean;
+  published_at: string;
+  updated_at: string;
 };
+
+export interface PaginationType<T> {
+  meta: {
+    total: number;
+    perPage: number;
+    currentPage: number;
+    lastPage: number;
+    firstPage: number;
+    firstPageUrl: string;
+    lastPageUrl: string;
+    nextPageUrl: string | null;
+    previousPageUrl: string | null;
+  };
+  data: T[];
+}

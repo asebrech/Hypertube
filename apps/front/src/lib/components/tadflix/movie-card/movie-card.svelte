@@ -3,53 +3,61 @@
 	import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 	import { Skeleton } from '@/components/ui/skeleton';
 	import { getBackdropImage } from '@/services/api';
-	import { UserMovieAction, type BackDropImage } from '@hypertube/shared';
+	import type { BackDropImage, ImageSizeType, MovieType, UserMovieAction } from '@hypertube/shared';
 
-	export let movie_id: number;
-	export let isVisible: boolean;
-	export let title: string;
-	export let user_action: UserMovieAction | null = null;
+	let backdropImage: BackDropImage | null = $state(null);
+	let isLoading = $state(true);
 
-	let backdrop_image: BackDropImage | null = null;
-	let isLoading = true;
+	interface Props {
+		movieId: number;
+		isVisible: boolean;
+		title: string;
+		type: MovieType;
+		userAction?: UserMovieAction | null;
+	}
 
-	const loadBackdropImage = async (movieId: any, size: string): Promise<BackDropImage> => {
-		const backdrop_image_data = await getBackdropImage(movieId, size);
-		backdrop_image = backdrop_image_data;
+	let { movieId, isVisible, title, type, userAction }: Props = $props();
+
+	const loadBackdropImage = async (movieId: any, size: ImageSizeType): Promise<BackDropImage> => {
+		const backdrop_image_data = await getBackdropImage(movieId, size, type);
+		backdropImage = backdrop_image_data;
 		return backdrop_image_data;
 	};
 
 	//add on change to isVisible
-	$: if (isVisible) {
-		isLoading = true;
-		loadBackdropImage(movie_id, 'small')
-			.catch((error) => {
-				console.error('Error loading backdrop image:', error);
-				backdrop_image = null;
-			})
-			.finally(() => {
-				isLoading = false;
-			});
-	}
+
+	$effect(() => {
+		if (isVisible) {
+			isLoading = true;
+			loadBackdropImage(movieId, 'small')
+				.catch((error) => {
+					console.error('Error loading backdrop image:', error);
+					backdropImage = null;
+				})
+				.finally(() => {
+					isLoading = false;
+				});
+		}
+	});
 </script>
 
 <Card
-	class="jystify-end flex aspect-[5/3] flex-row rounded-[2px] border-none p-0"
-	style="background-size: cover; background-position: center; background-image: url({backdrop_image?.url});"
+	class="flex aspect-[5/3] flex-row rounded-[2px] border-none p-0"
+	style="background-size: cover; background-position: center; background-image: url({backdropImage?.url});"
 >
 	{#if isLoading}
 		<div class="h-full w-full">
 			<Skeleton class="h-full w-full rounded-[2px]" />
 		</div>
-	{:else if !backdrop_image?.langFound}
+	{:else if !backdropImage?.langFound}
 		<CardHeader class="bg-black bg-opacity-50 p-4">
 			<CardTitle>{title}</CardTitle>
 		</CardHeader>
 	{/if}
-	{#if user_action}
+	{#if userAction}
 		<div class="absolute bottom-0 flex w-full justify-center p-[3px]">
 			<Badge variant={'red'}>
-				{user_action}
+				{userAction}
 			</Badge>
 		</div>
 	{/if}
