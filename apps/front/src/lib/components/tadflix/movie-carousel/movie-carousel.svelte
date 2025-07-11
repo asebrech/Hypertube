@@ -7,22 +7,29 @@
 		CarouselNext
 	} from '@/components/ui/carousel';
 	import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card';
-	import type { MovieGenre } from '@hypertube/shared';
+	import type { MovieGenre, MovieType } from '@hypertube/shared';
 	import type { Action } from 'svelte/action';
-	import { writable } from 'svelte/store';
 	import { MoviePreview } from '@/components/tadflix/movie-preview';
 	import { MovieCard } from '@/components/tadflix/movie-card';
 	import { TopTenCard } from '@/components/tadflix/top-ten-card';
 
-	export const visibleSlides = writable<number[]>([]);
+	let visibleSlides = $state<number[]>([]);
+	let loadedSlides = $state<number[]>([]);
+
 	function handleVisibility(index: number, visible: boolean) {
-		visibleSlides.update((list) =>
-			visible ? (list.includes(index) ? list : [...list, index]) : list.filter((i) => i !== index)
-		);
+		loadedSlides = [...loadedSlides, index];
+		visibleSlides = visible
+			? visibleSlides.includes(index)
+				? visibleSlides
+				: [...visibleSlides, index]
+			: [...visibleSlides.filter((idx) => idx !== index)];
 	}
 
-	export let movies: MovieGenre['movies'];
-	export let variant: 'default' | 'top-ten' = 'default';
+	let {
+		movies,
+		variant = 'default',
+		type = 'movie'
+	}: { movies: MovieGenre['movies']; variant?: 'default' | 'top-ten'; type: MovieType } = $props();
 
 	export const inView: Action<HTMLElement, (visible: boolean) => void> = (node, callback) => {
 		const observer = new IntersectionObserver(([entry]) => {
@@ -75,19 +82,21 @@
 			<CarouselItem class="lg:basis-1/7 xl:basis-1/8 basis-1/4 p-[3px] sm:basis-1/5 md:basis-1/6">
 				<div use:inView={(visible) => handleVisibility(index, visible)}>
 					<HoverCard openDelay={100} closeDelay={100}>
-						<HoverCardTrigger href="/movie/{movie.id}" target="_blank" rel="noreferrer noopener">
+						<HoverCardTrigger>
 							{#if variant === 'top-ten'}
 								<TopTenCard
 									movie_id={movie.id}
-									isVisible={$visibleSlides.includes(index)}
+									isVisible={visibleSlides.includes(index)}
 									title={movie.title}
 									orderNumber={index ? index : 10}
+									{type}
 								/>
 							{:else}
 								<MovieCard
-									movie_id={movie.id}
-									isVisible={$visibleSlides.includes(index)}
+									movieId={movie.id}
+									isVisible={visibleSlides.includes(index)}
 									title={movie.title}
+									{type}
 								/>
 							{/if}
 						</HoverCardTrigger>
@@ -95,12 +104,12 @@
 							hideWhenDetached={true}
 							collisionPadding={0}
 							avoidCollisions={false}
-							align={computeAlign(index, $visibleSlides)}
+							align={computeAlign(index, visibleSlides)}
 							side="bottom"
 							sideOffset={-200}
 							class="m-0 w-[300px] overflow-hidden rounded-[8px] border-none p-0"
 						>
-							<MoviePreview movieId={movie.id} />
+							<MoviePreview movieId={movie.id} {type} />
 						</HoverCardContent>
 					</HoverCard>
 				</div>

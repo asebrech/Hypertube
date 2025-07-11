@@ -1,5 +1,18 @@
 {
-    "sign_in": "Sign in",
-    "sign_up": "Sign up",
-    "log_out": "Log out"
-  }
+	"sign_in": "Sign in",
+	"sign_up": "Sign up",
+	"log_out": "Log out",
+	"navbar": {
+		"home": "Home",
+		"shows": "TV Shows",
+		"movies": "Movies",
+		"news-popular": "News & Popular",
+		"my-list": "My Lists",
+		"by-language": "Browse By Language"
+	},
+	"movie-banner": {
+		"play": "Play",
+		"more-info": "More Info",
+		"see-more": "See More"
+	}
+}

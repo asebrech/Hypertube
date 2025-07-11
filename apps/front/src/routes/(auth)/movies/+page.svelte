@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { BackDropImage, MovieDetails, MovieGenre, MovieVideo } from '@hypertube/shared';
+	import type {
+		BackDropImage,
+		MovieDetails,
+		MovieGenre,
+		MovieType,
+		MovieVideo
+	} from '@hypertube/shared';
 	import { getLogoImage, getMovieDetails, getMovies, getMovieVideos } from '@/services/api';
 
 	import { MovieCarousel } from '@/components/tadflix/movie-carousel';
