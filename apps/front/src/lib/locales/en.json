@@ -14,5 +14,9 @@
 		"play": "Play",
 		"more-info": "More Info",
 		"see-more": "See More"
+	},
+	"movie-action": {
+		"bookmarked": "watchlist",
+		"watched": "already watched"
 	}
 }

@@ -14,5 +14,9 @@
         "play": "播放",
         "more-info": "更多信息",
         "see-more": "查看更多"
+    },
+    "movie-action": {
+        "bookmarked": "收藏夹",
+        "watched": "已观看"
     }
   }

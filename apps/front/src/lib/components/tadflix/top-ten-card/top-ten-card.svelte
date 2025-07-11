@@ -5,6 +5,7 @@
 	import type { BackDropImage, ImageSizeType, MovieType, UserMovieAction } from '@hypertube/shared';
 	import Rank from './rank.svelte';
 	import { Badge } from '@/components/ui/badge';
+	import { _ } from 'svelte-i18n';
 
 	export let movieId: number;
 	export let isVisible: boolean;
@@ -51,7 +52,7 @@
 				{#if userAction}
 					<div class="absolute bottom-0 flex w-full justify-center">
 						<Badge variant={'red'}>
-							{userAction}
+							{$_(`movie-action.${userAction}`)}
 						</Badge>
 					</div>
 				{/if}

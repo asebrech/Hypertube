@@ -4,6 +4,7 @@
 	import { Skeleton } from '@/components/ui/skeleton';
 	import { getBackdropImage } from '@/services/api';
 	import type { BackDropImage, ImageSizeType, MovieType, UserMovieAction } from '@hypertube/shared';
+	import { _ } from 'svelte-i18n';
 
 	let backdropImage: BackDropImage | null = $state(null);
 	let isLoading = $state(true);
@@ -57,7 +58,7 @@
 	{#if userAction}
 		<div class="absolute bottom-0 flex w-full justify-center p-[3px]">
 			<Badge variant={'red'}>
-				{userAction}
+				{$_(`movie-action.${userAction}`)}
 			</Badge>
 		</div>
 	{/if}
