@@ -175,7 +175,7 @@
 					<h3 class="line-clamp-1 font-medium">{movie?.title}</h3>
 				</div>
 			</div>
-		{:else if !movie?.backdrop_path! && (playerReady || videoEnded)}
+		{:else if !movie?.backdrop_path! && (!playerReady || videoEnded)}
 			<div class="flex aspect-[5/3] w-[300px] items-center justify-center">
 				<Skeleton class="h-full w-full rounded-[2px]" />
 			</div>
