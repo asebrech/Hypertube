@@ -142,10 +142,6 @@
 
 			<!-- 🖼️ Image background if available -->
 			<div
-<<<<<<< HEAD
-				class="flex aspect-[6/3] w-full items-end rounded-[2px] bg-cover bg-center"
-				style="background-image: url('https://image.tmdb.org/t/p/w500{movie.backdrop_path}');"
-=======
 				class="absolute inset-0 z-20 flex items-end bg-cover bg-center transition-opacity duration-300"
 				class:bg-black={!movie?.backdrop_path}
 				style="
@@ -155,18 +151,12 @@
       opacity: {showImage || movie?.backdrop_path ? 1 : 0};
       pointer-events: none;
     "
->>>>>>> 62-thumbnails-behaviours
 			>
 				<div class="w-full rounded-b-[2px] bg-gradient-to-t from-black/60 to-transparent p-4">
 					<Icon />
 					<h3 class="line-clamp-1 font-medium">{movie?.title}</h3>
 				</div>
 			</div>
-<<<<<<< HEAD
-		{:else if !movie?.backdrop_path! && (!playerReady || videoEnded)}
-			<div class="flex aspect-[5/3] w-full items-center justify-center">
-				<Skeleton class="h-full w-full rounded-[2px]" />
-=======
 
 			<!-- ▶️ YouTube Player -->
 			<div
@@ -202,7 +192,6 @@
 						</button>
 					{/if}
 				</div>
->>>>>>> 62-thumbnails-behaviours
 			</div>
 		</div>
 		<div class="flex w-full flex-col gap-2 p-4">
