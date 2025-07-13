@@ -23,6 +23,9 @@
 	let videoEnded = $state(false);
 	let isMuted = $state(true);
 	let playerElement: HTMLDivElement;
+	let showVideo: boolean = $state(false);
+	let showImage: boolean = $state(false);
+	let showSkeleton: boolean = $state(true);
 
 	const loadMovieDetails = async (movieId: number): Promise<MovieDetails> => {
 		const movieDetailsResponse = await getMovieDetails(movieId, type);
@@ -93,13 +96,6 @@
 		isMuted = !isMuted;
 	}
 
-	function replayVideo() {
-		if (!player) return;
-		player.seekTo(0, false);
-		player.playVideo();
-		videoEnded = false;
-	}
-
 	onMount(() => {
 		console.log('key', movieVideo?.key);
 		// @ts-ignore
@@ -125,61 +121,79 @@
 			createPlayer(movieVideo?.key);
 		}
 	});
+
+	$effect(() => {
+		showVideo = playerReady && !videoEnded;
+		showImage = !!movie?.backdrop_path && (!playerReady || videoEnded);
+		showSkeleton = !movie?.backdrop_path && (!playerReady || videoEnded);
+	});
 </script>
 
 <a href="/movie/{movieId}" class="block">
 	<div class="bg-secondary flex flex-col items-center gap-2 pb-2">
-		<div
-			class="relative flex aspect-[6/3] w-full items-end overflow-hidden rounded-[2px] bg-black {playerReady &&
-			!videoEnded
-				? ''
-				: 'hidden'}"
-		>
-			<div class="absolute h-full w-full">
-				<div
-					class="absolute left-1/2 top-1/2 min-h-[155%] min-w-[155%] -translate-x-1/2 -translate-y-1/2"
-				>
-					<div
-						id="player"
-						bind:this={playerElement}
-						class="absolute left-0 top-0 h-full w-full overflow-hidden"
-					></div>
-				</div>
-				<div
-					class="absolute bottom-0 z-10 w-full rounded-b-[2px] bg-gradient-to-t from-black/60 to-transparent p-4"
-				>
-					<Icon />
-					<h3 class="line-clamp-1 font-medium">{movie?.title}</h3>
-				</div>
-				{#if playerReady && !videoEnded}
-					<button onclick={toggleMute} class="absolute bottom-0 right-0 z-20 p-4">
-						<ButtonPreview variant="outline" size="default">
-							{#if isMuted}
-								<VolumeOff onclick={toggleMute} />
-							{:else}
-								<Volume2 onclick={toggleMute} />
-							{/if}
-						</ButtonPreview>
-					</button>
-				{/if}
-			</div>
-			<div class="bg-red relative left-0 top-0 h-full w-full"></div>
-		</div>
-		{#if movie?.backdrop_path && (!playerReady || videoEnded)}
+		<div class="relative aspect-[6/3] w-full overflow-hidden rounded-[2px]">
+			<!-- 🟥 Skeleton background (fallback) -->
 			<div
-				class="flex aspect-[6/3] w-[300px] items-end rounded-[2px] bg-cover bg-center"
-				style="background-image: url('https://image.tmdb.org/t/p/w500{movie.backdrop_path}');"
+				class="absolute inset-0 z-10 flex items-center justify-center transition-opacity duration-700"
+				style="opacity: {showSkeleton ? 1 : 0}; pointer-events: none;"
 			>
-				<div class="z-20 w-full rounded-b-[2px] bg-gradient-to-t from-black/60 to-transparent p-4">
-					<Icon />
-					<h3 class="line-clamp-1 font-medium">{movie?.title}</h3>
-				</div>
-			</div>
-		{:else if !movie?.backdrop_path! && (!playerReady || videoEnded)}
-			<div class="flex aspect-[5/3] w-[300px] items-center justify-center">
 				<Skeleton class="h-full w-full rounded-[2px]" />
 			</div>
-		{/if}
+
+			<!-- 🖼️ Image background if available -->
+			<div
+				class="absolute inset-0 z-20 flex items-end bg-cover bg-center transition-opacity duration-300"
+				class:bg-black={!movie?.backdrop_path}
+				style="
+      background-image: {movie?.backdrop_path
+					? `url('https://image.tmdb.org/t/p/w500${movie.backdrop_path}')`
+					: 'none'};
+      opacity: {showImage || movie?.backdrop_path ? 1 : 0};
+      pointer-events: none;
+    "
+			>
+				<div class="w-full rounded-b-[2px] bg-gradient-to-t from-black/60 to-transparent p-4">
+					<Icon />
+					<h3 class="line-clamp-1 font-medium">{movie?.title}</h3>
+				</div>
+			</div>
+
+			<!-- ▶️ YouTube Player -->
+			<div
+				class="absolute inset-0 z-30 flex items-end bg-black transition-opacity duration-1000"
+				style="opacity: {showVideo ? 1 : 0}; pointer-events: {showVideo ? 'auto' : 'none'};"
+			>
+				<div class="absolute h-full w-full">
+					<div
+						class="absolute left-1/2 top-1/2 min-h-[155%] min-w-[155%] -translate-x-1/2 -translate-y-1/2"
+					>
+						<div
+							id="player"
+							bind:this={playerElement}
+							class="absolute left-0 top-0 h-full w-full overflow-hidden"
+						></div>
+					</div>
+					<div
+						class="absolute bottom-0 z-10 w-full rounded-b-[2px] bg-gradient-to-t from-black/60 to-transparent p-4"
+					>
+						<Icon />
+						<h3 class="line-clamp-1 font-medium">{movie?.title}</h3>
+					</div>
+
+					{#if showVideo}
+						<button onclick={toggleMute} class="absolute bottom-0 right-0 z-20 p-4">
+							<ButtonPreview variant="outline" size="default">
+								{#if isMuted}
+									<VolumeOff />
+								{:else}
+									<Volume2 />
+								{/if}
+							</ButtonPreview>
+						</button>
+					{/if}
+				</div>
+			</div>
+		</div>
 		<div class="flex w-full flex-col gap-2 p-4">
 			{#if isLoading}
 				<div class="mt-2">

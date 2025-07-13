@@ -35,7 +35,7 @@
 	}
 
 	function handleMouseLeave(id: string) {
-		openHoverCardId.set(null);
+		if (get(openHoverCardId) === String(genreId) + id) openHoverCardId.set(null);
 	}
 
 	function handleVisibility(index: number, visible: boolean) {
