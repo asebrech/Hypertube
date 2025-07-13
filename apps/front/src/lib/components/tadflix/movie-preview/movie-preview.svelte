@@ -135,7 +135,7 @@
 			<!-- 🟥 Skeleton background (fallback) -->
 			<div
 				class="absolute inset-0 z-10 flex items-center justify-center transition-opacity duration-700"
-				style="opacity: {showSkeleton ? 1 : 0}; pointer-events: none;"
+				style="opacity: {showSkeleton ? 1 : 0};"
 			>
 				<Skeleton class="h-full w-full rounded-[2px]" />
 			</div>
@@ -149,7 +149,6 @@
 					? `url('https://image.tmdb.org/t/p/w500${movie.backdrop_path}')`
 					: 'none'};
       opacity: {showImage || movie?.backdrop_path ? 1 : 0};
-      pointer-events: none;
     "
 			>
 				<div class="w-full rounded-b-[2px] bg-gradient-to-t from-black/60 to-transparent p-4">
@@ -161,7 +160,7 @@
 			<!-- ▶️ YouTube Player -->
 			<div
 				class="absolute inset-0 z-30 flex items-end bg-black transition-opacity duration-1000"
-				style="opacity: {showVideo ? 1 : 0}; pointer-events: {showVideo ? 'auto' : 'none'};"
+				style="opacity: {showVideo ? 1 : 0};"
 			>
 				<div class="absolute h-full w-full">
 					<div
