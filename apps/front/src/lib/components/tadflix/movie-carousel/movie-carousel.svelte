@@ -12,6 +12,7 @@
 	import { MoviePreview } from '@/components/tadflix/movie-preview';
 	import { MovieCard } from '@/components/tadflix/movie-card';
 	import { TopTenCard } from '@/components/tadflix/top-ten-card';
+	import { onMount } from 'svelte';
 	import { openHoverCardId } from '@/services/store';
 	import { get } from 'svelte/store';
 
@@ -29,6 +30,16 @@
 
 	let visibleSlides = $state<number[]>([]);
 	let loadedSlides = $state<number[]>([]);
+	let triggerWrapper = $state<HTMLElement | null>(null);
+	let triggerHeight = $state<number>(300);
+	let triggerWidth = $state<number>(300);
+
+	function updateWidthandHeight() {
+		if (triggerWrapper) {
+			triggerWidth = triggerWrapper.clientWidth;
+			triggerHeight = triggerWrapper.clientHeight;
+		}
+	}
 
 	async function handleMouseEnter(id: string) {
 		openHoverCardId.set(String(genreId) + id);
@@ -70,6 +81,12 @@
 		if (index === last) return 'end';
 		return 'center';
 	}
+
+	onMount(() => {
+		updateWidthandHeight();
+		window.addEventListener('resize', updateWidthandHeight);
+		return () => window.removeEventListener('resize', updateWidthandHeight);
+	});
 </script>
 
 <div>
@@ -97,7 +114,11 @@
 		<CarouselContent class="ml-0 flex gap-[0px]">
 			{#each movies as movie, index}
 				<CarouselItem class="lg:basis-1/7 xl:basis-1/8 basis-1/4 p-[4px] sm:basis-1/5 md:basis-1/6">
-					<div use:inView={(visible) => handleVisibility(index, visible)}>
+					<div
+						use:inView={(visible) => handleVisibility(index, visible)}
+						bind:this={triggerWrapper}
+						class="w-full"
+					>
 						<HoverCard open={$openHoverCardId === String(genreId) + String(movie.id)}>
 							<HoverCardTrigger>
 								<div
@@ -129,8 +150,8 @@
 								avoidCollisions={false}
 								align={computeAlign(index, visibleSlides)}
 								side="bottom"
-								sideOffset={-200}
-								class="m-0 w-[300px] overflow-hidden rounded-[8px] border-none p-0"
+								sideOffset={triggerWrapper ? -triggerHeight - 40 : 0}
+								class="m-0 w-full overflow-hidden rounded-[8px] border-none p-0"
 							>
 								<div
 									role="button"
@@ -141,7 +162,9 @@
 										? ''
 										: 'hidden'}
 								>
-									<MoviePreview movieId={movie.id} {type} />
+									<div style="width: {triggerWidth * 1.5}px;">
+										<MoviePreview movieId={movie.id} {type} />
+									</div>
 								</div>
 							</HoverCardContent>
 						</HoverCard>
