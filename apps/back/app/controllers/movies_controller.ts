@@ -29,7 +29,7 @@ export default class MoviesController {
     const genresList = await this.tmdbService.getGenresList(lang, movieType)
     const popularMovies = await this.tmdbService.getPopularMovies(lang, page, movieType)
     const movieListByGenre = genresList.genres.map(async (genre: any) => {
-      const movies = await this.tmdbService.getMovieListByGenre(genre.id, lang, page, movieType)
+      const movies = await this.tmdbService.getMovieListByGenre(genre.id, undefined, lang, page, movieType)
       return {
         id: genre.id,
         name: genre.name,
@@ -128,14 +128,29 @@ export default class MoviesController {
     }
     const searchResults = await this.tmdbService.getMultiSearch(query, lang, page)
     const hasMorePages = searchResults.total_pages > page
-    const media = searchResults.results.reduce((acc: any[], result: any) => {
-      if (result.media_type === 'person') {
-      acc.push(...result.known_for)
+    const media: any[] = [];
+
+    for (const result of searchResults.results) {
+      if (result.media_type === 'person' && result.known_for_department === 'Acting') {
+        const movieActor = await this.tmdbService.getMovieListByGenre(
+          undefined,
+          result.id,
+          lang,
+          1,
+          'movie',
+          'en'
+        );
+
+        const movies = movieActor.results.map((movie: any) => ({
+          media_type: 'movie',
+          ...movie
+        }));
+
+        media.push(...movies);
       } else {
-      acc.push(result)
+        media.push(result);
       }
-      return acc
-    }, [])
+    }
     if (searchResults) {
     return {movies: media, hasMorePages}
     } else {
