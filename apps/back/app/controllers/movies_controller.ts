@@ -114,4 +114,21 @@ export default class MoviesController {
       movieVideo = movieVideos.results.find((video: any) => video.site === 'YouTube' && video.type === 'Trailer')
     return movieVideo;
   }
+
+  async movieSearch ({ request, response }: HttpContext) {
+    const query = request.input('query')
+    const lang = request.input('lang', 'en')
+    const page = request.input('page', 1)
+    // const movieType = request.input('type', 'movie')
+    if (!query) {
+      return response.badRequest({ error: 'Query is required' })
+    }
+    const searchResults = await this.tmdbService.getMultiSearch(query, lang, page)
+    const hasMorePages = searchResults.total_pages > page
+    if (searchResults) {
+    return {movies: searchResults.results, hasMorePages}
+    } else {
+      return response.notFound({ error: 'Search results not found' })
+    }
+  }
 }

@@ -184,4 +184,16 @@ export class TMDBService {
       langFound: langFound,
     }
   }
+
+  async getMovieSearch(query: string, language: string = 'en', page: number = 1, movieType: MovieType = 'movie') {
+    const endpoint = `/search/${movieType}?query=${encodeURIComponent(query)}&language=${language}&page=${page}`
+    const data = await this.getSomething(endpoint)
+    return data
+  }
+
+  async getMultiSearch(query: string, language: string = 'en', page: number = 1) {
+    const endpoint = `/search/multi?query=${encodeURIComponent(query)}&language=${language}&page=${page}`
+    const data = await this.getSomething(endpoint)
+    return data
+  }
 }
