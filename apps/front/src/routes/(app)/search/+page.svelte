@@ -41,7 +41,6 @@
 	onMount(async () => {
 		if ($searchQuery) {
 			await loadSearchResults();
-			// await new Promise((resolve) => setTimeout(resolve, 300));
 			observeSentinel();
 		}
 	});
@@ -82,7 +81,7 @@
 </script>
 
 <div class="py-[150px]">
-	<MovieList movies={searchResults} variant="default" />
+	<MovieList movies={searchResults} />
 </div>
 
 <div bind:this={sentinel}></div>
