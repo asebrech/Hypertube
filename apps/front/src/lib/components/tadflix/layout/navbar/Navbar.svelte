@@ -10,6 +10,9 @@
 	import { t } from 'svelte-i18n';
 	import { _ } from 'svelte-i18n';
 	import { Skeleton } from '@/components/ui/skeleton';
+	import { Input } from '@/components/ui/input';
+	import { searchQuery } from '@/services/store';
+	import { goto } from '$app/navigation';
 
 	interface Props {
 		data: any;
@@ -17,6 +20,8 @@
 	}
 
 	let { data, showSkeleton = false }: Props = $props();
+	let query = $state('');
+
 	function isLinkCurrentPage(link: Link): boolean {
 		return page.url.pathname === link.href;
 	}
@@ -60,6 +65,22 @@
 		// Clean up
 		return () => window.removeEventListener('scroll', handleScroll);
 	});
+
+	function handleInput(event: any) {
+		searchQuery.set(event.target.value.trim());
+		if ($searchQuery.length === 0) {
+			// If search query is empty, reset results
+			goto('/', { replaceState: true, noScroll: true, keepFocus: true });
+			return;
+		}
+
+		// Update URL query param without reloading
+		goto(`/search?q=${encodeURIComponent($searchQuery)}`, {
+			replaceState: true,
+			noScroll: true,
+			keepFocus: true
+		});
+	}
 </script>
 
 <!-- Navbar -->
@@ -104,6 +125,7 @@
 		{#if showSkeleton}
 			<Skeleton class="h-8 w-20" />
 		{:else}
+			<Input type="search" placeholder="Search..." oninput={handleInput} />
 			<LanguageSelector />
 		{/if}
 

@@ -30,6 +30,7 @@ router.group(() => {
   router.get('movies/logoImage', [MoviesController, 'logoImage'])
   router.get('movies/:id', [MoviesController, 'movieDetails'])
   router.get('movies/:id/videos', [MoviesController, 'movieVideos'])
+  router.get('movies/search', [MoviesController, 'movieSearch'])
 })
 
 router
