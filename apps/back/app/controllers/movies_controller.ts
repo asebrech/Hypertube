@@ -127,7 +127,7 @@ export default class MoviesController {
       return response.badRequest({ error: 'Query is required' })
     }
     const searchResults = await this.tmdbService.getMultiSearch(query, lang, page)
-    const hasMorePages = searchResults.total_pages > page
+    const hasMorePages = searchResults.total_pages > page;
     const media: any[] = [];
 
     for (const result of searchResults.results) {
