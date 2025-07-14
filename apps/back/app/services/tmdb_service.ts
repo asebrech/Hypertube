@@ -27,8 +27,7 @@ export class TMDBService {
       const response = await axios(options)
       return response.data
     } catch (error) {
-      console.error(`Error fetching data from TMDB. URL: ${url}, Error:`, error)
-      throw new Error('Failed to fetch data from TMDB')
+      throw new Error('Failed to fetch data from TMDB. Endpoint : ' + endpoint)
     }
   }
 
@@ -129,6 +128,7 @@ export class TMDBService {
   }
 
   async getMovieDetails(tmdb_movie_id: number, lang: string = 'en', movieType: MovieType = 'movie') {
+    console.log("WTFWTFWTF")
     let movie = await this.getSomething(`/${movieType}/${tmdb_movie_id}?language=${lang}`)
     return movie
   }
@@ -192,7 +192,9 @@ export class TMDBService {
   }
 
   async getMultiSearch(query: string, language: string = 'en', page: number = 1) {
+    console.log('TMDBService.getMultiSearch', query, language, page)
     const endpoint = `/search/multi?query=${encodeURIComponent(query)}&language=${language}&page=${page}`
+    console.log('TMDBService.getMultiSearch endpoint', endpoint)
     const data = await this.getSomething(endpoint)
     return data
   }
