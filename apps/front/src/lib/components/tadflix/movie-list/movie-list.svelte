@@ -12,27 +12,47 @@
 	import { MoviePreview } from '@/components/tadflix/movie-preview';
 	import { MovieCard } from '@/components/tadflix/movie-card';
 	import { TopTenCard } from '@/components/tadflix/top-ten-card';
+	import { onMount } from 'svelte';
+	import { openHoverCardId } from '@/services/store';
+	import { get } from 'svelte/store';
+
+	let {
+		movies
+	}: {
+		movies: Movie[];
+	} = $props();
 
 	let visibleSlides = $state<number[]>([]);
 	let loadedSlides = $state<number[]>([]);
-
-	function handleVisibility(index: number, visible: boolean) {
-		loadedSlides = [...loadedSlides, index];
-		visibleSlides = visible
-			? visibleSlides.includes(index)
-				? visibleSlides
-				: [...visibleSlides, index]
-			: [...visibleSlides.filter((idx) => idx !== index)];
-	}
-
-	let { movies, variant = 'default' }: { movies: Movie[]; variant?: 'default' | 'top-ten' } =
-		$props();
 
 	function computeAlign(index: number) {
 		if (index === 0) return 'start';
 		if (index === movies.length - 1) return 'end';
 		return 'center';
 	}
+
+	let triggerWrapper = $state<HTMLElement | null>(null);
+	let triggerHeight = $state<number>(300);
+	let triggerWidth = $state<number>(300);
+
+	function updateWidthandHeight() {
+		if (triggerWrapper) {
+			triggerWidth = triggerWrapper.clientWidth;
+			triggerHeight = triggerWrapper.clientHeight;
+		}
+	}
+	async function handleMouseEnter(id: string) {
+		openHoverCardId.set(id);
+	}
+	function handleMouseLeave(id: string) {
+		if (get(openHoverCardId) === id) openHoverCardId.set(null);
+	}
+
+	onMount(() => {
+		updateWidthandHeight();
+		window.addEventListener('resize', updateWidthandHeight);
+		return () => window.removeEventListener('resize', updateWidthandHeight);
+	});
 </script>
 
 <div
@@ -47,37 +67,46 @@
 	<div class="ml-0 flex flex-wrap gap-[0px]" style="row-gap: 5.5vw;">
 		{#each movies as movie, index}
 			<div class="basis-1/2 p-[3px] sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6">
-				<HoverCard openDelay={100} closeDelay={100}>
-					<HoverCardTrigger>
-						{#if variant === 'top-ten'}
-							<TopTenCard
-								movie_id={movie.id}
-								isVisible={true}
-								title={movie.title}
-								orderNumber={index || 10}
-								type={movie.media_type}
-							/>
-						{:else}
-							<MovieCard
-								movieId={movie.id}
-								isVisible={true}
-								title={movie.title}
-								type={movie?.media_type}
-							/>
-						{/if}
-					</HoverCardTrigger>
-					<HoverCardContent
-						hideWhenDetached={true}
-						collisionPadding={0}
-						avoidCollisions={false}
-						align={computeAlign(index)}
-						side="bottom"
-						sideOffset={-200}
-						class="m-0 w-[300px] overflow-hidden rounded-[8px] border-none p-0"
-					>
-						<MoviePreview movieId={movie.id} type={movie.media_type} />
-					</HoverCardContent>
-				</HoverCard>
+				<div bind:this={triggerWrapper} class="w-full">
+					<HoverCard openDelay={100} closeDelay={100}>
+						<HoverCardTrigger>
+							<div
+								role="button"
+								tabindex="0"
+								onmouseenter={async () => await handleMouseEnter(String(movie.id))}
+							>
+								<MovieCard
+									movieId={movie.id}
+									isVisible={true}
+									title={movie.title}
+									type={movie?.media_type}
+								/>
+							</div>
+						</HoverCardTrigger>
+						<HoverCardContent
+							hideWhenDetached={true}
+							collisionPadding={0}
+							avoidCollisions={false}
+							align={computeAlign(index)}
+							side="bottom"
+							sideOffset={triggerWrapper ? -triggerHeight - 40 : 0}
+							class="m-0 w-full overflow-hidden rounded-[8px] border-none p-0"
+						>
+							<div
+								role="button"
+								tabindex="0"
+								onmouseleave={() => handleMouseLeave(String(movie.id))}
+								class={get(openHoverCardId) === null || get(openHoverCardId) === String(movie.id)
+									? ''
+									: 'hidden'}
+							>
+								<div style="width: {triggerWidth * 1.5}px;">
+									<MoviePreview movieId={movie.id} type={movie.media_type} />
+								</div>
+							</div>
+						</HoverCardContent>
+					</HoverCard>
+				</div>
 			</div>
 		{/each}
 	</div>
