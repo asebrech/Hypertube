@@ -50,13 +50,16 @@ export class TMDBService {
   }
 
   public async getMovieListByGenre(
-    genreId: number,
+    genreId: number | undefined,
+    castId: number | undefined,
     language: string = 'en',
     page: number = 1,
     movieType: MovieType = 'movie',
     region: string = 'en'
   ) {
-    const endpoint = `/discover/${movieType}?with_genres=${genreId}&language=${language}&page=${page}&sort_by=popularity.desc&region=${region}`
+
+    const endpoint = `/discover/${movieType}?with_genres=${genreId || ''}&language=${language}&page=${page}&sort_by=popularity.desc&region=${region}&with_cast=${castId || ''}`
+    console.log('TMDBService.getMovieListByGenre endpoint:', endpoint)
     const data = await this.getSomething(endpoint)
     return data
   }
@@ -128,7 +131,6 @@ export class TMDBService {
   }
 
   async getMovieDetails(tmdb_movie_id: number, lang: string = 'en', movieType: MovieType = 'movie') {
-    console.log("WTFWTFWTF")
     let movie = await this.getSomething(`/${movieType}/${tmdb_movie_id}?language=${lang}`)
     return movie
   }
