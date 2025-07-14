@@ -20,7 +20,7 @@ export type Movie = {
   poster_path: string;
   release_date: string;
   vote_average: number;
-  backdrop_image: BackDropImage | null | undefined;
+  media_type: MovieType | undefined
 };
 
 export type MovieGenre = {

@@ -119,7 +119,12 @@ export async function getMovieVideos(movieId: number, type: MovieType = 'movie')
 	}
 }
 
-export async function getMovieSearch(query: string, page: number, type: MovieType = 'movie') {
+export async function getMovieSearch(
+	query: string,
+	page: number,
+	type: MovieType = 'movie',
+	options?: { signal?: AbortSignal }
+) {
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies/search`,
@@ -128,7 +133,8 @@ export async function getMovieSearch(query: string, page: number, type: MovieTyp
 			lang: get(locale),
 			page: page,
 			type: type
-		}
+		},
+		...(options?.signal ? { signal: options.signal } : {})
 	};
 	try {
 		const response = await axios(config);

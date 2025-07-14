@@ -33,7 +33,11 @@ export default class MoviesController {
       return {
         id: genre.id,
         name: genre.name,
-        movies: movies.results,
+        movies: movies.results.map((movie: any) => {
+          return {
+            media_type: movieType,
+            ...movie
+          }})
       }
     })
     const movieListByGenreResults = await Promise.all(movieListByGenre)
@@ -124,11 +128,14 @@ export default class MoviesController {
     }
     const searchResults = await this.tmdbService.getMultiSearch(query, lang, page)
     const hasMorePages = searchResults.total_pages > page
-    const media = searchResults.results.map((result: any) => {
+    const media = searchResults.results.reduce((acc: any[], result: any) => {
       if (result.media_type === 'person') {
-        return result.known_for
+      acc.push(...result.known_for)
+      } else {
+      acc.push(result)
       }
-      return result})
+      return acc
+    }, [])
     if (searchResults) {
     return {movies: media, hasMorePages}
     } else {
