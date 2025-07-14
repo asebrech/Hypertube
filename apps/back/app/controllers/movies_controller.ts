@@ -119,14 +119,18 @@ export default class MoviesController {
     const query = request.input('query')
     const lang = request.input('lang', 'en')
     const page = request.input('page', 1)
-    // const movieType = request.input('type', 'movie')
     if (!query) {
       return response.badRequest({ error: 'Query is required' })
     }
     const searchResults = await this.tmdbService.getMultiSearch(query, lang, page)
     const hasMorePages = searchResults.total_pages > page
+    const media = searchResults.results.map((result: any) => {
+      if (result.media_type === 'person') {
+        return result.known_for
+      }
+      return result})
     if (searchResults) {
-    return {movies: searchResults.results, hasMorePages}
+    return {movies: media, hasMorePages}
     } else {
       return response.notFound({ error: 'Search results not found' })
     }
