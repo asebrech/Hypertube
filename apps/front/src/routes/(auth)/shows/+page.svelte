@@ -73,9 +73,9 @@
 		<div class="flex w-full flex-col gap-[15px] overflow-hidden">
 			<h2 class="text-l ml-[58px] font-medium">{genre.name}</h2>
 			{#if genre.id == 0}
-				<MovieCarousel movies={genre.movies} variant={'top-ten'} type={'tv'} />
+				<MovieCarousel movies={genre.movies} variant={'top-ten'} />
 			{:else}
-				<MovieCarousel movies={genre.movies} type={'tv'} />
+				<MovieCarousel movies={genre.movies} />
 			{/if}
 		</div>
 	{/each}

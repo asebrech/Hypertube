@@ -11,7 +11,7 @@
 		movieId: number;
 		isVisible: boolean;
 		title: string;
-		type: MovieType;
+		type: MovieType | undefined;
 	}
 
 	let { movieId, isVisible, title, type }: Props = $props();
