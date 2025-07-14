@@ -9,21 +9,19 @@
 	let isLoading: boolean = $state(false);
 	let hasMorePages: boolean = $state(true);
 	let currentPage: number = $state(1);
-
 	let abortController: AbortController | null = null;
+	let lastSearchQuery = $state('');
+	let debounceTimer: NodeJS.Timeout;
 
 	const loadSearchResults = async () => {
-		if (!hasMorePages || !searchQuery) return;
-
+		if (!hasMorePages || !searchQuery || isLoading) return;
+		isLoading = true;
 		if (abortController) {
 			abortController.abort();
 		}
 		abortController = new AbortController();
 
 		try {
-			console.log('Loading search results for:', $searchQuery);
-			await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate delay
-			isLoading = true;
 			const response = await getMovieSearch($searchQuery, currentPage, 'movie', {
 				signal: abortController.signal
 			});
@@ -40,27 +38,31 @@
 		}
 	};
 
-	onMount(() => {
-		observeSentinel();
+	onMount(async () => {
+		if ($searchQuery) {
+			await loadSearchResults();
+			// await new Promise((resolve) => setTimeout(resolve, 300));
+			observeSentinel();
+		}
 	});
 
 	$effect(() => {
-		if ($searchQuery) {
-			resetResults();
-			loadSearchResults();
-		} else {
-			// Abort any ongoing request if query is cleared
-			if (abortController) {
-				abortController.abort();
-			}
+		if ($searchQuery && $searchQuery !== lastSearchQuery) {
+			clearTimeout(debounceTimer);
+
+			debounceTimer = setTimeout(() => {
+				lastSearchQuery = $searchQuery;
+				resetResults();
+				loadSearchResults();
+			}, 300);
 		}
 	});
+
 	let sentinel: HTMLDivElement;
 
 	const observeSentinel = () => {
 		const observer = new IntersectionObserver(
 			async (entries) => {
-				console.log('Sentinel intersected', entries);
 				if (entries[0].isIntersecting && hasMorePages && !isLoading) {
 					await loadSearchResults();
 				}
