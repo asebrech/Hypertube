@@ -125,7 +125,7 @@
 		{#if showSkeleton}
 			<Skeleton class="h-8 w-20" />
 		{:else}
-			<Input type="search" placeholder="Search..." oninput={handleInput} />
+			<Input type="search" placeholder={$_('search.placeholder')} oninput={handleInput} />
 			<LanguageSelector />
 		{/if}
 

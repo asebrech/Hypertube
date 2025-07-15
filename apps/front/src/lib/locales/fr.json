@@ -14,5 +14,9 @@
 		"play": "Lecture",
 		"more-info": "Plus d'infos",
 		"see-more": "Voir plus"
+	},
+	"search": {
+		"placeholder": "Rechercher des films, des émissions ou des personnes...",
+		"noresults": "Aucun résultat trouvé"
 	}
 }
