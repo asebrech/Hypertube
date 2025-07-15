@@ -16,6 +16,7 @@ export type MovieType = 'movie'| 'tv'
 export type Movie = {
   id: number;
   title: string;
+  name: string;
   overview: string;
   poster_path: string;
   release_date: string;
@@ -73,6 +74,7 @@ export type MovieDetails = {
   status: string;
   tagline: string;
   title: string;
+  name: string;
   video: boolean;
   vote_average: number;
   vote_count: number;

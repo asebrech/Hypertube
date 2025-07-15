@@ -30,7 +30,17 @@
 			loadBackdropImage(movieId, 'small')
 				.catch((error) => {
 					console.error('Error loading backdrop image:', error);
-					backdropImage = null;
+					backdropImage = {
+						aspect_ratio: 0,
+						height: 0,
+						width: 0,
+						iso_639_1: '',
+						file_path: '',
+						vote_average: 0,
+						vote_count: 0,
+						url: '/img/default-backdrop2.png',
+						langFound: false
+					};
 				})
 				.finally(() => {
 					isLoading = false;

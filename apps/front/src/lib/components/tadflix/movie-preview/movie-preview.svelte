@@ -124,7 +124,7 @@
 
 	$effect(() => {
 		showVideo = playerReady && !videoEnded;
-		showImage = !!movie?.backdrop_path && (!playerReady || videoEnded);
+		showImage = !!movie && (!playerReady || videoEnded);
 		showSkeleton = !movie?.backdrop_path && (!playerReady || videoEnded);
 	});
 </script>
@@ -147,13 +147,13 @@
 				style="
       background-image: {movie?.backdrop_path
 					? `url('https://image.tmdb.org/t/p/w500${movie.backdrop_path}')`
-					: 'none'};
+					: `url('/img/default-backdrop2.png')`};
       opacity: {showImage || movie?.backdrop_path ? 1 : 0};
     "
 			>
 				<div class="w-full rounded-b-[2px] bg-gradient-to-t from-black/60 to-transparent p-4">
 					<Icon />
-					<h3 class="line-clamp-1 font-medium">{movie?.title}</h3>
+					<h3 class="line-clamp-1 font-medium">{type === 'movie' ? movie?.title : movie?.name}</h3>
 				</div>
 			</div>
 
@@ -176,7 +176,9 @@
 						class="absolute bottom-0 z-10 w-full rounded-b-[2px] bg-gradient-to-t from-black/60 to-transparent p-4"
 					>
 						<Icon />
-						<h3 class="line-clamp-1 font-medium">{movie?.title}</h3>
+						<h3 class="line-clamp-1 font-medium">
+							{type === 'movie' ? movie?.title : movie?.name}
+						</h3>
 					</div>
 
 					{#if showVideo}
