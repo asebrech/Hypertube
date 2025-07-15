@@ -136,7 +136,7 @@
 										<MovieCard
 											movieId={movie.id}
 											isVisible={visibleSlides.includes(index)}
-											title={movie.title}
+											title={movie.media_type === 'movie' ? movie.title : movie.name}
 											type={movie.media_type}
 										/>
 									{/if}
