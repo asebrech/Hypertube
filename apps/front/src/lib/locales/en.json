@@ -14,5 +14,9 @@
 		"play": "Play",
 		"more-info": "More Info",
 		"see-more": "See More"
+	},
+	"search": {
+		"placeholder": "Search for movies, shows, or people...",
+		"noresults": "No results found"
 	}
 }

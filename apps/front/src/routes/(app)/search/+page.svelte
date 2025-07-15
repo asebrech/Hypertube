@@ -5,6 +5,7 @@
 	import { MovieList } from '@/components/tadflix/movie-list';
 	import { onMount } from 'svelte';
 	import { Skeleton } from '@/components/ui/skeleton';
+	import { _ } from 'svelte-i18n';
 
 	let searchResults: Movie[] = $state([]);
 	let isLoading: boolean = $state(false);
@@ -83,7 +84,7 @@
 
 {#if searchResults.length === 0 && !isLoading}
 	<div class="flex h-[80vh] items-center justify-center">
-		<p class="text-lg text-gray-500">No results found for "{$searchQuery}"</p>
+		<p class="text-lg text-gray-500">{$_('search.noresults')}</p>
 	</div>
 {/if}
 

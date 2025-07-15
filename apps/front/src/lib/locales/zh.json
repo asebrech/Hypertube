@@ -14,5 +14,9 @@
         "play": "播放",
         "more-info": "更多信息",
         "see-more": "查看更多"
+    },
+    "search": {
+        "placeholder": "搜索电影、电视剧或人物...",
+        "noresults": "未找到结果"
     }
   }
