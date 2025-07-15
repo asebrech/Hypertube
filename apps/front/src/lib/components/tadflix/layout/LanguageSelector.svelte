@@ -27,6 +27,10 @@
 				return 'English';
 			case 'zh-CN':
 				return '简体中文';
+			case 'es-ES':
+				return 'Español';
+			case 'ar-SA':
+				return 'العربية';
 			default:
 				return lang;
 		}
