@@ -1,17 +1,8 @@
 <script lang="ts">
-	import {
-		Carousel,
-		CarouselContent,
-		CarouselItem,
-		CarouselPrevious,
-		CarouselNext
-	} from '@/components/ui/carousel';
 	import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card';
 	import type { Movie } from '@hypertube/shared';
-	import type { Action } from 'svelte/action';
 	import { MoviePreview } from '@/components/tadflix/movie-preview';
 	import { MovieCard } from '@/components/tadflix/movie-card';
-	import { TopTenCard } from '@/components/tadflix/top-ten-card';
 	import { onMount } from 'svelte';
 	import { openHoverCardId } from '@/services/store';
 	import { get } from 'svelte/store';
@@ -22,9 +13,6 @@
 		movies: Movie[];
 	} = $props();
 
-	let visibleSlides = $state<number[]>([]);
-	let loadedSlides = $state<number[]>([]);
-
 	function computeAlign(index: number) {
 		if (index === 0) return 'start';
 		if (index === movies.length - 1) return 'end';
@@ -32,8 +20,8 @@
 	}
 
 	let triggerWrapper = $state<HTMLElement | null>(null);
-	let triggerHeight = $state<number>(300);
-	let triggerWidth = $state<number>(300);
+	let triggerHeight = $state<number>(10);
+	let triggerWidth = $state<number>(10);
 
 	function updateWidthandHeight() {
 		if (triggerWrapper) {
