@@ -35,7 +35,6 @@
 		{ label: 'navbar.home', href: '/' },
 		{ label: 'navbar.shows', href: '/shows' },
 		{ label: 'navbar.movies', href: '/movies' },
-		{ label: 'navbar.news-popular', href: '/news' },
 		{ label: 'navbar.my-list', href: '/my-list' }
 	];
 
@@ -110,10 +109,12 @@
 						href={link.href}
 						class={cn(
 							'text-white transition-colors hover:text-gray-300',
-							isLinkCurrentPage(link) ? 'font-bold' : 'font-medium'
+							isLinkCurrentPage(link) ? 'font-bold' : 'font-light'
 						)}
 					>
-						{$_(link.label)}
+						<p class="text-[12px]">
+							{$_(link.label)}
+						</p>
 					</a>
 				{/each}
 			</div>
