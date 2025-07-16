@@ -55,7 +55,7 @@
 				lastSearchQuery = $searchQuery;
 				resetResults();
 				loadSearchResults();
-			}, 300);
+			}, 500);
 		}
 	});
 
