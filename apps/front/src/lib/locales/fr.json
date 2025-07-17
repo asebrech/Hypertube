@@ -19,5 +19,14 @@
 	"search": {
 		"placeholder": "Films, Emissions, Personnes...",
 		"noresults": "Aucun résultat trouvé"
+	},
+	"filters": {
+		"select_genre": "Catégorie",
+		"select_year": "Année de sortie",
+		"select_sort": "Trié par ...",
+		"select_language": "Pays d'origine",
+		"mostpopular": "Le plus populaire",
+		"latestrelease": "Dernière sortie",
+		"toprated": "Les mieux notés"
 	}
 }

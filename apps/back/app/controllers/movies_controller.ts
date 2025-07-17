@@ -159,8 +159,14 @@ export default class MoviesController {
   }
 
   async MovieDiscover ({ request, response }: HttpContext) {
-    const genreId = request.input('genreId')?.split(',').map(Number) ?? [];
-    const castId = request.input('castId')?.split(',').map(Number) ?? [];
+    let genreId = request.input('genreId')
+    if (typeof genreId === 'string') {
+      genreId = [genreId]
+    }
+    const castId = request.input('castId')
+    if (typeof castId === 'string') {
+      genreId = [castId]
+    }
     const lang = request.input('lang', 'en');
     const page = Number(request.input('page', 1));
     const movieType = request.input('type', 'movie');

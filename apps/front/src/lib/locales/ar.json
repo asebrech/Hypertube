@@ -19,5 +19,14 @@
     "search": {
         "placeholder": "أفلام، برامج، أشخاص...",
         "noresults": "لم يتم العثور على نتائج"
+    },
+    "filters": {
+        "select_genre": "اختر النوع",
+        "select_year": "سنة الإصدار",
+        "select_sort": "ترتيب حسب ...",
+        "select_language": "بلد المنشأ",
+        "mostpopular": "الأكثر شعبية",
+        "latestrelease": "أحدث إصدار",
+        "toprated": "الأعلى تقييماً"
     }
 }

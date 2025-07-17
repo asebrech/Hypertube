@@ -19,5 +19,14 @@
     "search": {
         "placeholder": "Películas, Programas, Personas...",
         "noresults": "No se encontraron resultados"
-    }
+    },
+    "filters": {
+		"select_genre": "Género",
+		"select_year": "Año de lanzamiento",
+		"select_sort": "Ordenar por ...",
+		"select_language": "País de origen",
+        "mostpopular": "Más popular",
+        "latestrelease": "Último lanzamiento",
+        "toprated": "Mejor valorados"
+	}
 }
