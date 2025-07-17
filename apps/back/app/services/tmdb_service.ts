@@ -73,10 +73,11 @@ export class TMDBService {
     movieType: MovieType = 'movie',
     region: string = 'en',
     releaseYear: string | undefined = undefined,
-    sortBy: string = 'popularity.desc'
+    sortBy: string = 'popularity.desc',
+    originalLanguage: string | undefined = undefined
   ) {
 
-    const endpoint = `/discover/${movieType}?with_genres=${genreId ? genreId?.join(',') : ''}&language=${language}&page=${page}&sort_by=${sortBy}&region=${region}&with_cast=${castId || ''}&primary_release_year=${releaseYear || ''}`
+    const endpoint = `/discover/${movieType}?with_genres=${genreId ? genreId?.join(',') : ''}&language=${language}&page=${page}&sort_by=${sortBy}&region=${region}&with_cast=${castId || ''}&primary_release_year=${releaseYear || ''}&with_original_language=${originalLanguage || ''}`
     console.log('TMDBService.getMovieListByGenre endpoint:', endpoint)
     const data = await this.getSomething(endpoint)
     return data

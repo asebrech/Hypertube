@@ -28,7 +28,9 @@ export async function getMovieDiscover(
 		castId: number[] | undefined,
 		page: number,
 		type: MovieType = 'movie',
-		releaseYear: string | undefined
+		releaseYear: string | undefined,
+		originalLanguage: string | undefined = undefined,
+		sortBy: string
 	) {
 	const config = {
 		method: 'get',
@@ -39,6 +41,8 @@ export async function getMovieDiscover(
 			page: page,
 			type: type,
 			releaseYear: releaseYear,
+			originalLanguage: originalLanguage,
+			sortBy: sortBy,
 			lang: get(locale)
 		}
 	};
