@@ -178,7 +178,6 @@ export default class MoviesController {
       releaseYear,
       sortBy
     )
-    console.log('discoverResults', discoverResults)
     const hasMorePages = discoverResults.total_pages > page;
     if (discoverResults) {
       return { movies: discoverResults.results, hasMorePages }
