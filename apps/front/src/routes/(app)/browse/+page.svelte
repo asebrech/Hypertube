@@ -40,7 +40,10 @@
 	};
 
 	onMount(async () => {
+		const urlParams = new URLSearchParams(window.location.search);
+		const genreParam = urlParams.get('genre');
 		genres = await getGenresList();
+		selectedGenres = genres.filter((genre) => genreParam === genre.id.toString());
 		await loadDiscoverMovies();
 		observeSentinel();
 	});
@@ -67,6 +70,8 @@
 		{ value: 'popularity.desc', label: 'filters.mostpopular' },
 		{ value: 'release_date.desc', label: 'filters.latestrelease' },
 		{ value: 'vote_average.desc', label: 'filters.toprated' }
+		// { value: 'title.asc', label: 'filters.originaltitle' },
+		// { value: 'title.desc', label: 'filters.originaltitle_desc' }
 	];
 
 	const languages = [
@@ -102,11 +107,9 @@
 		} else if (name === 'language' && typeof value === 'string') {
 			originalLanguage = value;
 		}
-		// Reset movies and pagination when filters change
 		movies = [];
 		currentPage = 1;
 		hasMorePages = true;
-		// Reload movies with new filters
 		loadDiscoverMovies();
 	};
 </script>
@@ -121,7 +124,12 @@
     "
 >
 	<!-- Genre -->
-	<Select type="multiple" name="genre" onValueChange={(val) => handleChange('genre', val)}>
+	<Select
+		type="multiple"
+		name="genre"
+		onValueChange={(val) => handleChange('genre', val)}
+		value={selectedGenres.map((g) => String(g.id))}
+	>
 		<SelectTrigger>
 			{$_('filters.select_genre')}
 		</SelectTrigger>
