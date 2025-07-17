@@ -64,80 +64,136 @@
 	const years = Array.from({ length: 50 }, (_, i) => `${2025 - i}`);
 
 	const sortOptions = [
-		{ value: 'popularity.desc', label: 'Most Popular' },
-		{ value: 'release_date.desc', label: 'Latest Release' },
-		{ value: 'vote_average.desc', label: 'Top Rated' }
+		{ value: 'popularity.desc', label: 'filters.mostpopular' },
+		{ value: 'release_date.desc', label: 'filters.latestrelease' },
+		{ value: 'vote_average.desc', label: 'filters.toprated' }
 	];
 
 	const languages = [
 		{ value: 'en', label: 'English' },
 		{ value: 'fr', label: 'French' },
-		{ value: 'ja', label: 'Japanese' }
+		{ value: 'ja', label: 'Japanese' },
+		{ value: 'zh', label: 'Chinese' },
+		{ value: 'es', label: 'Spanish' },
+		{ value: 'de', label: 'German' },
+		{ value: 'it', label: 'Italian' },
+		{ value: 'ko', label: 'Korean' },
+		{ value: 'ru', label: 'Russian' },
+		{ value: 'hi', label: 'Hindi' },
+		{ value: 'ar', label: 'Arabic' },
+		{ value: 'pt', label: 'Portuguese' },
+		{ value: 'tr', label: 'Turkish' },
+		{ value: 'nl', label: 'Dutch' },
+		{ value: 'sv', label: 'Swedish' },
+		{ value: 'no', label: 'Norwegian' },
+		{ value: 'da', label: 'Danish' },
+		{ value: 'fi', label: 'Finnish' },
+		{ value: 'pl', label: 'Polish' },
+		{ value: 'cs', label: 'Czech' }
 	];
 
-	const handleChange = (name: string, value: string | number | undefined) => {
-		if (name === 'genre') {
-			selectedGenres = genres.filter((g) => g.id === Number(value));
-		} else if (name === 'year') {
-			releaseYear = value as string;
-		} else if (name === 'sort') {
-			sortBy = value as string;
-		} else if (name === 'language') {
-			originalLanguage = value as string;
+	const handleChange = (name: string, value: string | string[] | number | undefined) => {
+		if (name === 'genre' && Array.isArray(value)) {
+			selectedGenres = genres.filter((genre) => value?.some((v) => String(v) === String(genre.id)));
+		} else if (name === 'year' && typeof value === 'string') {
+			releaseYear = value;
+		} else if (name === 'sort' && typeof value === 'string') {
+			sortBy = value;
+		} else if (name === 'language' && typeof value === 'string') {
+			originalLanguage = value;
 		}
 		// Reset movies and pagination when filters change
 		movies = [];
 		currentPage = 1;
 		hasMorePages = true;
+		// Reload movies with new filters
 		loadDiscoverMovies();
 	};
 </script>
 
-<div class="flex flex-wrap gap-4 px-4 pt-[120px]">
+<div
+	class="mx-[10%] flex gap-4
+        p-4 pt-[120px]
+        sm:mx-[10.714%]
+        md:mx-[8.333%]
+        lg:mx-[6.818%]
+        xl:mx-[5.769%]
+    "
+>
 	<!-- Genre -->
-	<select name="genre" on:change={handleChange}>
-		<option disabled selected>{$_('filters.select_genre')}</option>
-		{#each genres as genre}
-			<option value={genre.id}>{genre.name}</option>
-		{/each}
-	</select>
-	<Select
-		type="single"
-		bind:value={releaseYear}
-		name={'year'}
-		onValueChange={() => handleChange('year', releaseYear)}
-	>
+	<Select type="multiple" name="genre" onValueChange={(val) => handleChange('genre', val)}>
 		<SelectTrigger>
-			{$_('filters.select_year')}
+			{$_('filters.select_genre')}
 		</SelectTrigger>
 		<SelectContent>
-			{#each years as year}
-				<SelectItem value={year} label={year} />
+			{#each genres as genre}
+				<SelectItem
+					value={String(genre.id)}
+					label={genre.name}
+					class="flex items-center justify-between"
+				>
+					{genre.name}
+				</SelectItem>
 			{/each}
 		</SelectContent>
 	</Select>
+
 	<!-- Year -->
-	<!-- <select name="year" on:change={handleChange}>
-		<option disabled selected>{$_('filters.select_year')}</option>
-		{#each years as year}
-			<option value={year}>{year}</option>
-		{/each}
-	</select> -->
+	<Select
+		type="single"
+		bind:value={releaseYear}
+		name="year"
+		onValueChange={(val) => handleChange('year', val)}
+	>
+		<SelectTrigger>
+			{releaseYear ? releaseYear : $_('filters.select_year')}
+		</SelectTrigger>
+		<SelectContent>
+			{#each years as year}
+				<SelectItem value={year} label={year}>
+					{year}
+				</SelectItem>
+			{/each}
+		</SelectContent>
+	</Select>
 
 	<!-- Sort -->
-	<select name="sort" on:change={handleChange}>
-		{#each sortOptions as option}
-			<option value={option.value}>{option.label}</option>
-		{/each}
-	</select>
+	<Select
+		type="single"
+		bind:value={sortBy}
+		name="sort"
+		onValueChange={(val) => handleChange('sort', val)}
+	>
+		<SelectTrigger>
+			{$_(sortOptions.find((opt) => opt.value === sortBy)?.label || 'filters.select_sort')}
+		</SelectTrigger>
+		<SelectContent>
+			{#each sortOptions as option}
+				<SelectItem value={option.value} label={option.label}>
+					{$_(option.label)}
+				</SelectItem>
+			{/each}
+		</SelectContent>
+	</Select>
 
 	<!-- Language -->
-	<select name="language" on:change={handleChange}>
-		<option disabled selected>{$_('filters.select_language')}</option>
-		{#each languages as lang}
-			<option value={lang.value}>{lang.label}</option>
-		{/each}
-	</select>
+	<Select
+		type="single"
+		bind:value={originalLanguage}
+		name="language"
+		onValueChange={(val) => handleChange('language', val)}
+	>
+		<SelectTrigger>
+			{$_('filters.select_language')}
+		</SelectTrigger>
+		<SelectContent>
+			{#each languages as lang}
+				<SelectItem value={lang.value} label={lang.label}>
+					{lang.label}
+				</SelectItem>
+			{/each}
+		</SelectContent>
+	</Select>
 </div>
 
 {#if movies.length === 0 && !isLoading}

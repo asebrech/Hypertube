@@ -4,7 +4,6 @@
 	import { searchQuery } from '@/services/store';
 	import { MovieList } from '@/components/tadflix/movie-list';
 	import { onMount } from 'svelte';
-	import { Skeleton } from '@/components/ui/skeleton';
 	import { _ } from 'svelte-i18n';
 	import { goto } from '$app/navigation';
 

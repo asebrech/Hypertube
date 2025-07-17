@@ -19,5 +19,14 @@
     "search": {
         "placeholder": "电影、电视剧、人物...",
         "noresults": "未找到结果"
-    }
-  }
+    },
+    "filters": {
+		"select_genre": "类别",
+		"select_year": "发行年份",
+		"select_sort": "排序方式...",
+		"select_language": "原产国",
+        "mostpopular": "最受欢迎",
+        "latestrelease": "最新发行",
+        "toprated": "评分最高"
+	}
+}

@@ -19,5 +19,14 @@
 	"search": {
 		"placeholder": "Movies, Shows, People...",
 		"noresults": "No results found"
+	},
+	"filters": {
+		"select_genre": "Genre",
+		"select_year": "Release Year",
+		"select_sort": "Sorted by...",
+		"select_language": "Country of Origin",
+		"mostpopular": "Most Popular",
+		"latestrelease": "Latest Release",
+		"toprated": "Top Rated"
 	}
 }
