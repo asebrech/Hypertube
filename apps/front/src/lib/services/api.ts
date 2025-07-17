@@ -24,28 +24,32 @@ export async function getMovies(page_to_load: number, type: MovieType = 'movie')
 }
 
 export async function getMovieDiscover(
-		genreIds: number[] | undefined,
-		castId: number[] | undefined,
-		page: number,
-		type: MovieType = 'movie',
-		releaseYear: string | undefined,
-		originalLanguage: string | undefined = undefined,
-		sortBy: string
-	) {
+	genreIds: number[] | undefined,
+	castId: number[] | undefined,
+	page: number,
+	type: MovieType = 'movie',
+	releaseYear: string | undefined,
+	originalLanguage: string | undefined = undefined,
+	sortBy: string
+) {
+	const params: Record<string, any> = {
+		page,
+		type,
+		sortBy,
+		lang: get(locale),
+	};
+
+	if (genreIds && genreIds.length > 0) params.genreId = genreIds.join(',');
+	if (castId && castId.length > 0) params.castId = castId.join(',');
+	if (releaseYear) params.releaseYear = releaseYear;
+	if (originalLanguage) params.originalLanguage = originalLanguage;
+
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies/discover`,
-		params: {
-			genreId: genreIds ? genreIds.join(',') : undefined,
-			castId: castId,
-			page: page,
-			type: type,
-			releaseYear: releaseYear,
-			originalLanguage: originalLanguage,
-			sortBy: sortBy,
-			lang: get(locale)
-		}
+		params
 	};
+
 	try {
 		const response = await axios(config);
 		return response.data;
@@ -173,6 +177,23 @@ export async function getMovieSearch(
 		return response.data;
 	} catch (error) {
 		console.error('Error fetching movie search:', error);
+		throw error;
+	}
+}
+
+export async function getGenresList() {
+	const config = {
+		method: 'get',
+		url: `${PUBLIC_BACK_URL}/movies/genres`,
+		params: {
+			lang: get(locale)
+		}
+	};
+	try {
+		const response = await axios(config);
+		return response.data;
+	} catch (error) {
+		console.error('Error fetching genres:', error);
 		throw error;
 	}
 }
