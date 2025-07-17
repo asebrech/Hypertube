@@ -6,6 +6,7 @@
 	import { onMount } from 'svelte';
 	import { Skeleton } from '@/components/ui/skeleton';
 	import { _ } from 'svelte-i18n';
+	import { goto } from '$app/navigation';
 
 	let searchResults: Movie[] = $state([]);
 	let isLoading: boolean = $state(false);
@@ -44,6 +45,8 @@
 		if ($searchQuery) {
 			await loadSearchResults();
 			observeSentinel();
+		} else {
+			goto('/');
 		}
 	});
 
