@@ -8,7 +8,8 @@
         "movies": "电影",
         "news-popular": "新闻与热门",
         "my-list": "我的列表",
-        "by-language": "按语言浏览"
+        "by-language": "按语言浏览",
+        "browse": "浏览"
     },
     "movie-banner": {
         "play": "播放",

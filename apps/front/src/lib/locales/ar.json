@@ -8,7 +8,8 @@
         "movies": "أفلام",
         "news-popular": "أخبار وشائع",
         "my-list": "قائمتي",
-        "by-language": "استكشاف حسب اللغة"
+        "by-language": "استكشاف حسب اللغة",
+        "browse": "تصفح"
     },
     "movie-banner": {
         "play": "تشغيل",

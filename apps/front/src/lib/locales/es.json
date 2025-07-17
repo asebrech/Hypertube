@@ -8,7 +8,8 @@
         "movies": "Películas",
         "news-popular": "Noticias y populares",
         "my-list": "Mis listas",
-        "by-language": "Explorar por idioma"
+        "by-language": "Explorar por idioma",
+        "browse": "Explorar"
     },
     "movie-banner": {
         "play": "Reproducir",
