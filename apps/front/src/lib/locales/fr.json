@@ -27,6 +27,8 @@
 		"select_language": "Pays d'origine",
 		"mostpopular": "Le plus populaire",
 		"latestrelease": "Dernière sortie",
-		"toprated": "Les mieux notés"
+		"toprated": "Les mieux notés",
+		"originaltitle": "A-Z",
+		"originaltitle_desc": "Z-A"
 	}
 }
