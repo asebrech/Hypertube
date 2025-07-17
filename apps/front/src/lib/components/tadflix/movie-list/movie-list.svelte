@@ -13,9 +13,27 @@
 		movies: Movie[];
 	} = $props();
 
+	let itemsPerRow: number = $state(2);
+
+	function updateItemsPerRow() {
+		const width = window.innerWidth;
+		if (width >= 1280) itemsPerRow = 6;
+		else if (width >= 1024) itemsPerRow = 5;
+		else if (width >= 768) itemsPerRow = 4;
+		else if (width >= 640) itemsPerRow = 3;
+		else itemsPerRow = 2;
+	}
+
+	onMount(() => {
+		updateItemsPerRow();
+		window.addEventListener('resize', updateItemsPerRow);
+		return () => window.removeEventListener('resize', updateItemsPerRow);
+	});
+
 	function computeAlign(index: number) {
-		if (index === 0) return 'start';
-		if (index === movies.length - 1) return 'end';
+		const posInRow = index % itemsPerRow;
+		if (posInRow === 0) return 'start';
+		if (posInRow === itemsPerRow - 1) return 'end';
 		return 'center';
 	}
 
