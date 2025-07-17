@@ -14,7 +14,7 @@ export async function getMovies(page_to_load: number, type: MovieType = 'movie',
 			type: type
 		},
 		headers: {
-			Authorization: token ? `Bearer ${token}` : ''
+			...(token && { Authorization: `Bearer ${token}` })
 		},
 	};
 	try {
