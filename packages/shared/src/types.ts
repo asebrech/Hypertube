@@ -24,9 +24,12 @@ export type Movie = {
   media_type: MovieType | undefined
 };
 
-export type MovieGenre = {
+export type Genre = {
   id: number;
   name: string;
+}
+
+export type MovieGenre = Genre & {
   movies: Movie[];
 };
 

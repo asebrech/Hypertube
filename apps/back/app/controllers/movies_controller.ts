@@ -159,14 +159,15 @@ export default class MoviesController {
   }
 
   async MovieDiscover ({ request, response }: HttpContext) {
-    const genreId = request.input('genreId', undefined)
-    const castId = request.input('castId', undefined)
-    const lang = request.input('lang', 'en')
-    const page = request.input('page', 1)
-    const movieType = request.input('type', 'movie')
-    const region = request.input('region', 'en')
-    const releaseYear = request.input('releaseYear', undefined)
-    const sortBy = request.input('sortBy', 'popularity.desc')
+    const genreId = request.input('genreId')?.split(',').map(Number) ?? [];
+    const castId = request.input('castId')?.split(',').map(Number) ?? [];
+    const lang = request.input('lang', 'en');
+    const page = Number(request.input('page', 1));
+    const movieType = request.input('type', 'movie');
+    const region = request.input('region', 'en');
+    const releaseYear = request.input('releaseYear');
+    const sortBy = request.input('sortBy', 'popularity.desc');
+    const originalLanguage = request.input('originalLanguage');
 
     const discoverResults = await this.tmdbService.getDiscover(
       genreId,
@@ -176,13 +177,25 @@ export default class MoviesController {
       movieType,
       region,
       releaseYear,
-      sortBy
-    )
+      sortBy,
+      originalLanguage
+    );
     const hasMorePages = discoverResults.total_pages > page;
     if (discoverResults) {
       return { movies: discoverResults.results, hasMorePages }
     } else {
       return response.notFound({ error: 'Discover results not found' })
+    }
+  }
+
+  async movieGenres ({ request, response }: HttpContext) {
+    const lang = request.input('lang', 'en')
+    const movieType = request.input('type', 'movie')
+    const genresList = await this.tmdbService.getGenresList(lang, movieType)
+    if (genresList) {
+      return genresList.genres
+    } else {
+      return response.notFound({ error: 'Genres not found' })
     }
   }
 }

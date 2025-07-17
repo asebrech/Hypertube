@@ -1,13 +1,15 @@
 <script lang="ts">
 	import MovieList from '@/components/tadflix/movie-list/movie-list.svelte';
-	import type { Movie } from '@hypertube/shared';
-	import { getMovieDiscover } from '@/services/api';
+	import type { Movie, Genre } from '@hypertube/shared';
+	import { getMovieDiscover, getGenresList } from '@/services/api';
 	import { _ } from 'svelte-i18n';
 	import { onMount } from 'svelte';
+	import { Select, SelectTrigger, SelectItem, SelectContent } from '@/components/ui/select';
 
 	let isLoading: boolean = $state(false);
 	let movies: Movie[] = $state([]);
-	let genreId: number[] = $state([]);
+	let selectedGenres: Genre[] = $state([]);
+	let genres: Genre[] = $state([]);
 	let releaseYear: string | undefined = $state(undefined);
 	let hasMorePages: boolean = $state(true);
 	let currentPage: number = $state(1);
@@ -19,7 +21,7 @@
 		isLoading = true;
 		try {
 			const response = await getMovieDiscover(
-				genreId,
+				selectedGenres.map((genre) => genre.id),
 				castId,
 				currentPage,
 				'movie',
@@ -38,6 +40,7 @@
 	};
 
 	onMount(async () => {
+		genres = await getGenresList();
 		await loadDiscoverMovies();
 		observeSentinel();
 	});
@@ -58,12 +61,6 @@
 		}
 	};
 
-	const genres = [
-		{ id: 28, name: 'Action' },
-		{ id: 35, name: 'Comedy' }
-		// ... d’autres genres
-	];
-
 	const years = Array.from({ length: 50 }, (_, i) => `${2025 - i}`);
 
 	const sortOptions = [
@@ -78,16 +75,15 @@
 		{ value: 'ja', label: 'Japanese' }
 	];
 
-	const handleChange = (event: Event) => {
-		const target = event.target as HTMLSelectElement;
-		if (target.name === 'genre') {
-			genreId = [Number(target.value)];
-		} else if (target.name === 'year') {
-			releaseYear = target.value;
-		} else if (target.name === 'sort') {
-			sortBy = target.value;
-		} else if (target.name === 'language') {
-			originalLanguage = target.value;
+	const handleChange = (name: string, value: string | number | undefined) => {
+		if (name === 'genre') {
+			selectedGenres = genres.filter((g) => g.id === Number(value));
+		} else if (name === 'year') {
+			releaseYear = value as string;
+		} else if (name === 'sort') {
+			sortBy = value as string;
+		} else if (name === 'language') {
+			originalLanguage = value as string;
 		}
 		// Reset movies and pagination when filters change
 		movies = [];
@@ -105,14 +101,28 @@
 			<option value={genre.id}>{genre.name}</option>
 		{/each}
 	</select>
-
+	<Select
+		type="single"
+		bind:value={releaseYear}
+		name={'year'}
+		onValueChange={() => handleChange('year', releaseYear)}
+	>
+		<SelectTrigger>
+			{$_('filters.select_year')}
+		</SelectTrigger>
+		<SelectContent>
+			{#each years as year}
+				<SelectItem value={year} label={year} />
+			{/each}
+		</SelectContent>
+	</Select>
 	<!-- Year -->
-	<select name="year" on:change={handleChange}>
+	<!-- <select name="year" on:change={handleChange}>
 		<option disabled selected>{$_('filters.select_year')}</option>
 		{#each years as year}
 			<option value={year}>{year}</option>
 		{/each}
-	</select>
+	</select> -->
 
 	<!-- Sort -->
 	<select name="sort" on:change={handleChange}>
