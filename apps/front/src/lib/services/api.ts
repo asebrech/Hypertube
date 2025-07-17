@@ -23,6 +23,34 @@ export async function getMovies(page_to_load: number, type: MovieType = 'movie')
 	}
 }
 
+export async function getMovieDiscover(
+		genreIds: number[] | undefined,
+		castId: number[] | undefined,
+		page: number,
+		type: MovieType = 'movie',
+		releaseYear: string | undefined
+	) {
+	const config = {
+		method: 'get',
+		url: `${PUBLIC_BACK_URL}/movies/discover`,
+		params: {
+			genreId: genreIds ? genreIds.join(',') : undefined,
+			castId: castId,
+			page: page,
+			type: type,
+			releaseYear: releaseYear,
+			lang: get(locale)
+		}
+	};
+	try {
+		const response = await axios(config);
+		return response.data;
+	} catch (error) {
+		console.error('Error fetching movie discover:', error);
+		throw error;
+	}
+}
+
 export async function getMovieDetails(movieId: number, type: MovieType = 'movie'): Promise<MovieDetails> {
 	const config = {
 		method: 'get',

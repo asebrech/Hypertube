@@ -29,7 +29,7 @@ export default class MoviesController {
     const genresList = await this.tmdbService.getGenresList(lang, movieType)
     const popularMovies = await this.tmdbService.getPopularMovies(lang, page, movieType)
     const movieListByGenre = genresList.genres.map(async (genre: any) => {
-      const movies = await this.tmdbService.getMovieListByGenre(genre.id, undefined, lang, page, movieType)
+      const movies = await this.tmdbService.getDiscover([genre.id], undefined, lang, page, movieType)
       return {
         id: genre.id,
         name: genre.name,
@@ -155,6 +155,35 @@ export default class MoviesController {
     return {movies: media, hasMorePages}
     } else {
       return response.notFound({ error: 'Search results not found' })
+    }
+  }
+
+  async MovieDiscover ({ request, response }: HttpContext) {
+    const genreId = request.input('genreId', undefined)
+    const castId = request.input('castId', undefined)
+    const lang = request.input('lang', 'en')
+    const page = request.input('page', 1)
+    const movieType = request.input('type', 'movie')
+    const region = request.input('region', 'en')
+    const releaseYear = request.input('releaseYear', undefined)
+    const sortBy = request.input('sortBy', 'popularity.desc')
+
+    const discoverResults = await this.tmdbService.getDiscover(
+      genreId,
+      castId,
+      lang,
+      page,
+      movieType,
+      region,
+      releaseYear,
+      sortBy
+    )
+    console.log('discoverResults', discoverResults)
+    const hasMorePages = discoverResults.total_pages > page;
+    if (discoverResults) {
+      return { movies: discoverResults.results, hasMorePages }
+    } else {
+      return response.notFound({ error: 'Discover results not found' })
     }
   }
 }
