@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { Skeleton } from '@/components/ui/skeleton';
 	import { getMovieDetails, getMovieVideos } from '@/services/api';
 	import type { MovieDetails, MovieType, MovieVideo } from '@hypertube/shared';
@@ -129,7 +130,18 @@
 	});
 </script>
 
-<a href="/movie/{movieId}" class="block">
+<div
+	class="block cursor-pointer"
+	role="button"
+	tabindex="0"
+	onclick={() => goto(`/movie/${movieId}`)}
+	onkeydown={(event) => {
+		if (event.key === 'Enter' || event.key === ' ') {
+			event.preventDefault();
+			goto(`/movie/${movieId}`);
+		}
+	}}
+>
 	<div class="bg-secondary flex flex-col items-center gap-2 pb-2">
 		<div class="relative aspect-[6/3] w-full overflow-hidden rounded-[2px]">
 			<!-- 🟥 Skeleton background (fallback) -->
@@ -164,12 +176,12 @@
 			>
 				<div class="absolute h-full w-full">
 					<div
-						class="absolute left-1/2 top-1/2 min-h-[155%] min-w-[155%] -translate-x-1/2 -translate-y-1/2"
+						class="absolute top-1/2 left-1/2 min-h-[155%] min-w-[155%] -translate-x-1/2 -translate-y-1/2"
 					>
 						<div
 							id="player"
 							bind:this={playerElement}
-							class="absolute left-0 top-0 h-full w-full overflow-hidden"
+							class="absolute top-0 left-0 h-full w-full overflow-hidden"
 						></div>
 					</div>
 					<div
@@ -180,7 +192,7 @@
 					</div>
 
 					{#if showVideo}
-						<button onclick={toggleMute} class="absolute bottom-0 right-0 z-20 p-4">
+						<button onclick={(event) => { event.stopPropagation(); toggleMute(); }} class="absolute right-0 bottom-0 z-20 p-4">
 							<ButtonPreview variant="outline" size="default">
 								{#if isMuted}
 									<VolumeOff />
@@ -191,7 +203,7 @@
 						</button>
 					{/if}
 				</div>
-				<div class="bg-red relative left-0 top-0 h-full w-full"></div>
+				<div class="bg-red relative top-0 left-0 h-full w-full"></div>
 			</div>
 		</div>
 		<div class="flex w-full flex-col gap-2 p-4">
@@ -217,7 +229,7 @@
 			<!-- <p class="line-clamp-3 text-sm text-gray-500">{movie?.overview}</p> -->
 			{#if movie?.runtime}
 				<div class="flex items-center gap-2">
-					<p class="border border-gray-300 px-[4px] py-[0px] text-[12px] uppercase text-gray-300">
+					<p class="border border-gray-300 px-[4px] py-[0px] text-[12px] text-gray-300 uppercase">
 						{movie.release_date
 							? new Date(movie.release_date).toLocaleDateString(get(locale) as string, {
 									year: 'numeric',
@@ -229,7 +241,7 @@
 					<p class="text-sm text-gray-300">
 						{Math.floor(movie?.runtime / 60)} h {movie?.runtime % 60} min
 					</p>
-					<p class="border border-gray-300 px-[4px] py-[0px] text-[12px] uppercase text-gray-300">
+					<p class="border border-gray-300 px-[4px] py-[0px] text-[12px] text-gray-300 uppercase">
 						{movie.original_language}
 					</p>
 				</div>
@@ -246,4 +258,4 @@
 			{/if}
 		</div>
 	</div>
-</a>
+</div>

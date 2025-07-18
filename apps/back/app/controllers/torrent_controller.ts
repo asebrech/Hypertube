@@ -10,7 +10,6 @@ export default class TorrentController {
   async torrent({ request }) {
     const tmdb = request.qs().tmdbId
     console.log('TorrentController:tmdb', tmdb)
-    //if imdb movie aleady converted return nothing 
     if (this.torrentService.isMovieConverted(tmdb)) {
       console.log('TorrentController:tmdb', tmdb, 'already converted')
       return { message: 'Movie already converted' }
