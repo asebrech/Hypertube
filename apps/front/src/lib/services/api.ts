@@ -4,7 +4,7 @@ import { PUBLIC_BACK_URL } from '$env/static/public';
 import { get } from 'svelte/store';
 import type { ImageSizeType, MovieDetails, MovieType } from '@hypertube/shared';
 
-export async function getMovies(page_to_load: number, type: MovieType = 'movie') {
+export async function getMovies(page_to_load: number, type: MovieType = 'movie', token: string | null = null) {
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies`,
@@ -12,7 +12,10 @@ export async function getMovies(page_to_load: number, type: MovieType = 'movie')
 			page: page_to_load,
 			lang: get(locale),
 			type: type
-		}
+		},
+		headers: {
+			...(token && { Authorization: `Bearer ${token}` })
+		},
 	};
 	try {
 		const response = await axios(config);

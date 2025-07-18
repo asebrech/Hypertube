@@ -14,5 +14,9 @@
 		"play": "Lecture",
 		"more-info": "Plus d'infos",
 		"see-more": "Voir plus"
+	},
+	"movie-action": {
+		"bookmarked": "Watchlist",
+		"watched": "d\u00e9j\u00e0 vu"
 	}
 }
