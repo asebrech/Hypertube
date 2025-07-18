@@ -13,6 +13,8 @@
 	import MovieBanner from '@/components/tadflix/movie-banner/MovieBanner.svelte';
 	import Skeleton from '@/components/ui/skeleton/skeleton.svelte';
 
+	const { data } = $props();
+
 	let hasMorePages: boolean = $state(true);
 	let currentPage: number = $state(1);
 	let isLoading: boolean = $state(false);
@@ -25,7 +27,7 @@
 		if (!hasMorePages) return;
 		try {
 			isLoading = true;
-			const getMovieResponse = await getMovies(currentPage, 'tv');
+			const getMovieResponse = await getMovies(currentPage, 'movie', data.token);
 			movieGenres = movieGenres.concat(getMovieResponse.movies);
 			hasMorePages = getMovieResponse.hasMorePages;
 			currentPage++;
@@ -39,9 +41,9 @@
 		isLoading = true;
 		await loadMoviePage();
 		let idx = Math.floor(Math.random() * movieGenres[0].movies.length);
-		movieBanner = await getMovieDetails(movieGenres[0].movies[idx].id, 'tv');
-		movieLogo = await getLogoImage(movieGenres[0].movies[idx].id, 'small', 'tv');
-		movieVideoResponse = await getMovieVideos(movieGenres[0].movies[idx].id, 'tv');
+		movieBanner = await getMovieDetails(movieGenres[0].movies[idx].id, 'movie');
+		movieLogo = await getLogoImage(movieGenres[0].movies[idx].id, 'small', 'movie');
+		movieVideoResponse = await getMovieVideos(movieGenres[0].movies[idx].id, 'movie');
 		isLoading = false;
 		observeSentinel();
 	});
@@ -73,9 +75,14 @@
 		<div class="flex w-full flex-col gap-[15px] overflow-hidden">
 			<h2 class="text-l ml-[58px] font-medium">{genre.name}</h2>
 			{#if genre.id == 0}
-				<MovieCarousel movies={genre.movies} variant={'top-ten'} type={'tv'} />
+				<MovieCarousel
+					movies={genre.movies}
+					genreId={genre.id}
+					variant={'top-ten'}
+					type={'movie'}
+				/>
 			{:else}
-				<MovieCarousel movies={genre.movies} type={'tv'} />
+				<MovieCarousel movies={genre.movies} genreId={genre.id} type={'movie'} />
 			{/if}
 		</div>
 	{/each}
