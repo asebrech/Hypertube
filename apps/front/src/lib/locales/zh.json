@@ -28,5 +28,9 @@
         "mostpopular": "最受欢迎",
         "latestrelease": "最新发行",
         "toprated": "评分最高"
-	}
-}
+	},
+    "movie-action": {
+        "bookmarked": "收藏夹",
+        "watched": "已观看"
+    }
+  }

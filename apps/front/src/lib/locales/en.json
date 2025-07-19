@@ -28,5 +28,9 @@
 		"mostpopular": "Most Popular",
 		"latestrelease": "Latest Release",
 		"toprated": "Top Rated"
+	},
+	"movie-action": {
+		"bookmarked": "watchlist",
+		"watched": "already watched"
 	}
 }

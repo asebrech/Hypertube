@@ -30,5 +30,9 @@
 		"toprated": "Les mieux notés",
 		"originaltitle": "A-Z",
 		"originaltitle_desc": "Z-A"
+	},
+	"movie-action": {
+		"bookmarked": "Watchlist",
+		"watched": "d\u00e9j\u00e0 vu"
 	}
 }

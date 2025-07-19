@@ -13,6 +13,8 @@
 	import MovieBanner from '@/components/tadflix/movie-banner/MovieBanner.svelte';
 	import Skeleton from '@/components/ui/skeleton/skeleton.svelte';
 
+	const { data } = $props();
+
 	let hasMorePages: boolean = $state(true);
 	let currentPage: number = $state(1);
 	let isLoading: boolean = $state(false);
@@ -25,7 +27,7 @@
 		if (!hasMorePages) return;
 		try {
 			isLoading = true;
-			const getMovieResponse = await getMovies(currentPage, 'movie');
+			const getMovieResponse = await getMovies(currentPage, 'movie', data.token);
 			movieGenres = movieGenres.concat(getMovieResponse.movies);
 			hasMorePages = getMovieResponse.hasMorePages;
 			currentPage++;
