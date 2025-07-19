@@ -28,5 +28,9 @@
         "mostpopular": "Más popular",
         "latestrelease": "Último lanzamiento",
         "toprated": "Mejor valorados"
-	}
+	},
+    "movie-action": {
+        "bookmarked": "Lista de seguimiento",
+        "watched": "Ya visto"
+    }
 }
