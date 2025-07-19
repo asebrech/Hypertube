@@ -27,7 +27,10 @@
         "select_language": "بلد المنشأ",
         "mostpopular": "الأكثر شعبية",
         "latestrelease": "أحدث إصدار",
-        "toprated": "الأعلى تقييماً"
+        "toprated": "الأعلى تقييماً",
+        "originaltitle": "من الألف إلى الياء",
+        "originaltitle_desc": "من الياء إلى الألف",
+        "selected_cast": "الممثلين المختارين"
     },
     "movie-action": {
         "bookmarked": "قائمة المشاهدة",

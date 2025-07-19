@@ -27,7 +27,10 @@
 		"select_language": "País de origen",
         "mostpopular": "Más popular",
         "latestrelease": "Último lanzamiento",
-        "toprated": "Mejor valorados"
+        "toprated": "Mejor valorados",
+        "originaltitle": "De la A a la Z",
+        "originaltitle_desc": "De la Z a la A",
+        "selected_cast": "Reparto seleccionado"
 	},
     "movie-action": {
         "bookmarked": "Lista de seguimiento",
