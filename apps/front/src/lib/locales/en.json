@@ -27,7 +27,10 @@
 		"select_language": "Country of Origin",
 		"mostpopular": "Most Popular",
 		"latestrelease": "Latest Release",
-		"toprated": "Top Rated"
+		"toprated": "Top Rated",
+		"originaltitle": "A-Z",
+		"originaltitle_desc": "Z-A",
+		"selected_cast": "Selected Cast"
 	},
 	"movie-action": {
 		"bookmarked": "watchlist",
