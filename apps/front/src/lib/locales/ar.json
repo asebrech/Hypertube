@@ -32,5 +32,8 @@
     "movie-action": {
         "bookmarked": "قائمة المشاهدة",
         "watched": "تم المشاهدة"
+    },
+    "browse": {
+        "explore": "استكشاف الكل"
     }
 }

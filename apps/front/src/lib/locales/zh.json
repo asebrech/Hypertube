@@ -32,5 +32,8 @@
     "movie-action": {
         "bookmarked": "收藏夹",
         "watched": "已观看"
+    },
+    "browse": {
+        "explore": "探索全部"
     }
   }
