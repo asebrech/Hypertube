@@ -65,8 +65,8 @@
 		return () => window.removeEventListener('scroll', handleScroll);
 	});
 
-	function handleInput(event: any) {
-		searchQuery.set(event.target.value.trim());
+	function handleInput(event: Event & { currentTarget: EventTarget & HTMLInputElement }) {
+		searchQuery.set(event.currentTarget.value.trim());
 		if ($searchQuery.length === 0) {
 			// If search query is empty, reset results
 			goto('/', { replaceState: true, noScroll: true, keepFocus: true });
