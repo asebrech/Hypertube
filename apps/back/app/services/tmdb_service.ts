@@ -59,7 +59,6 @@ export class TMDBService {
   ) {
 
     const endpoint = `/discover/${movieType}?with_genres=${genreId || ''}&language=${language}&page=${page}&sort_by=popularity.desc&region=${region}&with_cast=${castId || ''}`
-    console.log('TMDBService.getMovieListByGenre endpoint:', endpoint)
     const data = await this.getSomething(endpoint)
     return data
   }
@@ -194,9 +193,7 @@ export class TMDBService {
   }
 
   async getMultiSearch(query: string, language: string = 'en', page: number = 1) {
-    console.log('TMDBService.getMultiSearch', query, language, page)
     const endpoint = `/search/multi?query=${encodeURIComponent(query)}&language=${language}&page=${page}`
-    console.log('TMDBService.getMultiSearch endpoint', endpoint)
     const data = await this.getSomething(endpoint)
     return data
   }
