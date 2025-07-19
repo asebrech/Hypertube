@@ -33,7 +33,7 @@ export type Movie = {
 export type Genre = {
   id: number;
   name: string;
-}
+};
 
 export type MovieGenre = Genre & {
   movies: Movie[];

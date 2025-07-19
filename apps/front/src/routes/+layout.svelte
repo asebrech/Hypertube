@@ -25,7 +25,6 @@
 
 <ModeWatcher defaultMode={'dark'} />
 
-<!-- <Navbar data={page.data} showSkeleton={$isLoading || !ready} /> -->
 <Navbar data={page.data} showSkeleton={$isLoading || !ready} />
 
 <main class="flex h-full min-h-screen w-full flex-col">

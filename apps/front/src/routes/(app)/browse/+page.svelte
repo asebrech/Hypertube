@@ -67,7 +67,7 @@
 		}
 	};
 
-	const years = Array.from({ length: 50 }, (_, i) => `${2025 - i}`);
+	const years = Array.from({ length: 50 }, (_, i) => `${new Date().getFullYear() - i}`);
 
 	const sortOptions = [
 		{ value: 'popularity.desc', label: 'filters.mostpopular' },
