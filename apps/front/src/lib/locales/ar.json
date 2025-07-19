@@ -28,5 +28,9 @@
         "mostpopular": "الأكثر شعبية",
         "latestrelease": "أحدث إصدار",
         "toprated": "الأعلى تقييماً"
+    },
+    "movie-action": {
+        "bookmarked": "قائمة المشاهدة",
+        "watched": "تم المشاهدة"
     }
 }
