@@ -42,6 +42,9 @@
 	onMount(async () => {
 		const urlParams = new URLSearchParams(window.location.search);
 		const genreParam = urlParams.get('genre');
+		if (window.location.search) {
+			window.history.replaceState({}, '', window.location.pathname);
+		}
 		genres = await getGenresList();
 		selectedGenres = genres.filter((genre) => genreParam === genre.id.toString());
 		await loadDiscoverMovies();
@@ -131,16 +134,15 @@
 		onValueChange={(val) => handleChange('genre', val)}
 		value={selectedGenres.map((g) => String(g.id))}
 	>
-		<SelectTrigger class="h-[2rem] rounded-none">
+		<SelectTrigger class="border-outline-1 h-[2rem] rounded-none focus:ring-0 focus:ring-offset-0">
 			{$_('filters.select_genre')}
 		</SelectTrigger>
-		<SelectContent sideOffset={0}>
+		<SelectContent
+			sideOffset={0}
+			class="border-outline-1 m-0 rounded-none border-gray-500 p-0 focus:ring-0 focus:ring-offset-0"
+		>
 			{#each genres as genre}
-				<SelectItem
-					value={String(genre.id)}
-					label={genre.name}
-					class="flex items-center justify-between"
-				>
+				<SelectItem value={String(genre.id)} label={genre.name}>
 					{genre.name}
 				</SelectItem>
 			{/each}
@@ -152,12 +154,16 @@
 		type="single"
 		bind:value={releaseYear}
 		name="year"
+		allowDeselect={true}
 		onValueChange={(val) => handleChange('year', val)}
 	>
-		<SelectTrigger>
+		<SelectTrigger class="border-outline-1 h-[2rem] rounded-none focus:ring-0 focus:ring-offset-0">
 			{releaseYear ? releaseYear : $_('filters.select_year')}
 		</SelectTrigger>
-		<SelectContent>
+		<SelectContent
+			sideOffset={0}
+			class="border-outline-1 m-0 rounded-none border-gray-500 p-0 focus:ring-0 focus:ring-offset-0"
+		>
 			{#each years as year}
 				<SelectItem value={year} label={year}>
 					{year}
@@ -173,10 +179,13 @@
 		name="sort"
 		onValueChange={(val) => handleChange('sort', val)}
 	>
-		<SelectTrigger>
+		<SelectTrigger class="border-outline-1 h-[2rem] rounded-none focus:ring-0 focus:ring-offset-0">
 			{$_(sortOptions.find((opt) => opt.value === sortBy)?.label || 'filters.select_sort')}
 		</SelectTrigger>
-		<SelectContent>
+		<SelectContent
+			sideOffset={0}
+			class="border-outline-1 m-0 rounded-none border-gray-500 p-0 focus:ring-0 focus:ring-offset-0"
+		>
 			{#each sortOptions as option}
 				<SelectItem value={option.value} label={option.label}>
 					{$_(option.label)}
@@ -190,12 +199,16 @@
 		type="single"
 		bind:value={originalLanguage}
 		name="language"
+		allowDeselect={true}
 		onValueChange={(val) => handleChange('language', val)}
 	>
-		<SelectTrigger>
+		<SelectTrigger class="border-outline-1 h-[2rem] rounded-none focus:ring-0 focus:ring-offset-0">
 			{$_('filters.select_language')}
 		</SelectTrigger>
-		<SelectContent>
+		<SelectContent
+			sideOffset={0}
+			class="border-outline-1 m-0 rounded-none border-gray-500 p-0 focus:ring-0 focus:ring-offset-0"
+		>
 			{#each languages as lang}
 				<SelectItem value={lang.value} label={lang.label}>
 					{lang.label}
