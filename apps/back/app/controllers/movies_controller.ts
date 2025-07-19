@@ -187,9 +187,9 @@ export default class MoviesController {
     if (typeof genreId === 'string') {
       genreId = [genreId]
     }
-    const castId = request.input('castId')
+    let castId = request.input('castId')
     if (typeof castId === 'string') {
-      genreId = [castId]
+      castId = [castId]
     }
     const lang = request.input('lang', 'en');
     const page = Number(request.input('page', 1));

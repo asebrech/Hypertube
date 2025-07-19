@@ -1,7 +1,6 @@
 import axios from 'axios'
 import env from '#start/env'
 import { ImageSizeType, MovieType } from '@hypertube/shared'
-import { release } from 'os'
 
 export type ImageSize = 'w92' | 'w154' | 'w185' | 'w342' | 'w500' | 'w780' | 'w1280' | 'original'
 
@@ -77,7 +76,6 @@ export class TMDBService {
   ) {
 
     const endpoint = `/discover/${movieType}?with_genres=${genreId ? genreId?.join(',') : ''}&language=${language}&page=${page}&sort_by=${sortBy}&region=${region}&with_cast=${castId || ''}&primary_release_year=${releaseYear || ''}&with_original_language=${originalLanguage || ''}`
-    console.log('TMDBService.getMovieListByGenre endpoint:', endpoint)
     const data = await this.getSomething(endpoint)
     return data
   }
