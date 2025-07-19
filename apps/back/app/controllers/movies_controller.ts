@@ -1,11 +1,11 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { TMDBService } from '#services/tmdb_service'
-import { BackDropImage } from '@hypertube/shared'
+import { BackDropImage, UserMovieAction } from '@hypertube/shared'
 
 export default class MoviesController {
   private tmdbService: TMDBService = new TMDBService()
 
-  async index({ request, response }: HttpContext) {
+  async index({ request, response, auth }: HttpContext) {
     const page = request.input('page', 1)
     const movieType = request.input('type', 'movie')
     const limit = 4
@@ -50,8 +50,32 @@ export default class MoviesController {
       ...movieListByGenreResults,
     ]
     const slicedResponse = finalMovieListByGenre.slice(offset, offset + limit)
+    let user = null
+    if (await auth.check()) {
+      user = await auth.authenticate()
+    }
+
+    const moviesFinalResult = await Promise.all(slicedResponse.map(async (genre: any) => {
+      return {
+        id: genre.id,
+        name: genre.name,
+        movies: await Promise.all(genre.movies.map(async (movie: any) => {
+          movie.user_action = null
+          if (user) {
+            const movieTable = await user
+              .related('movies')
+              .query()
+              .where('movies.tmdbId', movie.id)
+              .first()
+            if (!!movieTable) {
+              const action = movieTable.$extras.pivot_usersAction as UserMovieAction
+              movie.user_action = action || null
+            }
+          }
+          return movie
+        }))}}))
     const hasMorePages = finalMovieListByGenre.length > offset + limit
-    return {movies: slicedResponse, hasMorePages}
+    return {movies: moviesFinalResult, hasMorePages}
   }
 
   async backdropImage ({ request, response }: HttpContext): Promise<BackDropImage | void> {
