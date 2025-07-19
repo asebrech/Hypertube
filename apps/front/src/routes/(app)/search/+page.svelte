@@ -16,7 +16,7 @@
 	let debounceTimer: NodeJS.Timeout;
 
 	const loadSearchResults = async () => {
-		if (!hasMorePages || !searchQuery || isLoading) return;
+		if (!hasMorePages || !$searchQuery || isLoading) return;
 		isLoading = true;
 		if (abortController) {
 			abortController.abort();
