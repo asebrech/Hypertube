@@ -116,7 +116,8 @@
 
 <div
 	class="mx-[10%] flex gap-4
-        p-4 pt-[120px]
+        pb-6
+        pt-[120px]
         sm:mx-[10.714%]
         md:mx-[8.333%]
         lg:mx-[6.818%]
@@ -130,10 +131,10 @@
 		onValueChange={(val) => handleChange('genre', val)}
 		value={selectedGenres.map((g) => String(g.id))}
 	>
-		<SelectTrigger>
+		<SelectTrigger class="h-[2rem] rounded-none">
 			{$_('filters.select_genre')}
 		</SelectTrigger>
-		<SelectContent>
+		<SelectContent sideOffset={0}>
 			{#each genres as genre}
 				<SelectItem
 					value={String(genre.id)}
@@ -211,7 +212,7 @@
 {/if}
 
 {#if movies.length > 0}
-	<div class="flex flex-col gap-8 py-[150px]">
+	<div class="flex flex-col gap-8 pb-[150px]">
 		<MovieList {movies} />
 	</div>
 {/if}
