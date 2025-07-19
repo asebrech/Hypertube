@@ -2,13 +2,15 @@
 	import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 	import { Skeleton } from '@/components/ui/skeleton';
 	import { getPosterImage } from '@/services/api';
-	import type { BackDropImage, ImageSizeType, MovieType } from '@hypertube/shared';
+	import type { BackDropImage, ImageSizeType, MovieType, UserMovieAction } from '@hypertube/shared';
 	import Rank from './rank.svelte';
+	import { Badge } from '@/components/ui/badge';
+	import { _ } from 'svelte-i18n';
 
-	export let movie_id: number;
+	export let movieId: number;
 	export let isVisible: boolean;
-	export let title: string;
 	export let orderNumber: number;
+	export let userAction: UserMovieAction | null = null;
 	export let type: MovieType = 'movie';
 
 	let poster_image: BackDropImage | null = null;
@@ -24,7 +26,7 @@
 	//add on change to isVisible
 	$: if (isVisible) {
 		isLoading = true;
-		loadPosterImage(movie_id, 'small')
+		loadPosterImage(movieId, 'small')
 			.catch((error) => {
 				console.error('Error loading backdrop image:', error);
 				poster_image = {
@@ -56,7 +58,15 @@
 			<div
 				class="absolute right-0 top-0 h-full w-[50%]"
 				style="background-size: cover; background-position: center; background-image: url({poster_image?.url});"
-			></div>
+			>
+				{#if userAction}
+					<div class="absolute bottom-0 flex w-full justify-center">
+						<Badge variant={'red'}>
+							{$_(`movie-action.${userAction}`)}
+						</Badge>
+					</div>
+				{/if}
+			</div>
 		{/if}
 	</div>
 </Card>
