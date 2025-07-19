@@ -2,7 +2,7 @@ import axios from 'axios';
 import { locale } from 'svelte-i18n';
 import { PUBLIC_BACK_URL } from '$env/static/public';
 import { get } from 'svelte/store';
-import type { ImageSizeType, MovieDetails, MovieType } from '@hypertube/shared';
+import type { ImageSizeType, Movie, MovieDetails, MovieType } from '@hypertube/shared';
 
 export async function getMovies(page_to_load: number, type: MovieType = 'movie', token: string | null = null) {
 	const config = {
@@ -197,6 +197,26 @@ export async function getGenresList() {
 		return response.data;
 	} catch (error) {
 		console.error('Error fetching genres:', error);
+		throw error;
+	}
+}
+
+export async function getSimilarMovies(movieId: number, page: number, type: MovieType = 'movie'): Promise<{ movies: Movie[], hasMorePages: boolean }> {
+	const config = {
+		method: 'get',
+		url: `${PUBLIC_BACK_URL}/movies/similar`,
+		params: {
+			tmdb_movie_id: String(movieId),
+			page: page,
+			lang: get(locale),
+			type: type
+		}
+	};
+	try {
+		const response = await axios(config);
+		return response.data;
+	} catch (error) {
+		console.error('Error fetching similar movies:', error);
 		throw error;
 	}
 }

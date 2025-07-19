@@ -228,4 +228,19 @@ export default class MoviesController {
       return response.notFound({ error: 'Genres not found' })
     }
   }
+
+  async MovieSimilar({ request, response }: HttpContext) {
+    const tmdb_movie_id = request.input('tmdb_movie_id')
+    const lang = request.input('lang', 'en')
+    const page = request.input('page', 1)
+    const movieType = request.input('type', 'movie')
+    console.log('tmdb_movie_id', tmdb_movie_id)
+    const similarMovies = await this.tmdbService.getSimilarMovies(tmdb_movie_id, lang, page, movieType)
+    const hasMorePages = similarMovies.total_pages > page;
+    if (similarMovies) {
+      return { movies: similarMovies.results, hasMorePages }
+    } else {
+      return response.notFound({ error: 'Similar movies not found' })
+    }
+  }
 }

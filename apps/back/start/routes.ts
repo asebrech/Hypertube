@@ -31,6 +31,7 @@ router.group(() => {
   router.get('movies/search', [MoviesController, 'movieSearch'])
   router.get('movies/discover', [MoviesController, 'MovieDiscover'])
   router.get('movies/genres', [MoviesController, 'movieGenres'])
+  router.get('movies/similar', [MoviesController, 'MovieSimilar'])
   router.get('movies/:id', [MoviesController, 'movieDetails'])
   router.get('movies/:id/videos', [MoviesController, 'movieVideos'])
 })
