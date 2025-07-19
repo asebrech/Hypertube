@@ -53,6 +53,9 @@
 	$effect(() => {
 		if ($searchQuery && $searchQuery !== lastSearchQuery) {
 			clearTimeout(debounceTimer);
+			if (abortController) {
+				abortController.abort();
+			}
 
 			debounceTimer = setTimeout(() => {
 				lastSearchQuery = $searchQuery;
