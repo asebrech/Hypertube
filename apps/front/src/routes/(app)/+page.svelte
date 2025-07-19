@@ -7,6 +7,7 @@
 	import MovieBanner from '@/components/tadflix/movie-banner/MovieBanner.svelte';
 	import Skeleton from '@/components/ui/skeleton/skeleton.svelte';
 	import { ChevronRight } from 'lucide-svelte';
+	import { _ } from 'svelte-i18n';
 
 	const { data } = $props();
 
@@ -78,7 +79,7 @@
 						<span
 							class="ml-1 inline-block max-w-0 overflow-hidden whitespace-nowrap text-xs font-light text-[#54b9c5] opacity-0 transition-all duration-1000 group-hover:max-w-[200px] group-hover:translate-y-0 group-hover:opacity-100"
 						>
-							Tout explorer
+							{$_('browse.explore')}
 						</span>
 						<ChevronRight
 							size={12}

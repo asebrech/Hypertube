@@ -32,5 +32,8 @@
 	"movie-action": {
 		"bookmarked": "watchlist",
 		"watched": "already watched"
+	},
+	"browse": {
+		"explore": "Explore All"
 	}
 }
