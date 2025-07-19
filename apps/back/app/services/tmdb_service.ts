@@ -214,4 +214,10 @@ export class TMDBService {
     const data = await this.getSomething(endpoint)
     return data
   }
+
+  async getSimilarMovies(tmdb_movie_id: number, language: string = 'en', page: number = 1, movieType: MovieType = 'movie') {
+    const endpoint = `/${movieType}/${tmdb_movie_id}/similar?language=${language}&page=${page}`
+    const data = await this.getSomething(endpoint)
+    return data
+  }
 }
