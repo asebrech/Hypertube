@@ -133,7 +133,6 @@ export default class MoviesController {
     const tmdb_movie_id = request.param('id')
     const lang = request.input('lang', 'en')
     const movieType = request.input('type', 'movie')
-    console.log('type', movieType)
     const movieVideos = await this.tmdbService.getMovieVideos(tmdb_movie_id, lang, movieType)
     if (!movieVideos)
       return response.notFound({ error: 'Movie videos not found' })
@@ -234,7 +233,6 @@ export default class MoviesController {
     const lang = request.input('lang', 'en')
     const page = request.input('page', 1)
     const movieType = request.input('type', 'movie')
-    console.log('tmdb_movie_id', tmdb_movie_id)
     const similarMovies = await this.tmdbService.getSimilarMovies(tmdb_movie_id, lang, page, movieType)
     const hasMorePages = similarMovies.total_pages > page;
     if (similarMovies) {
