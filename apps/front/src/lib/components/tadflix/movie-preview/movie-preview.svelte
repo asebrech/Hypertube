@@ -97,7 +97,6 @@
 	}
 
 	onMount(() => {
-		console.log('key', movieVideo?.key);
 		// @ts-ignore
 		window.onYouTubeIframeAPIReady = () => {
 			isApiLoaded = true;

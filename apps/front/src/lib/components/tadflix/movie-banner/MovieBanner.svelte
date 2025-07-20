@@ -85,7 +85,6 @@
 	}
 
 	onMount(() => {
-		console.log('key', movieVideo?.key);
 		// @ts-ignore
 		window.onYouTubeIframeAPIReady = () => {
 			isApiLoaded = true;
@@ -104,7 +103,6 @@
 	});
 
 	$effect(() => {
-		console.log('key', movieVideo?.key);
 		if (movieVideo?.key) {
 			createPlayer(movieVideo?.key);
 		}
