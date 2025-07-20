@@ -5,6 +5,7 @@
 	import { _ } from 'svelte-i18n';
 	import { onMount } from 'svelte';
 	import { Select, SelectTrigger, SelectItem, SelectContent } from '@/components/ui/select';
+	import { X } from 'lucide-svelte';
 
 	let isLoading: boolean = $state(false);
 	let movies: Movie[] = $state([]);
@@ -233,10 +234,11 @@
 </div>
 
 {#if cast}
-	<div class="mx-[10%] mb-4 text-sm text-gray-500">
+	<div class="mx-[10%] mb-4 flex items-center gap-2 text-sm text-gray-500">
 		{$_('filters.selected_cast')}:
-		<span class="cursor-pointer underline" onclick={handleCastRemove}>
+		<span class="flex cursor-pointer items-center gap-1 underline" onclick={handleCastRemove}>
 			{cast.name}
+			<X class="ml-1 h-4 w-4 text-gray-400 underline" />
 		</span>
 	</div>
 {/if}
