@@ -240,7 +240,7 @@ export async function getMovieCredits(movieId: number, type: MovieType = 'movie'
 	}
 }
 
-export async function getPeopleDetails(castId: number): Promise<any> {
+export async function getPeopleDetails(castId: number): Promise<PersonDetails> {
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies/people`,
