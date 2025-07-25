@@ -29,7 +29,8 @@
 		"latestrelease": "Dernière sortie",
 		"toprated": "Les mieux notés",
 		"originaltitle": "A-Z",
-		"originaltitle_desc": "Z-A"
+		"originaltitle_desc": "Z-A",
+		"selected_cast": "Acteurs sélectionnés"
 	},
 	"movie-action": {
 		"bookmarked": "Watchlist",

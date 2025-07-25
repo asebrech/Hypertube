@@ -1,10 +1,11 @@
 <script lang="ts">
 	import MovieList from '@/components/tadflix/movie-list/movie-list.svelte';
-	import type { Movie, Genre } from '@hypertube/shared';
-	import { getMovieDiscover, getGenresList } from '@/services/api';
+	import type { Movie, Genre, PersonDetails } from '@hypertube/shared';
+	import { getMovieDiscover, getGenresList, getPeopleDetails } from '@/services/api';
 	import { _ } from 'svelte-i18n';
 	import { onMount } from 'svelte';
 	import { Select, SelectTrigger, SelectItem, SelectContent } from '@/components/ui/select';
+	import { X } from 'lucide-svelte';
 
 	let isLoading: boolean = $state(false);
 	let movies: Movie[] = $state([]);
@@ -13,7 +14,8 @@
 	let releaseYear: string | undefined = $state(undefined);
 	let hasMorePages: boolean = $state(true);
 	let currentPage: number = $state(1);
-	let castId: number[] | undefined = $state(undefined);
+	let castId: number | undefined = $state(undefined);
+	let cast: PersonDetails | undefined = $state(undefined);
 	let sortBy: string = $state('popularity.desc');
 	let originalLanguage: string | undefined = $state(undefined);
 
@@ -42,11 +44,14 @@
 	onMount(async () => {
 		const urlParams = new URLSearchParams(window.location.search);
 		const genreParam = urlParams.get('genre');
+		const castParam = urlParams.get('cast');
 		if (window.location.search) {
 			window.history.replaceState({}, '', window.location.pathname);
 		}
+		castId = castParam ? Number(castParam) : undefined;
 		genres = await getGenresList();
 		selectedGenres = genres.filter((genre) => genreParam === genre.id.toString());
+		if (castId) cast = await getPeopleDetails(castId);
 		await loadDiscoverMovies();
 		observeSentinel();
 	});
@@ -115,6 +120,16 @@
 		hasMorePages = true;
 		loadDiscoverMovies();
 	};
+
+	function handleCastRemove(event: MouseEvent & { currentTarget: EventTarget & HTMLSpanElement }) {
+		event.preventDefault();
+		castId = undefined;
+		cast = undefined;
+		movies = [];
+		currentPage = 1;
+		hasMorePages = true;
+		loadDiscoverMovies();
+	}
 </script>
 
 <div
@@ -217,6 +232,22 @@
 		</SelectContent>
 	</Select>
 </div>
+
+{#if cast}
+	<div class="mx-[10%] mb-4 flex items-center gap-2 text-sm text-gray-500">
+		{$_('filters.selected_cast')}:
+		<span class="flex cursor-pointer items-center gap-1 underline" onclick={handleCastRemove}>
+			{cast.name}
+			<X class="ml-1 h-4 w-4 text-gray-400 underline" />
+		</span>
+	</div>
+{/if}
+
+{#if isLoading}
+	<div class="flex h-[80vh] items-center justify-center">
+		<p class="text-lg text-gray-500">{$_('search.loading')}</p>
+	</div>
+{/if}
 
 {#if movies.length === 0 && !isLoading}
 	<div class="flex h-[80vh] items-center justify-center">

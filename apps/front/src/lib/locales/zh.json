@@ -27,7 +27,10 @@
 		"select_language": "原产国",
         "mostpopular": "最受欢迎",
         "latestrelease": "最新发行",
-        "toprated": "评分最高"
+        "toprated": "评分最高",
+        "originaltitle": "A-Z",
+        "originaltitle_desc": "Z-A",
+        "selected_cast": "选定演员"
 	},
     "movie-action": {
         "bookmarked": "收藏夹",
