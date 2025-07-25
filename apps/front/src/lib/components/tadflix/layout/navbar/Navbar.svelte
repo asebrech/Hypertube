@@ -34,7 +34,8 @@
 		{ label: 'navbar.home', href: '/' },
 		{ label: 'navbar.shows', href: '/shows' },
 		{ label: 'navbar.movies', href: '/movies' },
-		{ label: 'navbar.my-list', href: '/my-list' }
+		{ label: 'navbar.my-list', href: '/my-list' },
+		{ label: 'navbar.browse', href: '/browse' }
 	];
 
 	// Track scroll position and direction

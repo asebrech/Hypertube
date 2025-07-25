@@ -8,7 +8,8 @@
         "movies": "أفلام",
         "news-popular": "أخبار وشائع",
         "my-list": "قائمتي",
-        "by-language": "استكشاف حسب اللغة"
+        "by-language": "استكشاف حسب اللغة",
+        "browse": "تصفح"
     },
     "movie-banner": {
         "play": "تشغيل",
@@ -18,5 +19,21 @@
     "search": {
         "placeholder": "أفلام، برامج، أشخاص...",
         "noresults": "لم يتم العثور على نتائج"
+    },
+    "filters": {
+        "select_genre": "اختر النوع",
+        "select_year": "سنة الإصدار",
+        "select_sort": "ترتيب حسب ...",
+        "select_language": "بلد المنشأ",
+        "mostpopular": "الأكثر شعبية",
+        "latestrelease": "أحدث إصدار",
+        "toprated": "الأعلى تقييماً"
+    },
+    "movie-action": {
+        "bookmarked": "قائمة المشاهدة",
+        "watched": "تم المشاهدة"
+    },
+    "browse": {
+        "explore": "استكشاف الكل"
     }
 }

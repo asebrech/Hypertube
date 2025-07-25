@@ -30,9 +30,12 @@ export type Movie = {
   user_action?: UserMovieAction | null;
 };
 
-export type MovieGenre = {
+export type Genre = {
   id: number;
   name: string;
+};
+
+export type MovieGenre = Genre & {
   movies: Movie[];
 };
 

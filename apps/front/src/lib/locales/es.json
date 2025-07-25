@@ -8,7 +8,8 @@
         "movies": "Películas",
         "news-popular": "Noticias y populares",
         "my-list": "Mis listas",
-        "by-language": "Explorar por idioma"
+        "by-language": "Explorar por idioma",
+        "browse": "Explorar"
     },
     "movie-banner": {
         "play": "Reproducir",
@@ -18,5 +19,21 @@
     "search": {
         "placeholder": "Películas, Programas, Personas...",
         "noresults": "No se encontraron resultados"
+    },
+    "filters": {
+		"select_genre": "Género",
+		"select_year": "Año de lanzamiento",
+		"select_sort": "Ordenar por ...",
+		"select_language": "País de origen",
+        "mostpopular": "Más popular",
+        "latestrelease": "Último lanzamiento",
+        "toprated": "Mejor valorados"
+	},
+    "movie-action": {
+        "bookmarked": "Lista de seguimiento",
+        "watched": "Ya visto"
+    },
+    "browse": {
+        "explore": "Explorar todo"
     }
 }

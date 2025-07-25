@@ -63,6 +63,23 @@ export class TMDBService {
     return data
   }
 
+  public async getDiscover(
+    genreId: number[] | undefined,
+    castId: number[] | undefined,
+    language: string = 'en',
+    page: number = 1,
+    movieType: MovieType = 'movie',
+    region: string = 'en',
+    releaseYear: string | undefined = undefined,
+    sortBy: string = 'popularity.desc',
+    originalLanguage: string | undefined = undefined
+  ) {
+
+    const endpoint = `/discover/${movieType}?with_genres=${genreId ? genreId?.join(',') : ''}&language=${language}&page=${page}&sort_by=${sortBy}&region=${region}&with_cast=${castId || ''}&primary_release_year=${releaseYear || ''}&with_original_language=${originalLanguage || ''}`
+    const data = await this.getSomething(endpoint)
+    return data
+  }
+
   private getBackdropImageUrlFromData(data: any) {
     if (data.backdrops && data.backdrops.length > 0) {
       return data.backdrops[0]
