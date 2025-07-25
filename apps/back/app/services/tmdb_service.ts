@@ -214,4 +214,22 @@ export class TMDBService {
     const data = await this.getSomething(endpoint)
     return data
   }
+
+  async getSimilarMovies(tmdb_movie_id: number, language: string = 'en', page: number = 1, movieType: MovieType = 'movie') {
+    const endpoint = `/${movieType}/${tmdb_movie_id}/similar?language=${language}&page=${page}`
+    const data = await this.getSomething(endpoint)
+    return data
+  }
+
+  async getMovieCredits(tmdb_movie_id: number, language: string = 'en', movieType: MovieType = 'movie') {
+    const endpoint = `/${movieType}/${tmdb_movie_id}/credits?language=${language}`
+    const data = await this.getSomething(endpoint)
+    return data
+  }
+
+  async getPeopleDetails(tmdb_person_id: number, language: string = 'en') {
+    const endpoint = `/person/${tmdb_person_id}?language=${language}`
+    const data = await this.getSomething(endpoint)
+    return data
+  }
 }

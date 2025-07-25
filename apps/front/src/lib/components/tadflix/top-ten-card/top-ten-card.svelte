@@ -17,7 +17,6 @@
 	let isLoading = true;
 
 	const loadPosterImage = async (movieId: any, size: ImageSizeType): Promise<BackDropImage> => {
-		console.log('Loading poster image for movieId:', movieId, 'with size:', size);
 		const poster_image_data = await getPosterImage(movieId, size, type);
 		poster_image = poster_image_data;
 		return poster_image_data;

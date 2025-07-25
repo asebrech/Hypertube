@@ -133,7 +133,6 @@ export default class MoviesController {
     const tmdb_movie_id = request.param('id')
     const lang = request.input('lang', 'en')
     const movieType = request.input('type', 'movie')
-    console.log('type', movieType)
     const movieVideos = await this.tmdbService.getMovieVideos(tmdb_movie_id, lang, movieType)
     if (!movieVideos)
       return response.notFound({ error: 'Movie videos not found' })
@@ -226,6 +225,43 @@ export default class MoviesController {
       return genresList.genres
     } else {
       return response.notFound({ error: 'Genres not found' })
+    }
+  }
+
+  async MovieSimilar({ request, response }: HttpContext) {
+    const tmdb_movie_id = request.input('tmdb_movie_id')
+    const lang = request.input('lang', 'en')
+    const page = request.input('page', 1)
+    const movieType = request.input('type', 'movie')
+    const similarMovies = await this.tmdbService.getSimilarMovies(tmdb_movie_id, lang, page, movieType)
+    const hasMorePages = similarMovies.total_pages > page;
+    if (similarMovies) {
+      return { movies: similarMovies.results, hasMorePages }
+    } else {
+      return response.notFound({ error: 'Similar movies not found' })
+    }
+  }
+
+  async MovieCredits({ request, response }: HttpContext) {
+    const tmdb_movie_id = request.input('tmdb_movie_id')
+    const lang = request.input('lang', 'en')
+    const movieType = request.input('type', 'movie')
+    const movieCredits = await this.tmdbService.getMovieCredits(tmdb_movie_id, lang, movieType)
+    if (movieCredits) {
+      return movieCredits
+    } else {
+      return response.notFound({ error: 'Movie credits not found' })
+    }
+  }
+
+  async PeopleDetails({ request, response }: HttpContext) {
+    const tmdb_person_id = request.input('tmdb_people_id')
+    const lang = request.input('lang', 'en')
+    const personDetails = await this.tmdbService.getPeopleDetails(tmdb_person_id, lang)
+    if (personDetails) {
+      return personDetails
+    } else {
+      return response.notFound({ error: 'Person details not found' })
     }
   }
 }
