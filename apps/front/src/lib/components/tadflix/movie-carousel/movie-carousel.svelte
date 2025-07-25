@@ -7,7 +7,7 @@
 		CarouselNext
 	} from '@/components/ui/carousel';
 	import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card';
-	import type { MovieGenre, MovieType } from '@hypertube/shared';
+	import type { Movie, MovieType } from '@hypertube/shared';
 	import type { Action } from 'svelte/action';
 	import { MoviePreview } from '@/components/tadflix/movie-preview';
 	import { MovieCard } from '@/components/tadflix/movie-card';
@@ -19,13 +19,11 @@
 	let {
 		movies,
 		genreId,
-		variant = 'default',
-		type = 'movie'
+		variant = 'default'
 	}: {
-		movies: MovieGenre['movies'];
+		movies: Movie[];
 		genreId: number;
 		variant?: 'default' | 'top-ten';
-		type: MovieType;
 	} = $props();
 
 	let visibleSlides = $state<number[]>([]);
@@ -131,16 +129,16 @@
 											movieId={movie.id}
 											isVisible={visibleSlides.includes(index)}
 											orderNumber={index ? index : 10}
+											type={movie.media_type}
 											userAction={movie.user_action}
-											{type}
 										/>
 									{:else}
 										<MovieCard
 											movieId={movie.id}
 											isVisible={visibleSlides.includes(index)}
-											title={movie.title}
+											title={movie.media_type === 'movie' ? movie.title : movie.name}
+											type={movie.media_type}
 											userAction={movie.user_action}
-											{type}
 										/>
 									{/if}
 								</div>
@@ -164,7 +162,7 @@
 										: 'hidden'}
 								>
 									<div style="width: {triggerWidth * 1.5}px;">
-										<MoviePreview movieId={movie.id} {type} />
+										<MoviePreview movieId={movie.id} type={movie.media_type} />
 									</div>
 								</div>
 							</HoverCardContent>

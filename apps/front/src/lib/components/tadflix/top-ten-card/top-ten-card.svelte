@@ -17,7 +17,6 @@
 	let isLoading = true;
 
 	const loadPosterImage = async (movieId: any, size: ImageSizeType): Promise<BackDropImage> => {
-		console.log('Loading poster image for movieId:', movieId, 'with size:', size);
 		const poster_image_data = await getPosterImage(movieId, size, type);
 		poster_image = poster_image_data;
 		return poster_image_data;
@@ -29,7 +28,17 @@
 		loadPosterImage(movieId, 'small')
 			.catch((error) => {
 				console.error('Error loading backdrop image:', error);
-				poster_image = null;
+				poster_image = {
+					aspect_ratio: 0,
+					height: 0,
+					width: 0,
+					iso_639_1: '',
+					file_path: '',
+					vote_average: 0,
+					vote_count: 0,
+					url: '/img/default-backdrop2.png',
+					langFound: false
+				};
 			})
 			.finally(() => {
 				isLoading = false;
