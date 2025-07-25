@@ -6,6 +6,8 @@
 	import { MovieCarousel } from '@/components/tadflix/movie-carousel';
 	import MovieBanner from '@/components/tadflix/movie-banner/MovieBanner.svelte';
 	import Skeleton from '@/components/ui/skeleton/skeleton.svelte';
+	import { ChevronRight } from 'lucide-svelte';
+	import { _ } from 'svelte-i18n';
 
 	const { data } = $props();
 
@@ -66,17 +68,30 @@
 		<Skeleton class="h-[80vh]" />
 	{/if}
 	{#each movieGenres as genre}
-		<div class="flex w-full flex-col gap-[15px] overflow-hidden">
-			<h2 class="text-l ml-[58px] font-medium">{genre.name}</h2>
+		<div class="z-9 flex w-full flex-col gap-[8px] overflow-hidden">
+			<div class="mx-[10%] sm:mx-[10.714%] md:mx-[8.333%] lg:mx-[6.818%] xl:mx-[5.769%]">
+				<a
+					href={`/browse?genre=${genre.id}`}
+					class="group flex w-fit flex-row items-center gap-2 text-xs font-normal text-white/80 transition-colors hover:text-white sm:text-sm lg:text-lg"
+				>
+					<div>{genre.name}</div>
+					<div class="relative flex items-center overflow-hidden text-[#54b9c5]">
+						<span
+							class="ml-1 inline-block max-w-0 overflow-hidden whitespace-nowrap text-xs font-light text-[#54b9c5] opacity-0 transition-all duration-1000 group-hover:max-w-[200px] group-hover:translate-y-0 group-hover:opacity-100"
+						>
+							{$_('browse.explore')}
+						</span>
+						<ChevronRight
+							size={12}
+							class="inline-block transform opacity-0 transition-all duration-1000 group-hover:translate-x-1 group-hover:opacity-100"
+						/>
+					</div>
+				</a>
+			</div>
 			{#if genre.id == 0}
-				<MovieCarousel
-					movies={genre.movies}
-					genreId={genre.id}
-					variant={'top-ten'}
-					type={'movie'}
-				/>
+				<MovieCarousel movies={genre.movies} genreId={genre.id} variant={'top-ten'} />
 			{:else}
-				<MovieCarousel movies={genre.movies} genreId={genre.id} type={'movie'} />
+				<MovieCarousel movies={genre.movies} genreId={genre.id} />
 			{/if}
 		</div>
 	{/each}
