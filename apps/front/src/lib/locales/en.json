@@ -15,6 +15,10 @@
 		"more-info": "More Info",
 		"see-more": "See More"
 	},
+	"search": {
+		"placeholder": "Movies, Shows, People...",
+		"noresults": "No results found"
+	},
 	"movie-action": {
 		"bookmarked": "watchlist",
 		"watched": "already watched"

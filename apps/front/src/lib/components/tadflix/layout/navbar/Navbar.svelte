@@ -5,11 +5,13 @@
 	import { cn } from '@/utils';
 	import LanguageSelector from '../LanguageSelector.svelte';
 	import { page } from '$app/state';
-	import type { User } from '@hypertube/shared';
 	import { enhance } from '$app/forms';
-	import { t } from 'svelte-i18n';
 	import { _ } from 'svelte-i18n';
 	import { Skeleton } from '@/components/ui/skeleton';
+	import { Input } from '@/components/ui/input';
+	import { searchQuery } from '@/services/store';
+	import { goto } from '$app/navigation';
+	import { Search } from 'lucide-svelte';
 
 	interface Props {
 		data: any;
@@ -17,6 +19,8 @@
 	}
 
 	let { data, showSkeleton = false }: Props = $props();
+	let searchOpen: boolean = $state(false);
+
 	function isLinkCurrentPage(link: Link): boolean {
 		return page.url.pathname === link.href;
 	}
@@ -30,7 +34,6 @@
 		{ label: 'navbar.home', href: '/' },
 		{ label: 'navbar.shows', href: '/shows' },
 		{ label: 'navbar.movies', href: '/movies' },
-		{ label: 'navbar.news-popular', href: '/news' },
 		{ label: 'navbar.my-list', href: '/my-list' }
 	];
 
@@ -60,6 +63,22 @@
 		// Clean up
 		return () => window.removeEventListener('scroll', handleScroll);
 	});
+
+	function handleInput(event: Event & { currentTarget: EventTarget & HTMLInputElement }) {
+		searchQuery.set(event.currentTarget.value.trim());
+		if ($searchQuery.length === 0) {
+			// If search query is empty, reset results
+			goto('/', { replaceState: true, noScroll: true, keepFocus: true });
+			return;
+		}
+
+		// Update URL query param without reloading
+		goto(`/search?q=${encodeURIComponent($searchQuery)}`, {
+			replaceState: true,
+			noScroll: true,
+			keepFocus: true
+		});
+	}
 </script>
 
 <!-- Navbar -->
@@ -89,10 +108,12 @@
 						href={link.href}
 						class={cn(
 							'text-white transition-colors hover:text-gray-300',
-							isLinkCurrentPage(link) ? 'font-bold' : 'font-medium'
+							isLinkCurrentPage(link) ? 'font-bold' : 'font-light'
 						)}
 					>
-						{$_(link.label)}
+						<p class="text-[12px]">
+							{$_(link.label)}
+						</p>
 					</a>
 				{/each}
 			</div>
@@ -104,7 +125,42 @@
 		{#if showSkeleton}
 			<Skeleton class="h-8 w-20" />
 		{:else}
-			<LanguageSelector />
+			<div class="relative flex items-center">
+				<div class="overflow-hidden">
+					<div
+						class="relative flex w-[250px] items-center transition-all duration-500"
+						style="left: {searchOpen ? '0' : '100%'};"
+					>
+						<span class="pointer-events-none absolute left-3 text-gray-400">
+							<Search size={18} />
+						</span>
+						<input
+							type="search"
+							placeholder={$_('search.placeholder')}
+							class="h-[32px] w-full bg-black/80 pl-10"
+							oninput={handleInput}
+							onfocusout={() => {
+								if ($searchQuery === '') {
+									searchOpen = false;
+								}
+							}}
+						/>
+					</div>
+				</div>
+				{#if !searchOpen}
+					<div class="relative top-0">
+						<button
+							onclick={() => (searchOpen = !searchOpen)}
+							class="flex cursor-pointer items-center justify-center bg-none p-2 text-white"
+						>
+							<Search size={20} />
+						</button>
+					</div>
+				{/if}
+			</div>
+			<div>
+				<LanguageSelector />
+			</div>
 		{/if}
 
 		{#if !page.data.user}

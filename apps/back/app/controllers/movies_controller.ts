@@ -29,11 +29,15 @@ export default class MoviesController {
     const genresList = await this.tmdbService.getGenresList(lang, movieType)
     const popularMovies = await this.tmdbService.getPopularMovies(lang, page, movieType)
     const movieListByGenre = genresList.genres.map(async (genre: any) => {
-      const movies = await this.tmdbService.getMovieListByGenre(genre.id, lang, page, movieType)
+      const movies = await this.tmdbService.getMovieListByGenre(genre.id, undefined, lang, page, movieType)
       return {
         id: genre.id,
         name: genre.name,
-        movies: movies.results,
+        movies: movies.results.map((movie: any) => {
+          return {
+            media_type: movieType,
+            ...movie
+          }})
       }
     })
     const movieListByGenreResults = await Promise.all(movieListByGenre)
@@ -137,5 +141,44 @@ export default class MoviesController {
     if (!movieVideo)
       movieVideo = movieVideos.results.find((video: any) => video.site === 'YouTube' && video.type === 'Trailer')
     return movieVideo;
+  }
+
+  async movieSearch ({ request, response }: HttpContext) {
+    const query = request.input('query')
+    const lang = request.input('lang', 'en')
+    const page = request.input('page', 1)
+    if (!query) {
+      return response.badRequest({ error: 'Query is required' })
+    }
+    const searchResults = await this.tmdbService.getMultiSearch(query, lang, page)
+    const hasMorePages = searchResults.total_pages > page;
+    const media: any[] = [];
+
+    for (const result of searchResults.results) {
+      if (result.media_type === 'person' && result.known_for_department === 'Acting') {
+        const movieActor = await this.tmdbService.getMovieListByGenre(
+          undefined,
+          result.id,
+          lang,
+          1,
+          'movie',
+          'en'
+        );
+
+        const movies = movieActor.results.map((movie: any) => ({
+          media_type: 'movie',
+          ...movie
+        }));
+
+        media.push(...movies);
+      } else {
+        media.push(result);
+      }
+    }
+    if (searchResults) {
+    return {movies: media, hasMorePages}
+    } else {
+      return response.notFound({ error: 'Search results not found' })
+    }
   }
 }

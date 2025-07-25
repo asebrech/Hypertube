@@ -20,10 +20,12 @@ export type MovieType = 'movie'| 'tv'
 export type Movie = {
   id: number;
   title: string;
+  name: string;
   overview: string;
   poster_path: string;
   release_date: string;
   vote_average: number;
+  media_type: MovieType | undefined
   backdrop_image: BackDropImage | null | undefined;
   user_action?: UserMovieAction | null;
 };
@@ -78,6 +80,7 @@ export type MovieDetails = {
   status: string;
   tagline: string;
   title: string;
+  name: string;
   video: boolean;
   vote_average: number;
   vote_count: number;
