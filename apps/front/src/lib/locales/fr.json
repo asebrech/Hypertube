@@ -8,7 +8,8 @@
 		"movies": "Films",
 		"news-popular": "Nouveau et populaire",
 		"my-list": "Mes listes",
-		"by-language": "Browse By Language"
+		"by-language": "Browse By Language",
+		"browse": "Parcourir"
 	},
 	"movie-banner": {
 		"play": "Lecture",
@@ -19,8 +20,22 @@
 		"placeholder": "Films, Emissions, Personnes...",
 		"noresults": "Aucun résultat trouvé"
 	},
+	"filters": {
+		"select_genre": "Catégorie",
+		"select_year": "Année de sortie",
+		"select_sort": "Trié par ...",
+		"select_language": "Pays d'origine",
+		"mostpopular": "Le plus populaire",
+		"latestrelease": "Dernière sortie",
+		"toprated": "Les mieux notés",
+		"originaltitle": "A-Z",
+		"originaltitle_desc": "Z-A"
+	},
 	"movie-action": {
 		"bookmarked": "Watchlist",
 		"watched": "d\u00e9j\u00e0 vu"
+	},
+	"browse": {
+		"explore": "Tout explorer"
 	}
 }

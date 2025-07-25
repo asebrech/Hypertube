@@ -8,7 +8,8 @@
         "movies": "电影",
         "news-popular": "新闻与热门",
         "my-list": "我的列表",
-        "by-language": "按语言浏览"
+        "by-language": "按语言浏览",
+        "browse": "浏览"
     },
     "movie-banner": {
         "play": "播放",
@@ -19,8 +20,20 @@
         "placeholder": "电影、电视剧、人物...",
         "noresults": "未找到结果"
     },
+    "filters": {
+		"select_genre": "类别",
+		"select_year": "发行年份",
+		"select_sort": "排序方式...",
+		"select_language": "原产国",
+        "mostpopular": "最受欢迎",
+        "latestrelease": "最新发行",
+        "toprated": "评分最高"
+	},
     "movie-action": {
         "bookmarked": "收藏夹",
         "watched": "已观看"
+    },
+    "browse": {
+        "explore": "探索全部"
     }
   }
