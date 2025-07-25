@@ -7,7 +7,7 @@ on:
     branches: [staging, main]
 
 jobs:
-  test:
+  up-to-date:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
