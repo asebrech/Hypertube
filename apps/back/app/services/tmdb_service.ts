@@ -27,8 +27,7 @@ export class TMDBService {
       const response = await axios(options)
       return response.data
     } catch (error) {
-      console.error(`Error fetching data from TMDB. URL: ${url}, Error:`, error)
-      throw new Error('Failed to fetch data from TMDB')
+      throw new Error('Failed to fetch data from TMDB. Endpoint : ' + endpoint)
     }
   }
 
@@ -51,13 +50,15 @@ export class TMDBService {
   }
 
   public async getMovieListByGenre(
-    genreId: number,
+    genreId: number | undefined,
+    castId: number | undefined,
     language: string = 'en',
     page: number = 1,
     movieType: MovieType = 'movie',
     region: string = 'en'
   ) {
-    const endpoint = `/discover/${movieType}?with_genres=${genreId}&language=${language}&page=${page}&sort_by=popularity.desc&region=${region}`
+
+    const endpoint = `/discover/${movieType}?with_genres=${genreId || ''}&language=${language}&page=${page}&sort_by=popularity.desc&region=${region}&with_cast=${castId || ''}`
     const data = await this.getSomething(endpoint)
     return data
   }
@@ -183,5 +184,17 @@ export class TMDBService {
       ...image,
       langFound: langFound,
     }
+  }
+
+  async getMovieSearch(query: string, language: string = 'en', page: number = 1, movieType: MovieType = 'movie') {
+    const endpoint = `/search/${movieType}?query=${encodeURIComponent(query)}&language=${language}&page=${page}`
+    const data = await this.getSomething(endpoint)
+    return data
+  }
+
+  async getMultiSearch(query: string, language: string = 'en', page: number = 1) {
+    const endpoint = `/search/multi?query=${encodeURIComponent(query)}&language=${language}&page=${page}`
+    const data = await this.getSomething(endpoint)
+    return data
   }
 }

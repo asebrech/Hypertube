@@ -15,6 +15,10 @@
         "more-info": "更多信息",
         "see-more": "查看更多"
     },
+    "search": {
+        "placeholder": "电影、电视剧、人物...",
+        "noresults": "未找到结果"
+    },
     "movie-action": {
         "bookmarked": "收藏夹",
         "watched": "已观看"

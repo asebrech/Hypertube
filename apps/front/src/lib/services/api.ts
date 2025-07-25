@@ -121,3 +121,29 @@ export async function getMovieVideos(movieId: number, type: MovieType = 'movie')
 		throw error;
 	}
 }
+
+export async function getMovieSearch(
+	query: string,
+	page: number,
+	type: MovieType = 'movie',
+	options?: { signal?: AbortSignal }
+) {
+	const config = {
+		method: 'get',
+		url: `${PUBLIC_BACK_URL}/movies/search`,
+		params: {
+			query: query,
+			lang: get(locale),
+			page: page,
+			type: type
+		},
+		...(options?.signal ? { signal: options.signal } : {})
+	};
+	try {
+		const response = await axios(config);
+		return response.data;
+	} catch (error) {
+		console.error('Error fetching movie search:', error);
+		throw error;
+	}
+}
