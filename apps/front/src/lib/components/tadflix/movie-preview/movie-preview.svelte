@@ -5,7 +5,7 @@
 	import { onMount } from 'svelte';
 	import ButtonPreview from '$lib/components/tadflix/buttons/button-preview/button-preview.svelte';
 	import { Play, Plus, ChevronDown, Languages, VolumeOff, Volume2, RotateCw } from 'lucide-svelte';
-	import Icon from '$lib/assets/tadflix-small.svelte';
+	import Icon from '@/assets/datflix-small.svelte';
 	import { Dot } from 'lucide-svelte';
 	import { locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';

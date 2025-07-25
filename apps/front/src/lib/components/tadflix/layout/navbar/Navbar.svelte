@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import Tadflix from '$lib/assets/tadflix.svelte';
+	import Datflix from '@/assets/datflix.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { cn } from '@/utils';
 	import LanguageSelector from '../LanguageSelector.svelte';
@@ -95,8 +95,8 @@
 	<div class="flex items-center space-x-10">
 		<!-- Logo -->
 		<a href="/" class="mr-8 text-3xl font-bold text-red-600">
-			<span class="sr-only">TadFlix</span>
-			<Tadflix size="sm" />
+			<span class="sr-only">DatFlix</span>
+			<Datflix size="sm" />
 		</a>
 
 		<!-- Navigation Links -->
