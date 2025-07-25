@@ -16,11 +16,15 @@ export default class MoviesController {
     const popularMovies = await this.tmdbService.getPopularMovies(lang, page)
 
     const movieListByGenre = genresList.genres.map(async (genre: any) => {
-      const movies = await this.tmdbService.getMovieListByGenre(genre.id, lang, page, movieType)
+      const movies = await this.tmdbService.getDiscover([genre.id], undefined, lang, page, movieType)
       return {
         id: genre.id,
         name: genre.name,
-        movies: movies.results,
+        movies: movies.results.map((movie: any) => {
+          return {
+            media_type: movieType,
+            ...movie
+          }})
       }
     })
     const movieListByGenreResults = await Promise.all(movieListByGenre)
@@ -116,7 +120,6 @@ export default class MoviesController {
     const tmdb_movie_id = request.param('id')
     const lang = request.input('lang', 'en')
     const movieType = request.input('type', 'movie')
-    console.log('type', movieType)
     const movieVideos = await this.tmdbService.getMovieVideos(tmdb_movie_id, lang, movieType)
     if (!movieVideos)
       return response.notFound({ error: 'Movie videos not found' })
@@ -124,5 +127,128 @@ export default class MoviesController {
     if (!movieVideo)
       movieVideo = movieVideos.results.find((video: any) => video.site === 'YouTube' && video.type === 'Trailer')
     return movieVideo;
+  }
+
+  async movieSearch ({ request, response }: HttpContext) {
+    const query = request.input('query')
+    const lang = request.input('lang', 'en')
+    const page = request.input('page', 1)
+    if (!query) {
+      return response.badRequest({ error: 'Query is required' })
+    }
+    const searchResults = await this.tmdbService.getMultiSearch(query, lang, page)
+    const hasMorePages = searchResults.total_pages > page;
+    const media: any[] = [];
+
+    for (const result of searchResults.results) {
+      if (result.media_type === 'person' && result.known_for_department === 'Acting') {
+        const movieActor = await this.tmdbService.getMovieListByGenre(
+          undefined,
+          result.id,
+          lang,
+          1,
+          'movie',
+          'en'
+        );
+
+        const movies = movieActor.results.map((movie: any) => ({
+          media_type: 'movie',
+          ...movie
+        }));
+
+        media.push(...movies);
+      } else {
+        media.push(result);
+      }
+    }
+    if (searchResults) {
+    return {movies: media, hasMorePages}
+    } else {
+      return response.notFound({ error: 'Search results not found' })
+    }
+  }
+
+  async MovieDiscover ({ request, response }: HttpContext) {
+    let genreId = request.input('genreId')
+    if (typeof genreId === 'string') {
+      genreId = [genreId]
+    }
+    let castId = request.input('castId')
+    if (typeof castId === 'string') {
+      castId = [castId]
+    }
+    const lang = request.input('lang', 'en');
+    const page = Number(request.input('page', 1));
+    const movieType = request.input('type', 'movie');
+    const region = request.input('region', 'en');
+    const releaseYear = request.input('releaseYear');
+    const sortBy = request.input('sortBy', 'popularity.desc');
+    const originalLanguage = request.input('originalLanguage');
+
+    const discoverResults = await this.tmdbService.getDiscover(
+      genreId,
+      castId,
+      lang,
+      page,
+      movieType,
+      region,
+      releaseYear,
+      sortBy,
+      originalLanguage
+    );
+    const hasMorePages = discoverResults.total_pages > page;
+    if (discoverResults) {
+      return { movies: discoverResults.results, hasMorePages }
+    } else {
+      return response.notFound({ error: 'Discover results not found' })
+    }
+  }
+
+  async movieGenres ({ request, response }: HttpContext) {
+    const lang = request.input('lang', 'en')
+    const movieType = request.input('type', 'movie')
+    const genresList = await this.tmdbService.getGenresList(lang, movieType)
+    if (genresList) {
+      return genresList.genres
+    } else {
+      return response.notFound({ error: 'Genres not found' })
+    }
+  }
+
+  async MovieSimilar({ request, response }: HttpContext) {
+    const tmdb_movie_id = request.input('tmdb_movie_id')
+    const lang = request.input('lang', 'en')
+    const page = request.input('page', 1)
+    const movieType = request.input('type', 'movie')
+    const similarMovies = await this.tmdbService.getSimilarMovies(tmdb_movie_id, lang, page, movieType)
+    const hasMorePages = similarMovies.total_pages > page;
+    if (similarMovies) {
+      return { movies: similarMovies.results, hasMorePages }
+    } else {
+      return response.notFound({ error: 'Similar movies not found' })
+    }
+  }
+
+  async MovieCredits({ request, response }: HttpContext) {
+    const tmdb_movie_id = request.input('tmdb_movie_id')
+    const lang = request.input('lang', 'en')
+    const movieType = request.input('type', 'movie')
+    const movieCredits = await this.tmdbService.getMovieCredits(tmdb_movie_id, lang, movieType)
+    if (movieCredits) {
+      return movieCredits
+    } else {
+      return response.notFound({ error: 'Movie credits not found' })
+    }
+  }
+
+  async PeopleDetails({ request, response }: HttpContext) {
+    const tmdb_person_id = request.input('tmdb_people_id')
+    const lang = request.input('lang', 'en')
+    const personDetails = await this.tmdbService.getPeopleDetails(tmdb_person_id, lang)
+    if (personDetails) {
+      return personDetails
+    } else {
+      return response.notFound({ error: 'Person details not found' })
+    }
   }
 }

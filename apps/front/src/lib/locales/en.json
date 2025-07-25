@@ -8,15 +8,35 @@
 		"movies": "Movies",
 		"news-popular": "News & Popular",
 		"my-list": "My Lists",
-		"by-language": "Browse By Language"
+		"by-language": "Browse By Language",
+		"browse": "Browse"
 	},
 	"movie-banner": {
 		"play": "Play",
 		"more-info": "More Info",
 		"see-more": "See More"
 	},
+	"search": {
+		"placeholder": "Movies, Shows, People...",
+		"noresults": "No results found"
+	},
+	"filters": {
+		"select_genre": "Genre",
+		"select_year": "Release Year",
+		"select_sort": "Sorted by...",
+		"select_language": "Country of Origin",
+		"mostpopular": "Most Popular",
+		"latestrelease": "Latest Release",
+		"toprated": "Top Rated",
+		"originaltitle": "A-Z",
+		"originaltitle_desc": "Z-A",
+		"selected_cast": "Selected Cast"
+	},
 	"movie-action": {
 		"bookmarked": "watchlist",
 		"watched": "already watched"
+	},
+	"browse": {
+		"explore": "Explore All"
 	}
 }

@@ -6,7 +6,7 @@
 	import { onMount } from 'svelte';
 	import ButtonPreview from '$lib/components/tadflix/buttons/button-preview/button-preview.svelte';
 	import { Play, Plus, ChevronDown, Languages, VolumeOff, Volume2, RotateCw } from 'lucide-svelte';
-	import Icon from '$lib/assets/tadflix-small.svelte';
+	import Icon from '@/assets/datflix-small.svelte';
 	import { Dot } from 'lucide-svelte';
 	import { locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
@@ -98,7 +98,6 @@
 	}
 
 	onMount(() => {
-		console.log('key', movieVideo?.key);
 		// @ts-ignore
 		window.onYouTubeIframeAPIReady = () => {
 			isApiLoaded = true;
@@ -117,7 +116,6 @@
 	});
 
 	$effect(() => {
-		console.log('key', movieVideo?.key);
 		if (movieVideo?.key) {
 			createPlayer(movieVideo?.key);
 		}
@@ -125,21 +123,25 @@
 
 	$effect(() => {
 		showVideo = playerReady && !videoEnded;
-		showImage = !!movie?.backdrop_path && (!playerReady || videoEnded);
+		showImage = !!movie && (!playerReady || videoEnded);
 		showSkeleton = !movie?.backdrop_path && (!playerReady || videoEnded);
 	});
+
+	function toggleModalMovie(arg0: { movieId: number | undefined; type: any }) {
+		throw new Error('Function not implemented.');
+	}
+
+	function addMovieToWatchlist(arg0: { movieId: number | undefined; type: any }) {
+		throw new Error('Function not implemented.');
+	}
 </script>
 
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
 	class="block cursor-pointer"
-	role="button"
-	tabindex="0"
-	onclick={() => goto(`/movie/${movieId}`)}
-	onkeydown={(event) => {
-		if (event.key === 'Enter' || event.key === ' ') {
-			event.preventDefault();
-			goto(`/movie/${movieId}`);
-		}
+	onclick={() => {
+		window.location.href = `/movie/${movieId}`;
 	}}
 >
 	<div class="bg-secondary flex flex-col items-center gap-2 pb-2">
@@ -159,13 +161,13 @@
 				style="
       background-image: {movie?.backdrop_path
 					? `url('https://image.tmdb.org/t/p/w500${movie.backdrop_path}')`
-					: 'none'};
+					: `url('/img/default-backdrop2.png')`};
       opacity: {showImage || movie?.backdrop_path ? 1 : 0};
     "
 			>
 				<div class="w-full rounded-b-[2px] bg-gradient-to-t from-black/60 to-transparent p-4">
 					<Icon />
-					<h3 class="line-clamp-1 font-medium">{movie?.title}</h3>
+					<h3 class="line-clamp-1 font-medium">{type === 'movie' ? movie?.title : movie?.name}</h3>
 				</div>
 			</div>
 
@@ -188,19 +190,27 @@
 						class="absolute bottom-0 z-10 w-full rounded-b-[2px] bg-gradient-to-t from-black/60 to-transparent p-4"
 					>
 						<Icon />
-						<h3 class="line-clamp-1 font-medium">{movie?.title}</h3>
+						<h3 class="line-clamp-1 font-medium">
+							{type === 'movie' ? movie?.title : movie?.name}
+						</h3>
 					</div>
 
 					{#if showVideo}
-						<button onclick={(event) => { event.stopPropagation(); toggleMute(); }} class="absolute right-0 bottom-0 z-20 p-4">
-							<ButtonPreview variant="outline" size="default">
-								{#if isMuted}
-									<VolumeOff />
-								{:else}
-									<Volume2 />
-								{/if}
-							</ButtonPreview>
-						</button>
+						<ButtonPreview
+							variant="outline"
+							size="default"
+							onclick={(e) => {
+								e.stopPropagation();
+								toggleMute();
+							}}
+							class="absolute bottom-0 right-0 z-20 m-4"
+						>
+							{#if isMuted}
+								<VolumeOff />
+							{:else}
+								<Volume2 />
+							{/if}
+						</ButtonPreview>
 					{/if}
 				</div>
 				<div class="bg-red relative top-0 left-0 h-full w-full"></div>
@@ -217,11 +227,29 @@
 						<ButtonPreview variant="filled">
 							<Play fill={'black'} />
 						</ButtonPreview>
-						<ButtonPreview variant="outline">
+						<ButtonPreview
+							variant="outline"
+							onclick={(e) => {
+								e.stopPropagation();
+								addMovieToWatchlist({
+									movieId: movie?.id,
+									type: type
+								});
+							}}
+						>
 							<Plus />
 						</ButtonPreview>
 					</div>
-					<ButtonPreview variant="outline">
+					<ButtonPreview
+						variant="outline"
+						onclick={(e) => {
+							e.stopPropagation();
+							toggleModalMovie({
+								movieId: movie?.id,
+								type: type
+							});
+						}}
+					>
 						<ChevronDown />
 					</ButtonPreview>
 				</div>
