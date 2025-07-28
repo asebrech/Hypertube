@@ -3,16 +3,24 @@ import fs from 'node:fs'
 import ffmpeg from 'fluent-ffmpeg'
 import path from 'node:path'
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg'
-import SearchTorrentService from './search_torrent_service.ts'
+import SearchTorrentService from './search_torrent_service.js'
+import MovieService from './movie_service.js'
 
 ffmpeg.setFfmpegPath(ffmpegInstaller.path)
 
 export default class TorrentService {
   private searchTorrentService: SearchTorrentService = new SearchTorrentService()
+  private movieService: MovieService = new MovieService()
 
   async download(tmdbId: number) {
     console.log('Searching for torrents for TMDB ID:', tmdbId)
+
+    const movie = await this.movieService.getOrCreate(tmdbId)
+    console.log('Movie instance:', { id: movie.id, tmdbId: movie.tmdbId, title: movie.title })
+
     const torrent = await this.searchTorrentService.search(tmdbId, 'All', 100)
+
+    await this.movieService.updateMagnetLink(tmdbId, torrent.magnetLink)
 
     const filePath = torrent.magnetLink
     const engine = torrentStream(filePath)
