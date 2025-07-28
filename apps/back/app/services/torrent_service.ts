@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import ffmpeg from 'fluent-ffmpeg'
 import path from 'node:path'
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg'
-import SearchTorrentService from './search_torrent_service.js'
+import SearchTorrentService from './search_torrent_service.ts'
 
 ffmpeg.setFfmpegPath(ffmpegInstaller.path)
 

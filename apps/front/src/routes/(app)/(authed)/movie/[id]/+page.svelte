@@ -3,17 +3,19 @@
 	import videojs from 'video.js';
 	import 'video.js/dist/video-js.css';
 	import { invalidateAll } from '$app/navigation';
+	import { PUBLIC_BACK_URL } from '$env/static/public';
 
 	export let data;
 
-	const BASE_URL = 'http://localhost:3333/stream';
+	const BASE_URL = `${PUBLIC_BACK_URL}/stream`;
+
 	const POLL_INTERVAL = 5000; // 5 seconds
 	const TIMEOUT_DURATION = 300000; // 5 minutes
 
 	let player;
 	let container;
-	let isLoading = !data.isAnyVideoReady;
-	let loadingMessage = data.isAnyVideoReady ? '' : 'Converting video files... Please wait.';
+	let isLoading = !data.isAllVideoReady;
+	let loadingMessage = data.isAllVideoReady ? '' : 'Converting video files... Please wait.';
 	let error = null;
 	let pollingInterval;
 
@@ -27,14 +29,14 @@
 	$: preferredResolution = data.preferredResolution || '1080';
 
 	async function pollForVideoReadiness() {
-		if (data.isAnyVideoReady) {
+		if (data.isAllVideoReady) {
 			clearInterval(pollingInterval);
 			return;
 		}
 
 		await invalidateAll();
 
-		if (!data.isAnyVideoReady) {
+		if (!data.isAllVideoReady) {
 			loadingMessage = 'Converting video files... Please wait.';
 		} else {
 			isLoading = false;
@@ -112,20 +114,20 @@
 		player.ready(() => player.currentTime(currentTime));
 	}
 
-	$: if (data.isAnyVideoReady && !isLoading && !error && container && !player) {
+	$: if (data.isAllVideoReady && !isLoading && !error && container && !player) {
 		initializeVideoPlayer();
 	}
 
 	$: {
-		isLoading = !data.isAnyVideoReady;
-		if (data.isAnyVideoReady && pollingInterval) {
+		isLoading = !data.isAllVideoReady;
+		if (data.isAllVideoReady && pollingInterval) {
 			clearInterval(pollingInterval);
 			pollingInterval = null;
 		}
 	}
 
 	onMount(() => {
-		if (!data.isAnyVideoReady) {
+		if (!data.isAllVideoReady) {
 			pollingInterval = setInterval(pollForVideoReadiness, POLL_INTERVAL);
 
 			setTimeout(() => {

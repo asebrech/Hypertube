@@ -9,12 +9,16 @@ type VideoReadiness = {
 type LoadResult = {
 	movieId: string;
 	videoReadiness: VideoReadiness[];
-	isAnyVideoReady: boolean;
+	isAllVideoReady: boolean;
 	preferredResolution: string | null;
 	availableResolutions: string[];
 };
 
-async function checkVideoReadiness(movieId: string, resolution: string, fetch: typeof globalThis.fetch): Promise<boolean> {
+async function checkVideoReadiness(
+	movieId: string,
+	resolution: string,
+	fetch: typeof globalThis.fetch
+): Promise<boolean> {
 	try {
 		const response = await fetch(`${PUBLIC_BACK_URL}/torrent/${resolution}/${movieId}`);
 		const data = await response.json();
@@ -37,8 +41,7 @@ function getPreferredResolution(readyResolutions: string[]): string | null {
 
 export const load: PageServerLoad = async ({ params, fetch }): Promise<LoadResult> => {
 	const movieId = params.id!;
-	
-	// Start torrent download/conversion process
+
 	try {
 		const response = await fetch(`${PUBLIC_BACK_URL}/torrent/${movieId}`);
 		if (!response.ok) {
@@ -46,10 +49,8 @@ export const load: PageServerLoad = async ({ params, fetch }): Promise<LoadResul
 		}
 	} catch (error) {
 		console.error('Error starting torrent download:', error);
-		// Continue anyway to check if video files already exist
 	}
 
-	// Check readiness for all resolutions
 	const resolutions = ['480', '720', '1080'];
 	const readinessChecks = await Promise.all(
 		resolutions.map(async (resolution) => ({
@@ -59,16 +60,16 @@ export const load: PageServerLoad = async ({ params, fetch }): Promise<LoadResul
 	);
 
 	const readyResolutions = readinessChecks
-		.filter(check => check.ready)
-		.map(check => check.resolution);
+		.filter((check) => check.ready)
+		.map((check) => check.resolution);
 
 	const preferredResolution = getPreferredResolution(readyResolutions);
-	const isAnyVideoReady = readyResolutions.length > 0;
+	const isAllVideoReady = readyResolutions.length === resolutions.length;
 
 	return {
 		movieId,
 		videoReadiness: readinessChecks,
-		isAnyVideoReady,
+		isAllVideoReady,
 		preferredResolution,
 		availableResolutions: readyResolutions
 	};
