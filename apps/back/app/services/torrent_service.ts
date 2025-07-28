@@ -1,78 +1,192 @@
 import torrentStream from 'torrent-stream'
 import fs from 'node:fs'
-import { PassThrough } from 'node:stream'
 import ffmpeg from 'fluent-ffmpeg'
-import { HttpContext } from '@adonisjs/core/http'
 import path from 'node:path'
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg'
 import SearchTorrentService from './search_torrent_service.js'
 
 ffmpeg.setFfmpegPath(ffmpegInstaller.path)
 
-export default class EchoService {
+export default class TorrentService {
   private searchTorrentService: SearchTorrentService = new SearchTorrentService()
 
-  async respond(tmdbId: number) {
+  async download(tmdbId: number) {
     console.log('Searching for torrents for TMDB ID:', tmdbId)
     const torrent = await this.searchTorrentService.search(tmdbId, 'All', 100)
-    
-    // const filePath =
-    //   'magnet:?xt=urn:btih:52DB7C1686A8D3C22F70F3187061FE1737AA0258&dn=Rick+and+Morty+S08E03+1080p+WEB+H264-SuccessfulCrab&tr=http%3A%2F%2Fp4p.arenabg.com%3A1337%2Fannounce&tr=udp%3A%2F%2F47.ip-51-68-199.eu%3A6969%2Fannounce&tr=udp%3A%2F%2F9.rarbg.me%3A2780%2Fannounce&tr=udp%3A%2F%2F9.rarbg.to%3A2710%2Fannounce&tr=udp%3A%2F%2F9.rarbg.to%3A2730%2Fannounce&tr=udp%3A%2F%2F9.rarbg.to%3A2920%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&tr=udp%3A%2F%2Fopentracker.i2p.rocks%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.cyberia.is%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.dler.org%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.internetwarriors.net%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=udp%3A%2F%2Ftracker.pirateparty.gr%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.tiny-vps.com%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce'
+
     const filePath = torrent.magnetLink
     const engine = torrentStream(filePath)
 
     engine.on('ready', () => {
-      engine.files.forEach((file) => {
-        console.log('filename:', file.name)
-        const stream = file.createReadStream()
-        this.convert(stream, tmdbId.toString())
-      })
+      console.log('Torrent engine ready, files:', engine.files.length)
+
+      // Find the largest video file (main movie)
+      const videoFile = engine.files
+        .filter((file: any) => this.isVideoFile(file.name))
+        .sort((a: any, b: any) => b.length - a.length)[0]
+
+      if (!videoFile) {
+        console.error('No video file found in torrent')
+        return
+      }
+
+      console.log('Selected video file:', videoFile.name, 'Size:', videoFile.length)
+
+      // Select this file for priority download
+      videoFile.select()
+
+      // Enable progressive conversion with partial file streaming
+      this.progressiveConvert(videoFile, tmdbId.toString())
     })
 
-    return 'Streaming started'
+    engine.on('download', (pieceIndex: number) => {
+      // Log download progress for monitoring
+      const downloaded = engine.swarm.downloaded
+      const total = (engine as any).torrent?.length || 1
+      const progress = ((downloaded / total) * 100).toFixed(2)
+      console.log(`Download progress: ${progress}% (Piece ${pieceIndex})`)
+    })
+
+    return { message: 'Sequential torrent download started', tmdbId }
   }
 
-  convert(stream: any, videoId: string) {
+  private isVideoFile(filename: string): boolean {
+    const videoExtensions = ['.mp4', '.mkv', '.avi', '.mov', '.wmv', '.flv', '.webm', '.m4v']
+    return videoExtensions.some((ext) => filename.toLowerCase().endsWith(ext))
+  }
+
+  private progressiveConvert(file: any, videoId: string) {
     const resolutions = [480, 720, 1080]
 
     resolutions.forEach((width) => {
-      const outputFolderRootPath = `./hls-output/${videoId}/${width}p`
-      if (!fs.existsSync(outputFolderRootPath)) {
-        fs.mkdirSync(outputFolderRootPath, { recursive: true })
-      }
-      const outputFilePath = path.join(outputFolderRootPath, `output.m3u8`)
-
-      ffmpeg(stream)
-        .outputOptions([
-          '-c:v libx264', // Video codec
-          '-c:a aac',
-          '-preset veryfast', // Fast encoding with reasonable quality and file size
-          '-movflags +faststart', // Optimize for web streaming
-          '-crf 27', // Constant Rate Factor for quality
-          '-tag:v avc1', // Tag for QuickTime compatibility
-          '-f hls', // Output format
-          '-hls_time 10', // Segment duration
-          '-hls_list_size 0', // Include all segments in playlist
-          '-hls_playlist_type event',
-          '-hls_flags append_list',
-          '-start_number 0',
-          '-ac 6',
-          '-ar 48000',
-          '-b:a 384k',
-        ])
-        .output(outputFilePath)
-        .videoFilter(`scale = ${width}: -2`) // Scale width and maintain aspect ratio
-        // .on('progress', () => {
-        //   console.log(`An HLS ${width}p segment has been generated successfully!`)
-        // })
-        .on('end', () => {
-          console.log(`All HLS segments for ${width}p have been generated successfully!`)
-        })
-        .on('error', (err) => {
-          console.log(`Error: ${err.message} `)
-        })
-        .run()
+      this.startProgressiveHLSConversion(file, videoId, width)
     })
+  }
+
+  private startProgressiveHLSConversion(file: any, videoId: string, width: number) {
+    const outputFolderRootPath = `./hls-output/${videoId}/${width}p`
+    if (!fs.existsSync(outputFolderRootPath)) {
+      fs.mkdirSync(outputFolderRootPath, { recursive: true })
+    }
+
+    const outputFilePath = path.join(outputFolderRootPath, `output.m3u8`)
+
+    // Create a readable stream that can handle partial file data
+    const stream = file.createReadStream()
+
+    console.log(`Starting progressive HLS conversion for ${width}p`)
+
+    ffmpeg(stream)
+      .outputOptions([
+        '-c:v libx264',
+        '-c:a aac',
+        '-preset veryfast',
+        '-movflags +faststart',
+        '-crf 27',
+        '-tag:v avc1',
+        '-f hls',
+        '-hls_time 6', // Shorter segments for faster initial playback
+        '-hls_list_size 0',
+        '-hls_playlist_type event',
+        '-hls_flags append_list',
+        '-start_number 0',
+        '-hls_segment_filename',
+        path.join(outputFolderRootPath, 'segment_%03d.ts'),
+        // Enable low latency streaming
+        '-hls_flags +append_list+omit_endlist',
+        '-hls_allow_cache 0',
+        '-ac 6',
+        '-ar 48000',
+        '-b:a 384k',
+        // Buffer settings for progressive streaming
+        '-bufsize 1M',
+        '-maxrate 2M',
+      ])
+      .output(outputFilePath)
+      .videoFilter(`scale=${width}:-2`)
+      .on('start', (commandLine) => {
+        console.log(`FFmpeg command for ${width}p: ${commandLine}`)
+      })
+      .on('progress', (progress) => {
+        if (progress.percent) {
+          console.log(`HLS ${width}p conversion progress: ${progress.percent.toFixed(2)}%`)
+        }
+        // Update playlist to mark segments as available for streaming
+        this.updateProgressivePlaylist(outputFilePath, width, videoId)
+      })
+      .on('end', () => {
+        console.log(`Progressive HLS conversion completed for ${width}p`)
+        // Finalize the playlist
+        this.finalizePlaylist(outputFilePath)
+      })
+      .on('error', (err) => {
+        console.error(`Error in progressive conversion for ${width}p:`, err.message)
+      })
+      .run()
+  }
+
+  private updateProgressivePlaylist(playlistPath: string, resolution: number, videoId: string) {
+    // This method can be enhanced to update the playlist dynamically
+    // as new segments become available for immediate streaming
+    try {
+      if (fs.existsSync(playlistPath)) {
+        const playlist = fs.readFileSync(playlistPath, 'utf8')
+        // Check if playlist has enough segments for initial playback (e.g., 3 segments)
+        const segmentCount = (playlist.match(/segment_\d+\.ts/g) || []).length
+
+        if (segmentCount >= 3) {
+          // Mark this resolution as ready for progressive streaming
+          this.markProgressiveReady(videoId, resolution.toString())
+        }
+      }
+    } catch (error) {
+      console.error('Error updating progressive playlist:', error)
+    }
+  }
+
+  private markProgressiveReady(videoId: string, resolution: string) {
+    // Create a marker file to indicate progressive streaming is available
+    const markerPath = `./hls-output/${videoId}/${resolution}p/.progressive_ready`
+    if (!fs.existsSync(markerPath)) {
+      fs.writeFileSync(markerPath, Date.now().toString())
+      console.log(`Progressive streaming available for ${resolution}p`)
+    }
+  }
+
+  private finalizePlaylist(playlistPath: string) {
+    try {
+      if (fs.existsSync(playlistPath)) {
+        let playlist = fs.readFileSync(playlistPath, 'utf8')
+        // Add end tag if not present
+        if (!playlist.includes('#EXT-X-ENDLIST')) {
+          playlist += '#EXT-X-ENDLIST\n'
+          fs.writeFileSync(playlistPath, playlist)
+        }
+      }
+    } catch (error) {
+      console.error('Error finalizing playlist:', error)
+    }
+  }
+
+  ready(tmdbId: string, resolution: string) {
+    const outputFolderRootPath = `./hls-output/${tmdbId}/${resolution}p`
+    const progressiveMarkerPath = path.join(outputFolderRootPath, '.progressive_ready')
+
+    const isProgressiveReady = fs.existsSync(progressiveMarkerPath)
+
+    if (isProgressiveReady) {
+      return {
+        status: 200,
+        message: 'Video is partially ready for progressive streaming',
+        progressive: true,
+      }
+    } else {
+      return {
+        status: 404,
+        message: 'Video is not ready yet or conversion in progress',
+        progressive: false,
+      }
+    }
   }
 
   isMovieConverted(imdbId: string): boolean {

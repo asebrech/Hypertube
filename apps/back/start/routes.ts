@@ -16,9 +16,6 @@ const TorrentController = () => import('#controllers/torrent_controller')
 
 router.get('/', async () => ({ hello: 'world' }))
 
-router.get('/torrent', [TorrentController, 'torrent'])
-router.get('/hls/*', [TorrentController, 'stream'])
-
 router
   .group(() => {
     router.post('register', [AuthController, 'register'])
@@ -27,20 +24,27 @@ router
   })
   .prefix('user')
 
-router.group(() => {
-  router.get('movies', [MoviesController, 'index'])
-  router.get('movies/backdropImage', [MoviesController, 'backdropImage'])
-  router.get('movies/posterImage', [MoviesController, 'posterImage'])
-  router.get('movies/logoImage', [MoviesController, 'logoImage'])
-  router.get('movies/search', [MoviesController, 'movieSearch'])
-  router.get('movies/discover', [MoviesController, 'MovieDiscover'])
-  router.get('movies/genres', [MoviesController, 'movieGenres'])
-  router.get('movies/similar', [MoviesController, 'MovieSimilar'])
-  router.get('movies/credits', [MoviesController, 'MovieCredits'])
-  router.get('movies/people', [MoviesController, 'PeopleDetails'])
-  router.get('movies/:id', [MoviesController, 'movieDetails'])
-  router.get('movies/:id/videos', [MoviesController, 'movieVideos'])
-})
+router
+  .group(() => {
+    router.get('', [MoviesController, 'index'])
+    router.get('backdropImage', [MoviesController, 'backdropImage'])
+    router.get('posterImage', [MoviesController, 'posterImage'])
+    router.get('logoImage', [MoviesController, 'logoImage'])
+    router.get('search', [MoviesController, 'movieSearch'])
+    router.get('discover', [MoviesController, 'MovieDiscover'])
+    router.get('genres', [MoviesController, 'movieGenres'])
+    router.get('similar', [MoviesController, 'MovieSimilar'])
+    router.get('credits', [MoviesController, 'MovieCredits'])
+    router.get('people', [MoviesController, 'PeopleDetails'])
+    router.get(':id', [MoviesController, 'movieDetails'])
+    router.get(':id/videos', [MoviesController, 'movieVideos'])
+  })
+  .prefix('movies')
+
+// will need to move to an authed route
+router.get('/torrent/:id', [TorrentController, 'torrent'])
+router.get('/torrent/:resolution/:id', [TorrentController, 'ready'])
+router.get('/stream/*', [TorrentController, 'stream'])
 
 router
   .get('me', async ({ auth, response }) => {
