@@ -20,27 +20,22 @@ export default class TorrentService {
     engine.on('ready', () => {
       console.log('Torrent engine ready, files:', engine.files.length)
 
-      // Find the largest video file (main movie)
       const videoFile = engine.files
         .filter((file: any) => this.isVideoFile(file.name))
         .sort((a: any, b: any) => b.length - a.length)[0]
 
       if (!videoFile) {
-        console.error('No video file found in torrent')
-        return
+        throw new Error('No video file found in torrent')
       }
 
       console.log('Selected video file:', videoFile.name, 'Size:', videoFile.length)
 
-      // Select this file for priority download
       videoFile.select()
 
-      // Enable progressive conversion with partial file streaming
       this.progressiveConvert(videoFile, tmdbId.toString())
     })
 
     engine.on('download', (pieceIndex: number) => {
-      // Log download progress for monitoring
       const downloaded = engine.swarm.downloaded
       const total = (engine as any).torrent?.length || 1
       const progress = ((downloaded / total) * 100).toFixed(2)
@@ -121,6 +116,7 @@ export default class TorrentService {
       })
       .on('error', (err) => {
         console.error(`Error in progressive conversion for ${width}p:`, err.message)
+        throw new Error(`FFmpeg conversion failed for ${width}p: ${err.message}`)
       })
       .run()
   }
@@ -141,6 +137,7 @@ export default class TorrentService {
       }
     } catch (error) {
       console.error('Error updating progressive playlist:', error)
+      throw new Error(`Failed to update progressive playlist: ${error}`)
     }
   }
 
@@ -165,6 +162,7 @@ export default class TorrentService {
       }
     } catch (error) {
       console.error('Error finalizing playlist:', error)
+      throw new Error(`Failed to finalize playlist: ${error}`)
     }
   }
 

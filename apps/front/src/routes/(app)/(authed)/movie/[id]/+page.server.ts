@@ -42,13 +42,9 @@ function getPreferredResolution(readyResolutions: string[]): string | null {
 export const load: PageServerLoad = async ({ params, fetch }): Promise<LoadResult> => {
 	const movieId = params.id!;
 
-	try {
-		const response = await fetch(`${PUBLIC_BACK_URL}/torrent/${movieId}`);
-		if (!response.ok) {
-			throw new Error('Failed to fetch torrent data');
-		}
-	} catch (error) {
-		console.error('Error starting torrent download:', error);
+	const response = await fetch(`${PUBLIC_BACK_URL}/torrent/${movieId}`);
+	if (!response.ok) {
+		throw new Error('Failed to fetch torrent data');
 	}
 
 	const resolutions = ['480', '720', '1080'];
