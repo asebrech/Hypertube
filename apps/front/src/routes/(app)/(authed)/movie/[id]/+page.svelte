@@ -7,6 +7,9 @@
 	export let data;
 
 	const BASE_URL = 'http://localhost:3333/stream';
+	const POLL_INTERVAL = 5000; // 5 seconds
+	const TIMEOUT_DURATION = 300000; // 5 minutes
+
 	let player;
 	let container;
 	let isLoading = !data.isAnyVideoReady;
@@ -20,7 +23,6 @@
 		{ label: '1080p', src: `${BASE_URL}/${data.movieId}/1080p/output.m3u8`, value: '1080' }
 	];
 
-	// Create a reactive set of ready resolutions from server data
 	$: readyResolutions = new Set(data.availableResolutions);
 	$: preferredResolution = data.preferredResolution || '1080';
 
@@ -30,10 +32,8 @@
 			return;
 		}
 
-		// Use SvelteKit's invalidateAll to re-run the load function
 		await invalidateAll();
-		
-		// If still no videos are ready, continue polling
+
 		if (!data.isAnyVideoReady) {
 			loadingMessage = 'Converting video files... Please wait.';
 		} else {
@@ -69,50 +69,53 @@
 			responsive: true,
 			fluid: true,
 			liveui: true,
+			preload: 'auto',
 			sources: [{ src: preferredSource.src, type: 'application/x-mpegURL' }]
 		};
 
 		try {
-			// Create video element
 			const videoElement = document.createElement('video-js');
 			videoElement.className = 'vjs-big-play-centered';
 			container.appendChild(videoElement);
 
-			player = videojs(videoElement, options, function () {
-				console.log('Player is ready');
-			});
+			player = videojs(videoElement, options);
 
-			// Add error handling for the player
 			player.on('error', (error) => {
 				console.error('Video.js player error:', error);
 			});
 
-			// Add resolution switching buttons for ready resolutions only
-			const controlBar = player.getChild('ControlBar');
-			availableResolutions
-				.filter((res) => readyResolutions.has(res.value))
-				.forEach((res) => {
-					const btn = controlBar.addChild('button', {
-						controlText: res.label,
-						className: 'vjs-visible-text'
-					});
-					btn.on('click', () => switchResolution(res));
-				});
+			addResolutionButtons();
 		} catch (error) {
 			console.error('Error initializing video player:', error);
 		}
 	}
 
-	// Reactive statement to initialize player when data is ready
-	$: if (data.isAnyVideoReady && !isLoading && !error && container && !player) {
-		setTimeout(() => {
-			if (container && document.contains(container)) {
-				initializeVideoPlayer();
-			}
-		}, 100);
+	function addResolutionButtons() {
+		const controlBar = player.getChild('ControlBar');
+
+		availableResolutions
+			.filter((res) => readyResolutions.has(res.value))
+			.forEach((res) => {
+				const btn = controlBar.addChild('button', {
+					controlText: res.label,
+					className: 'vjs-visible-text'
+				});
+				btn.on('click', () => switchResolution(res));
+			});
 	}
 
-	// Update loading state when data changes
+	function switchResolution(resolution) {
+		if (!player || !readyResolutions.has(resolution.value)) return;
+
+		const currentTime = player.currentTime();
+		player.src({ src: resolution.src, type: 'application/x-mpegURL' });
+		player.ready(() => player.currentTime(currentTime));
+	}
+
+	$: if (data.isAnyVideoReady && !isLoading && !error && container && !player) {
+		initializeVideoPlayer();
+	}
+
 	$: {
 		isLoading = !data.isAnyVideoReady;
 		if (data.isAnyVideoReady && pollingInterval) {
@@ -121,19 +124,10 @@
 		}
 	}
 
-	function switchResolution(resolution) {
-		if (!player || !readyResolutions.has(resolution.value)) return;
-		const time = player.currentTime();
-		player.src({ src: resolution.src, type: 'application/x-mpegURL' });
-		player.ready(() => player.currentTime(time));
-	}
-
 	onMount(() => {
-		// Only start polling if no videos are ready yet
 		if (!data.isAnyVideoReady) {
-			pollingInterval = setInterval(pollForVideoReadiness, 5000); // Poll every 5 seconds
+			pollingInterval = setInterval(pollForVideoReadiness, POLL_INTERVAL);
 
-			// Set a timeout to stop polling after 5 minutes
 			setTimeout(() => {
 				if (pollingInterval) {
 					clearInterval(pollingInterval);
@@ -142,7 +136,7 @@
 						isLoading = false;
 					}
 				}
-			}, 300000); // 5 minutes timeout
+			}, TIMEOUT_DURATION);
 		}
 	});
 
