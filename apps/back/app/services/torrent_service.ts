@@ -50,6 +50,11 @@ export default class TorrentService {
       console.log(`Download progress: ${progress}% (Piece ${pieceIndex})`)
     })
 
+    engine.on('done', () => {
+      console.log('Torrent download completed - all pieces downloaded')
+      console.log('Final download size:', engine.swarm.downloaded, 'bytes')
+    })
+
     return { message: 'Sequential torrent download started', tmdbId }
   }
 
