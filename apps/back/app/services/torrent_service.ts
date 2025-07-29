@@ -15,6 +15,38 @@ export default class TorrentService {
   private progressLoggingService: ProgressLoggingService = new ProgressLoggingService()
   private readyResolutions: Set<string> = new Set()
   private lastSegmentCounts: Map<string, number> = new Map()
+  private getQualitySettings(width: number) {
+    switch (width) {
+      case 480:
+        return {
+          crf: 20,
+          videoBitrate: '1500k',
+          maxBitrate: '2000k',
+          bufsize: '3000k',
+        }
+      case 720:
+        return {
+          crf: 19,
+          videoBitrate: '3000k',
+          maxBitrate: '4000k',
+          bufsize: '6000k',
+        }
+      case 1080:
+        return {
+          crf: 18,
+          videoBitrate: '5000k',
+          maxBitrate: '7000k',
+          bufsize: '10000k',
+        }
+      default:
+        return {
+          crf: 20,
+          videoBitrate: '2000k',
+          maxBitrate: '3000k',
+          bufsize: '4000k',
+        }
+    }
+  }
   private completedConversions: Map<string, Set<number>> = new Map()
   private videoDurations: Map<string, number> = new Map()
 
@@ -131,13 +163,21 @@ export default class TorrentService {
 
     const stream = file.createReadStream()
 
+    const qualitySettings = this.getQualitySettings(width)
+
     ffmpeg(stream)
       .outputOptions([
         '-c:v libx264',
         '-c:a aac',
-        '-preset veryfast',
+        '-preset medium',
         '-movflags +faststart',
-        '-crf 27',
+        `-crf ${qualitySettings.crf}`,
+        `-b:v ${qualitySettings.videoBitrate}`,
+        `-maxrate ${qualitySettings.maxBitrate}`,
+        `-bufsize ${qualitySettings.bufsize}`,
+        '-profile:v high',
+        '-level 4.1',
+        '-pix_fmt yuv420p',
         '-tag:v avc1',
         '-f hls',
         '-hls_time 6',
@@ -148,11 +188,9 @@ export default class TorrentService {
         path.join(outputFolderRootPath, 'segment_%03d.ts'),
         '-hls_flags +append_list',
         '-hls_allow_cache 0',
-        '-ac 6',
+        '-ac 2',
         '-ar 48000',
-        '-b:a 384k',
-        '-bufsize 1M',
-        '-maxrate 2M',
+        '-b:a 128k',
       ])
       .output(outputFilePath)
       .videoFilter(`scale=${width}:-2`)
