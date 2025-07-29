@@ -7,8 +7,6 @@ export default class MovieService {
     let movie = await Movie.query().where('tmdbId', tmdbId).first()
 
     if (movie) {
-      console.log(`Movie found for TMDB ID ${tmdbId}:`, movie.title || 'Untitled')
-
       if (!movie.title && (!data || !data.title)) {
         await this.fetchAndUpdateMovieDetails(movie)
       }
@@ -60,14 +58,21 @@ export default class MovieService {
   async updateResolutionStatus(tmdbId: number, resolution: number, ready: boolean): Promise<void> {
     const movie = await this.getOrCreate(tmdbId)
     
+    let currentStatus: boolean
     switch (resolution) {
       case 480:
+        currentStatus = movie.resolution480pReady
+        if (currentStatus === ready) return
         movie.resolution480pReady = ready
         break
       case 720:
+        currentStatus = movie.resolution720pReady
+        if (currentStatus === ready) return
         movie.resolution720pReady = ready
         break
       case 1080:
+        currentStatus = movie.resolution1080pReady
+        if (currentStatus === ready) return
         movie.resolution1080pReady = ready
         break
       default:
@@ -75,7 +80,9 @@ export default class MovieService {
     }
     
     await movie.save()
-    console.log(`Updated ${resolution}p status to ${ready} for movie ${movie.id}`)
+    if (ready) {
+      console.log(`${resolution}p resolution marked as ready for movie ${movie.id}`)
+    }
   }
 
   async getResolutionStatus(tmdbId: number): Promise<{

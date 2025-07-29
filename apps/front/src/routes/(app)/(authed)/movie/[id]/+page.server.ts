@@ -13,14 +13,22 @@ type LoadResult = {
 	};
 };
 
-function getPreferredResolution(resolutions: { '480p': boolean; '720p': boolean; '1080p': boolean }): string | null {
+function getPreferredResolution(resolutions: {
+	'480p': boolean;
+	'720p': boolean;
+	'1080p': boolean;
+}): string | null {
 	if (resolutions['1080p']) return '1080';
 	if (resolutions['720p']) return '720';
 	if (resolutions['480p']) return '480';
 	return null;
 }
 
-function getAvailableResolutions(resolutions: { '480p': boolean; '720p': boolean; '1080p': boolean }): string[] {
+function getAvailableResolutions(resolutions: {
+	'480p': boolean;
+	'720p': boolean;
+	'1080p': boolean;
+}): string[] {
 	const available: string[] = [];
 	if (resolutions['480p']) available.push('480');
 	if (resolutions['720p']) available.push('720');
@@ -31,13 +39,11 @@ function getAvailableResolutions(resolutions: { '480p': boolean; '720p': boolean
 export const load: PageServerLoad = async ({ params, fetch }): Promise<LoadResult> => {
 	const movieId = params.id!;
 
-	// Start torrent download
 	const torrentResponse = await fetch(`${PUBLIC_BACK_URL}/torrent/${movieId}`);
 	if (!torrentResponse.ok) {
 		throw new Error('Failed to fetch torrent data');
 	}
 
-	// Check readiness status
 	const readinessResponse = await fetch(`${PUBLIC_BACK_URL}/torrent/ready/${movieId}`);
 	if (!readinessResponse.ok) {
 		throw new Error('Failed to check video readiness');
