@@ -34,6 +34,19 @@ new Ignitor(APP_ROOT, { importer: IMPORTER })
     app.booting(async () => {
       await import('#start/env')
     })
+    
+    app.ready(async () => {
+      // Reset interrupted movie conversions after app is fully ready
+      try {
+        const MovieService = (await import('../app/services/movie_service.js')).default
+        const movieService = new MovieService()
+        await movieService.resetInterruptedConversions()
+        console.log('✓ Startup: Reset interrupted movie conversions completed')
+      } catch (error) {
+        console.error('✗ Startup: Failed to reset interrupted conversions:', error)
+      }
+    })
+    
     app.listen('SIGTERM', () => app.terminate())
     app.listenIf(app.managedByPm2, 'SIGINT', () => app.terminate())
   })

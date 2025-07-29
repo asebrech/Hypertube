@@ -28,10 +28,6 @@ export default class ProgressLoggingService {
     }
   }
 
-  logDownloadCompletion(tmdbId: number) {
-    console.log(`Torrent download completed for movie ${tmdbId}: 100%`)
-  }
-
   trackConversionProgress(videoId: string, resolution: number, progress: any, duration?: number) {
     let percent = 0
 
@@ -86,8 +82,6 @@ export default class ProgressLoggingService {
       const conversionKey = `${tmdbId}-${resolution}`
       this.conversionProgressTracking.delete(conversionKey)
     })
-
-    console.log(`Cleaned up progress tracking for movie ${tmdbId}`)
   }
 
   private parseTimemarkToSeconds(timemark: string): number {

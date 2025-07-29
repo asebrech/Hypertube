@@ -60,8 +60,7 @@ export default class TorrentService {
     })
 
     engine.on('idle', () => {
-      console.log(`Torrent download completed for TMDB ID: ${tmdbId}`)
-      this.progressLoggingService.logDownloadCompletion(tmdbId)
+      console.log(`Torrent download completed for movie ${tmdbId}: 100%`)
       this.movieService.updateDownloadStatus(tmdbId, 'completed')
     })
 
@@ -163,7 +162,6 @@ export default class TorrentService {
         this.progressLoggingService.trackConversionProgress(videoId, width, progress, duration)
       })
       .on('end', () => {
-        console.log(`HLS conversion completed for ${width}p`)
         this.progressLoggingService.logConversionCompletion(videoId, width)
         this.markConversionComplete(videoId, width)
       })

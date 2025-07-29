@@ -117,6 +117,24 @@ export default class MovieService {
     }
   }
 
+  async resetInterruptedConversions(): Promise<void> {
+    try {
+      const convertingMovies = await Movie.query().where('conversion_status', 'converting')
+      
+      for (const movie of convertingMovies) {
+        movie.conversionStatus = 'pending'
+        await movie.save()
+        console.log(`Reset conversion status for movie ${movie.tmdbId} from 'converting' to 'pending'`)
+      }
+      
+      if (convertingMovies.length > 0) {
+        console.log(`Reset ${convertingMovies.length} interrupted movie conversions to pending`)
+      }
+    } catch (error) {
+      console.error('Error resetting interrupted conversions:', error)
+    }
+  }
+
   private async fetchAndUpdateMovieDetails(movie: Movie): Promise<void> {
     try {
       const movieDetails = await this.tmdbService.getMovieDetails(movie.tmdbId)
