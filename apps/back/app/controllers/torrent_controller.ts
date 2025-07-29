@@ -11,12 +11,10 @@ export default class TorrentController {
   async torrent({ request }: HttpContext) {
     const tmdb = request.param('id')
 
-    console.log('TorrentController:tmdb', tmdb)
-
-    // if (this.torrentService.isMovieConverted(tmdb)) {
-    //   console.log('TorrentController:tmdb', tmdb, 'already converted')
-    //   return { message: 'Movie already converted' }
-    // }
+    if (await this.torrentService.isMovieProcessing(tmdb)) {
+      console.log('TorrentController:tmdb', tmdb, 'is currently being processed')
+      return { message: 'Movie is currently being processed' }
+    }
 
     console.log('TorrentController:tmdb', tmdb, 'not converted, starting conversion')
     return await this.torrentService.download(tmdb)

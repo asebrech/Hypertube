@@ -51,7 +51,7 @@ export default class MovieService {
 
   async updateResolutionStatus(tmdbId: number, resolution: number, ready: boolean): Promise<void> {
     const movie = await this.getOrCreate(tmdbId)
-    
+
     let currentStatus: boolean
     switch (resolution) {
       case 480:
@@ -72,7 +72,31 @@ export default class MovieService {
       default:
         throw new Error(`Unsupported resolution: ${resolution}`)
     }
-    
+
+    await movie.save()
+  }
+
+  async updateDownloadStatus(
+    tmdbId: number,
+    status: 'pending' | 'downloading' | 'completed' | 'failed'
+  ): Promise<void> {
+    const movie = await this.getOrCreate(tmdbId)
+    movie.downloadStatus = status
+    await movie.save()
+  }
+
+  async updateConversionStatus(
+    tmdbId: number,
+    status: 'pending' | 'converting' | 'completed' | 'failed'
+  ): Promise<void> {
+    const movie = await this.getOrCreate(tmdbId)
+    movie.conversionStatus = status
+    await movie.save()
+  }
+
+  async updateDuration(tmdbId: number, duration: number): Promise<void> {
+    const movie = await this.getOrCreate(tmdbId)
+    movie.duration = duration
     await movie.save()
   }
 
@@ -83,12 +107,13 @@ export default class MovieService {
     allReady: boolean
   }> {
     const movie = await this.getOrCreate(tmdbId)
-    
+
     return {
       resolution480pReady: movie.resolution480pReady,
       resolution720pReady: movie.resolution720pReady,
       resolution1080pReady: movie.resolution1080pReady,
-      allReady: movie.resolution480pReady && movie.resolution720pReady && movie.resolution1080pReady
+      allReady:
+        movie.resolution480pReady && movie.resolution720pReady && movie.resolution1080pReady,
     }
   }
 

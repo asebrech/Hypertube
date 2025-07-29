@@ -25,6 +25,8 @@ export default class TorrentService {
     const torrent = await this.searchTorrentService.search(tmdbId, 'All', 100)
     await this.movieService.updateMagnetLink(tmdbId, torrent.magnetLink)
 
+    await this.movieService.updateDownloadStatus(tmdbId, 'downloading')
+
     const cacheDir = `./torrent-cache/${tmdbId}`
     if (!fs.existsSync(cacheDir)) {
       fs.mkdirSync(cacheDir, { recursive: true })
@@ -61,6 +63,14 @@ export default class TorrentService {
     engine.on('done', () => {
       console.log('Torrent download completed for TMDB ID:', tmdbId)
       this.progressLoggingService.logDownloadCompletion(tmdbId)
+      // Set download status to completed
+      this.movieService.updateDownloadStatus(tmdbId, 'completed')
+    })
+
+    engine.on('error', (err: Error) => {
+      console.error('Torrent download error for TMDB ID:', tmdbId, err)
+      // Set download status to failed
+      this.movieService.updateDownloadStatus(tmdbId, 'failed')
     })
 
     return { message: 'Sequential torrent download started', tmdbId }
@@ -96,13 +106,20 @@ export default class TorrentService {
 
   private async progressiveConvert(file: any, videoId: string) {
     const resolutions = [480, 720, 1080]
+    const tmdbId = Number.parseInt(videoId)
 
     try {
+      await this.movieService.updateConversionStatus(tmdbId, 'converting')
+
       const duration = await this.probeVideoDuration(file)
       this.videoDurations.set(videoId, duration)
       console.log(`Video duration stored for ${videoId}: ${duration} seconds`)
+
+      await this.movieService.updateDuration(tmdbId, duration)
     } catch (error) {
       console.error('Failed to probe video duration:', error)
+      await this.movieService.updateConversionStatus(tmdbId, 'failed')
+      return
     }
 
     resolutions.forEach((width) => {
@@ -157,8 +174,10 @@ export default class TorrentService {
         this.progressLoggingService.logConversionCompletion(videoId, width)
         this.markConversionComplete(videoId, width)
       })
-      .on('error', (err) => {
+      .on('error', async (err) => {
         console.error(`Error in conversion for ${width}p:`, err.message)
+        const tmdbId = Number.parseInt(videoId)
+        await this.movieService.updateConversionStatus(tmdbId, 'failed')
         throw new Error(`FFmpeg conversion failed for ${width}p: ${err.message}`)
       })
       .run()
@@ -220,7 +239,8 @@ export default class TorrentService {
     const allCompleted = allResolutions.every((res) => completedSet.has(res))
 
     if (allCompleted) {
-      console.log(`All conversions completed for movie ${tmdbId}, cleaning up torrent cache`)
+      console.log(`All conversions completed for movie ${tmdbId}`)
+      await this.movieService.updateConversionStatus(tmdbId, 'completed')
       await this.cleanupMovieCache(tmdbId)
       this.completedConversions.delete(videoId)
     }
@@ -263,9 +283,18 @@ export default class TorrentService {
     }
   }
 
-  isMovieConverted(imdbId: string): boolean {
-    const outputFolderRootPath = `./hls-output/${imdbId}`
-    return fs.existsSync(outputFolderRootPath)
+  async isMovieProcessing(tmdbId: number): Promise<boolean> {
+    try {
+      const movie = await this.movieService.getByTmdbId(tmdbId)
+      if (!movie) {
+        return false
+      }
+
+      return movie.conversionStatus === 'converting' || movie.conversionStatus === 'completed'
+    } catch (error) {
+      console.error('Error checking movie conversion status:', error)
+      return false
+    }
   }
 
   async cleanupMovieCache(tmdbId: number): Promise<void> {

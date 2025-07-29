@@ -34,7 +34,7 @@ export default class ProgressLoggingService {
 
   trackConversionProgress(videoId: string, resolution: number, progress: any, duration?: number) {
     let percent = 0
-    
+
     // Calculate percentage from timemark and duration if available
     if (duration && progress.timemark) {
       const currentTimeSeconds = this.parseTimemarkToSeconds(progress.timemark)
@@ -47,7 +47,8 @@ export default class ProgressLoggingService {
       } else {
         // Handle numeric values (could be 0-1 or 0-100 range)
         const numericPercent = Number.parseFloat(progress.percent.toString())
-        percent = numericPercent <= 1 ? Math.floor(numericPercent * 100) : Math.floor(numericPercent)
+        percent =
+          numericPercent <= 1 ? Math.floor(numericPercent * 100) : Math.floor(numericPercent)
       }
     }
 
