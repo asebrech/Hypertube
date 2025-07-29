@@ -12,11 +12,9 @@ export default class TorrentController {
     const tmdb = request.param('id')
 
     if (await this.torrentService.isMovieProcessing(tmdb)) {
-      console.log('TorrentController:tmdb', tmdb, 'is currently being processed')
-      return { message: 'Movie is currently being processed' }
+      return { message: 'Movie is currently being processed or already processed' }
     }
 
-    console.log('TorrentController:tmdb', tmdb, 'not converted, starting conversion')
     return await this.torrentService.download(tmdb)
   }
 

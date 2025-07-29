@@ -20,7 +20,6 @@ export default class TorrentService {
 
   async download(tmdbId: number) {
     console.log('Starting torrent download for TMDB ID:', tmdbId)
-
     await this.movieService.getOrCreate(tmdbId)
     const torrent = await this.searchTorrentService.search(tmdbId, 'All', 100)
     await this.movieService.updateMagnetLink(tmdbId, torrent.magnetLink)
@@ -60,16 +59,14 @@ export default class TorrentService {
       this.progressLoggingService.trackDownloadProgress(tmdbId, engine)
     })
 
-    engine.on('done', () => {
-      console.log('Torrent download completed for TMDB ID:', tmdbId)
+    engine.on('idle', () => {
+      console.log(`Torrent download completed for TMDB ID: ${tmdbId}`)
       this.progressLoggingService.logDownloadCompletion(tmdbId)
-      // Set download status to completed
       this.movieService.updateDownloadStatus(tmdbId, 'completed')
     })
 
     engine.on('error', (err: Error) => {
       console.error('Torrent download error for TMDB ID:', tmdbId, err)
-      // Set download status to failed
       this.movieService.updateDownloadStatus(tmdbId, 'failed')
     })
 
@@ -94,7 +91,6 @@ export default class TorrentService {
 
         const duration = metadata.format?.duration
         if (duration) {
-          console.log(`Video duration detected: ${duration} seconds`)
           resolve(duration)
         } else {
           console.error('Could not determine video duration from metadata')
@@ -113,7 +109,6 @@ export default class TorrentService {
 
       const duration = await this.probeVideoDuration(file)
       this.videoDurations.set(videoId, duration)
-      console.log(`Video duration stored for ${videoId}: ${duration} seconds`)
 
       await this.movieService.updateDuration(tmdbId, duration)
     } catch (error) {
@@ -136,8 +131,6 @@ export default class TorrentService {
     const outputFilePath = path.join(outputFolderRootPath, `output.m3u8`)
 
     const stream = file.createReadStream()
-
-    console.log(`Starting HLS conversion for ${width}p`)
 
     ffmpeg(stream)
       .outputOptions([
@@ -219,7 +212,13 @@ export default class TorrentService {
     try {
       await this.movieService.updateResolutionStatus(tmdbId, resolution, true)
       this.readyResolutions.add(key)
-      console.log(`${resolution}p ready for streaming`)
+
+      const allResolutions = [480, 720, 1080]
+      const allReady = allResolutions.every((res) => this.readyResolutions.has(`${tmdbId}-${res}`))
+
+      if (allReady) {
+        console.log(`All resolutions ready for streaming: 480p, 720p, 1080p`)
+      }
     } catch (error) {
       console.error('Error marking progressive ready in database:', error)
     }
