@@ -1,5 +1,6 @@
 downloads/
 hls-output
+torrent-cache
 
 # Dependencies and AdonisJS build
 node_modules

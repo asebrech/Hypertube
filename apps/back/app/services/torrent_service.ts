@@ -13,6 +13,7 @@ export default class TorrentService {
   private movieService: MovieService = new MovieService()
   private readyResolutions: Set<string> = new Set()
   private lastSegmentCounts: Map<string, number> = new Map()
+  private completedConversions: Map<string, Set<number>> = new Map()
 
   async download(tmdbId: number) {
     console.log('Starting torrent download for TMDB ID:', tmdbId)
@@ -21,8 +22,20 @@ export default class TorrentService {
     const torrent = await this.searchTorrentService.search(tmdbId, 'All', 100)
     await this.movieService.updateMagnetLink(tmdbId, torrent.magnetLink)
 
-    const filePath = torrent.magnetLink
-    const engine = torrentStream(filePath)
+    const cacheDir = `./torrent-cache/${tmdbId}`
+    if (!fs.existsSync(cacheDir)) {
+      fs.mkdirSync(cacheDir, { recursive: true })
+    }
+
+    const engine = torrentStream(torrent.magnetLink, {
+      tmp: cacheDir,
+      verify: true,
+      uploads: 0,
+    })
+
+    if (fs.existsSync(cacheDir) && fs.readdirSync(cacheDir).length > 0) {
+      console.log(`Resuming torrent download for TMDB ID: ${tmdbId}`)
+    }
 
     engine.on('ready', () => {
       const videoFile = engine.files
@@ -101,6 +114,7 @@ export default class TorrentService {
       })
       .on('end', () => {
         console.log(`HLS conversion completed for ${width}p`)
+        this.markConversionComplete(videoId, width)
       })
       .on('error', (err) => {
         console.error(`Error in conversion for ${width}p:`, err.message)
@@ -118,13 +132,13 @@ export default class TorrentService {
       if (fs.existsSync(playlistPath)) {
         const playlist = fs.readFileSync(playlistPath, 'utf8')
         const segmentCount = (playlist.match(/segment_\d+\.ts/g) || []).length
-        
+
         const trackingKey = `${videoId}-${resolution}`
         const lastCount = this.lastSegmentCounts.get(trackingKey) || 0
-        
+
         if (segmentCount > lastCount) {
           this.lastSegmentCounts.set(trackingKey, segmentCount)
-          
+
           if (segmentCount >= 3) {
             await this.markProgressiveReady(Number.parseInt(videoId), resolution)
           }
@@ -148,6 +162,26 @@ export default class TorrentService {
       console.log(`${resolution}p ready for streaming`)
     } catch (error) {
       console.error('Error marking progressive ready in database:', error)
+    }
+  }
+
+  private async markConversionComplete(videoId: string, resolution: number) {
+    const tmdbId = Number.parseInt(videoId)
+
+    if (!this.completedConversions.has(videoId)) {
+      this.completedConversions.set(videoId, new Set())
+    }
+
+    const completedSet = this.completedConversions.get(videoId)!
+    completedSet.add(resolution)
+
+    const allResolutions = [480, 720, 1080]
+    const allCompleted = allResolutions.every((res) => completedSet.has(res))
+
+    if (allCompleted) {
+      console.log(`All conversions completed for movie ${tmdbId}, cleaning up torrent cache`)
+      await this.cleanupMovieCache(tmdbId)
+      this.completedConversions.delete(videoId)
     }
   }
 
@@ -191,5 +225,18 @@ export default class TorrentService {
   isMovieConverted(imdbId: string): boolean {
     const outputFolderRootPath = `./hls-output/${imdbId}`
     return fs.existsSync(outputFolderRootPath)
+  }
+
+  async cleanupMovieCache(tmdbId: number): Promise<void> {
+    const cacheDir = `./torrent-cache/${tmdbId}`
+
+    if (fs.existsSync(cacheDir)) {
+      try {
+        fs.rmSync(cacheDir, { recursive: true, force: true })
+        console.log(`Cleaned up torrent cache for movie ${tmdbId}`)
+      } catch (error) {
+        console.error(`Error cleaning up torrent cache for movie ${tmdbId}:`, error)
+      }
+    }
   }
 }

@@ -13,10 +13,10 @@ export default class TorrentController {
 
     console.log('TorrentController:tmdb', tmdb)
 
-    if (this.torrentService.isMovieConverted(tmdb)) {
-      console.log('TorrentController:tmdb', tmdb, 'already converted')
-      return { message: 'Movie already converted' }
-    }
+    // if (this.torrentService.isMovieConverted(tmdb)) {
+    //   console.log('TorrentController:tmdb', tmdb, 'already converted')
+    //   return { message: 'Movie already converted' }
+    // }
 
     console.log('TorrentController:tmdb', tmdb, 'not converted, starting conversion')
     return await this.torrentService.download(tmdb)
