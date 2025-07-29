@@ -5,15 +5,18 @@ import path from 'node:path'
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg'
 import SearchTorrentService from './search_torrent_service.js'
 import MovieService from './movie_service.js'
+import ProgressLoggingService from './progress_logging_service.js'
 
 ffmpeg.setFfmpegPath(ffmpegInstaller.path)
 
 export default class TorrentService {
   private searchTorrentService: SearchTorrentService = new SearchTorrentService()
   private movieService: MovieService = new MovieService()
+  private progressLoggingService: ProgressLoggingService = new ProgressLoggingService()
   private readyResolutions: Set<string> = new Set()
   private lastSegmentCounts: Map<string, number> = new Map()
   private completedConversions: Map<string, Set<number>> = new Map()
+  private videoDurations: Map<string, number> = new Map()
 
   async download(tmdbId: number) {
     console.log('Starting torrent download for TMDB ID:', tmdbId)
@@ -51,8 +54,13 @@ export default class TorrentService {
       this.progressiveConvert(videoFile, tmdbId.toString())
     })
 
+    engine.on('download', () => {
+      this.progressLoggingService.trackDownloadProgress(tmdbId, engine)
+    })
+
     engine.on('done', () => {
       console.log('Torrent download completed for TMDB ID:', tmdbId)
+      this.progressLoggingService.logDownloadCompletion(tmdbId)
     })
 
     return { message: 'Sequential torrent download started', tmdbId }
@@ -63,8 +71,39 @@ export default class TorrentService {
     return videoExtensions.some((ext) => filename.toLowerCase().endsWith(ext))
   }
 
-  private progressiveConvert(file: any, videoId: string) {
+  private async probeVideoDuration(file: any): Promise<number> {
+    return new Promise((resolve, reject) => {
+      const stream = file.createReadStream()
+
+      ffmpeg(stream).ffprobe((err, metadata) => {
+        if (err) {
+          console.error('Error probing video duration:', err)
+          reject(err)
+          return
+        }
+
+        const duration = metadata.format?.duration
+        if (duration) {
+          console.log(`Video duration detected: ${duration} seconds`)
+          resolve(duration)
+        } else {
+          console.error('Could not determine video duration from metadata')
+          reject(new Error('Could not determine video duration'))
+        }
+      })
+    })
+  }
+
+  private async progressiveConvert(file: any, videoId: string) {
     const resolutions = [480, 720, 1080]
+
+    try {
+      const duration = await this.probeVideoDuration(file)
+      this.videoDurations.set(videoId, duration)
+      console.log(`Video duration stored for ${videoId}: ${duration} seconds`)
+    } catch (error) {
+      console.error('Failed to probe video duration:', error)
+    }
 
     resolutions.forEach((width) => {
       this.startProgressiveHLSConversion(file, videoId, width)
@@ -108,11 +147,14 @@ export default class TorrentService {
       ])
       .output(outputFilePath)
       .videoFilter(`scale=${width}:-2`)
-      .on('progress', () => {
+      .on('progress', (progress) => {
         this.updateProgressivePlaylist(outputFilePath, width, videoId)
+        const duration = this.videoDurations.get(videoId)
+        this.progressLoggingService.trackConversionProgress(videoId, width, progress, duration)
       })
       .on('end', () => {
         console.log(`HLS conversion completed for ${width}p`)
+        this.progressLoggingService.logConversionCompletion(videoId, width)
         this.markConversionComplete(videoId, width)
       })
       .on('error', (err) => {
@@ -233,6 +275,7 @@ export default class TorrentService {
       try {
         fs.rmSync(cacheDir, { recursive: true, force: true })
         console.log(`Cleaned up torrent cache for movie ${tmdbId}`)
+        this.progressLoggingService.cleanupMovieTracking(tmdbId)
       } catch (error) {
         console.error(`Error cleaning up torrent cache for movie ${tmdbId}:`, error)
       }
