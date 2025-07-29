@@ -14,7 +14,6 @@ export default class MovieService {
       return movie
     }
 
-    console.log(`Creating new movie for TMDB ID ${tmdbId}`)
     movie = new Movie()
     movie.tmdbId = tmdbId
 
@@ -29,10 +28,6 @@ export default class MovieService {
     }
 
     await movie.save()
-    console.log(
-      `Movie created with ID ${movie.id} for TMDB ID ${tmdbId}:`,
-      movie.title || 'Untitled'
-    )
 
     return movie
   }
@@ -42,7 +37,6 @@ export default class MovieService {
     movie.magicLink = magnetLink
     await movie.save()
 
-    console.log(`Updated magnet link for movie ${movie.id}`)
     return movie
   }
 
@@ -80,9 +74,6 @@ export default class MovieService {
     }
     
     await movie.save()
-    if (ready) {
-      console.log(`${resolution}p resolution marked as ready for movie ${movie.id}`)
-    }
   }
 
   async getResolutionStatus(tmdbId: number): Promise<{
@@ -103,18 +94,15 @@ export default class MovieService {
 
   private async fetchAndUpdateMovieDetails(movie: Movie): Promise<void> {
     try {
-      console.log(`Fetching movie details from TMDB for ID ${movie.tmdbId}`)
       const movieDetails = await this.tmdbService.getMovieDetails(movie.tmdbId)
 
       if (movieDetails) {
         if (movieDetails.title) {
           movie.title = movieDetails.title
-          console.log(`Updated movie title: ${movieDetails.title}`)
         }
 
         if (movieDetails.imdb_id && !movie.imdbId) {
           movie.imdbId = movieDetails.imdb_id
-          console.log(`Updated IMDB ID: ${movieDetails.imdb_id}`)
         }
       }
     } catch (error) {
