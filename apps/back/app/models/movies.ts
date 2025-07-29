@@ -19,6 +19,15 @@ export default class Movie extends BaseModel {
   @column({ columnName: 'magicLink' })
   declare magicLink: string
 
+  @column({ columnName: 'resolution_480p_ready' })
+  declare resolution480pReady: boolean
+
+  @column({ columnName: 'resolution_720p_ready' })
+  declare resolution720pReady: boolean
+
+  @column({ columnName: 'resolution_1080p_ready' })
+  declare resolution1080pReady: boolean
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

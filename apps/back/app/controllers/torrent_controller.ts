@@ -23,9 +23,8 @@ export default class TorrentController {
   }
 
   async ready({ request }: HttpContext) {
-    const resolution = request.param('resolution')
     const tmdb = request.param('id')
-    return this.torrentService.ready(tmdb, resolution)
+    return this.torrentService.ready(tmdb)
   }
 
   stream({ response, params }: HttpContext) {

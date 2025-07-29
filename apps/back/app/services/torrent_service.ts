@@ -134,7 +134,7 @@ export default class TorrentService {
       .run()
   }
 
-  private updateProgressivePlaylist(playlistPath: string, resolution: number, videoId: string) {
+  private async updateProgressivePlaylist(playlistPath: string, resolution: number, videoId: string) {
     // This method can be enhanced to update the playlist dynamically
     // as new segments become available for immediate streaming
     try {
@@ -145,7 +145,7 @@ export default class TorrentService {
 
         if (segmentCount >= 3) {
           // Mark this resolution as ready for progressive streaming
-          this.markProgressiveReady(videoId, resolution.toString())
+          await this.markProgressiveReady(parseInt(videoId), resolution)
         }
       }
     } catch (error) {
@@ -154,12 +154,13 @@ export default class TorrentService {
     }
   }
 
-  private markProgressiveReady(videoId: string, resolution: string) {
-    // Create a marker file to indicate progressive streaming is available
-    const markerPath = `./hls-output/${videoId}/${resolution}p/.progressive_ready`
-    if (!fs.existsSync(markerPath)) {
-      fs.writeFileSync(markerPath, Date.now().toString())
+  private async markProgressiveReady(tmdbId: number, resolution: number) {
+    // Update database to indicate progressive streaming is available
+    try {
+      await this.movieService.updateResolutionStatus(tmdbId, resolution, true)
       console.log(`Progressive streaming available for ${resolution}p`)
+    } catch (error) {
+      console.error('Error marking progressive ready in database:', error)
     }
   }
 
@@ -179,23 +180,39 @@ export default class TorrentService {
     }
   }
 
-  ready(tmdbId: string, resolution: string) {
-    const outputFolderRootPath = `./hls-output/${tmdbId}/${resolution}p`
-    const progressiveMarkerPath = path.join(outputFolderRootPath, '.progressive_ready')
-
-    const isProgressiveReady = fs.existsSync(progressiveMarkerPath)
-
-    if (isProgressiveReady) {
-      return {
-        status: 200,
-        message: 'Video is partially ready for progressive streaming',
-        progressive: true,
+  async ready(tmdbId: number) {
+    try {
+      const resolutionStatus = await this.movieService.getResolutionStatus(tmdbId)
+      
+      if (resolutionStatus.allReady) {
+        return {
+          status: 200,
+          message: 'All video resolutions are ready',
+          allReady: true,
+          resolutions: {
+            '480p': resolutionStatus.resolution480pReady,
+            '720p': resolutionStatus.resolution720pReady,
+            '1080p': resolutionStatus.resolution1080pReady
+          }
+        }
+      } else {
+        return {
+          status: 206,
+          message: 'Video conversion in progress',
+          allReady: false,
+          resolutions: {
+            '480p': resolutionStatus.resolution480pReady,
+            '720p': resolutionStatus.resolution720pReady,
+            '1080p': resolutionStatus.resolution1080pReady
+          }
+        }
       }
-    } else {
+    } catch (error) {
       return {
-        status: 404,
-        message: 'Video is not ready yet or conversion in progress',
-        progressive: false,
+        status: 500,
+        message: 'Error checking video readiness',
+        allReady: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
       }
     }
   }

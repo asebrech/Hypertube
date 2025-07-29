@@ -57,6 +57,43 @@ export default class MovieService {
     return !!movie
   }
 
+  async updateResolutionStatus(tmdbId: number, resolution: number, ready: boolean): Promise<void> {
+    const movie = await this.getOrCreate(tmdbId)
+    
+    switch (resolution) {
+      case 480:
+        movie.resolution480pReady = ready
+        break
+      case 720:
+        movie.resolution720pReady = ready
+        break
+      case 1080:
+        movie.resolution1080pReady = ready
+        break
+      default:
+        throw new Error(`Unsupported resolution: ${resolution}`)
+    }
+    
+    await movie.save()
+    console.log(`Updated ${resolution}p status to ${ready} for movie ${movie.id}`)
+  }
+
+  async getResolutionStatus(tmdbId: number): Promise<{
+    resolution480pReady: boolean
+    resolution720pReady: boolean
+    resolution1080pReady: boolean
+    allReady: boolean
+  }> {
+    const movie = await this.getOrCreate(tmdbId)
+    
+    return {
+      resolution480pReady: movie.resolution480pReady,
+      resolution720pReady: movie.resolution720pReady,
+      resolution1080pReady: movie.resolution1080pReady,
+      allReady: movie.resolution480pReady && movie.resolution720pReady && movie.resolution1080pReady
+    }
+  }
+
   private async fetchAndUpdateMovieDetails(movie: Movie): Promise<void> {
     try {
       console.log(`Fetching movie details from TMDB for ID ${movie.tmdbId}`)
