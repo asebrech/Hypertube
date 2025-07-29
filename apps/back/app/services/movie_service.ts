@@ -96,7 +96,7 @@ export default class MovieService {
 
   async updateDuration(tmdbId: number, duration: number): Promise<void> {
     const movie = await this.getOrCreate(tmdbId)
-    movie.duration = duration
+    movie.duration = Math.round(duration)
     await movie.save()
   }
 
