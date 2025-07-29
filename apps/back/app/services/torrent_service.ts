@@ -95,7 +95,6 @@ export default class TorrentService {
         '-hls_time 6',
         '-hls_list_size 0',
         '-hls_playlist_type event',
-        '-hls_flags append_list',
         '-start_number 0',
         '-hls_segment_filename',
         path.join(outputFolderRootPath, 'segment_%03d.ts'),
