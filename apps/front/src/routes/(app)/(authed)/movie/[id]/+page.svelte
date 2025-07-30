@@ -59,6 +59,22 @@
 		return availableResolutions[0];
 	}
 
+	function setupAuthenticationHooks() {
+		if (!data.token) return;
+
+		const authHook = (options) => {
+			if (!options.headers) {
+				options.headers = {};
+			}
+			options.headers.Authorization = `Bearer ${data.token}`;
+			return options;
+		};
+
+		if (typeof videojs !== 'undefined' && videojs.Vhs) {
+			videojs.Vhs.xhr.onRequest(authHook);
+		}
+	}
+
 	function initializeVideoPlayer() {
 		if (!container || player || readyResolutions.size === 0) return;
 
@@ -72,7 +88,12 @@
 			fluid: true,
 			liveui: true,
 			preload: 'auto',
-			sources: [{ src: preferredSource.src, type: 'application/x-mpegURL' }]
+			sources: [{ src: preferredSource.src, type: 'application/x-mpegURL' }],
+			html5: {
+				vhs: {
+					withCredentials: false
+				}
+			}
 		};
 
 		try {
@@ -81,6 +102,19 @@
 			container.appendChild(videoElement);
 
 			player = videojs(videoElement, options);
+
+			player.on('xhr-hooks-ready', () => {
+				if (data.token && player.tech() && player.tech().vhs) {
+					const playerAuthHook = (options) => {
+						if (!options.headers) {
+							options.headers = {};
+						}
+						options.headers.Authorization = `Bearer ${data.token}`;
+						return options;
+					};
+					player.tech().vhs.xhr.onRequest(playerAuthHook);
+				}
+			});
 
 			player.on('error', (error) => {
 				console.error('Video.js player error:', error);
@@ -115,6 +149,7 @@
 	}
 
 	$: if (data.isAllVideoReady && !isLoading && !error && container && !player) {
+		setupAuthenticationHooks();
 		initializeVideoPlayer();
 	}
 

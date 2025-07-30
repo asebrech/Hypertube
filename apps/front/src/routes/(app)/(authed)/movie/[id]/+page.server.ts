@@ -11,6 +11,7 @@ type LoadResult = {
 		'720p': boolean;
 		'1080p': boolean;
 	};
+	token: string | undefined;
 };
 
 function getPreferredResolution(resolutions: {
@@ -36,15 +37,25 @@ function getAvailableResolutions(resolutions: {
 	return available;
 }
 
-export const load: PageServerLoad = async ({ params, fetch }): Promise<LoadResult> => {
+export const load: PageServerLoad = async ({ params, fetch, cookies }): Promise<LoadResult> => {
 	const movieId = params.id!;
+	const token = cookies.get('session');
 
-	const torrentResponse = await fetch(`${PUBLIC_BACK_URL}/torrent/${movieId}`);
+	const headers: HeadersInit = {};
+	if (token) {
+		headers.Authorization = `Bearer ${token}`;
+	}
+
+	const torrentResponse = await fetch(`${PUBLIC_BACK_URL}/torrent/${movieId}`, {
+		headers
+	});
 	if (!torrentResponse.ok) {
 		throw new Error('Failed to fetch torrent data');
 	}
 
-	const readinessResponse = await fetch(`${PUBLIC_BACK_URL}/torrent/ready/${movieId}`);
+	const readinessResponse = await fetch(`${PUBLIC_BACK_URL}/torrent/ready/${movieId}`, {
+		headers
+	});
 	if (!readinessResponse.ok) {
 		throw new Error('Failed to check video readiness');
 	}
@@ -58,6 +69,7 @@ export const load: PageServerLoad = async ({ params, fetch }): Promise<LoadResul
 		isAllVideoReady: readinessData.allReady,
 		preferredResolution,
 		availableResolutions,
-		resolutions: readinessData.resolutions
+		resolutions: readinessData.resolutions,
+		token
 	};
 };

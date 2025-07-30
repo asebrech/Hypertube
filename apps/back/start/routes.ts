@@ -41,10 +41,15 @@ router
   })
   .prefix('movies')
 
-// will need to move to an authed route
-router.get('/torrent/:id', [TorrentController, 'torrent'])
-router.get('/torrent/:resolution/:id', [TorrentController, 'ready'])
-router.get('/stream/*', [TorrentController, 'stream'])
+router
+  .group(() => {
+    router.get(':id', [TorrentController, 'torrent'])
+    router.get(':resolution/:id', [TorrentController, 'ready'])
+  })
+  .prefix('torrent')
+  .use(middleware.auth())
+
+router.get('/stream/*', [TorrentController, 'stream']).use(middleware.auth())
 
 router
   .get('me', async ({ auth, response }) => {
