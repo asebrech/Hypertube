@@ -12,6 +12,7 @@
 	const POLL_INTERVAL = 5000; // 5 seconds
 	const TIMEOUT_DURATION = 300000; // 5 minutes
 	const WATCH_TIME_CHECK_INTERVAL = 1000; // Check watch time every 1 second
+	const PROGRESS_SAVE_INTERVAL = 10000; // Save progress every 10 seconds
 
 	let player;
 	let container;
@@ -21,6 +22,8 @@
 	let pollingInterval;
 	let hasMarkedAsWatched = false;
 	let lastWatchTimeCheck = 0;
+	let lastProgressSave = 0;
+	let progressSaveInterval;
 
 	const availableResolutions = [
 		{ label: '480p', src: `${BASE_URL}/${data.movieId}/480p/output.m3u8`, value: '480' },
@@ -51,6 +54,61 @@
 		} catch (error) {
 			console.error('Error marking movie as watched:', error);
 		}
+	}
+
+	async function saveWatchProgress(currentTime) {
+		if (!data.token || !player) return;
+
+		try {
+			const response = await fetch(`${PUBLIC_BACK_URL}/movies/${data.movieId}/progress`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${data.token}`,
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ currentTime })
+			});
+
+			if (!response.ok) {
+				console.error('Failed to save watch progress:', response.statusText);
+			}
+		} catch (error) {
+			console.error('Error saving watch progress:', error);
+		}
+	}
+
+	async function getWatchProgress() {
+		if (!data.token) return 0;
+
+		try {
+			const response = await fetch(`${PUBLIC_BACK_URL}/movies/${data.movieId}/progress`, {
+				headers: {
+					Authorization: `Bearer ${data.token}`
+				}
+			});
+
+			if (response.ok) {
+				const progressData = await response.json();
+				return progressData.progress || 0;
+			}
+		} catch (error) {
+			console.error('Error getting watch progress:', error);
+		}
+		return 0;
+	}
+
+	function handleProgressSave() {
+		if (!player || !player.duration() || player.duration() === 0) return;
+
+		const currentTime = player.currentTime();
+		const duration = player.duration();
+		const watchedPercentage = (currentTime / duration) * 100;
+
+		if (watchedPercentage > 95 || watchedPercentage < 1) return;
+
+		if (duration < 120) return;
+
+		saveWatchProgress(currentTime);
 	}
 
 	async function pollForVideoReadiness() {
@@ -102,7 +160,7 @@
 		}
 	}
 
-	function initializeVideoPlayer() {
+	async function initializeVideoPlayer() {
 		if (!container || player || readyResolutions.size === 0) return;
 
 		const preferredSource = getPreferredSource();
@@ -159,6 +217,32 @@
 						}
 					}
 				}
+			});
+
+			player.on('loadedmetadata', async () => {
+				const savedProgress = await getWatchProgress();
+				if (savedProgress > 0 && player.duration() > 0) {
+					const duration = player.duration();
+					const watchedPercentage = (savedProgress / duration) * 100;
+
+					if (watchedPercentage >= 1 && watchedPercentage <= 95) {
+						player.currentTime(savedProgress);
+					}
+				}
+			});
+
+			progressSaveInterval = setInterval(() => {
+				if (player && !player.paused() && player.duration() > 0) {
+					handleProgressSave();
+				}
+			}, PROGRESS_SAVE_INTERVAL);
+
+			player.on('pause', () => {
+				handleProgressSave();
+			});
+
+			player.on('seeked', () => {
+				handleProgressSave();
 			});
 
 			addResolutionButtons();

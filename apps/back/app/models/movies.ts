@@ -45,7 +45,7 @@ export default class Movie extends BaseModel {
 
   @manyToMany(() => User, {
     pivotTable: 'movie_user',
-    pivotColumns: ['usersAction'],
+    pivotColumns: ['usersAction', 'watch_progress_seconds', 'last_watched_at'],
   })
   declare users: ManyToMany<typeof User>
 }

@@ -299,7 +299,7 @@ export default class MoviesController {
       const user = await auth.authenticate()
       const tmdbId = Number.parseInt(params.id)
 
-      if (isNaN(tmdbId)) {
+      if (Number.isNaN(tmdbId)) {
         return response.badRequest({ error: 'Invalid movie ID' })
       }
 
@@ -319,6 +319,7 @@ export default class MoviesController {
       await user.related('movies').attach({
         [movie.id]: {
           usersAction: UserMovieAction.WATCHED,
+          last_watched_at: new Date(),
         },
       })
 
@@ -326,6 +327,91 @@ export default class MoviesController {
     } catch (error) {
       console.error('Error marking movie as watched:', error)
       return response.internalServerError({ error: 'Failed to mark movie as watched' })
+    }
+  }
+
+  async saveWatchProgress({ params, auth, request, response }: HttpContext) {
+    try {
+      const user = await auth.authenticate()
+      const tmdbId = Number.parseInt(params.id)
+      const { currentTime } = request.only(['currentTime'])
+
+      if (isNaN(tmdbId)) {
+        return response.badRequest({ error: 'Invalid movie ID' })
+      }
+
+      if (typeof currentTime !== 'number' || currentTime < 0) {
+        return response.badRequest({ error: 'Invalid current time' })
+      }
+
+      const movieService = new MovieService()
+      const movie = await movieService.getOrCreate(tmdbId)
+
+      const progressSeconds = Math.floor(currentTime)
+
+      const existingRelation = await user
+        .related('movies')
+        .query()
+        .where('movies.id', movie.id)
+        .first()
+
+      if (existingRelation) {
+        await user.related('movies').detach([movie.id])
+      }
+
+      const currentAction = existingRelation?.$extras.pivot_usersAction || UserMovieAction.WATCHED
+
+      await user.related('movies').attach({
+        [movie.id]: {
+          usersAction: currentAction,
+          watch_progress_seconds: progressSeconds,
+          last_watched_at: new Date(),
+        },
+      })
+
+      return response.ok({
+        message: 'Watch progress saved successfully',
+        progress: progressSeconds,
+      })
+    } catch (error) {
+      console.error('Error saving watch progress:', error)
+      return response.internalServerError({ error: 'Failed to save watch progress' })
+    }
+  }
+
+  async getWatchProgress({ params, auth, response }: HttpContext) {
+    try {
+      const user = await auth.authenticate()
+      const tmdbId = Number.parseInt(params.id)
+
+      if (isNaN(tmdbId)) {
+        return response.badRequest({ error: 'Invalid movie ID' })
+      }
+
+      const movieService = new MovieService()
+      const movie = await movieService.getOrCreate(tmdbId)
+
+      const relation = await user
+        .related('movies')
+        .query()
+        .where('movies.id', movie.id)
+        .first()
+
+      if (!relation) {
+        return response.ok({ 
+          progress: 0,
+          lastWatchedAt: null 
+        })
+      }
+
+      return response.ok({
+        progress: relation.$extras.pivot_watch_progress_seconds || 0,
+        lastWatchedAt: relation.$extras.pivot_last_watched_at || null,
+        action: relation.$extras.pivot_usersAction || null
+      })
+    } catch (error) {
+      console.error('Error getting watch progress:', error)
+      return response.internalServerError({ error: 'Failed to get watch progress' })
     }
   }
 
