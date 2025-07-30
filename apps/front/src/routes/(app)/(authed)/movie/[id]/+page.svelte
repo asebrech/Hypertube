@@ -11,6 +11,7 @@
 
 	const POLL_INTERVAL = 5000; // 5 seconds
 	const TIMEOUT_DURATION = 300000; // 5 minutes
+	const WATCH_TIME_CHECK_INTERVAL = 1000; // Check watch time every 1 second
 
 	let player;
 	let container;
@@ -19,6 +20,7 @@
 	let error = null;
 	let pollingInterval;
 	let hasMarkedAsWatched = false;
+	let lastWatchTimeCheck = 0;
 
 	const availableResolutions = [
 		{ label: '480p', src: `${BASE_URL}/${data.movieId}/480p/output.m3u8`, value: '480' },
@@ -144,12 +146,17 @@
 
 			player.on('timeupdate', () => {
 				if (!hasMarkedAsWatched && player.duration() > 0) {
-					const currentTime = player.currentTime();
-					const duration = player.duration();
-					const watchedPercentage = (currentTime / duration) * 100;
+					const now = Date.now();
+					if (now - lastWatchTimeCheck >= WATCH_TIME_CHECK_INTERVAL) {
+						lastWatchTimeCheck = now;
 
-					if (watchedPercentage >= 90) {
-						markMovieAsWatched();
+						const currentTime = player.currentTime();
+						const duration = player.duration();
+						const watchedPercentage = (currentTime / duration) * 100;
+
+						if (watchedPercentage >= 90) {
+							markMovieAsWatched();
+						}
 					}
 				}
 			});
