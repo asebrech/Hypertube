@@ -1,6 +1,12 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { TMDBService } from '#services/tmdb_service'
-import { BackDropImage, UserMovieAction } from '@hypertube/shared'
+import { BackDropImage } from '@hypertube/shared'
+import MovieService from '#services/movie_service'
+
+enum UserMovieAction {
+  WATCHED = 'watched',
+  BOOKMARKED = 'bookmarked',
+}
 
 export default class MoviesController {
   private tmdbService: TMDBService = new TMDBService()
@@ -16,22 +22,29 @@ export default class MoviesController {
     const popularMovies = await this.tmdbService.getPopularMovies(lang, page)
 
     const movieListByGenre = genresList.genres.map(async (genre: any) => {
-      const movies = await this.tmdbService.getDiscover([genre.id], undefined, lang, page, movieType)
+      const movies = await this.tmdbService.getDiscover(
+        [genre.id],
+        undefined,
+        lang,
+        page,
+        movieType
+      )
       return {
         id: genre.id,
         name: genre.name,
         movies: movies.results.map((movie: any) => {
           return {
             media_type: movieType,
-            ...movie
-          }})
+            ...movie,
+          }
+        }),
       }
     })
     const movieListByGenreResults = await Promise.all(movieListByGenre)
     const finalMovieListByGenre = [
       {
         id: 0,
-        name: "TOP 10",
+        name: 'TOP 10',
         movies: popularMovies.results.slice(0, 10),
       },
       ...movieListByGenreResults,
@@ -42,35 +55,46 @@ export default class MoviesController {
       user = await auth.authenticate()
     }
 
-    const moviesFinalResult = await Promise.all(slicedResponse.map(async (genre: any) => {
-      return {
-        id: genre.id,
-        name: genre.name,
-        movies: await Promise.all(genre.movies.map(async (movie: any) => {
-          movie.user_action = null
-          if (user) {
-            const movieTable = await user
-              .related('movies')
-              .query()
-              .where('movies.tmdbId', movie.id)
-              .first()
-            if (!!movieTable) {
-              const action = movieTable.$extras.pivot_usersAction as UserMovieAction
-              movie.user_action = action || null
-            }
-          }
-          return movie
-        }))}}))
+    const moviesFinalResult = await Promise.all(
+      slicedResponse.map(async (genre: any) => {
+        return {
+          id: genre.id,
+          name: genre.name,
+          movies: await Promise.all(
+            genre.movies.map(async (movie: any) => {
+              movie.user_action = null
+              if (user) {
+                const movieTable = await user
+                  .related('movies')
+                  .query()
+                  .where('movies.tmdbId', movie.id)
+                  .first()
+                if (movieTable) {
+                  const action = movieTable.$extras.pivot_usersAction as UserMovieAction
+                  movie.user_action = action || null
+                }
+              }
+              return movie
+            })
+          ),
+        }
+      })
+    )
     const hasMorePages = finalMovieListByGenre.length > offset + limit
-    return {movies: moviesFinalResult, hasMorePages}
+    return { movies: moviesFinalResult, hasMorePages }
   }
 
-  async backdropImage ({ request, response }: HttpContext): Promise<BackDropImage | void> {
+  async backdropImage({ request, response }: HttpContext): Promise<BackDropImage | void> {
     const tmdb_movie_id = request.input('tmdb_movie_id')
     const lang = request.input('lang', 'en')
     const size = request.input('size', 'original')
     const movieType = request.input('type', 'movie')
-    const backdropImageFoundBoolean = await this.tmdbService.getBackdropImageUrl(tmdb_movie_id, size, lang, movieType)
+    const backdropImageFoundBoolean = await this.tmdbService.getBackdropImageUrl(
+      tmdb_movie_id,
+      size,
+      lang,
+      movieType
+    )
     if (backdropImageFoundBoolean) {
       return backdropImageFoundBoolean
     } else {
@@ -78,12 +102,17 @@ export default class MoviesController {
     }
   }
 
-  async posterImage ({ request, response }: HttpContext): Promise<BackDropImage | void> {
+  async posterImage({ request, response }: HttpContext): Promise<BackDropImage | void> {
     const tmdb_movie_id = request.input('tmdb_movie_id')
     const lang = request.input('lang', 'en')
     const size = request.input('size', 'original')
     const movieType = request.input('type', 'movie')
-    const backdropImageFoundBoolean = await this.tmdbService.getPosterImageUrl(tmdb_movie_id, size, lang, movieType)
+    const backdropImageFoundBoolean = await this.tmdbService.getPosterImageUrl(
+      tmdb_movie_id,
+      size,
+      lang,
+      movieType
+    )
     if (backdropImageFoundBoolean) {
       return backdropImageFoundBoolean
     } else {
@@ -91,12 +120,17 @@ export default class MoviesController {
     }
   }
 
-  async logoImage ({ request, response }: HttpContext): Promise<BackDropImage | void> {
+  async logoImage({ request, response }: HttpContext): Promise<BackDropImage | void> {
     const tmdb_movie_id = request.input('tmdb_movie_id')
     const lang = request.input('lang', 'en')
     const size = request.input('size', 'original')
     const movieType = request.input('type', 'movie')
-    const logoImageFoundBoolean = await this.tmdbService.getLogoImageUrl(tmdb_movie_id, size, lang, movieType)
+    const logoImageFoundBoolean = await this.tmdbService.getLogoImageUrl(
+      tmdb_movie_id,
+      size,
+      lang,
+      movieType
+    )
     if (logoImageFoundBoolean) {
       return logoImageFoundBoolean
     } else {
@@ -104,7 +138,7 @@ export default class MoviesController {
     }
   }
 
-  async movieDetails ({ request, response }: HttpContext) {
+  async movieDetails({ request, response }: HttpContext) {
     const tmdb_movie_id = request.param('id')
     const lang = request.input('lang', 'en')
     const movieType = request.input('type', 'movie')
@@ -116,20 +150,23 @@ export default class MoviesController {
     }
   }
 
-  async movieVideos ({ request, response }: HttpContext) {
+  async movieVideos({ request, response }: HttpContext) {
     const tmdb_movie_id = request.param('id')
     const lang = request.input('lang', 'en')
     const movieType = request.input('type', 'movie')
     const movieVideos = await this.tmdbService.getMovieVideos(tmdb_movie_id, lang, movieType)
-    if (!movieVideos)
-      return response.notFound({ error: 'Movie videos not found' })
-    let movieVideo = movieVideos.results.find((video: any) => video.site === 'YouTube' && video.type === 'Clip')
+    if (!movieVideos) return response.notFound({ error: 'Movie videos not found' })
+    let movieVideo = movieVideos.results.find(
+      (video: any) => video.site === 'YouTube' && video.type === 'Clip'
+    )
     if (!movieVideo)
-      movieVideo = movieVideos.results.find((video: any) => video.site === 'YouTube' && video.type === 'Trailer')
-    return movieVideo;
+      movieVideo = movieVideos.results.find(
+        (video: any) => video.site === 'YouTube' && video.type === 'Trailer'
+      )
+    return movieVideo
   }
 
-  async movieSearch ({ request, response }: HttpContext) {
+  async movieSearch({ request, response }: HttpContext) {
     const query = request.input('query')
     const lang = request.input('lang', 'en')
     const page = request.input('page', 1)
@@ -137,8 +174,8 @@ export default class MoviesController {
       return response.badRequest({ error: 'Query is required' })
     }
     const searchResults = await this.tmdbService.getMultiSearch(query, lang, page)
-    const hasMorePages = searchResults.total_pages > page;
-    const media: any[] = [];
+    const hasMorePages = searchResults.total_pages > page
+    const media: any[] = []
 
     for (const result of searchResults.results) {
       if (result.media_type === 'person' && result.known_for_department === 'Acting') {
@@ -149,26 +186,26 @@ export default class MoviesController {
           1,
           'movie',
           'en'
-        );
+        )
 
         const movies = movieActor.results.map((movie: any) => ({
           media_type: 'movie',
-          ...movie
-        }));
+          ...movie,
+        }))
 
-        media.push(...movies);
+        media.push(...movies)
       } else {
-        media.push(result);
+        media.push(result)
       }
     }
     if (searchResults) {
-    return {movies: media, hasMorePages}
+      return { movies: media, hasMorePages }
     } else {
       return response.notFound({ error: 'Search results not found' })
     }
   }
 
-  async MovieDiscover ({ request, response }: HttpContext) {
+  async MovieDiscover({ request, response }: HttpContext) {
     let genreId = request.input('genreId')
     if (typeof genreId === 'string') {
       genreId = [genreId]
@@ -177,13 +214,13 @@ export default class MoviesController {
     if (typeof castId === 'string') {
       castId = [castId]
     }
-    const lang = request.input('lang', 'en');
-    const page = Number(request.input('page', 1));
-    const movieType = request.input('type', 'movie');
-    const region = request.input('region', 'en');
-    const releaseYear = request.input('releaseYear');
-    const sortBy = request.input('sortBy', 'popularity.desc');
-    const originalLanguage = request.input('originalLanguage');
+    const lang = request.input('lang', 'en')
+    const page = Number(request.input('page', 1))
+    const movieType = request.input('type', 'movie')
+    const region = request.input('region', 'en')
+    const releaseYear = request.input('releaseYear')
+    const sortBy = request.input('sortBy', 'popularity.desc')
+    const originalLanguage = request.input('originalLanguage')
 
     const discoverResults = await this.tmdbService.getDiscover(
       genreId,
@@ -195,8 +232,8 @@ export default class MoviesController {
       releaseYear,
       sortBy,
       originalLanguage
-    );
-    const hasMorePages = discoverResults.total_pages > page;
+    )
+    const hasMorePages = discoverResults.total_pages > page
     if (discoverResults) {
       return { movies: discoverResults.results, hasMorePages }
     } else {
@@ -204,7 +241,7 @@ export default class MoviesController {
     }
   }
 
-  async movieGenres ({ request, response }: HttpContext) {
+  async movieGenres({ request, response }: HttpContext) {
     const lang = request.input('lang', 'en')
     const movieType = request.input('type', 'movie')
     const genresList = await this.tmdbService.getGenresList(lang, movieType)
@@ -220,8 +257,13 @@ export default class MoviesController {
     const lang = request.input('lang', 'en')
     const page = request.input('page', 1)
     const movieType = request.input('type', 'movie')
-    const similarMovies = await this.tmdbService.getSimilarMovies(tmdb_movie_id, lang, page, movieType)
-    const hasMorePages = similarMovies.total_pages > page;
+    const similarMovies = await this.tmdbService.getSimilarMovies(
+      tmdb_movie_id,
+      lang,
+      page,
+      movieType
+    )
+    const hasMorePages = similarMovies.total_pages > page
     if (similarMovies) {
       return { movies: similarMovies.results, hasMorePages }
     } else {
@@ -249,6 +291,88 @@ export default class MoviesController {
       return personDetails
     } else {
       return response.notFound({ error: 'Person details not found' })
+    }
+  }
+
+  async markAsWatched({ params, auth, response }: HttpContext) {
+    try {
+      const user = await auth.authenticate()
+      const tmdbId = Number.parseInt(params.id)
+
+      if (isNaN(tmdbId)) {
+        return response.badRequest({ error: 'Invalid movie ID' })
+      }
+
+      const movieService = new MovieService()
+      const movie = await movieService.getOrCreate(tmdbId)
+
+      const existingRelation = await user
+        .related('movies')
+        .query()
+        .where('movies.id', movie.id)
+        .first()
+
+      if (existingRelation) {
+        await user.related('movies').detach([movie.id])
+      }
+
+      await user.related('movies').attach({
+        [movie.id]: {
+          usersAction: UserMovieAction.WATCHED,
+        },
+      })
+
+      return response.ok({ message: 'Movie marked as watched successfully' })
+    } catch (error) {
+      console.error('Error marking movie as watched:', error)
+      return response.internalServerError({ error: 'Failed to mark movie as watched' })
+    }
+  }
+
+  async toggleBookmark({ params, auth, response }: HttpContext) {
+    try {
+      const user = await auth.authenticate()
+      const tmdbId = Number.parseInt(params.id)
+
+      if (isNaN(tmdbId)) {
+        return response.badRequest({ error: 'Invalid movie ID' })
+      }
+
+      const movieService = new MovieService()
+      const movie = await movieService.getOrCreate(tmdbId)
+
+      const existingRelation = await user
+        .related('movies')
+        .query()
+        .where('movies.id', movie.id)
+        .first()
+
+      if (existingRelation) {
+        const currentAction = existingRelation.$extras.pivot_usersAction as UserMovieAction
+
+        if (currentAction === UserMovieAction.BOOKMARKED) {
+          await user.related('movies').detach([movie.id])
+          return response.ok({ message: 'Bookmark removed successfully', bookmarked: false })
+        } else {
+          await user.related('movies').detach([movie.id])
+          await user.related('movies').attach({
+            [movie.id]: {
+              usersAction: UserMovieAction.BOOKMARKED,
+            },
+          })
+          return response.ok({ message: 'Movie bookmarked successfully', bookmarked: true })
+        }
+      } else {
+        await user.related('movies').attach({
+          [movie.id]: {
+            usersAction: UserMovieAction.BOOKMARKED,
+          },
+        })
+        return response.ok({ message: 'Movie bookmarked successfully', bookmarked: true })
+      }
+    } catch (error) {
+      console.error('Error toggling bookmark:', error)
+      return response.internalServerError({ error: 'Failed to toggle bookmark' })
     }
   }
 }

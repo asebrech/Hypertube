@@ -18,6 +18,7 @@
 	let loadingMessage = data.isAllVideoReady ? '' : 'Converting video files... Please wait.';
 	let error = null;
 	let pollingInterval;
+	let hasMarkedAsWatched = false;
 
 	const availableResolutions = [
 		{ label: '480p', src: `${BASE_URL}/${data.movieId}/480p/output.m3u8`, value: '480' },
@@ -27,6 +28,28 @@
 
 	$: readyResolutions = new Set(data.availableResolutions);
 	$: preferredResolution = data.preferredResolution || '1080';
+
+	async function markMovieAsWatched() {
+		if (hasMarkedAsWatched || !data.token) return;
+
+		try {
+			const response = await fetch(`${PUBLIC_BACK_URL}/movies/${data.movieId}/watched`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${data.token}`,
+					'Content-Type': 'application/json'
+				}
+			});
+
+			if (response.ok) {
+				hasMarkedAsWatched = true;
+			} else {
+				console.error('Failed to mark movie as watched:', response.statusText);
+			}
+		} catch (error) {
+			console.error('Error marking movie as watched:', error);
+		}
+	}
 
 	async function pollForVideoReadiness() {
 		if (data.isAllVideoReady) {
@@ -107,12 +130,28 @@
 
 			player.on('xhr-hooks-ready', () => {
 				if (data.token && player.tech() && player.tech().vhs) {
-							player.tech().vhs.xhr.onRequest(createAuthHook());
+					player.tech().vhs.xhr.onRequest(createAuthHook());
 				}
 			});
 
 			player.on('error', (error) => {
 				console.error('Video.js player error:', error);
+			});
+
+			player.on('ended', () => {
+				markMovieAsWatched();
+			});
+
+			player.on('timeupdate', () => {
+				if (!hasMarkedAsWatched && player.duration() > 0) {
+					const currentTime = player.currentTime();
+					const duration = player.duration();
+					const watchedPercentage = (currentTime / duration) * 100;
+
+					if (watchedPercentage >= 90) {
+						markMovieAsWatched();
+					}
+				}
 			});
 
 			addResolutionButtons();
