@@ -59,19 +59,21 @@
 		return availableResolutions[0];
 	}
 
-	function setupAuthenticationHooks() {
-		if (!data.token) return;
-
-		const authHook = (options) => {
+	function createAuthHook() {
+		return (options) => {
 			if (!options.headers) {
 				options.headers = {};
 			}
 			options.headers.Authorization = `Bearer ${data.token}`;
 			return options;
 		};
+	}
+
+	function setupAuthenticationHooks() {
+		if (!data.token) return;
 
 		if (typeof videojs !== 'undefined' && videojs.Vhs) {
-			videojs.Vhs.xhr.onRequest(authHook);
+			videojs.Vhs.xhr.onRequest(createAuthHook());
 		}
 	}
 
@@ -105,14 +107,7 @@
 
 			player.on('xhr-hooks-ready', () => {
 				if (data.token && player.tech() && player.tech().vhs) {
-					const playerAuthHook = (options) => {
-						if (!options.headers) {
-							options.headers = {};
-						}
-						options.headers.Authorization = `Bearer ${data.token}`;
-						return options;
-					};
-					player.tech().vhs.xhr.onRequest(playerAuthHook);
+							player.tech().vhs.xhr.onRequest(createAuthHook());
 				}
 			});
 

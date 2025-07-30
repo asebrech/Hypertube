@@ -43,8 +43,8 @@ router
 
 router
   .group(() => {
-    router.get(':id', [TorrentController, 'torrent'])
-    router.get(':resolution/:id', [TorrentController, 'ready'])
+    router.get('/:id', [TorrentController, 'torrent'])
+    router.get('/:resolution/:id', [TorrentController, 'ready'])
   })
   .prefix('torrent')
   .use(middleware.auth())
