@@ -23,6 +23,8 @@ export default class TorrentService {
           videoBitrate: '1500k',
           maxBitrate: '2000k',
           bufsize: '3000k',
+          audioBitrate: '192k',
+          audioChannels: 2,
         }
       case 720:
         return {
@@ -30,6 +32,8 @@ export default class TorrentService {
           videoBitrate: '3000k',
           maxBitrate: '4000k',
           bufsize: '6000k',
+          audioBitrate: '256k',
+          audioChannels: 6,
         }
       case 1080:
         return {
@@ -37,6 +41,8 @@ export default class TorrentService {
           videoBitrate: '5000k',
           maxBitrate: '7000k',
           bufsize: '10000k',
+          audioBitrate: '320k',
+          audioChannels: 6,
         }
       default:
         return {
@@ -44,6 +50,8 @@ export default class TorrentService {
           videoBitrate: '2000k',
           maxBitrate: '3000k',
           bufsize: '4000k',
+          audioBitrate: '192k',
+          audioChannels: 2,
         }
     }
   }
@@ -188,9 +196,9 @@ export default class TorrentService {
         path.join(outputFolderRootPath, 'segment_%03d.ts'),
         '-hls_flags +append_list',
         '-hls_allow_cache 0',
-        '-ac 2',
+        `-ac ${qualitySettings.audioChannels}`,
         '-ar 48000',
-        '-b:a 128k',
+        `-b:a ${qualitySettings.audioBitrate}`,
       ])
       .output(outputFilePath)
       .videoFilter(`scale=${width}:-2`)
