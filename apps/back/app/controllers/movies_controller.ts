@@ -57,7 +57,9 @@ export default class MoviesController {
           name: genre.name,
           movies: await Promise.all(
             genre.movies.map(async (movie: any) => {
-              movie.user_action = null
+              movie.is_watched = false
+              movie.is_bookmarked = false
+
               if (user) {
                 const movieTable = await user
                   .related('movies')
@@ -65,18 +67,8 @@ export default class MoviesController {
                   .where('movies.tmdbId', movie.id)
                   .first()
                 if (movieTable) {
-                  const isWatched = movieTable.$extras.pivot_is_watched
-                  const isBookmarked = movieTable.$extras.pivot_is_bookmarked
-                  
-                  if (isWatched && isBookmarked) {
-                    movie.user_action = 'watched_and_bookmarked'
-                  } else if (isWatched) {
-                    movie.user_action = 'watched'
-                  } else if (isBookmarked) {
-                    movie.user_action = 'bookmarked'
-                  } else {
-                    movie.user_action = null
-                  }
+                  movie.is_watched = movieTable.$extras.pivot_is_watched || false
+                  movie.is_bookmarked = movieTable.$extras.pivot_is_bookmarked || false
                 }
               }
               return movie
@@ -401,16 +393,12 @@ export default class MoviesController {
       const movieService = new MovieService()
       const movie = await movieService.getOrCreate(tmdbId)
 
-      const relation = await user
-        .related('movies')
-        .query()
-        .where('movies.id', movie.id)
-        .first()
+      const relation = await user.related('movies').query().where('movies.id', movie.id).first()
 
       if (!relation) {
-        return response.ok({ 
+        return response.ok({
           progress: 0,
-          lastWatchedAt: null 
+          lastWatchedAt: null,
         })
       }
 
@@ -418,7 +406,7 @@ export default class MoviesController {
         progress: relation.$extras.pivot_watch_progress_seconds || 0,
         lastWatchedAt: relation.$extras.pivot_last_watched_at || null,
         isWatched: relation.$extras.pivot_is_watched || false,
-        isBookmarked: relation.$extras.pivot_is_bookmarked || false
+        isBookmarked: relation.$extras.pivot_is_bookmarked || false,
       })
     } catch (error) {
       console.error('Error getting watch progress:', error)
@@ -464,13 +452,13 @@ export default class MoviesController {
         },
       })
 
-      const message = newBookmarkStatus 
-        ? 'Movie bookmarked successfully' 
+      const message = newBookmarkStatus
+        ? 'Movie bookmarked successfully'
         : 'Bookmark removed successfully'
 
-      return response.ok({ 
-        message, 
-        bookmarked: newBookmarkStatus 
+      return response.ok({
+        message,
+        bookmarked: newBookmarkStatus,
       })
     } catch (error) {
       console.error('Error toggling bookmark:', error)
