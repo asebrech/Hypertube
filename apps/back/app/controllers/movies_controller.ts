@@ -3,11 +3,6 @@ import { TMDBService } from '#services/tmdb_service'
 import { BackDropImage } from '@hypertube/shared'
 import MovieService from '#services/movie_service'
 
-enum UserMovieAction {
-  WATCHED = 'watched',
-  BOOKMARKED = 'bookmarked',
-}
-
 export default class MoviesController {
   private tmdbService: TMDBService = new TMDBService()
 
@@ -70,8 +65,18 @@ export default class MoviesController {
                   .where('movies.tmdbId', movie.id)
                   .first()
                 if (movieTable) {
-                  const action = movieTable.$extras.pivot_usersAction as UserMovieAction
-                  movie.user_action = action || null
+                  const isWatched = movieTable.$extras.pivot_is_watched
+                  const isBookmarked = movieTable.$extras.pivot_is_bookmarked
+                  
+                  if (isWatched && isBookmarked) {
+                    movie.user_action = 'watched_and_bookmarked'
+                  } else if (isWatched) {
+                    movie.user_action = 'watched'
+                  } else if (isBookmarked) {
+                    movie.user_action = 'bookmarked'
+                  } else {
+                    movie.user_action = null
+                  }
                 }
               }
               return movie
@@ -316,9 +321,12 @@ export default class MoviesController {
         await user.related('movies').detach([movie.id])
       }
 
+      const currentIsBookmarked = existingRelation?.$extras.pivot_is_bookmarked || false
+
       await user.related('movies').attach({
         [movie.id]: {
-          usersAction: UserMovieAction.WATCHED,
+          is_watched: true,
+          is_bookmarked: currentIsBookmarked,
           last_watched_at: new Date(),
         },
       })
@@ -359,11 +367,13 @@ export default class MoviesController {
         await user.related('movies').detach([movie.id])
       }
 
-      const currentAction = existingRelation?.$extras.pivot_usersAction || UserMovieAction.WATCHED
+      const currentIsWatched = existingRelation?.$extras.pivot_is_watched || false
+      const currentIsBookmarked = existingRelation?.$extras.pivot_is_bookmarked || false
 
       await user.related('movies').attach({
         [movie.id]: {
-          usersAction: currentAction,
+          is_watched: currentIsWatched,
+          is_bookmarked: currentIsBookmarked,
           watch_progress_seconds: progressSeconds,
           last_watched_at: new Date(),
         },
@@ -407,7 +417,8 @@ export default class MoviesController {
       return response.ok({
         progress: relation.$extras.pivot_watch_progress_seconds || 0,
         lastWatchedAt: relation.$extras.pivot_last_watched_at || null,
-        action: relation.$extras.pivot_usersAction || null
+        isWatched: relation.$extras.pivot_is_watched || false,
+        isBookmarked: relation.$extras.pivot_is_bookmarked || false
       })
     } catch (error) {
       console.error('Error getting watch progress:', error)
@@ -434,28 +445,33 @@ export default class MoviesController {
         .first()
 
       if (existingRelation) {
-        const currentAction = existingRelation.$extras.pivot_usersAction as UserMovieAction
-
-        if (currentAction === UserMovieAction.BOOKMARKED) {
-          await user.related('movies').detach([movie.id])
-          return response.ok({ message: 'Bookmark removed successfully', bookmarked: false })
-        } else {
-          await user.related('movies').detach([movie.id])
-          await user.related('movies').attach({
-            [movie.id]: {
-              usersAction: UserMovieAction.BOOKMARKED,
-            },
-          })
-          return response.ok({ message: 'Movie bookmarked successfully', bookmarked: true })
-        }
-      } else {
-        await user.related('movies').attach({
-          [movie.id]: {
-            usersAction: UserMovieAction.BOOKMARKED,
-          },
-        })
-        return response.ok({ message: 'Movie bookmarked successfully', bookmarked: true })
+        await user.related('movies').detach([movie.id])
       }
+
+      const currentIsWatched = existingRelation?.$extras.pivot_is_watched || false
+      const currentIsBookmarked = existingRelation?.$extras.pivot_is_bookmarked || false
+      const currentWatchProgress = existingRelation?.$extras.pivot_watch_progress_seconds || 0
+      const currentLastWatchedAt = existingRelation?.$extras.pivot_last_watched_at || null
+
+      const newBookmarkStatus = !currentIsBookmarked
+
+      await user.related('movies').attach({
+        [movie.id]: {
+          is_watched: currentIsWatched,
+          is_bookmarked: newBookmarkStatus,
+          watch_progress_seconds: currentWatchProgress,
+          last_watched_at: currentLastWatchedAt,
+        },
+      })
+
+      const message = newBookmarkStatus 
+        ? 'Movie bookmarked successfully' 
+        : 'Bookmark removed successfully'
+
+      return response.ok({ 
+        message, 
+        bookmarked: newBookmarkStatus 
+      })
     } catch (error) {
       console.error('Error toggling bookmark:', error)
       return response.internalServerError({ error: 'Failed to toggle bookmark' })

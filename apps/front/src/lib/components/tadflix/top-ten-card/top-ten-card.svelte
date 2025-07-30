@@ -2,7 +2,7 @@
 	import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 	import { Skeleton } from '@/components/ui/skeleton';
 	import { getPosterImage } from '@/services/api';
-	import type { BackDropImage, ImageSizeType, MovieType, UserMovieAction } from '@hypertube/shared';
+	import type { BackDropImage, ImageSizeType, MovieType } from '@hypertube/shared';
 	import Rank from './rank.svelte';
 	import { Badge } from '@/components/ui/badge';
 	import { _ } from 'svelte-i18n';
@@ -10,7 +10,8 @@
 	export let movieId: number;
 	export let isVisible: boolean;
 	export let orderNumber: number;
-	export let userAction: UserMovieAction | null = null;
+	export let isWatched: boolean = false;
+	export let isBookmarked: boolean = false;
 	export let type: MovieType = 'movie';
 
 	let poster_image: BackDropImage | null = null;
@@ -58,10 +59,22 @@
 				class="absolute right-0 top-0 h-full w-[50%]"
 				style="background-size: cover; background-position: center; background-image: url({poster_image?.url});"
 			>
-				{#if userAction}
+							{#if isWatched && isBookmarked}
 					<div class="absolute bottom-0 flex w-full justify-center">
 						<Badge variant={'red'}>
-							{$_(`movie-action.${userAction}`)}
+										{$_('movie-action.watched')} & {$_('movie-action.bookmarked')}
+									</Badge>
+								</div>
+							{:else if isWatched}
+								<div class="absolute bottom-0 flex w-full justify-center">
+									<Badge variant={'red'}>
+										{$_('movie-action.watched')}
+									</Badge>
+								</div>
+							{:else if isBookmarked}
+								<div class="absolute bottom-0 flex w-full justify-center">
+									<Badge variant={'red'}>
+										{$_('movie-action.bookmarked')}
 						</Badge>
 					</div>
 				{/if}
