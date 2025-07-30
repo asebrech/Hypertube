@@ -11,23 +11,10 @@ export default class MoviesController {
     const limit = 4
     const offset = (page - 1) * limit
     const lang = request.input('lang', 'en')
-    // // // const limit = 10
-    // // // const offset = (page - 1) * limit
-    // TorrentSearchApi.disableAllProviders()
-    // // console.log('Yts : ', TorrentSearchApi.isProviderActive('Yts'))
-    // // console.log('ThePirateBay : ', TorrentSearchApi.isProviderActive('ThePirateBay'))
-    // TorrentSearchApi.enableProvider('Yts')
-    // TorrentSearchApi.enableProvider('ThePirateBay')
-    // console.log('Yts : ', TorrentSearchApi.isProviderActive('Yts'))
-    // console.log('ThePirateBay : ', TorrentSearchApi.isProviderActive('ThePirateBay'))
-    // const torrents = await TorrentSearchApi.search('tt0111161', 'All', 100)
-    // // const activeTorrentProviders = TorrentSearchApi.getActiveProviders()
-    // // console.log('Active Torrent Providers:', activeTorrentProviders)
-    // console.log('Torrents:', torrents)
-    // // console.log('Page:', page)
 
-    const genresList = await this.tmdbService.getGenresList(lang, movieType)
-    const popularMovies = await this.tmdbService.getPopularMovies(lang, page, movieType)
+    const genresList = await this.tmdbService.getGenresList(lang)
+    const popularMovies = await this.tmdbService.getPopularMovies(lang, page)
+
     const movieListByGenre = genresList.genres.map(async (genre: any) => {
       const movies = await this.tmdbService.getDiscover([genre.id], undefined, lang, page, movieType)
       return {
