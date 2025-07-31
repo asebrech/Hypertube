@@ -1,10 +1,15 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import { inject } from '@adonisjs/core'
 import { TMDBService } from '#services/tmdb_service'
 import { BackDropImage } from '@hypertube/shared'
 import MovieService from '#services/movie_service'
 
+@inject()
 export default class MoviesController {
-  private tmdbService: TMDBService = new TMDBService()
+  constructor(
+    private tmdbService: TMDBService,
+    private movieService: MovieService
+  ) {}
 
   async index({ request, response, auth }: HttpContext) {
     const page = request.input('page', 1)
@@ -300,8 +305,7 @@ export default class MoviesController {
         return response.badRequest({ error: 'Invalid movie ID' })
       }
 
-      const movieService = new MovieService()
-      const movie = await movieService.getOrCreate(tmdbId)
+      const movie = await this.movieService.getOrCreate(tmdbId)
 
       const existingRelation = await user
         .related('movies')
@@ -344,8 +348,7 @@ export default class MoviesController {
         return response.badRequest({ error: 'Invalid current time' })
       }
 
-      const movieService = new MovieService()
-      const movie = await movieService.getOrCreate(tmdbId)
+      const movie = await this.movieService.getOrCreate(tmdbId)
 
       const progressSeconds = Math.floor(currentTime)
 
@@ -390,8 +393,7 @@ export default class MoviesController {
         return response.badRequest({ error: 'Invalid movie ID' })
       }
 
-      const movieService = new MovieService()
-      const movie = await movieService.getOrCreate(tmdbId)
+      const movie = await this.movieService.getOrCreate(tmdbId)
 
       const relation = await user.related('movies').query().where('movies.id', movie.id).first()
 

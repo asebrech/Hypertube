@@ -141,55 +141,6 @@ export default class MovieService {
     }
   }
 
-  async resetMovieForReDownload(tmdbId: number): Promise<void> {
-    try {
-      const movie = await this.getOrCreate(tmdbId)
-      
-      // Reset all resolution statuses
-      movie.resolution480pReady = false
-      movie.resolution720pReady = false
-      movie.resolution1080pReady = false
-      
-      // Reset processing statuses
-      movie.conversionStatus = 'pending'
-      movie.downloadStatus = 'pending'
-      
-      // Clear magnet link to force new torrent search
-      movie.magicLink = ''
-      
-      await movie.save()
-      
-      console.log(`Reset movie ${tmdbId} for re-download`)
-    } catch (error) {
-      console.error(`Error resetting movie ${tmdbId} for re-download:`, error)
-      throw error
-    }
-  }
-
-  async getOldUnwatchedMovies(daysThreshold: number = 30): Promise<Movie[]> {
-    const cutoffDate = new Date()
-    cutoffDate.setDate(cutoffDate.getDate() - daysThreshold)
-    
-    try {
-      return await Movie.query()
-        .where((query) => {
-          query
-            .whereNull('last_accessed_at')
-            .orWhere('last_accessed_at', '<', cutoffDate)
-        })
-        .andWhere((query) => {
-          // Only select movies that have been converted (have video files)
-          query
-            .where('conversion_status', 'completed')
-            .orWhere('resolution_480p_ready', true)
-            .orWhere('resolution_720p_ready', true)
-            .orWhere('resolution_1080p_ready', true)
-        })
-    } catch (error) {
-      console.error('Error querying old unwatched movies:', error)
-      return []
-    }
-  }
 
   async resetInterruptedConversions(): Promise<void> {
     try {
