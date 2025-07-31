@@ -37,6 +37,9 @@ export default class Movie extends BaseModel {
   @column({ columnName: 'duration' })
   declare duration: number | null
 
+  @column.dateTime({ columnName: 'last_accessed_at' })
+  declare lastAccessedAt: DateTime | null
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
