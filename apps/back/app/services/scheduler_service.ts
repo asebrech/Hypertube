@@ -127,6 +127,7 @@ export default class SchedulerService {
     this.schedule({
       name: 'movie-cleanup',
       schedule: '0 2 * * *', // Daily at 2:00 AM UTC
+      //schedule: '*/2 * * * *', // Every 2 minutes for testing
       command: this.getMovieCleanupCommand(),
       description: 'Daily at 2:00 AM UTC',
       options: { timezone: 'UTC' },
