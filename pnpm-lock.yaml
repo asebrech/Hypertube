@@ -169,6 +169,9 @@ importers:
       video.js:
         specifier: ^8.23.3
         version: 8.23.3
+      videojs-hls-quality-selector:
+        specifier: ^2.0.0
+        version: 2.0.0
     devDependencies:
       '@eslint/compat':
         specifier: ^1.2.5
@@ -5183,6 +5186,10 @@ packages:
 
   videojs-font@4.2.0:
     resolution: {integrity: sha512-YPq+wiKoGy2/M7ccjmlvwi58z2xsykkkfNMyIg4xb7EZQQNwB71hcSsB3o75CqQV7/y5lXkXhI/rsGAS7jfEmQ==}
+
+  videojs-hls-quality-selector@2.0.0:
+    resolution: {integrity: sha512-x0AQKGwryDdD94s1it+Jolb6j1mg4Q+c7g1PlCIG6dXBdipVPaZmg71fxaFZJgx1k326DFnRaWrLxQ72/TKd2A==}
+    engines: {node: '>=14', npm: '>=6'}
 
   videojs-vtt.js@0.15.5:
     resolution: {integrity: sha512-yZbBxvA7QMYn15Lr/ZfhhLPrNpI/RmCSCqgIff57GC2gIrV5YfyzLfLyZMj0NnZSAz8syB4N0nHXpZg9MyrMOQ==}
@@ -10529,6 +10536,11 @@ snapshots:
       video.js: 8.23.3
 
   videojs-font@4.2.0: {}
+
+  videojs-hls-quality-selector@2.0.0:
+    dependencies:
+      global: 4.4.0
+      video.js: 8.23.3
 
   videojs-vtt.js@0.15.5:
     dependencies:

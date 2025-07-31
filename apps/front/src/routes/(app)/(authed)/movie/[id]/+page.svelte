@@ -2,6 +2,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import videojs from 'video.js';
 	import 'video.js/dist/video-js.css';
+	import 'videojs-hls-quality-selector';
 	import { invalidateAll } from '$app/navigation';
 	import { PUBLIC_BACK_URL } from '$env/static/public';
 
@@ -24,14 +25,10 @@
 	let lastWatchTimeCheck = 0;
 	let progressSaveInterval;
 
-	const availableResolutions = [
-		{ label: '480p', src: `${BASE_URL}/${data.movieId}/480p/output.m3u8`, value: '480' },
-		{ label: '720p', src: `${BASE_URL}/${data.movieId}/720p/output.m3u8`, value: '720' },
-		{ label: '1080p', src: `${BASE_URL}/${data.movieId}/1080p/output.m3u8`, value: '1080' }
-	];
+	// Use master playlist instead of individual resolution URLs
+	const masterPlaylistUrl = `${BASE_URL}/${data.movieId}/master.m3u8`;
 
 	$: readyResolutions = new Set(data.availableResolutions);
-	$: preferredResolution = data.preferredResolution || '1080';
 
 	async function markMovieAsWatched() {
 		if (hasMarkedAsWatched || !data.token) return;
@@ -126,20 +123,6 @@
 		}
 	}
 
-	function getPreferredSource() {
-		if (readyResolutions.has(preferredResolution)) {
-			return availableResolutions.find((res) => res.value === preferredResolution);
-		}
-
-		const sortedResolutions = ['1080', '720', '480'];
-		for (const res of sortedResolutions) {
-			if (readyResolutions.has(res)) {
-				return availableResolutions.find((r) => r.value === res);
-			}
-		}
-
-		return availableResolutions[0];
-	}
 
 	function createAuthHook() {
 		return (options) => {
@@ -162,9 +145,6 @@
 	async function initializeVideoPlayer() {
 		if (!container || player || readyResolutions.size === 0) return;
 
-		const preferredSource = getPreferredSource();
-		if (!preferredSource) return;
-
 		const options = {
 			autoplay: true,
 			controls: true,
@@ -172,7 +152,7 @@
 			fluid: true,
 			liveui: true,
 			preload: 'auto',
-			sources: [{ src: preferredSource.src, type: 'application/x-mpegURL' }],
+			sources: [{ src: masterPlaylistUrl, type: 'application/x-mpegURL' }],
 			html5: {
 				vhs: {
 					withCredentials: false
@@ -244,33 +224,15 @@
 				handleProgressSave();
 			});
 
-			addResolutionButtons();
+			// Initialize HLS quality selector plugin
+			player.hlsQualitySelector({
+				displayCurrentQuality: true
+			});
 		} catch (error) {
 			console.error('Error initializing video player:', error);
 		}
 	}
 
-	function addResolutionButtons() {
-		const controlBar = player.getChild('ControlBar');
-
-		availableResolutions
-			.filter((res) => readyResolutions.has(res.value))
-			.forEach((res) => {
-				const btn = controlBar.addChild('button', {
-					controlText: res.label,
-					className: 'vjs-visible-text'
-				});
-				btn.on('click', () => switchResolution(res));
-			});
-	}
-
-	function switchResolution(resolution) {
-		if (!player || !readyResolutions.has(resolution.value)) return;
-
-		const currentTime = player.currentTime();
-		player.src({ src: resolution.src, type: 'application/x-mpegURL' });
-		player.ready(() => player.currentTime(currentTime));
-	}
 
 	$: if (data.isAllVideoReady && !isLoading && !error && container && !player) {
 		setupAuthenticationHooks();
