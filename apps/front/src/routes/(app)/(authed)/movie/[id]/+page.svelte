@@ -22,8 +22,6 @@
 	let pollingInterval;
 	let hasMarkedAsWatched = false;
 	let lastWatchTimeCheck = 0;
-	let lastProgressSave = 0;
-	let progressSaveInterval;
 
 	const availableResolutions = [
 		{ label: '480p', src: `${BASE_URL}/${data.movieId}/480p/output.m3u8`, value: '480' },
