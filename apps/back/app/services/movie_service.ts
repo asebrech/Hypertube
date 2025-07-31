@@ -128,18 +128,6 @@ export default class MovieService {
     }
   }
 
-  async isMovieAvailable(tmdbId: number): Promise<boolean> {
-    try {
-      const movie = await this.getByTmdbId(tmdbId)
-      if (!movie) return false
-      
-      // Check if any resolution is ready
-      return movie.resolution480pReady || movie.resolution720pReady || movie.resolution1080pReady
-    } catch (error) {
-      console.error(`Error checking movie availability for ${tmdbId}:`, error)
-      return false
-    }
-  }
 
 
   async resetInterruptedConversions(): Promise<void> {
