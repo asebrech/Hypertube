@@ -33,7 +33,7 @@ export default class SchedulerService {
     this.tasks.set(task.name, scheduledTask)
     const timeDescription = task.description || this.getScheduleDescription(task.schedule)
     console.log(`[Scheduler] Scheduled "${task.name}" (${task.schedule}) → ${timeDescription}`)
-    
+
     if (this.isStarted) {
       scheduledTask.start()
     }
@@ -100,7 +100,7 @@ export default class SchedulerService {
     return new Promise((resolve, reject) => {
       const child = spawn(executable, args, {
         stdio: 'inherit',
-        cwd: process.cwd()
+        cwd: process.cwd(),
       })
 
       child.on('close', (code) => {
@@ -126,11 +126,10 @@ export default class SchedulerService {
   setupDefaultTasks(): void {
     this.schedule({
       name: 'movie-cleanup',
-      schedule: '0 2 * * *',
+      schedule: '0 2 * * *', // Daily at 2:00 AM UTC
       command: this.getMovieCleanupCommand(),
       description: 'Daily at 2:00 AM UTC',
       options: { timezone: 'UTC' },
     })
   }
 }
-

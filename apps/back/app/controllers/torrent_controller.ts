@@ -30,13 +30,11 @@ export default class TorrentController {
   async stream({ response, params }: HttpContext) {
     const filePath = join(app.makePath(), 'hls-output', ...params['*'])
 
-    // Extract tmdbId from the path to track access
     const pathParts = params['*'] as string[]
     if (pathParts && pathParts.length > 0) {
       const tmdbId = Number.parseInt(pathParts[0])
       if (!Number.isNaN(tmdbId)) {
-        // Update last accessed timestamp
-            await this.movieService.updateLastAccessed(tmdbId)
+        await this.movieService.updateLastAccessed(tmdbId)
       }
     }
 
