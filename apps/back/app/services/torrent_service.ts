@@ -62,6 +62,55 @@ export default class TorrentService {
   private completedConversions: Map<string, Set<number>> = new Map()
   private videoDurations: Map<string, number> = new Map()
 
+  private generateMasterPlaylist(tmdbId: number, availableResolutions: number[]): string {
+    const resolutionData = {
+      480: { bandwidth: 1500000, resolution: '854x480' },
+      720: { bandwidth: 3000000, resolution: '1280x720' },
+      1080: { bandwidth: 5000000, resolution: '1920x1080' }
+    }
+
+    let playlist = '#EXTM3U\n#EXT-X-VERSION:3\n'
+    
+    availableResolutions.forEach(width => {
+      const data = resolutionData[width as keyof typeof resolutionData]
+      if (data) {
+        playlist += `#EXT-X-STREAM-INF:BANDWIDTH=${data.bandwidth},RESOLUTION=${data.resolution}\n`
+        playlist += `${width}p/output.m3u8\n`
+      }
+    })
+
+    return playlist
+  }
+
+  private async createMasterPlaylist(tmdbId: number): Promise<void> {
+    try {
+      const resolutionStatus = await this.movieService.getResolutionStatus(tmdbId)
+      const availableResolutions: number[] = []
+
+      if (resolutionStatus.resolution480pReady) availableResolutions.push(480)
+      if (resolutionStatus.resolution720pReady) availableResolutions.push(720)
+      if (resolutionStatus.resolution1080pReady) availableResolutions.push(1080)
+
+      if (availableResolutions.length === 0) {
+        return
+      }
+
+      const masterPlaylistContent = this.generateMasterPlaylist(tmdbId, availableResolutions)
+      const masterPlaylistPath = `./hls-output/${tmdbId}/master.m3u8`
+      
+      // Ensure the directory exists
+      const outputDir = `./hls-output/${tmdbId}`
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true })
+      }
+
+      fs.writeFileSync(masterPlaylistPath, masterPlaylistContent)
+      console.log(`Master playlist created for movie ${tmdbId} with resolutions: ${availableResolutions.join(', ')}`)
+    } catch (error) {
+      console.error(`Error creating master playlist for movie ${tmdbId}:`, error)
+    }
+  }
+
   async download(tmdbId: number) {
     console.log('Starting torrent download for TMDB ID:', tmdbId)
     await this.movieService.getOrCreate(tmdbId)
@@ -263,6 +312,9 @@ export default class TorrentService {
     try {
       await this.movieService.updateResolutionStatus(tmdbId, resolution, true)
       this.readyResolutions.add(key)
+
+      // Create/update master playlist whenever a resolution becomes ready
+      await this.createMasterPlaylist(tmdbId)
 
       const allResolutions = [480, 720, 1080]
       const allReady = allResolutions.every((res) => this.readyResolutions.has(`${tmdbId}-${res}`))

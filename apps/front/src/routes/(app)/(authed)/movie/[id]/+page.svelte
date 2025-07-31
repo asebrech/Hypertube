@@ -23,15 +23,10 @@
 	let hasMarkedAsWatched = false;
 	let lastWatchTimeCheck = 0;
 	let progressSaveInterval;
+	let qualityLevels;
 
-	const availableResolutions = [
-		{ label: '480p', src: `${BASE_URL}/${data.movieId}/480p/output.m3u8`, value: '480' },
-		{ label: '720p', src: `${BASE_URL}/${data.movieId}/720p/output.m3u8`, value: '720' },
-		{ label: '1080p', src: `${BASE_URL}/${data.movieId}/1080p/output.m3u8`, value: '1080' }
-	];
-
-	$: readyResolutions = new Set(data.availableResolutions);
-	$: preferredResolution = data.preferredResolution || '1080';
+	// Master playlist URL for HLS adaptive bitrate streaming
+	const masterPlaylistUrl = `${PUBLIC_BACK_URL}/stream/${data.movieId}/master.m3u8`;
 
 	async function markMovieAsWatched() {
 		if (hasMarkedAsWatched || !data.token) return;
@@ -126,21 +121,6 @@
 		}
 	}
 
-	function getPreferredSource() {
-		if (readyResolutions.has(preferredResolution)) {
-			return availableResolutions.find((res) => res.value === preferredResolution);
-		}
-
-		const sortedResolutions = ['1080', '720', '480'];
-		for (const res of sortedResolutions) {
-			if (readyResolutions.has(res)) {
-				return availableResolutions.find((r) => r.value === res);
-			}
-		}
-
-		return availableResolutions[0];
-	}
-
 	function createAuthHook() {
 		return (options) => {
 			if (!options.headers) {
@@ -160,10 +140,7 @@
 	}
 
 	async function initializeVideoPlayer() {
-		if (!container || player || readyResolutions.size === 0) return;
-
-		const preferredSource = getPreferredSource();
-		if (!preferredSource) return;
+		if (!container || player) return;
 
 		const options = {
 			autoplay: true,
@@ -172,7 +149,7 @@
 			fluid: true,
 			liveui: true,
 			preload: 'auto',
-			sources: [{ src: preferredSource.src, type: 'application/x-mpegURL' }],
+			sources: [{ src: masterPlaylistUrl, type: 'application/x-mpegURL' }],
 			html5: {
 				vhs: {
 					withCredentials: false
@@ -186,6 +163,22 @@
 			container.appendChild(videoElement);
 
 			player = videojs(videoElement, options);
+
+			// Initialize quality levels plugin
+			qualityLevels = player.qualityLevels();
+
+			// Listen for quality levels being added
+			qualityLevels.on('addqualitylevel', (event) => {
+				console.log('Quality level added:', event.qualityLevel);
+			});
+
+			// Listen for quality changes
+			qualityLevels.on('change', () => {
+				const selectedLevel = qualityLevels[qualityLevels.selectedIndex];
+				if (selectedLevel) {
+					console.log('Quality changed to:', selectedLevel.height + 'p');
+				}
+			});
 
 			player.on('xhr-hooks-ready', () => {
 				if (data.token && player.tech() && player.tech().vhs) {
@@ -243,33 +236,9 @@
 			player.on('seeked', () => {
 				handleProgressSave();
 			});
-
-			addResolutionButtons();
 		} catch (error) {
 			console.error('Error initializing video player:', error);
 		}
-	}
-
-	function addResolutionButtons() {
-		const controlBar = player.getChild('ControlBar');
-
-		availableResolutions
-			.filter((res) => readyResolutions.has(res.value))
-			.forEach((res) => {
-				const btn = controlBar.addChild('button', {
-					controlText: res.label,
-					className: 'vjs-visible-text'
-				});
-				btn.on('click', () => switchResolution(res));
-			});
-	}
-
-	function switchResolution(resolution) {
-		if (!player || !readyResolutions.has(resolution.value)) return;
-
-		const currentTime = player.currentTime();
-		player.src({ src: resolution.src, type: 'application/x-mpegURL' });
-		player.ready(() => player.currentTime(currentTime));
 	}
 
 	$: if (data.isAllVideoReady && !isLoading && !error && container && !player) {
