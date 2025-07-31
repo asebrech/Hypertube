@@ -130,7 +130,8 @@
 											isVisible={visibleSlides.includes(index)}
 											orderNumber={index ? index : 10}
 											type={movie.media_type}
-											userAction={movie.user_action}
+																		isWatched={movie.is_watched || false}
+																		isBookmarked={movie.is_bookmarked || false}
 										/>
 									{:else}
 										<MovieCard
@@ -138,7 +139,8 @@
 											isVisible={visibleSlides.includes(index)}
 											title={movie.media_type === 'movie' ? movie.title : movie.name}
 											type={movie.media_type}
-											userAction={movie.user_action}
+																		isWatched={movie.is_watched || false}
+																		isBookmarked={movie.is_bookmarked || false}
 										/>
 									{/if}
 								</div>

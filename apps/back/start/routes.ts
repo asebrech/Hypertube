@@ -38,6 +38,10 @@ router
     router.get('people', [MoviesController, 'PeopleDetails'])
     router.get(':id', [MoviesController, 'movieDetails'])
     router.get(':id/videos', [MoviesController, 'movieVideos'])
+    router.post(':id/watched', [MoviesController, 'markAsWatched']).use(middleware.auth())
+    router.post(':id/bookmark', [MoviesController, 'toggleBookmark']).use(middleware.auth())
+    router.post(':id/progress', [MoviesController, 'saveWatchProgress']).use(middleware.auth())
+    router.get(':id/progress', [MoviesController, 'getWatchProgress']).use(middleware.auth())
   })
   .prefix('movies')
 

@@ -33,7 +33,8 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @manyToMany(() => Movies, {
     pivotTable: 'movie_user',
-    pivotColumns: ['usersAction'],
+    pivotColumns: ['is_watched', 'is_bookmarked', 'watch_progress_seconds', 'last_watched_at'],
+    pivotTimestamps: true,
   })
   declare movies: ManyToMany<typeof Movies>
 
