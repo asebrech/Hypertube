@@ -106,13 +106,6 @@ export default class MovieCleanupService {
       .where((query) => {
         query.whereNull('last_accessed_at').orWhere('last_accessed_at', '<', cutoffDate.toSQL())
       })
-      .andWhere((query) => {
-        query
-          .where('conversion_status', 'completed')
-          .orWhere('resolution_480p_ready', true)
-          .orWhere('resolution_720p_ready', true)
-          .orWhere('resolution_1080p_ready', true)
-      })
       .orderBy('last_accessed_at', 'asc')
   }
 
