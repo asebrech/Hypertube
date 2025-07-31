@@ -61,6 +61,9 @@ export default class TorrentService {
   async download(tmdbId: number) {
     console.log('Starting torrent download for TMDB ID:', tmdbId)
     await this.movieService.getOrCreate(tmdbId)
+
+    await this.movieService.updateLastAccessed(tmdbId)
+
     const torrent = await this.searchTorrentService.search(tmdbId, 'All', 100)
     await this.movieService.updateMagnetLink(tmdbId, torrent.magnetLink)
 

@@ -1,5 +1,6 @@
 import cron from 'node-cron'
-import { execSync } from 'node:child_process'
+import { spawn } from 'node:child_process'
+import path from 'node:path'
 
 export interface ScheduledTask {
   name: string
@@ -22,12 +23,9 @@ export default class SchedulerService {
       task.schedule,
       () => {
         console.log(`[Scheduler] Running: ${task.name}`)
-        try {
-          execSync(task.command, { stdio: 'inherit' })
-          console.log(`[Scheduler] Completed: ${task.name}`)
-        } catch (error) {
-          console.error(`[Scheduler] Failed: ${task.name}`, error)
-        }
+        this.executeCommand(task.command)
+          .then(() => console.log(`[Scheduler] Completed: ${task.name}`))
+          .catch((error) => console.error(`[Scheduler] Failed: ${task.name}`, error))
       },
       { scheduled: false, ...task.options }
     )
@@ -89,11 +87,47 @@ export default class SchedulerService {
     return scheduleMap[schedule] || `Custom schedule: ${schedule}`
   }
 
+  private async executeCommand(command: string): Promise<void> {
+    const allowedCommands = [this.getMovieCleanupCommand()]
+    if (!allowedCommands.includes(command)) {
+      throw new Error(`Command not allowed: ${command}`)
+    }
+
+    const parts = command.split(' ')
+    const executable = parts[0]
+    const args = parts.slice(1)
+
+    return new Promise((resolve, reject) => {
+      const child = spawn(executable, args, {
+        stdio: 'inherit',
+        cwd: process.cwd()
+      })
+
+      child.on('close', (code) => {
+        if (code === 0) {
+          resolve()
+        } else {
+          reject(new Error(`Command exited with code ${code}`))
+        }
+      })
+
+      child.on('error', (error) => {
+        reject(error)
+      })
+    })
+  }
+
+  private getMovieCleanupCommand(): string {
+    const nodeExe = process.execPath
+    const aceScript = path.resolve(process.cwd(), 'ace')
+    return `${nodeExe} ${aceScript} movie:cleanup`
+  }
+
   setupDefaultTasks(): void {
     this.schedule({
       name: 'movie-cleanup',
       schedule: '0 2 * * *',
-      command: 'node ace movie:cleanup',
+      command: this.getMovieCleanupCommand(),
       description: 'Daily at 2:00 AM UTC',
       options: { timezone: 'UTC' },
     })

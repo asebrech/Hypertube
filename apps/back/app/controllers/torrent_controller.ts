@@ -7,7 +7,10 @@ import { HttpContext } from '@adonisjs/core/http'
 
 @inject()
 export default class TorrentController {
-  constructor(protected torrentService: TorrentService) {}
+  constructor(
+    protected torrentService: TorrentService,
+    protected movieService: MovieService
+  ) {}
 
   async torrent({ request }: HttpContext) {
     const tmdb = request.param('id')
@@ -33,8 +36,7 @@ export default class TorrentController {
       const tmdbId = Number.parseInt(pathParts[0])
       if (!Number.isNaN(tmdbId)) {
         // Update last accessed timestamp
-        const movieService = new MovieService()
-        await movieService.updateLastAccessed(tmdbId)
+            await this.movieService.updateLastAccessed(tmdbId)
       }
     }
 

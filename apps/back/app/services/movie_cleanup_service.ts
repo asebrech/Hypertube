@@ -61,11 +61,19 @@ export default class MovieCleanupService {
             }
 
             if (fs.existsSync(hlsPath)) {
-              fs.rmSync(hlsPath, { recursive: true, force: true })
+              try {
+                fs.rmSync(hlsPath, { recursive: true })
+              } catch (error) {
+                throw new Error(`Failed to remove HLS directory ${hlsPath}: ${error}`)
+              }
             }
 
             if (fs.existsSync(cachePath)) {
-              fs.rmSync(cachePath, { recursive: true, force: true })
+              try {
+                fs.rmSync(cachePath, { recursive: true })
+              } catch (error) {
+                throw new Error(`Failed to remove cache directory ${cachePath}: ${error}`)
+              }
             }
 
             await this.resetMovieStatus(movie)
@@ -103,9 +111,7 @@ export default class MovieCleanupService {
     const cutoffDate = DateTime.now().minus({ days: daysThreshold })
 
     return await Movie.query()
-      .where((query) => {
-        query.whereNull('last_accessed_at').orWhere('last_accessed_at', '<', cutoffDate.toSQL())
-      })
+      .where('last_accessed_at', '<', cutoffDate.toSQL())
       .orderBy('last_accessed_at', 'asc')
   }
 
@@ -115,6 +121,7 @@ export default class MovieCleanupService {
     movie.resolution1080pReady = false
     movie.conversionStatus = 'pending'
     movie.downloadStatus = 'pending'
+    movie.lastAccessedAt = null
     await movie.save()
   }
 
@@ -159,6 +166,6 @@ export default class MovieCleanupService {
     const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
     const i = Math.floor(Math.log(bytes) / Math.log(k))
 
-    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
+    return `${Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
   }
 }
