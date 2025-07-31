@@ -22,7 +22,6 @@
 	let pollingInterval;
 	let hasMarkedAsWatched = false;
 	let lastWatchTimeCheck = 0;
-	let lastProgressSave = 0;
 	let progressSaveInterval;
 
 	const availableResolutions = [
