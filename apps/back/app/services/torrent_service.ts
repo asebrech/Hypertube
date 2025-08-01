@@ -62,6 +62,47 @@ export default class TorrentService {
   private completedConversions: Map<string, Set<number>> = new Map()
   private videoDurations: Map<string, number> = new Map()
 
+  private generateMasterPlaylist(videoId: string): string {
+    const resolutions = [
+      { width: 1920, height: 1080, bandwidth: 5000000, folder: '1080p' },
+      { width: 1280, height: 720, bandwidth: 3000000, folder: '720p' },
+      { width: 854, height: 480, bandwidth: 1500000, folder: '480p' }
+    ]
+
+    let masterPlaylist = '#EXTM3U\n#EXT-X-VERSION:3\n\n'
+
+    resolutions.forEach(resolution => {
+      const resolutionFolder = `./hls-output/${videoId}/${resolution.folder}`
+      const playlistPath = path.join(resolutionFolder, 'output.m3u8')
+
+      // Check if the playlist exists before adding it to the master playlist
+      if (fs.existsSync(playlistPath)) {
+        masterPlaylist += `#EXT-X-STREAM-INF:BANDWIDTH=${resolution.bandwidth},RESOLUTION=${resolution.width}x${resolution.height}\n`
+        masterPlaylist += `${resolution.folder}/output.m3u8\n\n`
+      }
+    })
+
+    return masterPlaylist
+  }
+
+  private updateMasterPlaylist(videoId: string): void {
+    const masterPlaylistPath = `./hls-output/${videoId}/master.m3u8`
+    const masterPlaylistContent = this.generateMasterPlaylist(videoId)
+
+    try {
+      // Ensure the base directory exists
+      const baseDir = `./hls-output/${videoId}`
+      if (!fs.existsSync(baseDir)) {
+        fs.mkdirSync(baseDir, { recursive: true })
+      }
+
+      fs.writeFileSync(masterPlaylistPath, masterPlaylistContent)
+      console.log(`Updated master playlist for video ${videoId}`)
+    } catch (error) {
+      console.error(`Error updating master playlist for video ${videoId}:`, error)
+    }
+  }
+
   async download(tmdbId: number) {
     console.log('Starting torrent download for TMDB ID:', tmdbId)
     await this.movieService.getOrCreate(tmdbId)
@@ -243,6 +284,9 @@ export default class TorrentService {
         if (segmentCount > lastCount) {
           this.lastSegmentCounts.set(trackingKey, segmentCount)
 
+          // Update master playlist whenever segments are added
+          this.updateMasterPlaylist(videoId)
+
           if (segmentCount >= 3) {
             await this.markProgressiveReady(Number.parseInt(videoId), resolution)
           }
@@ -263,6 +307,9 @@ export default class TorrentService {
     try {
       await this.movieService.updateResolutionStatus(tmdbId, resolution, true)
       this.readyResolutions.add(key)
+
+      // Update master playlist when a resolution becomes ready
+      this.updateMasterPlaylist(tmdbId.toString())
 
       const allResolutions = [480, 720, 1080]
       const allReady = allResolutions.every((res) => this.readyResolutions.has(`${tmdbId}-${res}`))
@@ -290,6 +337,10 @@ export default class TorrentService {
 
     if (allCompleted) {
       console.log(`All conversions completed for movie ${tmdbId}`)
+      
+      // Final master playlist update when all conversions are complete
+      this.updateMasterPlaylist(videoId)
+      
       await this.movieService.updateConversionStatus(tmdbId, 'completed')
       await this.cleanupMovieCache(tmdbId)
       this.completedConversions.delete(videoId)

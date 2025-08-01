@@ -51,6 +51,7 @@
 		"mode-watcher": "^0.5.1",
 		"shadcn-ui": "^0.9.5",
 		"svelte-i18n": "^4.0.1",
-		"video.js": "^8.23.3"
+		"video.js": "^8.23.3",
+		"videojs-contrib-quality-menu": "^1.0.4"
 	}
 }
