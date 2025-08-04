@@ -7,6 +7,7 @@
 	import { SimilarMovieCard } from '../similar-movie-card';
 	import MovieBanner from '../movie-banner/MovieBanner.svelte';
 	import ButtonPreview from '../buttons/button-preview/button-preview.svelte';
+	import { Skeleton } from '@/components/ui/skeleton';
 	import { _ } from 'svelte-i18n';
 
 	// Store subscription
@@ -14,7 +15,8 @@
 		isOpen: false,
 		movieId: undefined as number | undefined,
 		type: undefined as MovieType | undefined,
-		history: [] as Array<{ movieId: number; type: MovieType }>
+		history: [] as Array<{ movieId: number; type: MovieType }>,
+		isLoading: false
 	});
 
 	// Movie data
@@ -31,7 +33,8 @@
 				isOpen: value.isOpen,
 				movieId: value.movieId,
 				type: value.type,
-				history: value.history
+				history: value.history,
+				isLoading: value.isLoading
 			};
 		});
 		return unsubscribe;
@@ -51,19 +54,34 @@
 			const cacheKey = `${modalData.movieId}_${modalData.type}`;
 			const cachedData = cache[cacheKey];
 
-			if (cachedData) {
-				// Use cached data
+			if (cachedData && cachedData.details) {
+				// Use cached data - instant loading
 				movie = cachedData.details;
 				// Handle cached video - if it's null in cache, that means no video exists
 				movieVideo = cachedData.video === null ? undefined : cachedData.video;
 				movieLogo = cachedData.logo;
 				similarMovies = cachedData.similarMovies || [];
+				
+				// Set loading to false immediately since we have cached data
+				setTimeout(() => movieModalActions.setLoading(false), 0);
 			} else {
-				// Reset video state immediately when loading new movie
+				// Reset all state when loading new movie
+				movie = undefined;
 				movieVideo = undefined;
+				movieLogo = undefined;
+				similarMovies = [];
 				
 				// Load fresh data and cache it
 				const dataToCache: any = {};
+				let loadedCount = 0;
+				const totalLoads = 4; // details, video, logo, similar movies
+
+				const checkAllLoaded = () => {
+					loadedCount++;
+					if (loadedCount >= totalLoads) {
+						movieModalActions.setLoading(false);
+					}
+				};
 
 				getMovieDetails(modalData.movieId, modalData.type)
 					.then((data) => {
@@ -73,7 +91,8 @@
 					})
 					.catch((error) => {
 						console.error('Error fetching movie details:', error);
-					});
+					})
+					.finally(checkAllLoaded);
 
 				getMovieVideos(modalData.movieId, modalData.type)
 					.then((data) => {
@@ -92,7 +111,8 @@
 						movieVideo = undefined;
 						dataToCache.video = null;
 						updateCache(cacheKey, dataToCache);
-					});
+					})
+					.finally(checkAllLoaded);
 
 				getLogoImage(modalData.movieId, 'original', modalData.type)
 					.then((data) => {
@@ -102,7 +122,8 @@
 					})
 					.catch((error) => {
 						console.error('Error fetching movie logo:', error);
-					});
+					})
+					.finally(checkAllLoaded);
 
 				getSimilarMovies(modalData.movieId, 1, modalData.type)
 					.then((data) => {
@@ -112,7 +133,8 @@
 					})
 					.catch((error) => {
 						console.error('Error fetching similar movies:', error);
-					});
+					})
+					.finally(checkAllLoaded);
 			}
 		}
 	});
@@ -147,8 +169,101 @@
 		showCloseButton={false}
 		data-dialog-content
 	>
-		{#if movie}
-			<!-- Close Button positioned over the banner -->
+		{#if modalData.isLoading}
+			<!-- Loading State -->
+			<div class="relative">
+				<!-- Loading buttons -->
+				<div class="absolute top-2 right-2 z-50 md:top-4 md:right-4 flex gap-2">
+					{#if modalData.history.length > 0}
+						<button
+							onclick={goBack}
+							class="flex h-8 w-8 items-center justify-center rounded-full border-none bg-[#2A2A2A] opacity-75 transition-opacity hover:opacity-100 md:h-9 md:w-9"
+							aria-label="Go back to previous movie"
+						>
+							<ArrowLeft size={20} class="text-white md:size-[22px]" />
+						</button>
+					{/if}
+					
+					<button
+						onclick={closeModal}
+						class="flex h-8 w-8 items-center justify-center rounded-full border-none bg-[#2A2A2A] opacity-75 transition-opacity hover:opacity-100 md:h-9 md:w-9"
+					>
+						<X size={20} class="text-white md:size-[22px]" />
+					</button>
+				</div>
+
+				<!-- Loading Banner -->
+				<div class="relative max-h-[50vh] md:max-h-[60vh] bg-neutral-800">
+					<Skeleton class="w-full h-full min-h-[300px] md:min-h-[400px] rounded-none" />
+					
+					<!-- Loading logo area -->
+					<div class="absolute bottom-8 left-8 md:bottom-12 md:left-12">
+						<Skeleton class="h-12 w-48 md:h-16 md:w-64 mb-4" />
+						<div class="flex gap-2">
+							<Skeleton class="h-10 w-24 rounded-md" />
+							<Skeleton class="h-10 w-10 rounded-full" />
+							<Skeleton class="h-10 w-10 rounded-full" />
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Loading Content -->
+			<div class="p-4 md:p-8 lg:p-12">
+				<div class="flex flex-col gap-8 lg:flex-row lg:gap-16">
+					<!-- Left Column Loading -->
+					<div class="flex-1">
+						<div class="mb-4 flex flex-wrap items-center gap-2">
+							<Skeleton class="h-4 w-8" />
+							<Skeleton class="h-4 w-12" />
+							<Skeleton class="h-4 w-10" />
+							<Skeleton class="h-6 w-8" />
+						</div>
+						
+						<div class="space-y-2">
+							<Skeleton class="h-4 w-full" />
+							<Skeleton class="h-4 w-full" />
+							<Skeleton class="h-4 w-3/4" />
+						</div>
+					</div>
+
+					<!-- Right Column Loading -->
+					<div class="w-full shrink-0 lg:w-60">
+						<div class="mb-3">
+							<Skeleton class="h-4 w-full" />
+						</div>
+						<Skeleton class="h-4 w-4/5" />
+					</div>
+				</div>
+
+				<!-- Loading Similar Movies Section -->
+				<div class="mt-12">
+					<div class="flex items-center gap-4 mb-6">
+						<Skeleton class="h-6 w-32" />
+						<div class="flex-1 h-px bg-gray-700"></div>
+					</div>
+					<div class="grid gap-4 grid-cols-3">
+						{#each Array(3) as _}
+							<div class="w-full bg-neutral-800 rounded-lg overflow-hidden">
+								<Skeleton class="w-full aspect-[2/3]" />
+								<div class="p-3 space-y-2">
+									<Skeleton class="h-4 w-3/4" />
+									<div class="flex items-center gap-2">
+										<Skeleton class="h-3 w-8" />
+										<Skeleton class="h-4 w-6" />
+									</div>
+									<div class="space-y-1">
+										<Skeleton class="h-3 w-full" />
+										<Skeleton class="h-3 w-2/3" />
+									</div>
+								</div>
+							</div>
+						{/each}
+					</div>
+				</div>
+			</div>
+		{:else if movie}
+			<!-- Actual Content -->
 			<div class="relative">
 				<div class="absolute top-2 right-2 z-50 md:top-4 md:right-4 flex gap-2">
 					<!-- Back Button (only show if there's history) -->

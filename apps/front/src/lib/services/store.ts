@@ -12,11 +12,13 @@ export const movieModal = writable<{
 	movieId?: number;
 	type?: MovieType;
 	history: Array<{ movieId: number; type: MovieType }>;
+	isLoading: boolean;
 }>({
 	isOpen: false,
 	movieId: undefined,
 	type: undefined,
-	history: []
+	history: [],
+	isLoading: false
 });
 
 // Cache for movie data to avoid reloading
@@ -37,7 +39,8 @@ export const movieModalActions = {
 			isOpen: true,
 			movieId,
 			type,
-			history: [] // Reset history when opening fresh
+			history: [], // Reset history when opening fresh
+			isLoading: true
 		}));
 	},
 
@@ -53,7 +56,8 @@ export const movieModalActions = {
 				...state,
 				movieId,
 				type,
-				history: newHistory
+				history: newHistory,
+				isLoading: true
 			};
 		});
 	},
@@ -69,9 +73,17 @@ export const movieModalActions = {
 				...state,
 				movieId: previous.movieId,
 				type: previous.type,
-				history: newHistory
+				history: newHistory,
+				isLoading: true
 			};
 		});
+	},
+
+	setLoading: (isLoading: boolean) => {
+		movieModal.update((state) => ({
+			...state,
+			isLoading
+		}));
 	},
 
 	close: () => {
@@ -79,7 +91,8 @@ export const movieModalActions = {
 			isOpen: false,
 			movieId: undefined,
 			type: undefined,
-			history: []
+			history: [],
+			isLoading: false
 		});
 	}
 };
