@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { Dialog, DialogContent } from '@/components/ui/dialog';
-	import { movieModal } from '@/services/store';
+	import { movieModal, movieModalActions, movieDataCache } from '@/services/store';
 	import { getMovieDetails, getMovieVideos, getLogoImage, getSimilarMovies, getPosterImage } from '@/services/api';
 	import type { BackDropImage, MovieDetails, MovieVideo, MovieType, Movie } from '@hypertube/shared';
-	import { X, Plus, ThumbsUp } from 'lucide-svelte';
+	import { X, Plus, ThumbsUp, ArrowLeft } from 'lucide-svelte';
 	import { SimilarMovieCard } from '../similar-movie-card';
 	import MovieBanner from '../movie-banner/MovieBanner.svelte';
 	import ButtonPreview from '../buttons/button-preview/button-preview.svelte';
@@ -13,7 +13,8 @@
 	let modalData = $state({
 		isOpen: false,
 		movieId: undefined as number | undefined,
-		type: undefined as MovieType | undefined
+		type: undefined as MovieType | undefined,
+		history: [] as Array<{ movieId: number; type: MovieType }>
 	});
 
 	// Movie data
@@ -21,6 +22,7 @@
 	let movieVideo: MovieVideo | undefined = $state(undefined);
 	let movieLogo: BackDropImage | undefined = $state(undefined);
 	let similarMovies: Movie[] = $state([]);
+	let cache: Record<string, any> = $state({});
 
 	// Subscribe to modal store
 	$effect(() => {
@@ -28,8 +30,17 @@
 			modalData = {
 				isOpen: value.isOpen,
 				movieId: value.movieId,
-				type: value.type
+				type: value.type,
+				history: value.history
 			};
+		});
+		return unsubscribe;
+	});
+
+	// Subscribe to cache store
+	$effect(() => {
+		const unsubscribe = movieDataCache.subscribe((value) => {
+			cache = value;
 		});
 		return unsubscribe;
 	});
@@ -37,46 +48,96 @@
 	// Load movie data when modal opens
 	$effect(() => {
 		if (modalData.movieId && modalData.type) {
-			getMovieDetails(modalData.movieId, modalData.type)
-				.then((data) => {
-					movie = data;
-				})
-				.catch((error) => {
-					console.error('Error fetching movie details:', error);
-				});
+			const cacheKey = `${modalData.movieId}_${modalData.type}`;
+			const cachedData = cache[cacheKey];
 
-			getMovieVideos(modalData.movieId, modalData.type)
-				.then((data) => {
-					movieVideo = data;
-				})
-				.catch((error) => {
-					console.error('Error fetching movie video:', error);
-				});
+			if (cachedData) {
+				// Use cached data
+				movie = cachedData.details;
+				// Handle cached video - if it's null in cache, that means no video exists
+				movieVideo = cachedData.video === null ? undefined : cachedData.video;
+				movieLogo = cachedData.logo;
+				similarMovies = cachedData.similarMovies || [];
+			} else {
+				// Reset video state immediately when loading new movie
+				movieVideo = undefined;
+				
+				// Load fresh data and cache it
+				const dataToCache: any = {};
 
-			getLogoImage(modalData.movieId, 'original', modalData.type)
-				.then((data) => {
-					movieLogo = data;
-				})
-				.catch((error) => {
-					console.error('Error fetching movie logo:', error);
-				});
+				getMovieDetails(modalData.movieId, modalData.type)
+					.then((data) => {
+						movie = data;
+						dataToCache.details = data;
+						updateCache(cacheKey, dataToCache);
+					})
+					.catch((error) => {
+						console.error('Error fetching movie details:', error);
+					});
 
-			getSimilarMovies(modalData.movieId, 1, modalData.type)
-				.then((data) => {
-					similarMovies = data.movies;
-				})
-				.catch((error) => {
-					console.error('Error fetching similar movies:', error);
-				});
+				getMovieVideos(modalData.movieId, modalData.type)
+					.then((data) => {
+						// Only set movieVideo if data exists and has valid video
+						if (data && data.key) {
+							movieVideo = data;
+							dataToCache.video = data;
+						} else {
+							movieVideo = undefined;
+							dataToCache.video = null; // Cache that no video exists
+						}
+						updateCache(cacheKey, dataToCache);
+					})
+					.catch((error) => {
+						console.error('Error fetching movie video:', error);
+						movieVideo = undefined;
+						dataToCache.video = null;
+						updateCache(cacheKey, dataToCache);
+					});
+
+				getLogoImage(modalData.movieId, 'original', modalData.type)
+					.then((data) => {
+						movieLogo = data;
+						dataToCache.logo = data;
+						updateCache(cacheKey, dataToCache);
+					})
+					.catch((error) => {
+						console.error('Error fetching movie logo:', error);
+					});
+
+				getSimilarMovies(modalData.movieId, 1, modalData.type)
+					.then((data) => {
+						similarMovies = data.movies;
+						dataToCache.similarMovies = data.movies;
+						updateCache(cacheKey, dataToCache);
+					})
+					.catch((error) => {
+						console.error('Error fetching similar movies:', error);
+					});
+			}
 		}
 	});
 
+	function updateCache(cacheKey: string, newData: any) {
+		movieDataCache.update(cache => ({
+			...cache,
+			[cacheKey]: { ...cache[cacheKey], ...newData }
+		}));
+	}
+
 	function closeModal() {
-		movieModal.set({
-			isOpen: false,
-			movieId: undefined,
-			type: undefined
-		});
+		movieModalActions.close();
+	}
+
+	function goBack() {
+		movieModalActions.goBack();
+		
+		// Scroll to top after going back
+		setTimeout(() => {
+			const modalContent = document.querySelector('[data-dialog-content]');
+			if (modalContent) {
+				modalContent.scrollTo({ top: 0, behavior: 'smooth' });
+			}
+		}, 50);
 	}
 </script>
 
@@ -89,7 +150,19 @@
 		{#if movie}
 			<!-- Close Button positioned over the banner -->
 			<div class="relative">
-				<div class="absolute top-2 right-2 z-50 md:top-4 md:right-4">
+				<div class="absolute top-2 right-2 z-50 md:top-4 md:right-4 flex gap-2">
+					<!-- Back Button (only show if there's history) -->
+					{#if modalData.history.length > 0}
+						<button
+							onclick={goBack}
+							class="flex h-8 w-8 items-center justify-center rounded-full border-none bg-[#2A2A2A] opacity-75 transition-opacity hover:opacity-100 md:h-9 md:w-9"
+							aria-label="Go back to previous movie"
+						>
+							<ArrowLeft size={20} class="text-white md:size-[22px]" />
+						</button>
+					{/if}
+					
+					<!-- Close Button -->
 					<button
 						onclick={closeModal}
 						class="flex h-8 w-8 items-center justify-center rounded-full border-none bg-[#2A2A2A] opacity-75 transition-opacity hover:opacity-100 md:h-9 md:w-9"
@@ -99,7 +172,7 @@
 				</div>
 
 				<!-- MovieBanner Component -->
-				{#key movie.id}
+				{#key `${movie.id}_${modalData.movieId}_${movieVideo?.key || 'no-video'}`}
 					<MovieBanner
 						{movie}
 						logo={movieLogo}

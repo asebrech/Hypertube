@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { Skeleton } from '@/components/ui/skeleton';
 	import { getMovieDetails, getMovieVideos } from '@/services/api';
-	import { movieModal } from '@/services/store';
+	import { movieModalActions } from '@/services/store';
 	import type { MovieDetails, MovieType, MovieVideo } from '@hypertube/shared';
 	import { onMount } from 'svelte';
 	import ButtonPreview from '$lib/components/tadflix/buttons/button-preview/button-preview.svelte';
@@ -130,11 +130,7 @@
 
 	function toggleModalMovie(options: { movieId: number | undefined; type: MovieType }) {
 		if (options.movieId && options.type) {
-			movieModal.set({
-				isOpen: true,
-				movieId: options.movieId,
-				type: options.type
-			});
+			movieModalActions.open(options.movieId, options.type);
 		}
 	}
 

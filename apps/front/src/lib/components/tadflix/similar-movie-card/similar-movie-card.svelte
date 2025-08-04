@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { MovieDetails, Movie } from '@hypertube/shared';
-	import { movieModal } from '@/services/store';
+	import { movieModalActions } from '@/services/store';
 
 	interface Props {
 		movie: MovieDetails | Movie;
@@ -10,13 +10,8 @@
 	let { movie, posterUrl }: Props = $props();
 
 	function openMovie() {
-		// Simply update the modal with new movie data
-		// The modal should handle the transition smoothly
-		movieModal.set({
-			isOpen: true,
-			movieId: movie.id,
-			type: 'movie'
-		});
+		// Navigate to the new movie (this will add current movie to history)
+		movieModalActions.navigateTo(movie.id, 'movie');
 
 		// Scroll to top of modal content
 		setTimeout(() => {

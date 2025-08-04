@@ -3,7 +3,7 @@
 	import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 	import { Skeleton } from '@/components/ui/skeleton';
 	import { getBackdropImage } from '@/services/api';
-	import { movieModal } from '@/services/store';
+	import { movieModalActions } from '@/services/store';
 	import type { BackDropImage, ImageSizeType, MovieType } from '@hypertube/shared';
 	import { _ } from 'svelte-i18n';
 
@@ -62,11 +62,7 @@
 
 	function openModal() {
 		if (type) {
-			movieModal.set({
-				isOpen: true,
-				movieId: movieId,
-				type: type
-			});
+			movieModalActions.open(movieId, type);
 		}
 	}
 </script>
