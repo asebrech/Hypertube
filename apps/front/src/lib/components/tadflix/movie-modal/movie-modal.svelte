@@ -1,331 +1,191 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { X, Play, Plus, ThumbsUp, ThumbsDown, Volume2, VolumeOff } from 'lucide-svelte';
-	import { movieModal } from '@/services/store';
-	import { getMovieDetails, getMovieVideos, getMovieCredits } from '@/services/api';
-	import type { MovieDetails, MovieVideo, MovieCredits, MovieType } from '@hypertube/shared';
-	import { Skeleton } from '@/components/ui/skeleton';
 	import { Dialog, DialogContent } from '@/components/ui/dialog';
-	import ButtonPreview from '$lib/components/tadflix/buttons/button-preview/button-preview.svelte';
-	import { locale } from 'svelte-i18n';
-	import { get } from 'svelte/store';
+	import { movieModal } from '@/services/store';
+	import { getMovieDetails, getMovieVideos, getLogoImage, getSimilarMovies, getPosterImage } from '@/services/api';
+	import type { BackDropImage, MovieDetails, MovieVideo, MovieType, Movie } from '@hypertube/shared';
+	import { X, Plus, ThumbsUp } from 'lucide-svelte';
+	import { SimilarMovieCard } from '../similar-movie-card';
+	import MovieBanner from '../movie-banner/MovieBanner.svelte';
+	import ButtonPreview from '../buttons/button-preview/button-preview.svelte';
+	import { _ } from 'svelte-i18n';
 
-	let isOpen = $state(false);
-	let movieId = $state<number | undefined>(undefined);
-	let type = $state<MovieType | undefined>(undefined);
-	let movie = $state<MovieDetails | undefined>(undefined);
-	let movieVideo = $state<MovieVideo | undefined>(undefined);
-	let movieCredits = $state<MovieCredits | undefined>(undefined);
-	let isLoading = $state(true);
-	let showVideo = $state(false);
-	let isMuted = $state(true);
-	let player: YT.Player;
-	let playerElement: HTMLDivElement;
-	let playerReady = $state(false);
-	let videoEnded = $state(false);
-	let isApiLoaded = false;
+	// Store subscription
+	let modalData = $state({
+		isOpen: false,
+		movieId: undefined as number | undefined,
+		type: undefined as MovieType | undefined
+	});
+
+	// Movie data
+	let movie: MovieDetails | undefined = $state(undefined);
+	let movieVideo: MovieVideo | undefined = $state(undefined);
+	let movieLogo: BackDropImage | undefined = $state(undefined);
+	let similarMovies: Movie[] = $state([]);
 
 	// Subscribe to modal store
-	let unsubscribe: (() => void) | undefined;
-
-	onMount(() => {
-		unsubscribe = movieModal.subscribe((modalState) => {
-			isOpen = modalState.isOpen;
-			movieId = modalState.movieId;
-			type = modalState.type;
-
-			if (isOpen && movieId && type) {
-				loadMovieData(movieId, type);
-			}
-		});
-
-		return () => {
-			if (unsubscribe) unsubscribe();
-		};
-	});
-
-	const loadMovieData = async (id: number, movieType: MovieType) => {
-		isLoading = true;
-		try {
-			const [movieDetails, movieVideos, credits] = await Promise.all([
-				getMovieDetails(id, movieType),
-				getMovieVideos(id, movieType),
-				getMovieCredits(id, movieType)
-			]);
-
-			movie = movieDetails;
-			movieVideo = movieVideos;
-			movieCredits = credits;
-		} catch (error) {
-			console.error('Error loading movie data:', error);
-		} finally {
-			isLoading = false;
-		}
-	};
-
-	const closeModal = () => {
-		movieModal.set({ isOpen: false, movieId: undefined, type: undefined });
-		if (player) {
-			player.stopVideo();
-		}
-		resetVideoState();
-	};
-
-	const resetVideoState = () => {
-		showVideo = false;
-		playerReady = false;
-		videoEnded = false;
-		isMuted = true;
-	};
-
-	const createPlayer = (videoId: string) => {
-		if (!videoId || !isApiLoaded || !playerElement) return;
-
-		if (!player) {
-			player = new YT.Player(playerElement, {
-				videoId: movieVideo?.key,
-				events: {
-					onReady: () => {
-						player.mute();
-						player.playVideo();
-					},
-					onStateChange: (event) => {
-						if (event.data === YT.PlayerState.ENDED) {
-							videoEnded = true;
-						}
-						if (event.data === YT.PlayerState.PLAYING) {
-							playerReady = true;
-							showVideo = true;
-						}
-					}
-				},
-				playerVars: {
-					autoplay: 1,
-					controls: 0,
-					loop: 0,
-					rel: 0,
-					showinfo: 0,
-					disablekb: 1
-				}
-			});
-		} else {
-			player.loadVideoById(videoId);
-		}
-	};
-
-	const toggleMute = () => {
-		if (!player) return;
-		if (isMuted) {
-			player.unMute();
-		} else {
-			player.mute();
-		}
-		isMuted = !isMuted;
-	};
-
-	onMount(() => {
-		// @ts-ignore
-		window.onYouTubeIframeAPIReady = () => {
-			isApiLoaded = true;
-			if (movieVideo?.key) createPlayer(movieVideo?.key);
-		};
-
-		if (!window.YT) {
-			const tag = document.createElement('script');
-			tag.src = 'https://www.youtube.com/iframe_api';
-			document.body.appendChild(tag);
-		} else {
-			isApiLoaded = true;
-			if (movieVideo?.key) createPlayer(movieVideo?.key);
-		}
-	});
-
 	$effect(() => {
-		if (movieVideo?.key && isApiLoaded) {
-			createPlayer(movieVideo?.key);
+		const unsubscribe = movieModal.subscribe((value) => {
+			modalData = {
+				isOpen: value.isOpen,
+				movieId: value.movieId,
+				type: value.type
+			};
+		});
+		return unsubscribe;
+	});
+
+	// Load movie data when modal opens
+	$effect(() => {
+		if (modalData.movieId && modalData.type) {
+			getMovieDetails(modalData.movieId, modalData.type)
+				.then((data) => {
+					movie = data;
+				})
+				.catch((error) => {
+					console.error('Error fetching movie details:', error);
+				});
+
+			getMovieVideos(modalData.movieId, modalData.type)
+				.then((data) => {
+					movieVideo = data;
+				})
+				.catch((error) => {
+					console.error('Error fetching movie video:', error);
+				});
+
+			getLogoImage(modalData.movieId, 'original', modalData.type)
+				.then((data) => {
+					movieLogo = data;
+				})
+				.catch((error) => {
+					console.error('Error fetching movie logo:', error);
+				});
+
+			getSimilarMovies(modalData.movieId, 1, modalData.type)
+				.then((data) => {
+					similarMovies = data.movies;
+				})
+				.catch((error) => {
+					console.error('Error fetching similar movies:', error);
+				});
 		}
 	});
+
+	function closeModal() {
+		movieModal.set({
+			isOpen: false,
+			movieId: undefined,
+			type: undefined
+		});
+	}
 </script>
 
-<Dialog
-	open={isOpen}
-	onOpenChange={(open) => {
-		if (!open) {
-			closeModal();
-		}
-	}}
->
+<Dialog open={modalData.isOpen} onOpenChange={(open) => !open && closeModal()}>
 	<DialogContent
-		class="max-h-[90vh] w-full max-w-6xl overflow-y-auto border-gray-800 bg-gray-900 p-0"
+		class="h-full max-h-none w-full max-w-none gap-0 overflow-y-auto border-none bg-[#181818] p-0 md:max-h-[95vh] md:max-w-[850px] md:rounded-lg"
 		showCloseButton={false}
+		data-dialog-content
 	>
-		<!-- Custom Close Button -->
-		<button
-			onclick={closeModal}
-			class="absolute top-4 right-4 z-10 rounded-full bg-gray-800/80 p-2 text-white transition-colors hover:bg-gray-700"
-		>
-			<X size={20} />
-		</button>
-
-		{#if isLoading}
-			<!-- Loading State -->
-			<div class="aspect-video w-full bg-gray-800">
-				<Skeleton class="h-full w-full" />
-			</div>
-			<div class="p-6">
-				<Skeleton class="mb-4 h-8 w-3/4" />
-				<Skeleton class="mb-2 h-4 w-full" />
-				<Skeleton class="h-4 w-2/3" />
-			</div>
-		{:else if movie}
-			<!-- Video/Backdrop Section -->
-			<div class="relative aspect-video w-full overflow-hidden">
-				<!-- Background Image -->
-				<div
-					class="absolute inset-0 bg-cover bg-center"
-					style="background-image: url('https://image.tmdb.org/t/p/w1280{movie.backdrop_path ||
-						movie.poster_path}');"
-				>
-					<div
-						class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"
-					/>
+		{#if movie}
+			<!-- Close Button positioned over the banner -->
+			<div class="relative">
+				<div class="absolute top-2 right-2 z-50 md:top-4 md:right-4">
+					<button
+						onclick={closeModal}
+						class="flex h-8 w-8 items-center justify-center rounded-full border-none bg-[#2A2A2A] opacity-75 transition-opacity hover:opacity-100 md:h-9 md:w-9"
+					>
+						<X size={20} class="text-white md:size-[22px]" />
+					</button>
 				</div>
 
-				<!-- Video Player -->
-				{#if showVideo}
-					<div class="absolute inset-0">
-						<div
-							class="absolute top-1/2 left-1/2 min-h-[110%] min-w-[110%] -translate-x-1/2 -translate-y-1/2"
-						>
-							<div bind:this={playerElement} class="absolute top-0 left-0 h-full w-full"></div>
-						</div>
-						<div
-							class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
-						/>
-					</div>
-				{/if}
-
-				<!-- Controls Overlay -->
-				<div class="absolute right-0 bottom-0 left-0 p-8">
-					<h1 class="mb-4 text-4xl font-bold text-white">
-						{type === 'movie' ? movie.title : movie.name}
-					</h1>
-
-					<div class="flex items-center gap-4">
-						<button
-							class="flex h-12 w-12 items-center justify-center rounded-full bg-white text-black transition-colors hover:bg-gray-200"
-						>
-							<Play fill="currentColor" size={20} />
-						</button>
-
-						<ButtonPreview variant="outline" class="border-white text-white hover:bg-white/20">
-							<Plus size={20} />
-						</ButtonPreview>
-
-						<ButtonPreview variant="outline" class="border-white text-white hover:bg-white/20">
-							<ThumbsUp size={20} />
-						</ButtonPreview>
-
-						<ButtonPreview variant="outline" class="border-white text-white hover:bg-white/20">
-							<ThumbsDown size={20} />
-						</ButtonPreview>
-
-						{#if showVideo}
-							<ButtonPreview
-								variant="outline"
-								class="ml-auto border-white text-white hover:bg-white/20"
-								onclick={toggleMute}
-							>
-								{#if isMuted}
-									<VolumeOff size={20} />
-								{:else}
-									<Volume2 size={20} />
-								{/if}
+				<!-- MovieBanner Component -->
+				{#key movie.id}
+					<MovieBanner
+						{movie}
+						logo={movieLogo}
+						{movieVideo}
+						showDescription={false}
+						showMoreInfoButton={false}
+						showVoteAverage={false}
+						class="max-h-[50vh] md:max-h-[60vh] [&>div:first-child]:rounded-none"
+					>
+						{#snippet customActions()}
+							<!-- Add Button -->
+							<ButtonPreview variant="outline">
+								<Plus size={16} />
 							</ButtonPreview>
-						{/if}
-					</div>
-				</div>
+
+							<!-- Like Button -->
+							<ButtonPreview variant="outline">
+								<ThumbsUp size={16} />
+							</ButtonPreview>
+						{/snippet}
+					</MovieBanner>
+				{/key}
 			</div>
 
-			<!-- Movie Details Section -->
-			<div class="p-8">
-				<div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
-					<!-- Main Content -->
-					<div class="lg:col-span-2">
-						<!-- Movie Info -->
-						<div class="mb-6 flex items-center gap-4 text-sm text-gray-300">
+			<!-- Movie Info Section -->
+			<div class="p-4 md:p-8 lg:p-12">
+				<div class="flex flex-col gap-8 lg:flex-row lg:gap-16">
+					<!-- Left Column - Main Info -->
+					<div class="flex-1">
+						<!-- Movie Details -->
+						<div class="mb-4 flex flex-wrap items-center gap-2 text-xs text-[#BCBCBC] md:text-sm">
 							{#if movie.vote_average}
-								<span class="font-semibold text-green-500">
-									{Math.round(movie.vote_average * 10)}% Match
-								</span>
+								<span class="font-medium text-[#46D369]">New</span>
 							{/if}
-
-							{#if movie.release_date}
-								<span>
-									{new Date(movie.release_date).getFullYear()}
-								</span>
-							{/if}
-
 							{#if movie.runtime}
-								<span>
-									{Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m
-								</span>
+								<span>{Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m</span>
 							{/if}
-
-							{#if movie.adult}
-								<span class="border border-gray-400 px-1 text-xs">18+</span>
-							{:else}
-								<span class="border border-gray-400 px-1 text-xs">PG-13</span>
+							{#if movie.release_date}
+								<span>{new Date(movie.release_date).getFullYear()}</span>
 							{/if}
+							<div class="border border-[#808080] px-1.5 py-0.5 text-xs">
+								<span class="text-[#E5E5E5]">HD</span>
+							</div>
 						</div>
 
-						<!-- Overview -->
+						<!-- Description -->
 						{#if movie.overview}
-							<p class="mb-6 leading-relaxed text-white">
+							<p class="mb-4 text-sm leading-relaxed text-white md:text-base">
 								{movie.overview}
 							</p>
 						{/if}
 					</div>
 
-					<!-- Sidebar -->
-					<div class="lg:col-span-1">
-						<!-- Cast -->
-						{#if movieCredits?.cast && movieCredits.cast.length > 0}
-							<div class="mb-6">
-								<h3 class="mb-3 text-sm font-semibold text-gray-400">Cast:</h3>
-								<div class="text-sm text-gray-300">
-									{movieCredits.cast
-										.slice(0, 4)
-										.map((actor) => actor.name)
-										.join(', ')}
-									{#if movieCredits.cast.length > 4}
-										<span>, and more...</span>
-									{/if}
-								</div>
-							</div>
-						{/if}
-
-						<!-- Genres -->
+					<!-- Right Column - Cast & Genres -->
+					<div class="w-full shrink-0 lg:w-60">
 						{#if movie.genres && movie.genres.length > 0}
-							<div class="mb-6">
-								<h3 class="mb-3 text-sm font-semibold text-gray-400">Genres:</h3>
-								<div class="text-sm text-gray-300">
-									{movie.genres.map((genre) => genre.name).join(', ')}
-								</div>
+							<div class="mb-3">
+								<span class="text-sm text-[#777777]">Genres: </span>
+								<span class="text-sm text-white">
+									{movie.genres.map((g: any) => g.name).join(', ')}
+								</span>
 							</div>
 						{/if}
 
-						<!-- Languages -->
-						{#if movie.spoken_languages && movie.spoken_languages.length > 0}
-							<div class="mb-6">
-								<h3 class="mb-3 text-sm font-semibold text-gray-400">Audio:</h3>
-								<div class="text-sm text-gray-300">
-									{movie.spoken_languages.map((lang) => lang.english_name).join(', ')}
-								</div>
-							</div>
-						{/if}
+						<!-- Additional info could go here -->
+						<div class="text-sm text-[#777777]">This show is: Dark, Suspenseful, Exciting</div>
 					</div>
 				</div>
+
+				<!-- Similar Movies Section -->
+				{#if similarMovies.length > 0}
+					<div class="mt-12">
+						<div class="flex items-center gap-4 mb-6">
+							<h3 class="text-xl font-bold text-white">More Like This</h3>
+							<div class="flex-1 h-px bg-gray-700"></div>
+						</div>
+						<div class="grid gap-4 grid-cols-3">
+							{#each similarMovies as similarMovie}
+								<SimilarMovieCard 
+									movie={similarMovie} 
+									posterUrl={similarMovie.poster_path ? `https://image.tmdb.org/t/p/w500${similarMovie.poster_path}` : undefined}
+								/>
+							{/each}
+						</div>
+					</div>
+				{/if}
 			</div>
 		{/if}
 	</DialogContent>

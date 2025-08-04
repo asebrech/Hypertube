@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '@/components/ui/button';
 	import type { BackDropImage, MovieDetails, MovieVideo } from '@hypertube/shared';
-	import { onMount } from 'svelte';
+	import { onMount, type Snippet } from 'svelte';
 	import { Info, Play, Volume2, VolumeOff, TrendingUp, RotateCw } from 'lucide-svelte';
 	import { _ } from 'svelte-i18n';
 	import { Skeleton } from '@/components/ui/skeleton';
@@ -11,10 +11,17 @@
 		movie: MovieDetails;
 		logo?: BackDropImage;
 		movieVideo?: MovieVideo;
+		showDescription?: boolean;
+		showMoreInfoButton?: boolean;
+		showVoteAverage?: boolean;
+		enableDescriptionExpansion?: boolean;
+		maxDescriptionLines?: number;
+		customActions?: Snippet;
+		class?: string;
 	}
 
 	let expanded = $state(false);
-	let contentEl: HTMLParagraphElement;
+	let contentEl = $state<HTMLParagraphElement>();
 	let isClamped = $state(false);
 	let isMuted = $state(true);
 
@@ -25,7 +32,18 @@
 		}
 	});
 
-	let { movie, logo, movieVideo }: Props = $props();
+	let {
+		movie,
+		logo,
+		movieVideo,
+		showDescription = true,
+		showMoreInfoButton = true,
+		showVoteAverage = true,
+		enableDescriptionExpansion = true,
+		maxDescriptionLines = 6,
+		customActions,
+		class: className = ''
+	}: Props = $props();
 
 	let player: YT.Player;
 	let isApiLoaded = false;
@@ -109,7 +127,7 @@
 	});
 </script>
 
-<div class="relative max-h-[80vh] w-full">
+<div class="relative max-h-[80vh] w-full {className}">
 	<div
 		class="relative flex aspect-[6/3] w-full items-end overflow-hidden rounded-[2px] bg-black {playerReady &&
 		!videoEnded
@@ -118,16 +136,16 @@
 	>
 		<div class="absolute h-full w-full">
 			<div
-				class="absolute left-1/2 top-1/2 min-h-[155%] min-w-[155%] -translate-x-1/2 -translate-y-1/2"
+				class="absolute top-1/2 left-1/2 min-h-[155%] min-w-[155%] -translate-x-1/2 -translate-y-1/2"
 			>
 				<div
 					id="player"
 					bind:this={playerElement}
-					class="absolute left-0 top-0 h-full w-full overflow-hidden"
+					class="absolute top-0 left-0 h-full w-full overflow-hidden"
 				></div>
 			</div>
 		</div>
-		<div class="bg-red relative left-0 top-0 h-full w-full"></div>
+		<div class="bg-red relative top-0 left-0 h-full w-full"></div>
 		<!-- Fade effect: bottom gradient overlay -->
 		<div class="pointer-events-none absolute inset-0">
 			<div
@@ -156,7 +174,7 @@
 		<Skeleton class="h-[80vh] w-full" />
 	{/if}
 
-	<div class="absolute left-0 top-0 h-full w-full transform pb-24 pl-12 pr-0 pt-24">
+	<div class="absolute top-0 left-0 h-full w-full transform pt-24 px-12 pb-24">
 		<div class="flex h-full w-full flex-col justify-end gap-5 text-white">
 			{#if logo}
 				<img
@@ -171,34 +189,41 @@
 				/>
 			{:else}
 				<span
-					class="leading-14 text-wrap text-center text-7xl font-extrabold uppercase md:max-w-44"
+					class="text-center text-7xl leading-14 font-extrabold text-wrap uppercase md:max-w-44"
 				>
 					{movie.title}
 				</span>
 			{/if}
 
-			<div
-				class="hidden overflow-hidden transition-all duration-[2000ms] ease-in-out md:block md:max-w-[40%]"
-				style="
-					opacity: {playerReady && !videoEnded ? 0 : 1};
-					max-height: {playerReady && !videoEnded ? '0px' : '500px'};
-					pointer-events: {playerReady && !videoEnded ? 'none' : 'auto'};
-					visibility: {playerReady && !videoEnded ? 'hidden' : 'visible'};
-				"
-			>
-				<p bind:this={contentEl} class={`${expanded ? '' : 'line-clamp-3'}`}>
-					{movie.overview}
-				</p>
-				{#if isClamped}
-					<button
-						onclick={() => (expanded = !expanded)}
-						class="hidden self-start text-xs text-blue-600 hover:underline md:block"
-					>
-						{expanded ? 'See less' : 'See more'}
-					</button>
-				{/if}
-			</div>
-			<div class="relative flex w-full justify-between gap-2">
+			{#if showDescription}
+				<div
+					class="hidden overflow-hidden transition-all duration-[2000ms] ease-in-out md:block md:max-w-[40%]"
+					style="
+						opacity: {playerReady && !videoEnded ? 0 : 1};
+						max-height: {playerReady && !videoEnded ? '0px' : '500px'};
+						pointer-events: {playerReady && !videoEnded ? 'none' : 'auto'};
+						visibility: {playerReady && !videoEnded ? 'hidden' : 'visible'};
+					"
+				>
+					{#if movie.overview}
+						<p
+							bind:this={contentEl}
+							class={`${expanded ? '' : `line-clamp-${maxDescriptionLines}`}`}
+						>
+							{movie.overview}
+						</p>
+						{#if isClamped && enableDescriptionExpansion}
+							<button
+								onclick={() => (expanded = !expanded)}
+								class="hidden self-start text-xs text-blue-600 hover:underline md:block"
+							>
+								{expanded ? 'See less' : 'See more'}
+							</button>
+						{/if}
+					{/if}
+				</div>
+			{/if}
+			<div class="relative flex w-full items-center justify-between gap-4">
 				<div class="flex gap-2">
 					<Button
 						class="bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer rounded-[4px]"
@@ -206,14 +231,19 @@
 					>
 						<Play fill={'black'} />{$_('movie-banner.play')}
 					</Button>
-					<Button
-						class="text-secondary-foreground bg-secondary hover:bg-secondary hover:text-accent-foreground cursor-pointer rounded-[4px] brightness-150 hover:brightness-100"
-					>
-						<Info />{$_('movie-banner.more-info')}
-					</Button>
+					{#if showMoreInfoButton}
+						<Button
+							class="text-secondary-foreground bg-secondary hover:bg-secondary hover:text-accent-foreground cursor-pointer rounded-[4px] brightness-150 hover:brightness-100"
+						>
+							<Info />{$_('movie-banner.more-info')}
+						</Button>
+					{/if}
+					{#if customActions}
+						{@render customActions()}
+					{/if}
 				</div>
-				{#if movie.vote_average}
-					<div class="flex items-center gap-5">
+				{#if showVoteAverage && movie.vote_average}
+					<div class="flex items-center gap-3">
 						{#if playerReady && !videoEnded}
 							<button onclick={toggleMute}>
 								<ButtonPreview variant="outline" size="default">
@@ -232,11 +262,32 @@
 							</button>
 						{/if}
 						<div
-							class="bg-secondary/50 flex items-center gap-1 text-nowrap border-l-4 py-1 pl-3 pr-8 font-light"
+							class="bg-secondary/50 flex items-center gap-1 border-l-4 py-1 pr-4 pl-3 font-light text-nowrap"
 						>
 							<TrendingUp size="15px" />
 							{movie.vote_average}
 						</div>
+					</div>
+				{:else if movieVideo?.key}
+					<!-- Show only mute/replay controls when vote average is hidden -->
+					<div class="flex items-center">
+						{#if playerReady && !videoEnded}
+							<button onclick={toggleMute}>
+								<ButtonPreview variant="outline" size="default">
+									{#if isMuted}
+										<VolumeOff onclick={toggleMute} />
+									{:else}
+										<Volume2 onclick={toggleMute} />
+									{/if}
+								</ButtonPreview>
+							</button>
+						{:else if videoEnded}
+							<button onclick={replayVideo}>
+								<ButtonPreview variant="outline" size="default">
+									<RotateCw />
+								</ButtonPreview>
+							</button>
+						{/if}
 					</div>
 				{/if}
 			</div>
