@@ -17,6 +17,14 @@
 			movieId: movie.id,
 			type: 'movie'
 		});
+
+		// Scroll to top of modal content
+		setTimeout(() => {
+			const modalContent = document.querySelector('[data-dialog-content]');
+			if (modalContent) {
+				modalContent.scrollTo({ top: 0, behavior: 'smooth' });
+			}
+		}, 50);
 	}
 </script>
 
