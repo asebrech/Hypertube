@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '@/components/ui/button';
 	import type { BackDropImage, MovieDetails, MovieVideo } from '@hypertube/shared';
-	import { onMount, type Snippet } from 'svelte';
+	import { onMount, onDestroy, type Snippet } from 'svelte';
 	import { Info, Play, Volume2, VolumeOff, TrendingUp, RotateCw } from 'lucide-svelte';
 	import { _ } from 'svelte-i18n';
 	import { Skeleton } from '@/components/ui/skeleton';
@@ -45,44 +45,62 @@
 		class: className = ''
 	}: Props = $props();
 
-	let player: YT.Player;
+	let player: YT.Player | undefined;
 	let isApiLoaded = false;
 	let playerReady = $state(false);
 	let videoEnded = $state(false);
 	let playerElement: HTMLDivElement;
 
 	function createPlayer(id: string) {
-		if (!id || !isApiLoaded || !playerElement) return;
+		if (!id || !isApiLoaded) return;
 
-		if (!player) {
-			player = new YT.Player(playerElement, {
-				videoId: movieVideo?.key,
-				events: {
-					onReady: () => {
+		// Wait for playerElement to be available
+		if (!playerElement) {
+			setTimeout(() => createPlayer(id), 100);
+			return;
+		}
+
+		// Destroy existing player before creating new one
+		if (player && typeof player.destroy === 'function') {
+			try {
+				player.destroy();
+				playerReady = false;
+				videoEnded = false;
+			} catch (error) {
+				console.warn('Error destroying existing YouTube player:', error);
+			}
+		}
+
+		// Clear the player element before creating new player
+		playerElement.innerHTML = '';
+
+		player = new YT.Player(playerElement, {
+			videoId: id,
+			events: {
+				onReady: () => {
+					if (player) {
 						player.mute();
 						player.playVideo();
-					},
-					onStateChange: (event) => {
-						if (event.data === YT.PlayerState.ENDED) {
-							videoEnded = true;
-						}
-						if (event.data === YT.PlayerState.PLAYING) {
-							playerReady = true;
-						}
 					}
 				},
-				playerVars: {
-					autoplay: 1,
-					controls: 0,
-					loop: 0,
-					rel: 0,
-					showinfo: 0,
-					disablekb: 1
+				onStateChange: (event) => {
+					if (event.data === YT.PlayerState.ENDED) {
+						videoEnded = true;
+					}
+					if (event.data === YT.PlayerState.PLAYING) {
+						playerReady = true;
+					}
 				}
-			});
-		} else {
-			player.loadVideoById(id);
-		}
+			},
+			playerVars: {
+				autoplay: 1,
+				controls: 0,
+				loop: 0,
+				rel: 0,
+				showinfo: 0,
+				disablekb: 1
+			}
+		});
 	}
 
 	function toggleMute() {
@@ -120,9 +138,28 @@
 		}
 	});
 
+	onDestroy(() => {
+		// Clean up YouTube player when component is destroyed
+		if (player && typeof player.destroy === 'function') {
+			try {
+				player.destroy();
+				player = undefined;
+			} catch (error) {
+				console.warn('Error destroying YouTube player:', error);
+			}
+		}
+		// Reset player state
+		playerReady = false;
+		videoEnded = false;
+	});
+
+	let lastVideoKey = '';
+	
 	$effect(() => {
-		if (movieVideo?.key) {
-			createPlayer(movieVideo?.key);
+		// Only create player if video key changed to prevent recreation on every effect
+		if (movieVideo?.key && movieVideo.key !== lastVideoKey) {
+			lastVideoKey = movieVideo.key;
+			createPlayer(movieVideo.key);
 		}
 	});
 </script>
@@ -139,7 +176,6 @@
 				class="absolute top-1/2 left-1/2 min-h-[155%] min-w-[155%] -translate-x-1/2 -translate-y-1/2"
 			>
 				<div
-					id="player"
 					bind:this={playerElement}
 					class="absolute top-0 left-0 h-full w-full overflow-hidden"
 				></div>

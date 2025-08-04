@@ -3,12 +3,14 @@
 	import { movieModal, movieModalActions, movieDataCache } from '@/services/store';
 	import { getMovieDetails, getMovieVideos, getLogoImage, getSimilarMovies, getPosterImage } from '@/services/api';
 	import type { BackDropImage, MovieDetails, MovieVideo, MovieType, Movie } from '@hypertube/shared';
-	import { X, Plus, ThumbsUp, ArrowLeft } from 'lucide-svelte';
+	import { X, Plus, ThumbsUp, ArrowLeft, Play } from 'lucide-svelte';
 	import { SimilarMovieCard } from '../similar-movie-card';
 	import MovieBanner from '../movie-banner/MovieBanner.svelte';
 	import ButtonPreview from '../buttons/button-preview/button-preview.svelte';
+	import { Button } from '@/components/ui/button';
 	import { Skeleton } from '@/components/ui/skeleton';
 	import { _ } from 'svelte-i18n';
+	import { get } from 'svelte/store';
 
 	// Store subscription
 	let modalData = $state({
@@ -24,7 +26,7 @@
 	let movieVideo: MovieVideo | undefined = $state(undefined);
 	let movieLogo: BackDropImage | undefined = $state(undefined);
 	let similarMovies: Movie[] = $state([]);
-	let cache: Record<string, any> = $state({});
+	let currentMovieId: number | undefined = $state(undefined);
 
 	// Subscribe to modal store
 	$effect(() => {
@@ -40,19 +42,22 @@
 		return unsubscribe;
 	});
 
-	// Subscribe to cache store
-	$effect(() => {
-		const unsubscribe = movieDataCache.subscribe((value) => {
-			cache = value;
-		});
-		return unsubscribe;
-	});
-
 	// Load movie data when modal opens
 	$effect(() => {
 		if (modalData.movieId && modalData.type) {
+			// If this is a different movie, clear the current data immediately
+			if (currentMovieId !== modalData.movieId) {
+				currentMovieId = modalData.movieId;
+				movie = undefined;
+				movieVideo = undefined;
+				movieLogo = undefined;
+				similarMovies = [];
+			}
+
 			const cacheKey = `${modalData.movieId}_${modalData.type}`;
-			const cachedData = cache[cacheKey];
+			// Get current cache value directly from store (not reactive)
+			const currentCache = get(movieDataCache);
+			const cachedData = currentCache[cacheKey];
 
 			if (cachedData && cachedData.details) {
 				// Use cached data - instant loading
@@ -64,38 +69,55 @@
 				
 				// Set loading to false immediately since we have cached data
 				setTimeout(() => movieModalActions.setLoading(false), 0);
-			} else {
-				// Reset all state when loading new movie
-				movie = undefined;
-				movieVideo = undefined;
-				movieLogo = undefined;
-				similarMovies = [];
-				
-				// Load fresh data and cache it
-				const dataToCache: any = {};
-				let loadedCount = 0;
-				const totalLoads = 4; // details, video, logo, similar movies
+				return; // Exit early to prevent duplicate loading
+			}
 
-				const checkAllLoaded = () => {
-					loadedCount++;
-					if (loadedCount >= totalLoads) {
+			// Create AbortController for this effect's requests
+			const abortController = new AbortController();
+			const signal = abortController.signal;
+
+			// Only proceed with API calls if we don't have cached data
+			// Load fresh data and cache it
+			const dataToCache: any = {};
+			let loadedCount = 0;
+			const totalLoads = 4; // details, video, logo, similar movies
+			const currentMovieForThisEffect = modalData.movieId; // Capture the current movie ID
+
+			const checkAllLoaded = () => {
+				loadedCount++;
+				if (loadedCount >= totalLoads) {
+					// Only set loading to false if we're still on the same movie and not aborted
+					if (modalData.movieId === currentMovieForThisEffect && !signal.aborted) {
 						movieModalActions.setLoading(false);
 					}
-				};
+				}
+			};
 
-				getMovieDetails(modalData.movieId, modalData.type)
-					.then((data) => {
+			getMovieDetails(modalData.movieId, modalData.type)
+				.then((data) => {
+					// Only update if we're still on the same movie and not aborted
+					if (!signal.aborted && modalData.movieId === currentMovieForThisEffect && modalData.movieId === currentMovieId) {
 						movie = data;
 						dataToCache.details = data;
 						updateCache(cacheKey, dataToCache);
-					})
-					.catch((error) => {
+					}
+				})
+				.catch((error) => {
+					if (!signal.aborted) {
 						console.error('Error fetching movie details:', error);
-					})
-					.finally(checkAllLoaded);
+					}
+				})
+				.finally(() => {
+					// Only count as loaded if still on same movie and not aborted
+					if (!signal.aborted && modalData.movieId === currentMovieForThisEffect) {
+						checkAllLoaded();
+					}
+				});
 
-				getMovieVideos(modalData.movieId, modalData.type)
-					.then((data) => {
+			getMovieVideos(modalData.movieId, modalData.type)
+				.then((data) => {
+					// Only update if we're still on the same movie and not aborted
+					if (!signal.aborted && modalData.movieId === currentMovieForThisEffect && modalData.movieId === currentMovieId) {
 						// Only set movieVideo if data exists and has valid video
 						if (data && data.key) {
 							movieVideo = data;
@@ -105,37 +127,71 @@
 							dataToCache.video = null; // Cache that no video exists
 						}
 						updateCache(cacheKey, dataToCache);
-					})
-					.catch((error) => {
+					}
+				})
+				.catch((error) => {
+					if (!signal.aborted) {
 						console.error('Error fetching movie video:', error);
-						movieVideo = undefined;
-						dataToCache.video = null;
-						updateCache(cacheKey, dataToCache);
-					})
-					.finally(checkAllLoaded);
+						if (modalData.movieId === currentMovieForThisEffect && modalData.movieId === currentMovieId) {
+							movieVideo = undefined;
+							dataToCache.video = null;
+							updateCache(cacheKey, dataToCache);
+						}
+					}
+				})
+				.finally(() => {
+					// Only count as loaded if still on same movie and not aborted
+					if (!signal.aborted && modalData.movieId === currentMovieForThisEffect) {
+						checkAllLoaded();
+					}
+				});
 
-				getLogoImage(modalData.movieId, 'original', modalData.type)
-					.then((data) => {
+			getLogoImage(modalData.movieId, 'original', modalData.type)
+				.then((data) => {
+					// Only update if we're still on the same movie and not aborted
+					if (!signal.aborted && modalData.movieId === currentMovieForThisEffect && modalData.movieId === currentMovieId) {
 						movieLogo = data;
 						dataToCache.logo = data;
 						updateCache(cacheKey, dataToCache);
-					})
-					.catch((error) => {
+					}
+				})
+				.catch((error) => {
+					if (!signal.aborted) {
 						console.error('Error fetching movie logo:', error);
-					})
-					.finally(checkAllLoaded);
+					}
+				})
+				.finally(() => {
+					// Only count as loaded if still on same movie and not aborted
+					if (!signal.aborted && modalData.movieId === currentMovieForThisEffect) {
+						checkAllLoaded();
+					}
+				});
 
-				getSimilarMovies(modalData.movieId, 1, modalData.type)
-					.then((data) => {
+			getSimilarMovies(modalData.movieId, 1, modalData.type)
+				.then((data) => {
+					// Only update if we're still on the same movie and not aborted
+					if (!signal.aborted && modalData.movieId === currentMovieForThisEffect && modalData.movieId === currentMovieId) {
 						similarMovies = data.movies;
 						dataToCache.similarMovies = data.movies;
 						updateCache(cacheKey, dataToCache);
-					})
-					.catch((error) => {
+					}
+				})
+				.catch((error) => {
+					if (!signal.aborted) {
 						console.error('Error fetching similar movies:', error);
-					})
-					.finally(checkAllLoaded);
-			}
+					}
+				})
+				.finally(() => {
+					// Only count as loaded if still on same movie and not aborted
+					if (!signal.aborted && modalData.movieId === currentMovieForThisEffect) {
+						checkAllLoaded();
+					}
+				});
+
+			// Return cleanup function to abort requests when effect re-runs
+			return () => {
+				abortController.abort();
+			};
 		}
 	});
 
@@ -169,7 +225,7 @@
 		showCloseButton={false}
 		data-dialog-content
 	>
-		{#if modalData.isLoading}
+		{#if modalData.isLoading || (modalData.movieId && modalData.movieId !== currentMovieId) || (modalData.movieId && !movie)}
 			<!-- Loading State -->
 			<div class="relative">
 				<!-- Loading buttons -->
@@ -286,29 +342,84 @@
 					</button>
 				</div>
 
-				<!-- MovieBanner Component -->
-				{#key `${movie.id}_${modalData.movieId}_${movieVideo?.key || 'no-video'}`}
-					<MovieBanner
-						{movie}
-						logo={movieLogo}
-						{movieVideo}
-						showDescription={false}
-						showMoreInfoButton={false}
-						showVoteAverage={false}
-						class="max-h-[50vh] md:max-h-[60vh] [&>div:first-child]:rounded-none"
-					>
-						{#snippet customActions()}
-							<!-- Add Button -->
-							<ButtonPreview variant="outline">
-								<Plus size={16} />
-							</ButtonPreview>
+				<!-- Reusable action buttons snippet -->
+				{#snippet actionButtons()}
+					<!-- Add Button -->
+					<ButtonPreview variant="outline">
+						<Plus size={16} />
+					</ButtonPreview>
 
-							<!-- Like Button -->
-							<ButtonPreview variant="outline">
-								<ThumbsUp size={16} />
-							</ButtonPreview>
-						{/snippet}
-					</MovieBanner>
+					<!-- Like Button -->
+					<ButtonPreview variant="outline">
+						<ThumbsUp size={16} />
+					</ButtonPreview>
+				{/snippet}
+
+				<!-- MovieBanner Component -->
+				{#key `${movie.id}_${modalData.movieId}_${movieVideo?.key || 'no-video'}_${movie.backdrop_path || 'no-backdrop'}_${movie.poster_path || 'no-poster'}_${movieLogo?.url || 'no-logo'}`}
+					{#if movie.backdrop_path}
+						<MovieBanner
+							{movie}
+							logo={movieLogo}
+							{movieVideo}
+							showDescription={false}
+							showMoreInfoButton={false}
+							showVoteAverage={false}
+							class="max-h-[50vh] md:max-h-[60vh] [&>div:first-child]:rounded-none"
+						>
+							{#snippet customActions()}
+								{@render actionButtons()}
+							{/snippet}
+						</MovieBanner>
+					{:else}
+						<!-- Fallback Banner when no backdrop image -->
+						<div class="relative max-h-[50vh] md:max-h-[60vh] flex items-end overflow-hidden">
+							{#if movie.poster_path}
+								<!-- Use poster as background if available -->
+								<img 
+									src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
+									alt={movie.title || movie.name}
+									class="absolute inset-0 w-full h-full object-cover blur-sm scale-110"
+								/>
+								<!-- Dark overlay for poster background -->
+								<div class="absolute inset-0 bg-black/60"></div>
+							{:else}
+								<!-- Pure gradient fallback when no images available -->
+								<div class="absolute inset-0 bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-900"></div>
+							{/if}
+							
+							<!-- Bottom gradient overlay (always present) -->
+							<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+							
+							<!-- Fallback content -->
+							<div class="relative z-10 p-8 md:p-12 w-full">
+								<!-- Movie Logo or Title -->
+								{#if movieLogo?.url}
+									<img 
+										src={movieLogo.url} 
+										alt={movie.title || movie.name}
+										class="h-16 md:h-20 mb-6 max-w-xs object-contain"
+									/>
+								{:else}
+									<h1 class="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight max-w-2xl drop-shadow-lg">
+										{movie.title || movie.name}
+									</h1>
+								{/if}
+
+								<!-- Action Buttons -->
+								<div class="flex items-center gap-3">
+									<!-- Play Button (same as MovieBanner) -->
+									<Button
+										class="bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer rounded-[4px]"
+									>
+										<Play fill={'black'} />Lecture
+									</Button>
+
+									{@render actionButtons()}
+								</div>
+							</div>
+						</div>
+					{/if}
 				{/key}
 			</div>
 
