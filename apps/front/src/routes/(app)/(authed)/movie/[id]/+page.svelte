@@ -4,6 +4,7 @@
 	import 'video.js/dist/video-js.css';
 	import { invalidateAll } from '$app/navigation';
 	import { PUBLIC_BACK_URL } from '$env/static/public';
+	import NetflixLoader from '$lib/components/tadflix/NetflixLoader.svelte';
 
 	export let data;
 
@@ -313,11 +314,12 @@
 </script>
 
 {#if isLoading}
-	<div class="flex min-h-96 flex-col items-center justify-center space-y-4">
-		<div class="h-12 w-12 animate-spin rounded-full border-b-2 border-blue-500"></div>
-		<p class="text-lg font-medium">{loadingMessage}</p>
-		<p class="text-sm text-gray-600">This may take a few minutes...</p>
-	</div>
+	<NetflixLoader 
+		variant="conversion"
+		title="Converting Video"
+		subtitle="Optimizing quality for the best streaming experience..."
+		showProgress={true}
+	/>
 {:else if error}
 	<div class="flex min-h-96 flex-col items-center justify-center space-y-4">
 		<div class="text-6xl text-red-500">⚠️</div>
@@ -330,5 +332,7 @@
 		</button>
 	</div>
 {:else}
-	<div data-vjs-player bind:this={container}></div>
+	<div class="fixed inset-0 z-[9999] bg-background">
+		<div data-vjs-player bind:this={container} class="h-full w-full"></div>
+	</div>
 {/if}
