@@ -174,7 +174,7 @@
 	>
 		<div class="absolute inset-0">
 			<div
-				class="absolute top-1/2 left-1/2 min-h-[110%] min-w-[110%] -translate-x-1/2 -translate-y-1/2"
+				class="absolute top-1/2 left-1/2 min-h-[155%] min-w-[155%] -translate-x-1/2 -translate-y-1/2"
 			>
 				<div bind:this={playerElement} class="absolute inset-0 h-full w-full overflow-hidden"></div>
 			</div>
