@@ -6,6 +6,7 @@
 	import type { MovieDetails, MovieType, MovieVideo } from '@hypertube/shared';
 	import { onMount } from 'svelte';
 	import ButtonPreview from '$lib/components/tadflix/buttons/button-preview/button-preview.svelte';
+	import { MovieBadges } from '$lib/components/tadflix/movie-badges';
 	import { Play, Plus, ChevronDown, Languages, VolumeOff, Volume2, RotateCw } from 'lucide-svelte';
 	import Icon from '@/assets/datflix-small.svelte';
 	import { Dot } from 'lucide-svelte';
@@ -273,9 +274,7 @@
 					<p class="text-sm text-gray-300">
 						{Math.floor(movie?.runtime / 60)} h {movie?.runtime % 60} min
 					</p>
-					<p class="border border-gray-300 px-[4px] py-[0px] text-[12px] text-gray-300 uppercase">
-						{movie.original_language}
-					</p>
+					<MovieBadges {movie} showQuality={true} showLanguage={true} />
 				</div>
 			{/if}
 			{#if movie && movie?.genres.length > 0}

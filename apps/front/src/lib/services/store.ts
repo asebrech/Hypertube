@@ -1,5 +1,12 @@
 import { writable } from 'svelte/store';
-import type { MovieType, MovieDetails, MovieVideo, BackDropImage, Movie } from '@hypertube/shared';
+import type {
+	MovieType,
+	MovieDetails,
+	MovieVideo,
+	BackDropImage,
+	Movie,
+	MovieCredits
+} from '@hypertube/shared';
 
 export const user = writable<{ id: number; email: string }>();
 export const is18Ready = writable<boolean>(false);
@@ -27,6 +34,7 @@ export const movieDataCache = writable<{
 		details?: MovieDetails;
 		video?: MovieVideo;
 		logo?: BackDropImage;
+		credits?: MovieCredits;
 		similarMovies?: Movie[];
 	};
 }>({});

@@ -77,8 +77,9 @@
 			<Skeleton class="h-full w-full rounded-[2px]" />
 		</div>
 	{:else if !backdropImage?.langFound}
-		<CardHeader class="bg-opacity-50 bg-black p-4">
-			<CardTitle>{title}</CardTitle>
+		<div class="absolute inset-0 rounded-[2px] bg-gradient-to-t from-black/70 to-transparent"></div>
+		<CardHeader class="relative z-10 flex h-full items-end p-4">
+			<CardTitle class="text-white">{title}</CardTitle>
 		</CardHeader>
 	{/if}
 	{#if isWatched && isBookmarked}

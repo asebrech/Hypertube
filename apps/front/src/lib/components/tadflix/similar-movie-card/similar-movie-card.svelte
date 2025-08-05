@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { MovieDetails, Movie } from '@hypertube/shared';
 	import { movieModalActions } from '@/services/store';
+	import { MovieBadges } from '../movie-badges';
 
 	interface Props {
 		movie: MovieDetails | Movie;
@@ -23,8 +24,8 @@
 	}
 </script>
 
-<div 
-	class="w-full bg-neutral-800 rounded-lg overflow-hidden shadow-lg cursor-pointer hover:scale-105 transition-transform duration-300 text-left"
+<div
+	class="w-full cursor-pointer overflow-hidden rounded-lg bg-neutral-800 text-left shadow-lg transition-transform duration-300 hover:scale-105"
 	onclick={openMovie}
 	role="button"
 	tabindex="0"
@@ -39,50 +40,51 @@
 	<!-- Movie Image -->
 	<div class="relative aspect-[2/3] bg-neutral-700">
 		{#if posterUrl}
-			<img 
-				src={posterUrl} 
-				alt={movie.title || movie.name}
-				class="w-full h-full object-cover"
-			/>
+			<img src={posterUrl} alt={movie.title || movie.name} class="h-full w-full object-cover" />
 		{/if}
 	</div>
 
 	<!-- Movie Info -->
-	<div class="p-3 space-y-2">
+	<div class="space-y-2 p-3">
 		<!-- Title -->
-		<h3 class="text-white text-sm font-bold truncate">
+		<h3 class="truncate text-sm font-bold text-white">
 			{movie.title || movie.name}
 		</h3>
-		
+
 		<!-- Metadata Row -->
 		<div class="flex items-center gap-2 text-xs text-gray-300">
 			<!-- Year -->
 			<span>
-				{movie.release_date?.slice(0, 4) || ('first_air_date' in movie ? movie.first_air_date?.slice(0, 4) : null) || '2021'}
+				{movie.release_date?.slice(0, 4) ||
+					('first_air_date' in movie ? movie.first_air_date?.slice(0, 4) : null) ||
+					'2021'}
 			</span>
-			
-			<!-- Rating Badge -->
-			<div class="border border-gray-500 px-1.5 py-0.5 text-xs">
-				HD
-			</div>
-			
+
+			<!-- Quality and Language Badges -->
+			<MovieBadges {movie} />
+
 			<!-- Add Button -->
-			<button 
+			<button
 				aria-label="Add to watchlist"
-				class="ml-auto w-6 h-6 rounded-full border border-gray-500 text-gray-400 hover:text-white hover:border-white transition-colors flex items-center justify-center"
+				class="ml-auto flex h-6 w-6 items-center justify-center rounded-full border border-gray-500 text-gray-400 transition-colors hover:border-white hover:text-white"
 				onclick={(e) => {
 					e.stopPropagation();
 					// Add to watchlist logic here
 				}}
 			>
-				<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+				<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+					/>
 				</svg>
 			</button>
 		</div>
 
 		<!-- Description -->
-		<p class="text-gray-400 text-xs leading-relaxed line-clamp-2">
+		<p class="line-clamp-2 text-xs leading-relaxed text-gray-400">
 			{movie.overview || 'No description available.'}
 		</p>
 	</div>

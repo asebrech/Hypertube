@@ -38,5 +38,16 @@
 	},
 	"browse": {
 		"explore": "Tout explorer"
+	},
+	"movie-modal": {
+		"about": "À propos",
+		"more-like-this": "Autres titres similaires",
+		"director": "Réalisateur",
+		"cast": "Distribution",
+		"genres": "Genres",
+		"maturity-rating": "Classification d'âge",
+		"mature-audiences": "Pour un public mature.",
+		"audiences-13": "Pour les 13 ans et plus.",
+		"more": "plus"
 	}
 }
