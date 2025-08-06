@@ -42,6 +42,8 @@
 	"video-player": {
 		"back-to-home": "Volver al inicio",
 		"converting": "Convirtiendo archivos de video...",
-		"error-title": "¡Ups! Algo salió mal"
+		"error-title": "¡Ups! Algo salió mal",
+		"show-details": "Mostrar detalles",
+		"hide-details": "Ocultar detalles"
 	}
 }

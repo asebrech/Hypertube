@@ -17,36 +17,44 @@
 	}: Props = $props();
 	
 	let mounted = $state(false);
+	let accordionOpen = $state(false);
 	
 	onMount(() => {
 		mounted = true;
 	});
 </script>
 
-<div class="flex min-h-screen items-center justify-center bg-black">
-	<div class="flex flex-col items-center space-y-8 text-center">
-		<div class="relative">
-			<div class="text-8xl font-bold text-zinc-800">!</div>
-			<div 
-				class="absolute inset-0 text-8xl font-bold text-red-600 {mounted ? 'animate-pulse' : ''}"
+<div class="min-h-screen bg-black text-white flex flex-col items-center justify-center p-8">
+	<div class="text-center max-w-md">
+		<!-- Animated Error Icon -->
+		<div class="mb-8">
+			<div class="text-red-600 text-8xl font-bold {mounted ? 'animate-bounce' : ''}">!</div>
+		</div>
+		
+		<!-- Error Title -->
+		<h1 class="text-3xl font-bold text-red-600 mb-6">{title}</h1>
+		
+		<!-- Error Message -->
+		<div class="mb-8 w-full">
+			<button 
+				onclick={() => accordionOpen = !accordionOpen}
+				class="text-zinc-400 hover:text-white text-sm underline transition-colors duration-200"
 			>
-				!
-			</div>
+				{accordionOpen ? $_('video-player.hide-details') : $_('video-player.show-details')}
+			</button>
+			
+			{#if accordionOpen}
+				<div class="mt-4 p-4 bg-zinc-900/50 rounded text-left border-l-4 border-red-600 transition-all duration-300 ease-in-out">
+					<p class="text-zinc-300 text-sm break-words">{message}</p>
+				</div>
+			{/if}
 		</div>
 		
-		<div class="space-y-4">
-			<h1 class="text-3xl font-bold text-white">
-				{title}
-			</h1>
-			<p class="max-w-md text-lg text-zinc-400">
-				{message}
-			</p>
-		</div>
-		
+		<!-- Go Home Button -->
 		{#if showGoHome}
-			<button
-				class="rounded bg-red-600 px-8 py-4 text-lg font-semibold text-white transition-all duration-200 hover:bg-red-700 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500"
+			<button 
 				onclick={onGoHome}
+				class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 transform hover:scale-105"
 			>
 				{$_('video-player.back-to-home')}
 			</button>

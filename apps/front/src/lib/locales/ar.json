@@ -42,6 +42,8 @@
 	"video-player": {
 		"back-to-home": "العودة إلى الرئيسية",
 		"converting": "جاري تحويل ملفات الفيديو...",
-		"error-title": "عذراً! حدث خطأ ما"
+		"error-title": "عذراً! حدث خطأ ما",
+		"show-details": "إظهار التفاصيل",
+		"hide-details": "إخفاء التفاصيل"
 	}
 }
