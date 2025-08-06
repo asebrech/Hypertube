@@ -1,14 +1,16 @@
 <script lang="ts">
 	import { Button } from '@/components/ui/button';
-	import type { BackDropImage, MovieDetails, MovieVideo } from '@hypertube/shared';
+	import type { BackDropImage, MovieDetails, MovieVideo, MovieType } from '@hypertube/shared';
 	import { onMount, onDestroy, type Snippet } from 'svelte';
 	import { Info, Play, Volume2, VolumeOff, TrendingUp, RotateCw } from 'lucide-svelte';
 	import { _ } from 'svelte-i18n';
 	import { Skeleton } from '@/components/ui/skeleton';
 	import ButtonPreview from '../buttons/button-preview/button-preview.svelte';
+	import { movieModalActions } from '@/services/store';
 
 	interface Props {
 		movie: MovieDetails;
+		type: MovieType;
 		logo?: BackDropImage;
 		movieVideo?: MovieVideo;
 		showDescription?: boolean;
@@ -34,6 +36,7 @@
 
 	let {
 		movie,
+		type,
 		logo,
 		movieVideo,
 		showDescription = true,
@@ -120,6 +123,10 @@
 		videoEnded = false;
 	}
 
+	function openModal() {
+		movieModalActions.open(movie.id, type);
+	}
+
 	onMount(() => {
 		// @ts-ignore
 		window.onYouTubeIframeAPIReady = () => {
@@ -167,7 +174,8 @@
 <div class="relative max-h-[80vh] w-full {className}">
 	<!-- YouTube video player container -->
 	<div
-		class="relative w-full aspect-[6/3] flex overflow-hidden rounded-[2px] bg-black {playerReady && !videoEnded
+		class="relative flex aspect-[6/3] w-full overflow-hidden rounded-[2px] bg-black {playerReady &&
+		!videoEnded
 			? ''
 			: 'hidden'}"
 	>
@@ -306,6 +314,7 @@
 						{#if showMoreInfoButton}
 							<Button
 								class="text-secondary-foreground bg-secondary hover:bg-secondary hover:text-accent-foreground cursor-pointer rounded-[4px] brightness-150 hover:brightness-100"
+								onclick={openModal}
 							>
 								<Info />{$_('movie-banner.more-info')}
 							</Button>

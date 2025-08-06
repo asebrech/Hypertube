@@ -421,19 +421,22 @@
 
 				<!-- MovieBanner Component -->
 				{#key `${movie.id}_${modalData.movieId}_${movieVideo?.key || 'no-video'}_${movie.backdrop_path || 'no-backdrop'}_${movie.poster_path || 'no-poster'}_${movieLogo?.url || 'no-logo'}`}
-					<MovieBanner
-						{movie}
-						logo={movieLogo}
-						{movieVideo}
-						showDescription={false}
-						showMoreInfoButton={false}
-						showVoteAverage={false}
-						class="[&>div:first-child]:max-h-[40vh] [&>div:first-child]:rounded-none sm:[&>div:first-child]:max-h-[45vh] md:[&>div:first-child]:max-h-[50vh]"
-					>
-						{#snippet customActions()}
-							{@render actionButtons()}
-						{/snippet}
-					</MovieBanner>
+					{#if modalData.type}
+						<MovieBanner
+							{movie}
+							type={modalData.type}
+							logo={movieLogo}
+							{movieVideo}
+							showDescription={false}
+							showMoreInfoButton={false}
+							showVoteAverage={false}
+							class="[&>div:first-child]:max-h-[40vh] [&>div:first-child]:rounded-none sm:[&>div:first-child]:max-h-[45vh] md:[&>div:first-child]:max-h-[50vh]"
+						>
+							{#snippet customActions()}
+								{@render actionButtons()}
+							{/snippet}
+						</MovieBanner>
+					{/if}
 				{/key}
 			</div>
 

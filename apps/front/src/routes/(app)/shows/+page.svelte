@@ -68,7 +68,7 @@
 
 <div class="flex flex-col gap-8">
 	{#if movieBanner}
-		<MovieBanner logo={movieLogo} movie={movieBanner} movieVideo={movieVideoResponse} />
+		<MovieBanner logo={movieLogo} movie={movieBanner} movieVideo={movieVideoResponse} type="tv" />
 	{:else}
 		<Skeleton class="h-[80vh]" />
 	{/if}
