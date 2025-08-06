@@ -214,6 +214,9 @@
 			liveui: true,
 			preload: 'auto',
 			sources: [{ src: preferredSource.src, type: 'application/x-mpegURL' }],
+			controlBar: {
+				fullscreenToggle: false
+			},
 			html5: {
 				vhs: {
 					withCredentials: false
