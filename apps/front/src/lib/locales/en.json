@@ -42,7 +42,6 @@
 	"video-player": {
 		"back-to-home": "Back to Home",
 		"converting": "Converting video files...",
-		"try-again": "Try Again",
 		"error-title": "Oops! Something went wrong"
 	}
 }

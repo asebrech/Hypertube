@@ -5,6 +5,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { PUBLIC_BACK_URL } from '$env/static/public';
 	import { VideoLoading } from '$lib/components/tadflix/loading';
+	import { VideoError } from '$lib/components/tadflix/error';
 	import { goto } from '$app/navigation';
 	import { _ } from 'svelte-i18n';
 
@@ -19,9 +20,8 @@
 
 	let player;
 	let container;
-	let isLoading = !data.isAllVideoReady;
-	let loadingMessage = data.isAllVideoReady ? '' : 'Converting video files... Please wait.';
-	let error = null;
+	let isLoading = !data.isAllVideoReady && !data.error;
+	let error = data.error || null;
 	let pollingInterval;
 	let hasMarkedAsWatched = false;
 	let lastWatchTimeCheck = 0;
@@ -114,16 +114,18 @@
 	}
 
 	async function pollForVideoReadiness() {
-		if (data.isAllVideoReady) {
+		if (data.isAllVideoReady || data.error) {
 			clearInterval(pollingInterval);
 			return;
 		}
 
 		await invalidateAll();
 
-		if (!data.isAllVideoReady) {
-			loadingMessage = 'Converting video files... Please wait.';
-		} else {
+		if (data.error) {
+			error = data.error;
+			isLoading = false;
+			clearInterval(pollingInterval);
+		} else if (data.isAllVideoReady) {
 			isLoading = false;
 			clearInterval(pollingInterval);
 		}
@@ -347,15 +349,16 @@
 	}
 
 	$: {
-		isLoading = !data.isAllVideoReady;
-		if (data.isAllVideoReady && pollingInterval) {
+		isLoading = !data.isAllVideoReady && !data.error;
+		error = data.error || error;
+		if ((data.isAllVideoReady || data.error) && pollingInterval) {
 			clearInterval(pollingInterval);
 			pollingInterval = null;
 		}
 	}
 
 	onMount(() => {
-		if (!data.isAllVideoReady) {
+		if (!data.isAllVideoReady && !data.error) {
 			pollingInterval = setInterval(pollForVideoReadiness, POLL_INTERVAL);
 
 			setTimeout(() => {
@@ -384,19 +387,11 @@
 {#if isLoading}
 	<VideoLoading message={$_('video-player.converting')} />
 {:else if error}
-	<div class="flex min-h-screen items-center justify-center bg-black">
-		<div class="flex flex-col items-center justify-center space-y-6 text-center">
-			<div class="text-6xl text-red-500">⚠️</div>
-			<h2 class="text-2xl font-medium text-white">{$_('video-player.error-title')}</h2>
-			<p class="max-w-md text-lg text-zinc-400">{error}</p>
-			<button
-				class="rounded bg-red-600 px-6 py-3 font-medium text-white transition-colors hover:bg-red-700"
-				on:click={() => window.location.reload()}
-			>
-				{$_('video-player.try-again')}
-			</button>
-		</div>
-	</div>
+	<VideoError 
+		title={$_('video-player.error-title')}
+		message={error}
+		onGoHome={() => goto('/')}
+	/>
 {:else}
 	<div data-vjs-player bind:this={container}></div>
 {/if}

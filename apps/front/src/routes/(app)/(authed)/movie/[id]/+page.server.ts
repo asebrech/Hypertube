@@ -12,6 +12,7 @@ type LoadResult = {
 		'1080p': boolean;
 	};
 	token: string | undefined;
+	error?: string;
 };
 
 function getPreferredResolution(resolutions: {
@@ -46,30 +47,58 @@ export const load: PageServerLoad = async ({ params, fetch, cookies }): Promise<
 		headers.Authorization = `Bearer ${token}`;
 	}
 
-	const torrentResponse = await fetch(`${PUBLIC_BACK_URL}/torrent/${movieId}`, {
-		headers
-	});
-	if (!torrentResponse.ok) {
-		throw new Error('Failed to fetch torrent data');
+	try {
+		const torrentResponse = await fetch(`${PUBLIC_BACK_URL}/torrent/${movieId}`, {
+			headers
+		});
+		if (!torrentResponse.ok) {
+			return {
+				movieId,
+				isAllVideoReady: false,
+				preferredResolution: null,
+				availableResolutions: [],
+				resolutions: { '480p': false, '720p': false, '1080p': false },
+				token,
+				error: torrentResponse.status === 404 ? 'Movie not found' : 'Failed to fetch movie data'
+			};
+		}
+
+		const readinessResponse = await fetch(`${PUBLIC_BACK_URL}/torrent/ready/${movieId}`, {
+			headers
+		});
+		if (!readinessResponse.ok) {
+			return {
+				movieId,
+				isAllVideoReady: false,
+				preferredResolution: null,
+				availableResolutions: [],
+				resolutions: { '480p': false, '720p': false, '1080p': false },
+				token,
+				error: 'Failed to check video readiness'
+			};
+		}
+
+		const readinessData = await readinessResponse.json();
+		const availableResolutions = getAvailableResolutions(readinessData.resolutions);
+		const preferredResolution = getPreferredResolution(readinessData.resolutions);
+
+		return {
+			movieId,
+			isAllVideoReady: readinessData.allReady,
+			preferredResolution,
+			availableResolutions,
+			resolutions: readinessData.resolutions,
+			token
+		};
+	} catch {
+		return {
+			movieId,
+			isAllVideoReady: false,
+			preferredResolution: null,
+			availableResolutions: [],
+			resolutions: { '480p': false, '720p': false, '1080p': false },
+			token,
+			error: 'Network error occurred'
+		};
 	}
-
-	const readinessResponse = await fetch(`${PUBLIC_BACK_URL}/torrent/ready/${movieId}`, {
-		headers
-	});
-	if (!readinessResponse.ok) {
-		throw new Error('Failed to check video readiness');
-	}
-
-	const readinessData = await readinessResponse.json();
-	const availableResolutions = getAvailableResolutions(readinessData.resolutions);
-	const preferredResolution = getPreferredResolution(readinessData.resolutions);
-
-	return {
-		movieId,
-		isAllVideoReady: readinessData.allReady,
-		preferredResolution,
-		availableResolutions,
-		resolutions: readinessData.resolutions,
-		token
-	};
 };

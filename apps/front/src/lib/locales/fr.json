@@ -42,7 +42,6 @@
 	"video-player": {
 		"back-to-home": "Retour à l'accueil",
 		"converting": "Conversion des fichiers vidéo...",
-		"try-again": "Réessayer",
 		"error-title": "Oups ! Une erreur s'est produite"
 	}
 }
