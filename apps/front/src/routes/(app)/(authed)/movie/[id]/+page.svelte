@@ -6,6 +6,7 @@
 	import { PUBLIC_BACK_URL } from '$env/static/public';
 	import { VideoLoading } from '$lib/components/tadflix/loading';
 	import { goto } from '$app/navigation';
+	import { _ } from 'svelte-i18n';
 
 	export let data;
 
@@ -182,8 +183,9 @@
 					</svg>
 				`;
 
-				button.setAttribute('title', 'Back to Home');
-				button.setAttribute('aria-label', 'Back to Home');
+				const backToHomeText = $_('video-player.back-to-home');
+				button.setAttribute('title', backToHomeText);
+				button.setAttribute('aria-label', backToHomeText);
 
 				return button;
 			}
@@ -377,18 +379,18 @@
 </script>
 
 {#if isLoading}
-	<VideoLoading message="Converting video files..." />
+	<VideoLoading message={$_('video-player.converting')} />
 {:else if error}
 	<div class="flex min-h-screen items-center justify-center bg-black">
 		<div class="flex flex-col items-center justify-center space-y-6 text-center">
 			<div class="text-6xl text-red-500">⚠️</div>
-			<h2 class="text-2xl font-medium text-white">Oops! Something went wrong</h2>
+			<h2 class="text-2xl font-medium text-white">{$_('video-player.error-title')}</h2>
 			<p class="max-w-md text-lg text-zinc-400">{error}</p>
 			<button
 				class="rounded bg-red-600 px-6 py-3 font-medium text-white transition-colors hover:bg-red-700"
 				on:click={() => window.location.reload()}
 			>
-				Try Again
+				{$_('video-player.try-again')}
 			</button>
 		</div>
 	</div>
