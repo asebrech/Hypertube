@@ -4,6 +4,7 @@
 	import 'video.js/dist/video-js.css';
 	import { invalidateAll } from '$app/navigation';
 	import { PUBLIC_BACK_URL } from '$env/static/public';
+	import { VideoLoading } from '$lib/components/tadflix/loading';
 
 	export let data;
 
@@ -313,21 +314,20 @@
 </script>
 
 {#if isLoading}
-	<div class="flex min-h-96 flex-col items-center justify-center space-y-4">
-		<div class="h-12 w-12 animate-spin rounded-full border-b-2 border-blue-500"></div>
-		<p class="text-lg font-medium">{loadingMessage}</p>
-		<p class="text-sm text-gray-600">This may take a few minutes...</p>
-	</div>
+	<VideoLoading message="Converting video files..." />
 {:else if error}
-	<div class="flex min-h-96 flex-col items-center justify-center space-y-4">
-		<div class="text-6xl text-red-500">⚠️</div>
-		<p class="text-lg font-medium text-red-600">{error}</p>
-		<button
-			class="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-			on:click={() => window.location.reload()}
-		>
-			Try Again
-		</button>
+	<div class="flex min-h-screen bg-black items-center justify-center">
+		<div class="flex flex-col items-center justify-center space-y-6 text-center">
+			<div class="text-6xl text-red-500">⚠️</div>
+			<h2 class="text-2xl font-medium text-white">Oops! Something went wrong</h2>
+			<p class="text-lg text-zinc-400 max-w-md">{error}</p>
+			<button
+				class="rounded bg-red-600 px-6 py-3 text-white font-medium hover:bg-red-700 transition-colors"
+				on:click={() => window.location.reload()}
+			>
+				Try Again
+			</button>
+		</div>
 	</div>
 {:else}
 	<div data-vjs-player bind:this={container}></div>
