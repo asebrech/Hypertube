@@ -202,6 +202,25 @@
 				markMovieAsWatched();
 			});
 
+			player.on('play', () => {
+				if (!player.isFullscreen()) {
+					player.requestFullscreen();
+				}
+			});
+
+			player.ready(() => {
+				const bigPlayButton = player.getChild('BigPlayButton');
+				if (bigPlayButton) {
+					bigPlayButton.on('click', () => {
+						setTimeout(() => {
+							if (!player.isFullscreen()) {
+								player.requestFullscreen();
+							}
+						}, 100);
+					});
+				}
+			});
+
 			player.on('timeupdate', () => {
 				if (!hasMarkedAsWatched && player.duration() > 0) {
 					const now = Date.now();
@@ -316,13 +335,13 @@
 {#if isLoading}
 	<VideoLoading message="Converting video files..." />
 {:else if error}
-	<div class="flex min-h-screen bg-black items-center justify-center">
+	<div class="flex min-h-screen items-center justify-center bg-black">
 		<div class="flex flex-col items-center justify-center space-y-6 text-center">
 			<div class="text-6xl text-red-500">⚠️</div>
 			<h2 class="text-2xl font-medium text-white">Oops! Something went wrong</h2>
-			<p class="text-lg text-zinc-400 max-w-md">{error}</p>
+			<p class="max-w-md text-lg text-zinc-400">{error}</p>
 			<button
-				class="rounded bg-red-600 px-6 py-3 text-white font-medium hover:bg-red-700 transition-colors"
+				class="rounded bg-red-600 px-6 py-3 font-medium text-white transition-colors hover:bg-red-700"
 				on:click={() => window.location.reload()}
 			>
 				Try Again
