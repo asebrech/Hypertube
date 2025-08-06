@@ -164,13 +164,12 @@
 	});
 </script>
 
-<div class="relative w-full {className}">
+<div class="relative max-h-[80vh] w-full {className}">
 	<!-- YouTube video player container -->
 	<div
-		class="relative w-full overflow-hidden rounded-[2px] bg-black {playerReady && !videoEnded
+		class="relative w-full aspect-[6/3] flex overflow-hidden rounded-[2px] bg-black {playerReady && !videoEnded
 			? ''
 			: 'hidden'}"
-		style="aspect-ratio: 16/9; max-height: 50vh;"
 	>
 		<div class="absolute inset-0">
 			<div
