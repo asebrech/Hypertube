@@ -537,9 +537,7 @@
 										{movieCredits.cast
 											.slice(0, 14)
 											.map((actor) => actor.name)
-											.join(', ')}{movieCredits.cast.length > 14
-											? `, ${$_('movie-modal.more')}`
-											: ''}
+											.join(', ')}
 									</span>
 								</div>
 							{/if}
