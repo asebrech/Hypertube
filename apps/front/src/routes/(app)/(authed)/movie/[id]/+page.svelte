@@ -5,6 +5,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { PUBLIC_BACK_URL } from '$env/static/public';
 	import { VideoLoading } from '$lib/components/tadflix/loading';
+	import { goto } from '$app/navigation';
 
 	export let data;
 
@@ -160,6 +161,43 @@
 		}
 	}
 
+	function createBackButton() {
+		const BackButton = videojs.getComponent('Button');
+
+		class CustomBackButton extends BackButton {
+			constructor(player, options) {
+				super(player, options);
+				this.addClass('vjs-back-button');
+			}
+
+			createEl() {
+				const button = super.createEl('button', {
+					className: 'vjs-back-button vjs-control vjs-button'
+				});
+
+				button.innerHTML = `
+					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="m12 19-7-7 7-7"/>
+						<path d="M19 12H5"/>
+					</svg>
+				`;
+
+				button.setAttribute('title', 'Back to Home');
+				button.setAttribute('aria-label', 'Back to Home');
+
+				return button;
+			}
+
+			handleClick() {
+				goto('/');
+			}
+		}
+
+		videojs.registerComponent('CustomBackButton', CustomBackButton);
+
+		return CustomBackButton;
+	}
+
 	async function initializeVideoPlayer() {
 		if (!container || player || readyResolutions.size === 0) return;
 
@@ -186,7 +224,13 @@
 			videoElement.className = 'vjs-big-play-centered';
 			container.appendChild(videoElement);
 
+			createBackButton();
+
 			player = videojs(videoElement, options);
+
+			const controlBar = player.getChild('ControlBar');
+			const backButton = new (videojs.getComponent('CustomBackButton'))(player);
+			controlBar.addChild(backButton, {}, 0); // Add as first button
 
 			player.on('xhr-hooks-ready', () => {
 				if (data.token && player.tech() && player.tech().vhs) {
@@ -351,3 +395,32 @@
 {:else}
 	<div data-vjs-player bind:this={container}></div>
 {/if}
+
+<style>
+	:global(.vjs-back-button) {
+		width: 3em !important;
+		height: 100% !important;
+		cursor: pointer !important;
+		display: flex !important;
+		align-items: center !important;
+		justify-content: center !important;
+		color: white !important;
+		background: rgba(0, 0, 0, 0.5) !important;
+		border: none !important;
+		transition: background-color 0.2s ease !important;
+	}
+
+	:global(.vjs-back-button:hover) {
+		background: rgba(220, 38, 38, 0.8) !important;
+	}
+
+	:global(.vjs-back-button svg) {
+		width: 20px !important;
+		height: 20px !important;
+		stroke: currentColor !important;
+	}
+
+	:global(.vjs-control-bar .vjs-back-button) {
+		order: -1 !important;
+	}
+</style>
