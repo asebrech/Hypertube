@@ -22,7 +22,6 @@ interface ResolutionStatus {
 }
 
 const RESOLUTION_ORDER = ['1080p', '720p', '480p'] as const;
-const RESOLUTION_VALUES = ['1080', '720', '480'] as const;
 
 function getPreferredResolution(resolutions: ResolutionStatus): string | null {
 	for (const resolution of RESOLUTION_ORDER) {
@@ -34,7 +33,9 @@ function getPreferredResolution(resolutions: ResolutionStatus): string | null {
 }
 
 function getAvailableResolutions(resolutions: ResolutionStatus): string[] {
-	return RESOLUTION_VALUES.filter(value => resolutions[`${value}p` as keyof ResolutionStatus]);
+	return Object.entries(resolutions)
+		.filter(([, available]) => available)
+		.map(([key]) => key.replace('p', ''));
 }
 
 async function fetchWithAuth(url: string, token?: string, fetchFn: typeof fetch = fetch) {

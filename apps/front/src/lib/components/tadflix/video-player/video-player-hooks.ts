@@ -63,7 +63,7 @@ export class VideoPlayerAPI {
 			if (!response.ok) return 0;
 
 			const data = await response.json();
-			return data.currentTime || 0;
+			return data.progress || 0;
 		} catch (error) {
 			console.error('Error fetching watch progress:', error);
 			return 0;
@@ -89,14 +89,16 @@ export class VideoPlayerHooks {
 	static setupAuthentication(token: string | undefined, videojs: VideoJSWithVhs): void {
 		if (!token || !videojs.Vhs) return;
 
-		videojs.Vhs.xhr.beforeRequest = (options: XHROptions) => {
-			if (options.headers) {
-				options.headers.Authorization = `Bearer ${token}`;
-			} else {
-				options.headers = { Authorization: `Bearer ${token}` };
-			}
-			return options;
-		};
+		if (videojs.Vhs.xhr) {
+			videojs.Vhs.xhr.beforeRequest = (options: XHROptions) => {
+				if (options.headers) {
+					options.headers.Authorization = `Bearer ${token}`;
+				} else {
+					options.headers = { Authorization: `Bearer ${token}` };
+				}
+				return options;
+			};
+		}
 	}
 
 	static createAuthHook(token: string) {

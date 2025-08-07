@@ -175,7 +175,7 @@
 		player.on('pause', handleProgressSave);
 		player.on('seeked', handleProgressSave);
 
-		if (token && player.tech?.()?.vhs) {
+		if (token && typeof player.tech === 'function' && player.tech() && player.tech().vhs) {
 			player.tech().vhs.xhr.onRequest(VideoPlayerHooks.createAuthHook(token));
 		}
 	}
