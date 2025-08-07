@@ -41,9 +41,9 @@
 	},
 	"video-player": {
 		"back-to-home": "Retour à l'accueil",
-		"converting": "Conversion des fichiers vidéo...",
+		"converting": "Téléchargement et conversion du film en cours...",
 		"error-title": "Oups ! Une erreur s'est produite",
-		"timeout-error": "La conversion vidéo a expiré. Veuillez réessayer plus tard.",
+		"timeout-error": "Le traitement vidéo a expiré. Veuillez réessayer plus tard.",
 		"show-details": "Afficher les détails",
 		"hide-details": "Masquer les détails"
 	}

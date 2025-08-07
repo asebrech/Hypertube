@@ -41,9 +41,9 @@
 	},
 	"video-player": {
 		"back-to-home": "Back to Home",
-		"converting": "Converting video files...",
+		"converting": "Downloading and converting movie files...",
 		"error-title": "Oops! Something went wrong",
-		"timeout-error": "Video conversion timed out. Please try again later.",
+		"timeout-error": "Video processing timed out. Please try again later.",
 		"show-details": "Show details",
 		"hide-details": "Hide details"
 	}
