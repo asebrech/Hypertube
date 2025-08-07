@@ -64,7 +64,7 @@
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@hypertube/shared": "workspace:*",
     "@vinejs/vine": "^3.0.0",
-    "ally-42-oauth": "file:../../../ally-42-oauth",
+    "ally-42-oauth": "^1.1.0",
     "axios": "^1.8.4",
     "ffmpeg-static": "^5.2.0",
     "fluent-ffmpeg": "^2.1.3",
