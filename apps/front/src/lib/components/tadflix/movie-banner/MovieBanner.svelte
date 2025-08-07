@@ -171,7 +171,7 @@
 	});
 </script>
 
-<div class="relative max-h-[80vh] w-full {className}">
+<div class="relative w-full {className}">
 	<!-- YouTube video player container -->
 	<div
 		class="relative flex aspect-[6/3] w-full overflow-hidden rounded-[2px] bg-black {playerReady &&
@@ -197,7 +197,7 @@
 
 	<!-- Backdrop image container -->
 	{#if movie?.backdrop_path && (!playerReady || videoEnded)}
-		<div class="relative w-full overflow-hidden" style="aspect-ratio: 16/9; max-height: 50vh;">
+		<div class="relative aspect-[16/9] w-full overflow-hidden">
 			<img
 				src={`https://image.tmdb.org/t/p/original/${movie.backdrop_path}`}
 				alt="movie-background"
@@ -213,7 +213,7 @@
 		</div>
 	{:else if !movie?.backdrop_path && (!playerReady || videoEnded)}
 		<!-- Fallback background when no backdrop image -->
-		<div class="relative w-full overflow-hidden" style="aspect-ratio: 16/9; max-height: 50vh;">
+		<div class="relative w-full overflow-hidden" style="aspect-ratio: 16/9;">
 			{#if movie.poster_path}
 				<!-- Use poster as background if available -->
 				<img
@@ -239,7 +239,7 @@
 			</div>
 		</div>
 	{:else if !movie?.backdrop_path && !playerReady && !videoEnded}
-		<div class="w-full overflow-hidden" style="aspect-ratio: 16/9; max-height: 50vh;">
+		<div class="w-full overflow-hidden" style="aspect-ratio: 16/9;">
 			<Skeleton class="h-full w-full" />
 		</div>
 	{/if}
@@ -247,16 +247,8 @@
 	<!-- Content overlay - always visible -->
 	<div class="absolute inset-0 flex flex-col justify-end p-4 sm:p-6 md:p-8 lg:p-12">
 		<div class="flex flex-col gap-4 text-white md:gap-6">
-			<!-- Logo/Title section - hidden during video playback on desktop -->
-			<div
-				class="transition-all duration-[2000ms] ease-in-out md:block"
-				style="
-					opacity: {playerReady && !videoEnded ? 0 : 1};
-					max-height: {playerReady && !videoEnded ? '0px' : '500px'};
-					pointer-events: {playerReady && !videoEnded ? 'none' : 'auto'};
-					visibility: {playerReady && !videoEnded ? 'hidden' : 'visible'};
-				"
-			>
+			<!-- Logo/Title section - always visible -->
+			<div class="md:block">
 				{#if logo}
 					<img
 						src={logo.url}
@@ -275,8 +267,19 @@
 						{movie.title}
 					</h1>
 				{/if}
+			</div>
 
-				{#if showDescription}
+			<!-- Description section - hidden during video playback on desktop -->
+			{#if showDescription}
+				<div
+					class="transition-all duration-[2000ms] ease-in-out md:block"
+					style="
+						opacity: {playerReady && !videoEnded ? 0 : 1};
+						max-height: {playerReady && !videoEnded ? '0px' : '500px'};
+						pointer-events: {playerReady && !videoEnded ? 'none' : 'auto'};
+						visibility: {playerReady && !videoEnded ? 'hidden' : 'visible'};
+					"
+				>
 					<div class="mb-4 hidden max-w-full md:mb-6 md:block md:max-w-[50%] lg:max-w-[40%]">
 						{#if movie.overview}
 							<p
@@ -297,8 +300,8 @@
 							{/if}
 						{/if}
 					</div>
-				{/if}
-			</div>
+				</div>
+			{/if}
 
 			<!-- Buttons section - always visible at bottom -->
 			<div class="flex w-full flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
