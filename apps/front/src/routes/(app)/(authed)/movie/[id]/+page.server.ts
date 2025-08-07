@@ -1,7 +1,7 @@
 import { PUBLIC_BACK_URL } from '$env/static/public';
 import type { PageServerLoad } from './$types';
 
-type LoadResult = {
+interface LoadResult {
 	movieId: string;
 	isAllVideoReady: boolean;
 	preferredResolution: string | null;
@@ -13,67 +13,66 @@ type LoadResult = {
 	};
 	token: string | undefined;
 	error?: string;
-};
+}
 
-function getPreferredResolution(resolutions: {
+interface ResolutionStatus {
 	'480p': boolean;
 	'720p': boolean;
 	'1080p': boolean;
-}): string | null {
-	if (resolutions['1080p']) return '1080';
-	if (resolutions['720p']) return '720';
-	if (resolutions['480p']) return '480';
+}
+
+const RESOLUTION_ORDER = ['1080p', '720p', '480p'] as const;
+const RESOLUTION_VALUES = ['1080', '720', '480'] as const;
+
+function getPreferredResolution(resolutions: ResolutionStatus): string | null {
+	for (const resolution of RESOLUTION_ORDER) {
+		if (resolutions[resolution]) {
+			return resolution.replace('p', '');
+		}
+	}
 	return null;
 }
 
-function getAvailableResolutions(resolutions: {
-	'480p': boolean;
-	'720p': boolean;
-	'1080p': boolean;
-}): string[] {
-	const available: string[] = [];
-	if (resolutions['480p']) available.push('480');
-	if (resolutions['720p']) available.push('720');
-	if (resolutions['1080p']) available.push('1080');
-	return available;
+function getAvailableResolutions(resolutions: ResolutionStatus): string[] {
+	return RESOLUTION_VALUES.filter(value => resolutions[`${value}p` as keyof ResolutionStatus]);
 }
 
-export const load: PageServerLoad = async ({ params, fetch, cookies }): Promise<LoadResult> => {
-	const movieId = params.id!;
-	const token = cookies.get('session');
-
+async function fetchWithAuth(url: string, token?: string, fetchFn: typeof fetch = fetch) {
 	const headers: HeadersInit = {};
 	if (token) {
 		headers.Authorization = `Bearer ${token}`;
 	}
+	return fetchFn(url, { headers });
+}
+
+export const load: PageServerLoad = async ({ params, fetch: fetchFn, cookies }): Promise<LoadResult> => {
+	const movieId = params.id!;
+	const token = cookies.get('session');
+
+	const defaultResult: LoadResult = {
+		movieId,
+		isAllVideoReady: false,
+		preferredResolution: null,
+		availableResolutions: [],
+		resolutions: { '480p': false, '720p': false, '1080p': false },
+		token
+	};
 
 	try {
-		const torrentResponse = await fetch(`${PUBLIC_BACK_URL}/torrent/${movieId}`, {
-			headers
-		});
+		// Check if torrent exists
+		const torrentResponse = await fetchWithAuth(`${PUBLIC_BACK_URL}/torrent/${movieId}`, token, fetchFn);
 		if (!torrentResponse.ok) {
 			return {
-				movieId,
-				isAllVideoReady: false,
-				preferredResolution: null,
-				availableResolutions: [],
-				resolutions: { '480p': false, '720p': false, '1080p': false },
-				token,
+				...defaultResult,
 				error: torrentResponse.status === 404 ? 'Movie not found' : 'Failed to fetch movie data'
 			};
 		}
 
-		const readinessResponse = await fetch(`${PUBLIC_BACK_URL}/torrent/ready/${movieId}`, {
-			headers
-		});
+		// Check video readiness
+		const readinessResponse = await fetchWithAuth(`${PUBLIC_BACK_URL}/torrent/ready/${movieId}`, token, fetchFn);
 		if (!readinessResponse.ok) {
 			return {
-				movieId,
-				isAllVideoReady: false,
-				preferredResolution: null,
-				availableResolutions: [],
-				resolutions: { '480p': false, '720p': false, '1080p': false },
-				token,
+				...defaultResult,
 				error: 'Failed to check video readiness'
 			};
 		}
@@ -90,14 +89,10 @@ export const load: PageServerLoad = async ({ params, fetch, cookies }): Promise<
 			resolutions: readinessData.resolutions,
 			token
 		};
-	} catch {
+	} catch (error) {
+		console.error('Error loading movie data:', error);
 		return {
-			movieId,
-			isAllVideoReady: false,
-			preferredResolution: null,
-			availableResolutions: [],
-			resolutions: { '480p': false, '720p': false, '1080p': false },
-			token,
+			...defaultResult,
 			error: 'Network error occurred'
 		};
 	}

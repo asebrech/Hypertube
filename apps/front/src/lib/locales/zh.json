@@ -43,6 +43,7 @@
 		"back-to-home": "返回首页",
 		"converting": "正在转换视频文件...",
 		"error-title": "哎呀！出了点问题",
+		"timeout-error": "视频转换超时。请稍后重试。",
 		"show-details": "显示详情",
 		"hide-details": "隐藏详情"
 	}

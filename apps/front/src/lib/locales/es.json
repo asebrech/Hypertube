@@ -43,6 +43,7 @@
 		"back-to-home": "Volver al inicio",
 		"converting": "Convirtiendo archivos de video...",
 		"error-title": "¡Ups! Algo salió mal",
+		"timeout-error": "La conversión de video expiró. Por favor, inténtalo de nuevo más tarde.",
 		"show-details": "Mostrar detalles",
 		"hide-details": "Ocultar detalles"
 	}
