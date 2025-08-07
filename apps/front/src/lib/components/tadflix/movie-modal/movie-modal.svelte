@@ -486,6 +486,17 @@
 
 					<!-- Right Column - Cast & Genres -->
 					<div class="w-full shrink-0 lg:w-60">
+						<!-- Cast -->
+						{#if movieCredits?.cast && movieCredits.cast.length > 0}
+							<div class="mb-3">
+								<span class="text-sm text-[#777777]">{$_('movie-modal.cast')}: </span>
+								<span class="text-sm text-white">
+									{@render castList(movieCredits.cast)}
+								</span>
+							</div>
+						{/if}
+
+						<!-- Genres -->
 						{#if movie.genres && movie.genres.length > 0}
 							<div class="mb-3">
 								<span class="text-sm text-[#777777]">{$_('movie-modal.genres')}: </span>
@@ -495,26 +506,15 @@
 							</div>
 						{/if}
 
-						<!-- Director -->
-						{#if movieCredits?.crew}
-							{@const directors = movieCredits.crew.filter((member) => member.job === 'Director')}
-							{#if directors.length > 0}
-								<div class="mb-3">
-									<span class="text-sm text-[#777777]">{$_('movie-modal.director')}: </span>
-									<span class="text-sm text-white">
-										{@render directorsList(directors)}
-									</span>
-								</div>
-							{/if}
-						{/if}
-
-						<!-- Cast -->
-						{#if movieCredits?.cast && movieCredits.cast.length > 0}
+						<!-- Maturity Rating -->
+						{#if movie.adult !== undefined}
 							<div class="mb-3">
-								<span class="text-sm text-[#777777]">{$_('movie-modal.cast')}: </span>
-								<span class="text-sm text-white">
-									{@render castList(movieCredits.cast)}
-								</span>
+								<span class="text-sm text-[#777777]">{$_('movie-modal.maturity-rating')}: </span>
+								<div class="inline-flex items-center">
+									<div class="rounded border border-[#BCBCBC] px-2 py-1 text-xs text-[#BCBCBC]">
+										{movie.adult ? 'R' : 'PG-13'}
+									</div>
+								</div>
 							</div>
 						{/if}
 					</div>
@@ -628,11 +628,10 @@
 {#snippet directorsList(directors: Array<{ name: string }>)}
 	{#if directors && directors.length > 0}
 		{#each directors as director, i}
-			<button
-				onclick={() => {/* TODO: Navigate to director page */}}
-				class="cursor-pointer text-white underline-offset-2 transition-colors hover:text-gray-300 hover:underline"
+			<span
+				class="text-white"
 			>
-				{director.name}</button
+				{director.name}</span
 			>{#if i < directors.length - 1},&nbsp;{/if}
 		{/each}
 	{/if}
