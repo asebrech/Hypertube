@@ -447,8 +447,13 @@
 					<div class="flex-1">
 						<!-- Movie Details -->
 						<div class="mb-4 flex flex-wrap items-center gap-2 text-xs text-[#BCBCBC] md:text-sm">
-							{#if movie.vote_average}
-								<span class="font-medium text-[#46D369]">New</span>
+							{#if movie.release_date}
+								{@const releaseDate = new Date(movie.release_date)}
+								{@const thirtyDaysAgo = new Date()}
+								{@const _ = thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)}
+								{#if releaseDate > thirtyDaysAgo}
+									<span class="font-medium text-[#46D369]">New</span>
+								{/if}
 							{/if}
 							{#if movie.runtime}
 								<span>{Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m</span>
