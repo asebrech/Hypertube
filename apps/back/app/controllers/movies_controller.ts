@@ -18,8 +18,8 @@ export default class MoviesController {
     const offset = (page - 1) * limit
     const lang = request.input('lang', 'en')
 
-    const genresList = await this.tmdbService.getGenresList(lang)
-    const popularMovies = await this.tmdbService.getPopularMovies(lang, page)
+    const genresList = await this.tmdbService.getGenresList(lang, movieType)
+    const popularMovies = await this.tmdbService.getPopularMovies(lang, page, movieType)
 
     const movieListByGenre = genresList.genres.map(async (genre: any) => {
       const movies = await this.tmdbService.getDiscover(
