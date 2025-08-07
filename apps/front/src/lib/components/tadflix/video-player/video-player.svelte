@@ -5,7 +5,7 @@
 	import { _ } from 'svelte-i18n';
 	import { onMount, onDestroy } from 'svelte';
 	import { VideoPlayerAPI, VideoPlayerHooks } from './video-player-hooks.js';
-	import { VideoPlayerUtils, VIDEO_CONFIG } from './video-player-utils.js';
+	import { VideoPlayerUtils, VIDEO_CONFIG, type Resolution } from './video-player-utils.js';
 
 	interface Props {
 		movieId: string;
