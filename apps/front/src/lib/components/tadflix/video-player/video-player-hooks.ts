@@ -3,6 +3,7 @@ import { PUBLIC_BACK_URL } from '$env/static/public';
 interface VideoPlayerAPIHeaders {
 	'Content-Type': string;
 	Authorization?: string;
+	[key: string]: string | undefined;
 }
 
 // API service for video player operations
