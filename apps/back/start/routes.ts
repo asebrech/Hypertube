@@ -13,6 +13,7 @@ import { middleware } from './kernel.js'
 const AuthController = () => import('#controllers/auth_controller')
 const MoviesController = () => import('#controllers/movies_controller')
 const TorrentController = () => import('#controllers/torrent_controller')
+const CommentsController = () => import('#controllers/comments_controller')
 
 router.get('/', async () => ({ hello: 'world' }))
 
@@ -42,6 +43,8 @@ router
     router.post(':id/bookmark', [MoviesController, 'toggleBookmark']).use(middleware.auth())
     router.post(':id/progress', [MoviesController, 'saveWatchProgress']).use(middleware.auth())
     router.get(':id/progress', [MoviesController, 'getWatchProgress']).use(middleware.auth())
+    router.get(':id/comments', [CommentsController, 'movieComments']).use(middleware.auth())
+    router.post(':id/comments', [CommentsController, 'storeMovieComment']).use(middleware.auth())
   })
   .prefix('movies')
 
@@ -54,6 +57,14 @@ router
   .use(middleware.auth())
 
 router.get('/stream/*', [TorrentController, 'stream']).use(middleware.auth())
+
+router
+  .group(() => {
+    router.get(':id', [CommentsController, 'show'])
+    router.post('', [CommentsController, 'store'])
+  })
+  .prefix('comments')
+  .use(middleware.auth())
 
 router
   .get('me', async ({ auth, response }) => {

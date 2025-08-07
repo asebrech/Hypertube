@@ -10,8 +10,8 @@ export type BackDropImage = {
   langFound: boolean;
 };
 
-export type ImageSizeType = 'small' | 'medium' | 'large' | 'original'
-export type MovieType = 'movie'| 'tv'
+export type ImageSizeType = 'small' | 'medium' | 'large' | 'original';
+export type MovieType = 'movie' | 'tv';
 
 export type Movie = {
   id: number;
@@ -21,7 +21,7 @@ export type Movie = {
   poster_path: string;
   release_date: string;
   vote_average: number;
-  media_type: MovieType | undefined
+  media_type: MovieType | undefined;
   backdrop_image: BackDropImage | null | undefined;
   is_watched?: boolean;
   is_bookmarked?: boolean;
@@ -116,53 +116,78 @@ export interface PaginationType<T> {
 }
 
 export type CastMember = {
-	id: number;
-	adult: boolean;
-	gender: number;
-	known_for_department: string;
-	name: string;
-	original_name: string;
-	popularity: number;
-	profile_path: string;
-	cast_id: number;
-	character: string;
-	credit_id: string;
-	order: number;
+  id: number;
+  adult: boolean;
+  gender: number;
+  known_for_department: string;
+  name: string;
+  original_name: string;
+  popularity: number;
+  profile_path: string;
+  cast_id: number;
+  character: string;
+  credit_id: string;
+  order: number;
 };
 
 export type CrewMember = {
-	id: number;
-	adult: boolean;
-	gender: number;
-	known_for_department: string;
-	name: string;
-	original_name: string;
-	popularity: number;
-	profile_path: string;
-	credit_id: string;
-	department: string;
-	job: string;
+  id: number;
+  adult: boolean;
+  gender: number;
+  known_for_department: string;
+  name: string;
+  original_name: string;
+  popularity: number;
+  profile_path: string;
+  credit_id: string;
+  department: string;
+  job: string;
 };
 
 export type MovieCredits = {
-	id: number;
-	cast: CastMember[];
-	crew: CrewMember[];
+  id: number;
+  cast: CastMember[];
+  crew: CrewMember[];
 };
 
 export type PersonDetails = {
-	adult: boolean;
-	also_known_as: string[];
-	biography: string;
-	birthday: string;
-	deathday: string;
-	gender: number;
-	homepage: string;
-	id: number;
-	imdb_id: string;
-	known_for_department: string;
-	name: string;
-	place_of_birth: string;
-	popularity: number;
-	profile_path: string;
+  adult: boolean;
+  also_known_as: string[];
+  biography: string;
+  birthday: string;
+  deathday: string;
+  gender: number;
+  homepage: string;
+  id: number;
+  imdb_id: string;
+  known_for_department: string;
+  name: string;
+  place_of_birth: string;
+  popularity: number;
+  profile_path: string;
+};
+
+// Comment types
+export type Comment = {
+  id: number;
+  content: string;
+  date: string; // ISO date string
+  username: string;
+  movieId?: number;
+  movieTitle?: string;
+};
+
+export type PaginatedComments = {
+  data: Comment[];
+  meta: {
+    current_page: number;
+    first_page: number;
+    first_page_url: string;
+    last_page: number;
+    last_page_url: string | null;
+    next_page_url: string | null;
+    per_page: number;
+    previous_page_url: string | null;
+    total: number;
+  };
 };

@@ -2,9 +2,21 @@ import axios from 'axios';
 import { locale } from 'svelte-i18n';
 import { PUBLIC_BACK_URL } from '$env/static/public';
 import { get } from 'svelte/store';
-import type { ImageSizeType, Movie, MovieCredits, MovieDetails, MovieType } from '@hypertube/shared';
+import type {
+	ImageSizeType,
+	Movie,
+	MovieCredits,
+	MovieDetails,
+	MovieType,
+	Comment,
+	PaginatedComments
+} from '@hypertube/shared';
 
-export async function getMovies(page_to_load: number, type: MovieType = 'movie', token: string | null = null) {
+export async function getMovies(
+	page_to_load: number,
+	type: MovieType = 'movie',
+	token: string | null = null
+) {
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies`,
@@ -15,7 +27,7 @@ export async function getMovies(page_to_load: number, type: MovieType = 'movie',
 		},
 		headers: {
 			...(token && { Authorization: `Bearer ${token}` })
-		},
+		}
 	};
 	try {
 		const response = await axios(config);
@@ -39,7 +51,7 @@ export async function getMovieDiscover(
 		page,
 		type,
 		sortBy,
-		lang: get(locale),
+		lang: get(locale)
 	};
 
 	if (genreIds && genreIds.length > 0) params.genreId = genreIds.join(',');
@@ -62,7 +74,10 @@ export async function getMovieDiscover(
 	}
 }
 
-export async function getMovieDetails(movieId: number, type: MovieType = 'movie'): Promise<MovieDetails> {
+export async function getMovieDetails(
+	movieId: number,
+	type: MovieType = 'movie'
+): Promise<MovieDetails> {
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies/${movieId}`,
@@ -80,7 +95,11 @@ export async function getMovieDetails(movieId: number, type: MovieType = 'movie'
 	}
 }
 
-export async function getBackdropImage(movieId: any, size: ImageSizeType, type: MovieType = 'movie') {
+export async function getBackdropImage(
+	movieId: any,
+	size: ImageSizeType,
+	type: MovieType = 'movie'
+) {
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies/backdropImage`,
@@ -201,7 +220,11 @@ export async function getGenresList() {
 	}
 }
 
-export async function getSimilarMovies(movieId: number, page: number, type: MovieType = 'movie'): Promise<{ movies: Movie[], hasMorePages: boolean }> {
+export async function getSimilarMovies(
+	movieId: number,
+	page: number,
+	type: MovieType = 'movie'
+): Promise<{ movies: Movie[]; hasMorePages: boolean }> {
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies/similar`,
@@ -221,7 +244,10 @@ export async function getSimilarMovies(movieId: number, page: number, type: Movi
 	}
 }
 
-export async function getMovieCredits(movieId: number, type: MovieType = 'movie'): Promise<MovieCredits> {
+export async function getMovieCredits(
+	movieId: number,
+	type: MovieType = 'movie'
+): Promise<MovieCredits> {
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies/credits`,
@@ -254,6 +280,101 @@ export async function getPeopleDetails(castId: number): Promise<PersonDetails> {
 		return response.data;
 	} catch (error) {
 		console.error('Error fetching people details:', error);
+		throw error;
+	}
+}
+
+// Comment API functions
+export async function getMovieComments(
+	movieId: number,
+	page: number = 1,
+	limit: number = 20,
+	token: string
+): Promise<PaginatedComments> {
+	const config = {
+		method: 'get',
+		url: `${PUBLIC_BACK_URL}/movies/${movieId}/comments`,
+		params: {
+			page,
+			limit
+		},
+		headers: {
+			Authorization: `Bearer ${token}`
+		}
+	};
+	try {
+		const response = await axios(config);
+		return response.data;
+	} catch (error) {
+		console.error('Error fetching movie comments:', error);
+		throw error;
+	}
+}
+
+export async function createMovieComment(
+	movieId: number,
+	content: string,
+	token: string
+): Promise<Comment> {
+	const config = {
+		method: 'post',
+		url: `${PUBLIC_BACK_URL}/movies/${movieId}/comments`,
+		data: {
+			content
+		},
+		headers: {
+			Authorization: `Bearer ${token}`,
+			'Content-Type': 'application/json'
+		}
+	};
+	try {
+		const response = await axios(config);
+		return response.data;
+	} catch (error) {
+		console.error('Error creating comment:', error);
+		throw error;
+	}
+}
+
+export async function getComment(commentId: number, token: string): Promise<Comment> {
+	const config = {
+		method: 'get',
+		url: `${PUBLIC_BACK_URL}/comments/${commentId}`,
+		headers: {
+			Authorization: `Bearer ${token}`
+		}
+	};
+	try {
+		const response = await axios(config);
+		return response.data;
+	} catch (error) {
+		console.error('Error fetching comment:', error);
+		throw error;
+	}
+}
+
+export async function createComment(
+	movieId: number,
+	content: string,
+	token: string
+): Promise<Comment> {
+	const config = {
+		method: 'post',
+		url: `${PUBLIC_BACK_URL}/comments`,
+		data: {
+			content,
+			movie_id: movieId
+		},
+		headers: {
+			Authorization: `Bearer ${token}`,
+			'Content-Type': 'application/json'
+		}
+	};
+	try {
+		const response = await axios(config);
+		return response.data;
+	} catch (error) {
+		console.error('Error creating comment:', error);
 		throw error;
 	}
 }

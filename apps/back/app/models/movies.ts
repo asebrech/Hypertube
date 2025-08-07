@@ -1,6 +1,7 @@
-import { BaseModel, column, manyToMany } from '@adonisjs/lucid/orm'
+import { BaseModel, column, manyToMany, hasMany } from '@adonisjs/lucid/orm'
 import User from '#models/user'
-import type { ManyToMany } from '@adonisjs/lucid/types/relations'
+import Comment from '#models/comment'
+import type { ManyToMany, HasMany } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 
 export default class Movie extends BaseModel {
@@ -51,4 +52,9 @@ export default class Movie extends BaseModel {
     pivotColumns: ['is_watched', 'is_bookmarked', 'watch_progress_seconds', 'last_watched_at'],
   })
   declare users: ManyToMany<typeof User>
+
+  @hasMany(() => Comment, {
+    foreignKey: 'movieId',
+  })
+  declare comments: HasMany<typeof Comment>
 }
