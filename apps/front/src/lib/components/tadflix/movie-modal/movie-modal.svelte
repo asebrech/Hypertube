@@ -26,6 +26,7 @@
 	import { Skeleton } from '@/components/ui/skeleton';
 	import { _ } from 'svelte-i18n';
 	import { get } from 'svelte/store';
+	import { goto } from '$app/navigation';
 
 	// Store subscription
 	let modalData = $state({
@@ -268,6 +269,16 @@
 		movieModalActions.close();
 	}
 
+	function navigateToGenre(genreId: number) {
+		closeModal(); // Close modal first
+		goto(`/browse?genre=${genreId}`);
+	}
+
+	function navigateToCast(castId: number) {
+		closeModal(); // Close modal first
+		goto(`/browse?cast=${castId}`);
+	}
+
 	function goBack() {
 		movieModalActions.goBack();
 
@@ -478,8 +489,31 @@
 						{#if movie.genres && movie.genres.length > 0}
 							<div class="mb-3">
 								<span class="text-sm text-[#777777]">{$_('movie-modal.genres')}: </span>
+								<span class="text-sm">
+									{@render genresList(movie.genres)}
+								</span>
+							</div>
+						{/if}
+
+						<!-- Director -->
+						{#if movieCredits?.crew}
+							{@const directors = movieCredits.crew.filter((member) => member.job === 'Director')}
+							{#if directors.length > 0}
+								<div class="mb-3">
+									<span class="text-sm text-[#777777]">{$_('movie-modal.director')}: </span>
+									<span class="text-sm text-white">
+										{@render directorsList(directors)}
+									</span>
+								</div>
+							{/if}
+						{/if}
+
+						<!-- Cast -->
+						{#if movieCredits?.cast && movieCredits.cast.length > 0}
+							<div class="mb-3">
+								<span class="text-sm text-[#777777]">{$_('movie-modal.cast')}: </span>
 								<span class="text-sm text-white">
-									{movie.genres.map((g: any) => g.name).join(', ')}
+									{@render castList(movieCredits.cast)}
 								</span>
 							</div>
 						{/if}
@@ -528,7 +562,7 @@
 									<div class="text-sm">
 										<span class="text-[#777777]">{$_('movie-modal.director')}: </span>
 										<span class="text-white">
-											{directors.map((d) => d.name).join(', ')}
+											{@render directorsList(directors)}
 										</span>
 									</div>
 								{/if}
@@ -539,10 +573,7 @@
 								<div class="text-sm">
 									<span class="text-[#777777]">{$_('movie-modal.cast')}: </span>
 									<span class="text-white">
-										{movieCredits.cast
-											.slice(0, 14)
-											.map((actor) => actor.name)
-											.join(', ')}
+										{@render castList(movieCredits.cast)}
 									</span>
 								</div>
 							{/if}
@@ -551,8 +582,8 @@
 							{#if movie.genres && movie.genres.length > 0}
 								<div class="text-sm">
 									<span class="text-[#777777]">{$_('movie-modal.genres')}: </span>
-									<span class="text-white">
-										{movie.genres.map((g) => g.name).join(', ')}
+									<span>
+										{@render genresList(movie.genres)}
 									</span>
 								</div>
 							{/if}
@@ -580,3 +611,42 @@
 		{/if}
 	</DialogContent>
 </Dialog>
+
+{#snippet genresList(genres: Array<{ id: number; name: string }>)}
+	{#if genres && genres.length > 0}
+		{#each genres as genre, i}
+			<button
+				onclick={() => navigateToGenre(genre.id)}
+				class="cursor-pointer text-white underline-offset-2 transition-colors hover:text-gray-300 hover:underline"
+			>
+				{genre.name}</button
+			>{#if i < genres.length - 1},&nbsp;{/if}
+		{/each}
+	{/if}
+{/snippet}
+
+{#snippet directorsList(directors: Array<{ name: string }>)}
+	{#if directors && directors.length > 0}
+		{#each directors as director, i}
+			<button
+				onclick={() => {/* TODO: Navigate to director page */}}
+				class="cursor-pointer text-white underline-offset-2 transition-colors hover:text-gray-300 hover:underline"
+			>
+				{director.name}</button
+			>{#if i < directors.length - 1},&nbsp;{/if}
+		{/each}
+	{/if}
+{/snippet}
+
+{#snippet castList(cast: Array<{ id: number; name: string }>)}
+	{#if cast && cast.length > 0}
+		{#each cast.slice(0, 4) as actor, i}
+			<button
+				onclick={() => navigateToCast(actor.id)}
+				class="cursor-pointer text-white underline-offset-2 transition-colors hover:text-gray-300 hover:underline"
+			>
+				{actor.name}</button
+			>{#if i < cast.slice(0, 4).length - 1},&nbsp;{/if}
+		{/each}
+	{/if}
+{/snippet}
