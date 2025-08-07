@@ -215,6 +215,8 @@
 			fluid: true,
 			liveui: true,
 			preload: 'auto',
+			aspectRatio: '16:9',
+			fill: true,
 			sources: [{ src: preferredSource.src, type: 'application/x-mpegURL' }],
 			controlBar: {
 				fullscreenToggle: false
@@ -393,10 +395,33 @@
 		onGoHome={() => goto('/')}
 	/>
 {:else}
-	<div data-vjs-player bind:this={container}></div>
+	<div class="video-container" data-vjs-player bind:this={container}></div>
 {/if}
 
 <style>
+	.video-container {
+		width: 100%;
+		height: 100vh;
+		background: #000;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		overflow: hidden;
+	}
+
+	:global(.video-container .video-js) {
+		width: 100% !important;
+		height: 100% !important;
+		max-width: 100vw !important;
+		max-height: 100vh !important;
+	}
+
+	:global(.video-container .video-js .vjs-tech) {
+		width: 100% !important;
+		height: 100% !important;
+		object-fit: contain !important;
+	}
+
 	:global(.vjs-back-button) {
 		width: 3em !important;
 		height: 100% !important;
