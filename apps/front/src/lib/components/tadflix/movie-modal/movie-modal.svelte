@@ -296,7 +296,7 @@
 						<button
 							onclick={goBack}
 							class="flex h-8 w-8 items-center justify-center rounded-full border-none bg-[#2A2A2A] opacity-75 transition-opacity hover:opacity-100 md:h-9 md:w-9"
-							aria-label="Go back to previous movie"
+							aria-label={$_('movie-modal.go-back')}
 						>
 							<ArrowLeft size={20} class="text-white md:size-[22px]" />
 						</button>
@@ -391,7 +391,7 @@
 						<button
 							onclick={goBack}
 							class="flex h-8 w-8 items-center justify-center rounded-full border-none bg-[#2A2A2A] opacity-75 transition-opacity hover:opacity-100 md:h-9 md:w-9"
-							aria-label="Go back to previous movie"
+							aria-label={$_('movie-modal.go-back')}
 						>
 							<ArrowLeft size={20} class="text-white md:size-[22px]" />
 						</button>
@@ -450,9 +450,9 @@
 							{#if movie.release_date}
 								{@const releaseDate = new Date(movie.release_date)}
 								{@const thirtyDaysAgo = new Date()}
-								{@const _ = thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)}
+								{@const __ = thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)}
 								{#if releaseDate > thirtyDaysAgo}
-									<span class="font-medium text-[#46D369]">New</span>
+									<span class="font-medium text-[#46D369]">{$_('movie-modal.new')}</span>
 								{/if}
 							{/if}
 							{#if movie.runtime}
@@ -477,7 +477,7 @@
 					<div class="w-full shrink-0 lg:w-60">
 						{#if movie.genres && movie.genres.length > 0}
 							<div class="mb-3">
-								<span class="text-sm text-[#777777]">Genres: </span>
+								<span class="text-sm text-[#777777]">{$_('movie-modal.genres')}: </span>
 								<span class="text-sm text-white">
 									{movie.genres.map((g: any) => g.name).join(', ')}
 								</span>

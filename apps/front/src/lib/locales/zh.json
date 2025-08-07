@@ -40,6 +40,8 @@
 		"explore": "探索全部"
 	},
 	"movie-modal": {
+		"new": "新片",
+		"go-back": "返回上一部电影",
 		"about": "关于",
 		"more-like-this": "更多类似作品",
 		"director": "导演",

@@ -40,6 +40,8 @@
 		"explore": "Explore All"
 	},
 	"movie-modal": {
+		"new": "New",
+		"go-back": "Go back to previous movie",
 		"about": "About",
 		"more-like-this": "More Like This",
 		"director": "Director",

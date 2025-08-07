@@ -40,6 +40,8 @@
 		"explore": "Tout explorer"
 	},
 	"movie-modal": {
+		"new": "Nouveau",
+		"go-back": "Retour au film précédent",
 		"about": "À propos",
 		"more-like-this": "Autres titres similaires",
 		"director": "Réalisateur",
