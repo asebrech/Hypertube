@@ -44,6 +44,8 @@
 	let movieCredits: MovieCredits | undefined = $state(undefined);
 	let similarMovies: Movie[] = $state([]);
 	let currentMovieId: number | undefined = $state(undefined);
+	let showAllSimilarMovies = $state(false);
+	let isExpanding = $state(false);
 
 	// Subscribe to modal store
 	$effect(() => {
@@ -70,6 +72,8 @@
 				movieLogo = undefined;
 				movieCredits = undefined;
 				similarMovies = [];
+				showAllSimilarMovies = false; // Reset show more state
+				isExpanding = false; // Reset expansion state
 			}
 
 			const cacheKey = `${modalData.movieId}_${modalData.type}`;
@@ -289,6 +293,20 @@
 				modalContent.scrollTo({ top: 0, behavior: 'smooth' });
 			}
 		}, 50);
+	}
+
+	function toggleSimilarMovies() {
+		if (showAllSimilarMovies) {
+			// Collapsing - instant
+			showAllSimilarMovies = false;
+			isExpanding = false;
+		} else {
+			// Expanding - with animation
+			isExpanding = true;
+			setTimeout(() => {
+				showAllSimilarMovies = true;
+			}, 50);
+		}
 	}
 </script>
 
@@ -522,26 +540,70 @@
 
 				<!-- Similar Movies Section -->
 				{#if similarMovies.length > 0}
+					{@const itemsPerRow = 3}
+					<!-- sm:grid-cols-3 means 3 items per row on larger screens -->
+					{@const rowsToShow = 3}
+					{@const maxItemsToShow = itemsPerRow * rowsToShow}
+					<!-- 9 items = 3 rows -->
+					{@const visibleMovies = showAllSimilarMovies
+						? similarMovies
+						: similarMovies.slice(0, maxItemsToShow)}
+					{@const hasMoreMovies = similarMovies.length > maxItemsToShow}
+
 					<div class="mt-12">
 						<div class="mb-6 flex items-center gap-4">
 							<h3 class="text-xl font-bold text-white">{$_('movie-modal.more-like-this')}</h3>
 							<div class="h-px flex-1 bg-gray-700"></div>
 						</div>
-						<!-- Netflix-style scrollable grid with fixed height showing exactly 3 rows -->
-						<div
-							class="scrollbar-thin scrollbar-track-gray-800 scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500 overflow-y-auto"
-							style="height: 650px;"
-						>
+
+						<!-- Content container with relative positioning for overlay -->
+						<div class="relative">
+							<!-- Grid that shows limited items initially -->
 							<div class="grid grid-cols-2 gap-2 p-2 sm:grid-cols-3 sm:gap-4">
-								{#each similarMovies as similarMovie}
-									<SimilarMovieCard
-										movie={similarMovie}
-										posterUrl={similarMovie.poster_path
-											? `https://image.tmdb.org/t/p/w500${similarMovie.poster_path}`
-											: undefined}
-									/>
+								{#each visibleMovies as similarMovie, index}
+									{#if index < maxItemsToShow}
+										<!-- Always visible items -->
+										<div>
+											<SimilarMovieCard movie={similarMovie} />
+										</div>
+									{:else if isExpanding}
+										<!-- New items that slide down -->
+										<div
+											class="animate-slide-down opacity-0"
+											style="animation-delay: {(index - maxItemsToShow) * 100}ms;"
+										>
+											<SimilarMovieCard movie={similarMovie} />
+										</div>
+									{/if}
 								{/each}
 							</div>
+
+							<!-- Show More/Less Button - Overlayed at bottom -->
+							{#if hasMoreMovies}
+								<div class="absolute -bottom-4 left-1/2 z-10 -translate-x-1/2 transform">
+									<button
+										onclick={toggleSimilarMovies}
+										class="group flex h-12 w-12 items-center justify-center rounded-full border border-gray-600 bg-gradient-to-b from-black/60 to-black/80 text-gray-400 shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:border-gray-400 hover:from-black/70 hover:to-black/90 hover:text-white hover:shadow-xl"
+										aria-label={showAllSimilarMovies
+											? 'Show less'
+											: `Show ${similarMovies.length - maxItemsToShow} more similar movies`}
+									>
+										<svg
+											class={`h-6 w-6 transition-transform duration-500 ease-out ${showAllSimilarMovies ? 'rotate-180' : 'rotate-0'}`}
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24"
+										>
+											<path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="2.5"
+												d="M19 9l-7 7-7-7"
+											/>
+										</svg>
+									</button>
+								</div>
+							{/if}
 						</div>
 					</div>
 				{/if}
@@ -628,11 +690,7 @@
 {#snippet directorsList(directors: Array<{ name: string }>)}
 	{#if directors && directors.length > 0}
 		{#each directors as director, i}
-			<span
-				class="text-white"
-			>
-				{director.name}</span
-			>{#if i < directors.length - 1},&nbsp;{/if}
+			<span class="text-white"> {director.name}</span>{#if i < directors.length - 1},&nbsp;{/if}
 		{/each}
 	{/if}
 {/snippet}
@@ -649,3 +707,20 @@
 		{/each}
 	{/if}
 {/snippet}
+
+<style>
+	@keyframes slide-down {
+		from {
+			opacity: 0;
+			transform: translateY(-30px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.animate-slide-down {
+		animation: slide-down 0.8s ease-out forwards;
+	}
+</style>

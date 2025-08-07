@@ -1,18 +1,89 @@
 <script lang="ts">
-	import type { MovieDetails, Movie } from '@hypertube/shared';
+	import type {
+		MovieDetails,
+		Movie,
+		BackDropImage,
+		ImageSizeType,
+		MovieType
+	} from '@hypertube/shared';
 	import { movieModalActions } from '@/services/store';
 	import { MovieBadges } from '../movie-badges';
+	import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+	import { Skeleton } from '@/components/ui/skeleton';
+	import { getBackdropImage } from '@/services/api';
 
 	interface Props {
 		movie: MovieDetails | Movie;
-		posterUrl?: string;
 	}
 
-	let { movie, posterUrl }: Props = $props();
+	let { movie }: Props = $props();
+
+	let backdropImage: BackDropImage | null = $state(null);
+	let isLoading = $state(true);
+	let currentMovieId = $state<number | null>(null);
+	let abortController = $state<AbortController | null>(null);
+
+	// Determine movie type - check if it has 'media_type' or infer from other properties
+	const movieType: MovieType =
+		'media_type' in movie ? movie.media_type || 'movie' : 'title' in movie ? 'movie' : 'tv';
+
+	const loadBackdropImage = async (
+		movieId: number,
+		size: ImageSizeType
+	): Promise<BackDropImage> => {
+		// Cancel any previous request
+		if (abortController) {
+			abortController.abort();
+		}
+
+		abortController = new AbortController();
+
+		const backdrop_image_data = await getBackdropImage(movieId, size, movieType);
+		backdropImage = backdrop_image_data;
+		return backdrop_image_data;
+	};
+
+	// Load backdrop image only when movie ID actually changes
+	$effect(() => {
+		// Only load if movie ID has changed
+		if (currentMovieId !== movie.id) {
+			currentMovieId = movie.id;
+			isLoading = true;
+
+			loadBackdropImage(movie.id, 'small')
+				.catch((error) => {
+					// Don't log aborted requests
+					if (error.name !== 'AbortError') {
+						console.error('Error loading backdrop image:', error);
+						backdropImage = {
+							aspect_ratio: 0,
+							height: 0,
+							width: 0,
+							iso_639_1: '',
+							file_path: '',
+							vote_average: 0,
+							vote_count: 0,
+							url: '/img/default-backdrop2.png',
+							langFound: false
+						};
+					}
+				})
+				.finally(() => {
+					isLoading = false;
+				});
+		}
+
+		// Cleanup function
+		return () => {
+			if (abortController) {
+				abortController.abort();
+			}
+		};
+	});
 
 	function openMovie() {
 		// Navigate to the new movie (this will add current movie to history)
-		movieModalActions.navigateTo(movie.id, 'movie');
+		movieModalActions.navigateTo(movie.id, movieType);
 
 		// Scroll to top of modal content
 		setTimeout(() => {
@@ -28,7 +99,7 @@
 	class="w-full cursor-pointer overflow-hidden rounded-lg bg-neutral-800 text-left shadow-lg transition-transform duration-300 hover:scale-105"
 	onclick={openMovie}
 	role="button"
-	tabindex="0"
+	tabindex={0}
 	onkeydown={(e) => {
 		if (e.key === 'Enter' || e.key === ' ') {
 			e.preventDefault();
@@ -38,13 +109,15 @@
 	aria-label={`View details for ${movie.title || movie.name}`}
 >
 	<!-- Movie Image -->
-	<div class="relative aspect-[2/3] bg-neutral-700">
-		{#if posterUrl}
-			<img src={posterUrl} alt={movie.title || movie.name} class="h-full w-full object-cover" />
+	<div class="relative aspect-[5/3] bg-neutral-700">
+		{#if isLoading}
+			<Skeleton class="h-full w-full rounded-t-lg rounded-b-none" />
+		{:else if backdropImage?.url}
+			<img src={backdropImage.url} alt={''} class="h-full w-full object-cover" />
 		{/if}
 	</div>
 
-	<!-- Movie Info -->
+	<!-- Movie Info BELOW the image -->
 	<div class="space-y-2 p-3">
 		<!-- Title -->
 		<h3 class="truncate text-sm font-bold text-white">
@@ -61,12 +134,14 @@
 			</span>
 
 			<!-- Quality and Language Badges -->
-			<MovieBadges {movie} />
+			<div class="hidden flex-1 sm:block">
+				<MovieBadges {movie} />
+			</div>
 
 			<!-- Add Button -->
 			<button
 				aria-label="Add to watchlist"
-				class="ml-auto flex h-6 w-6 items-center justify-center rounded-full border border-gray-500 text-gray-400 transition-colors hover:border-white hover:text-white"
+				class="flex h-6 w-6 items-center justify-center rounded-full border border-gray-500 text-gray-400 transition-colors hover:border-white hover:text-white"
 				onclick={(e) => {
 					e.stopPropagation();
 					// Add to watchlist logic here
@@ -84,8 +159,10 @@
 		</div>
 
 		<!-- Description -->
-		<p class="line-clamp-2 text-xs leading-relaxed text-gray-400">
-			{movie.overview || 'No description available.'}
-		</p>
+		{#if movie.overview}
+			<p class="line-clamp-2 text-xs leading-relaxed text-gray-400">
+				{movie.overview}
+			</p>
+		{/if}
 	</div>
 </div>
