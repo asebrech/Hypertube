@@ -12,7 +12,6 @@
 
 	let ready = $state(false);
 
-	// Set initial locale from localStorage before rendering
 	if (typeof window !== 'undefined') {
 		const savedLang = localStorage.getItem('lang');
 		if (savedLang) locale.set(savedLang);
@@ -21,11 +20,15 @@
 	i18nReady?.then(() => {
 		ready = true;
 	});
+
+	let isMoviePlayerRoute = $derived(page.route?.id?.includes('/movie/[id]') ?? false);
 </script>
 
 <ModeWatcher defaultMode={'dark'} />
 
-<Navbar data={page.data} showSkeleton={$isLoading || !ready} />
+{#if !isMoviePlayerRoute}
+	<Navbar data={page.data} showSkeleton={$isLoading || !ready} />
+{/if}
 
 <main class="flex h-full min-h-screen w-full flex-col">
 	{#if $isLoading || !ready}

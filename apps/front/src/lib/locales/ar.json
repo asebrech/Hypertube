@@ -1,42 +1,50 @@
 {
-    "sign_up": " تسجيل",
-    "sign_in": "تسجيل الدخول",
-    "log_out": "تسجيل الخروج",
-    "navbar": {
-        "home": "الرئيسية",
-        "shows": "برامج تلفزيونية",
-        "movies": "أفلام",
-        "news-popular": "أخبار وشائع",
-        "my-list": "قائمتي",
-        "by-language": "استكشاف حسب اللغة",
-        "browse": "تصفح"
-    },
-    "movie-banner": {
-        "play": "تشغيل",
-        "more-info": "مزيد من المعلومات",
-        "see-more": "عرض المزيد"
-    },
-    "search": {
-        "placeholder": "أفلام، برامج، أشخاص...",
-        "noresults": "لم يتم العثور على نتائج"
-    },
-    "filters": {
-        "select_genre": "اختر النوع",
-        "select_year": "سنة الإصدار",
-        "select_sort": "ترتيب حسب ...",
-        "select_language": "بلد المنشأ",
-        "mostpopular": "الأكثر شعبية",
-        "latestrelease": "أحدث إصدار",
-        "toprated": "الأعلى تقييماً",
-        "originaltitle": "من الألف إلى الياء",
-        "originaltitle_desc": "من الياء إلى الألف",
-        "selected_cast": "الممثلين المختارين"
-    },
-    "movie-action": {
-        "bookmarked": "قائمة المشاهدة",
-        "watched": "تم المشاهدة"
-    },
-    "browse": {
-        "explore": "استكشاف الكل"
-    }
+	"sign_up": " تسجيل",
+	"sign_in": "تسجيل الدخول",
+	"log_out": "تسجيل الخروج",
+	"navbar": {
+		"home": "الرئيسية",
+		"shows": "برامج تلفزيونية",
+		"movies": "أفلام",
+		"news-popular": "أخبار وشائع",
+		"my-list": "قائمتي",
+		"by-language": "استكشاف حسب اللغة",
+		"browse": "تصفح"
+	},
+	"movie-banner": {
+		"play": "تشغيل",
+		"more-info": "مزيد من المعلومات",
+		"see-more": "عرض المزيد"
+	},
+	"search": {
+		"placeholder": "أفلام، برامج، أشخاص...",
+		"noresults": "لم يتم العثور على نتائج"
+	},
+	"filters": {
+		"select_genre": "اختر النوع",
+		"select_year": "سنة الإصدار",
+		"select_sort": "ترتيب حسب ...",
+		"select_language": "بلد المنشأ",
+		"mostpopular": "الأكثر شعبية",
+		"latestrelease": "أحدث إصدار",
+		"toprated": "الأعلى تقييماً",
+		"originaltitle": "من الألف إلى الياء",
+		"originaltitle_desc": "من الياء إلى الألف",
+		"selected_cast": "الممثلين المختارين"
+	},
+	"movie-action": {
+		"bookmarked": "قائمة المشاهدة",
+		"watched": "تم المشاهدة"
+	},
+	"browse": {
+		"explore": "استكشاف الكل"
+	},
+	"video-player": {
+		"back-to-home": "العودة إلى الرئيسية",
+		"converting": "جاري تحميل وتحويل الفيلم...",
+		"error-title": "عذراً! حدث خطأ ما",
+		"timeout-error": "انتهت مهلة معالجة الفيديو. يرجى المحاولة مرة أخرى لاحقاً.",
+		"show-details": "إظهار التفاصيل",
+		"hide-details": "إخفاء التفاصيل"
+	}
 }
