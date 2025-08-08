@@ -3,7 +3,7 @@
 	import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 	import { Skeleton } from '@/components/ui/skeleton';
 	import { getBackdropImage } from '@/services/api';
-	import type { BackDropImage, ImageSizeType, MovieType, UserMovieAction } from '@hypertube/shared';
+	import type { BackDropImage, ImageSizeType, MovieType } from '@hypertube/shared';
 	import { _ } from 'svelte-i18n';
 
 	let backdropImage: BackDropImage | null = $state(null);
@@ -14,10 +14,11 @@
 		isVisible: boolean;
 		title: string;
 		type: MovieType | undefined;
-		userAction?: UserMovieAction | null;
+		isWatched?: boolean;
+		isBookmarked?: boolean;
 	}
 
-	let { movieId, isVisible, title, type, userAction }: Props = $props();
+	let { movieId, isVisible, title, type, isWatched = false, isBookmarked = false }: Props = $props();
 
 	const loadBackdropImage = async (movieId: any, size: ImageSizeType): Promise<BackDropImage> => {
 		const backdrop_image_data = await getBackdropImage(movieId, size, type);
@@ -65,10 +66,22 @@
 			<CardTitle>{title}</CardTitle>
 		</CardHeader>
 	{/if}
-	{#if userAction}
+	{#if isWatched && isBookmarked}
 		<div class="absolute bottom-0 flex w-full justify-center p-[3px]">
 			<Badge variant={'red'}>
-				{$_(`movie-action.${userAction}`)}
+				{$_('movie-action.watched')} & {$_('movie-action.bookmarked')}
+			</Badge>
+		</div>
+	{:else if isWatched}
+		<div class="absolute bottom-0 flex w-full justify-center p-[3px]">
+			<Badge variant={'red'}>
+				{$_('movie-action.watched')}
+			</Badge>
+		</div>
+	{:else if isBookmarked}
+		<div class="absolute bottom-0 flex w-full justify-center p-[3px]">
+			<Badge variant={'red'}>
+				{$_('movie-action.bookmarked')}
 			</Badge>
 		</div>
 	{/if}

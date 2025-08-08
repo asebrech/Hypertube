@@ -1,5 +1,6 @@
 import Movie from '#models/movies'
 import { TMDBService } from './tmdb_service.js'
+import { DateTime } from 'luxon'
 
 export default class MovieService {
   private tmdbService: TMDBService = new TMDBService()
@@ -116,6 +117,18 @@ export default class MovieService {
         movie.resolution480pReady && movie.resolution720pReady && movie.resolution1080pReady,
     }
   }
+
+  async updateLastAccessed(tmdbId: number): Promise<void> {
+    try {
+      const movie = await this.getOrCreate(tmdbId)
+      movie.lastAccessedAt = DateTime.now()
+      await movie.save()
+    } catch (error) {
+      console.error(`Error updating last accessed time for movie ${tmdbId}:`, error)
+    }
+  }
+
+
 
   async resetInterruptedConversions(): Promise<void> {
     try {

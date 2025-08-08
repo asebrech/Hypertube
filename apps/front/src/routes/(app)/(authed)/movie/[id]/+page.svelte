@@ -11,6 +11,8 @@
 
 	const POLL_INTERVAL = 5000; // 5 seconds
 	const TIMEOUT_DURATION = 300000; // 5 minutes
+	const WATCH_TIME_CHECK_INTERVAL = 1000; // Check watch time every 1 second
+	const PROGRESS_SAVE_INTERVAL = 10000; // Save progress every 10 seconds
 
 	let player;
 	let container;
@@ -18,6 +20,9 @@
 	let loadingMessage = data.isAllVideoReady ? '' : 'Converting video files... Please wait.';
 	let error = null;
 	let pollingInterval;
+	let hasMarkedAsWatched = false;
+	let lastWatchTimeCheck = 0;
+	let progressSaveInterval;
 
 	const availableResolutions = [
 		{ label: '480p', src: `${BASE_URL}/${data.movieId}/480p/output.m3u8`, value: '480' },
@@ -27,6 +32,83 @@
 
 	$: readyResolutions = new Set(data.availableResolutions);
 	$: preferredResolution = data.preferredResolution || '1080';
+
+	async function markMovieAsWatched() {
+		if (hasMarkedAsWatched || !data.token) return;
+
+		try {
+			const response = await fetch(`${PUBLIC_BACK_URL}/movies/${data.movieId}/watched`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${data.token}`,
+					'Content-Type': 'application/json'
+				}
+			});
+
+			if (response.ok) {
+				hasMarkedAsWatched = true;
+			} else {
+				console.error('Failed to mark movie as watched:', response.statusText);
+			}
+		} catch (error) {
+			console.error('Error marking movie as watched:', error);
+		}
+	}
+
+	async function saveWatchProgress(currentTime) {
+		if (!data.token || !player) return;
+
+		try {
+			const response = await fetch(`${PUBLIC_BACK_URL}/movies/${data.movieId}/progress`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${data.token}`,
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ currentTime })
+			});
+
+			if (!response.ok) {
+				console.error('Failed to save watch progress:', response.statusText);
+			}
+		} catch (error) {
+			console.error('Error saving watch progress:', error);
+		}
+	}
+
+	async function getWatchProgress() {
+		if (!data.token) return 0;
+
+		try {
+			const response = await fetch(`${PUBLIC_BACK_URL}/movies/${data.movieId}/progress`, {
+				headers: {
+					Authorization: `Bearer ${data.token}`
+				}
+			});
+
+			if (response.ok) {
+				const progressData = await response.json();
+				return progressData.progress || 0;
+			}
+		} catch (error) {
+			console.error('Error getting watch progress:', error);
+		}
+		return 0;
+	}
+
+	function handleProgressSave() {
+		if (!player || !player.duration() || player.duration() === 0) return;
+
+		const currentTime = player.currentTime();
+		const duration = player.duration();
+		const watchedPercentage = (currentTime / duration) * 100;
+
+		if (watchedPercentage > 95 || watchedPercentage < 1) return;
+
+		if (duration < 120) return;
+
+		saveWatchProgress(currentTime);
+	}
 
 	async function pollForVideoReadiness() {
 		if (data.isAllVideoReady) {
@@ -59,7 +141,25 @@
 		return availableResolutions[0];
 	}
 
-	function initializeVideoPlayer() {
+	function createAuthHook() {
+		return (options) => {
+			if (!options.headers) {
+				options.headers = {};
+			}
+			options.headers.Authorization = `Bearer ${data.token}`;
+			return options;
+		};
+	}
+
+	function setupAuthenticationHooks() {
+		if (!data.token) return;
+
+		if (typeof videojs !== 'undefined' && videojs.Vhs) {
+			videojs.Vhs.xhr.onRequest(createAuthHook());
+		}
+	}
+
+	async function initializeVideoPlayer() {
 		if (!container || player || readyResolutions.size === 0) return;
 
 		const preferredSource = getPreferredSource();
@@ -72,7 +172,12 @@
 			fluid: true,
 			liveui: true,
 			preload: 'auto',
-			sources: [{ src: preferredSource.src, type: 'application/x-mpegURL' }]
+			sources: [{ src: preferredSource.src, type: 'application/x-mpegURL' }],
+			html5: {
+				vhs: {
+					withCredentials: false
+				}
+			}
 		};
 
 		try {
@@ -82,8 +187,61 @@
 
 			player = videojs(videoElement, options);
 
+			player.on('xhr-hooks-ready', () => {
+				if (data.token && player.tech() && player.tech().vhs) {
+					player.tech().vhs.xhr.onRequest(createAuthHook());
+				}
+			});
+
 			player.on('error', (error) => {
 				console.error('Video.js player error:', error);
+			});
+
+			player.on('ended', () => {
+				markMovieAsWatched();
+			});
+
+			player.on('timeupdate', () => {
+				if (!hasMarkedAsWatched && player.duration() > 0) {
+					const now = Date.now();
+					if (now - lastWatchTimeCheck >= WATCH_TIME_CHECK_INTERVAL) {
+						lastWatchTimeCheck = now;
+
+						const currentTime = player.currentTime();
+						const duration = player.duration();
+						const watchedPercentage = (currentTime / duration) * 100;
+
+						if (watchedPercentage >= 90) {
+							markMovieAsWatched();
+						}
+					}
+				}
+			});
+
+			player.on('loadedmetadata', async () => {
+				const savedProgress = await getWatchProgress();
+				if (savedProgress > 0 && player.duration() > 0) {
+					const duration = player.duration();
+					const watchedPercentage = (savedProgress / duration) * 100;
+
+					if (watchedPercentage >= 1 && watchedPercentage <= 95) {
+						player.currentTime(savedProgress);
+					}
+				}
+			});
+
+			progressSaveInterval = setInterval(() => {
+				if (player && !player.paused() && player.duration() > 0) {
+					handleProgressSave();
+				}
+			}, PROGRESS_SAVE_INTERVAL);
+
+			player.on('pause', () => {
+				handleProgressSave();
+			});
+
+			player.on('seeked', () => {
+				handleProgressSave();
 			});
 
 			addResolutionButtons();
@@ -115,6 +273,7 @@
 	}
 
 	$: if (data.isAllVideoReady && !isLoading && !error && container && !player) {
+		setupAuthenticationHooks();
 		initializeVideoPlayer();
 	}
 

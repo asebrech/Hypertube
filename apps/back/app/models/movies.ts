@@ -37,6 +37,9 @@ export default class Movie extends BaseModel {
   @column({ columnName: 'duration' })
   declare duration: number | null
 
+  @column.dateTime({ columnName: 'last_accessed_at' })
+  declare lastAccessedAt: DateTime | null
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
@@ -45,7 +48,7 @@ export default class Movie extends BaseModel {
 
   @manyToMany(() => User, {
     pivotTable: 'movie_user',
-    pivotColumns: ['usersAction'],
+    pivotColumns: ['is_watched', 'is_bookmarked', 'watch_progress_seconds', 'last_watched_at'],
   })
   declare users: ManyToMany<typeof User>
 }

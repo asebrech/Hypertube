@@ -38,13 +38,22 @@ router
     router.get('people', [MoviesController, 'PeopleDetails'])
     router.get(':id', [MoviesController, 'movieDetails'])
     router.get(':id/videos', [MoviesController, 'movieVideos'])
+    router.post(':id/watched', [MoviesController, 'markAsWatched']).use(middleware.auth())
+    router.post(':id/bookmark', [MoviesController, 'toggleBookmark']).use(middleware.auth())
+    router.post(':id/progress', [MoviesController, 'saveWatchProgress']).use(middleware.auth())
+    router.get(':id/progress', [MoviesController, 'getWatchProgress']).use(middleware.auth())
   })
   .prefix('movies')
 
-// will need to move to an authed route
-router.get('/torrent/:id', [TorrentController, 'torrent'])
-router.get('/torrent/:resolution/:id', [TorrentController, 'ready'])
-router.get('/stream/*', [TorrentController, 'stream'])
+router
+  .group(() => {
+    router.get('/:id', [TorrentController, 'torrent'])
+    router.get('/:resolution/:id', [TorrentController, 'ready'])
+  })
+  .prefix('torrent')
+  .use(middleware.auth())
+
+router.get('/stream/*', [TorrentController, 'stream']).use(middleware.auth())
 
 router
   .get('me', async ({ auth, response }) => {

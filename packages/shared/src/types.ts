@@ -10,10 +10,6 @@ export type BackDropImage = {
   langFound: boolean;
 };
 
-export enum UserMovieAction {
-  WATCHED = 'watched',
-  BOOKMARKED = 'bookmarked',
-}
 export type ImageSizeType = 'small' | 'medium' | 'large' | 'original'
 export type MovieType = 'movie'| 'tv'
 
@@ -27,7 +23,8 @@ export type Movie = {
   vote_average: number;
   media_type: MovieType | undefined
   backdrop_image: BackDropImage | null | undefined;
-  user_action?: UserMovieAction | null;
+  is_watched?: boolean;
+  is_bookmarked?: boolean;
 };
 
 export type Genre = {

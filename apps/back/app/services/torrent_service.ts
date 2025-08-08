@@ -3,16 +3,20 @@ import fs from 'node:fs'
 import ffmpeg from 'fluent-ffmpeg'
 import path from 'node:path'
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg'
+import { inject } from '@adonisjs/core'
 import SearchTorrentService from './search_torrent_service.js'
 import MovieService from './movie_service.js'
 import ProgressLoggingService from './progress_logging_service.js'
 
 ffmpeg.setFfmpegPath(ffmpegInstaller.path)
 
+@inject()
 export default class TorrentService {
-  private searchTorrentService: SearchTorrentService = new SearchTorrentService()
-  private movieService: MovieService = new MovieService()
-  private progressLoggingService: ProgressLoggingService = new ProgressLoggingService()
+  constructor(
+    private searchTorrentService: SearchTorrentService,
+    private movieService: MovieService,
+    private progressLoggingService: ProgressLoggingService
+  ) {}
   private readyResolutions: Set<string> = new Set()
   private lastSegmentCounts: Map<string, number> = new Map()
   private getQualitySettings(width: number) {
@@ -61,6 +65,9 @@ export default class TorrentService {
   async download(tmdbId: number) {
     console.log('Starting torrent download for TMDB ID:', tmdbId)
     await this.movieService.getOrCreate(tmdbId)
+
+    await this.movieService.updateLastAccessed(tmdbId)
+
     const torrent = await this.searchTorrentService.search(tmdbId, 'All', 100)
     await this.movieService.updateMagnetLink(tmdbId, torrent.magnetLink)
 
@@ -345,11 +352,12 @@ export default class TorrentService {
 
     if (fs.existsSync(cacheDir)) {
       try {
-        fs.rmSync(cacheDir, { recursive: true, force: true })
+        fs.rmSync(cacheDir, { recursive: true })
         console.log(`Cleaned up torrent cache for movie ${tmdbId}`)
         this.progressLoggingService.cleanupMovieTracking(tmdbId)
       } catch (error) {
         console.error(`Error cleaning up torrent cache for movie ${tmdbId}:`, error)
+        throw new Error(`Failed to cleanup cache directory ${cacheDir}: ${error}`)
       }
     }
   }
