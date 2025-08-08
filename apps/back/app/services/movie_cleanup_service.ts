@@ -227,6 +227,104 @@ export default class MovieCleanupService {
     }
   }
 
+  async deleteAllMovies(): Promise<{
+    success: boolean
+    message: string
+    moviesDeleted: number
+    spaceFreed: number
+    errors: number
+    errorMessages: string[]
+  }> {
+    try {
+      const allMovies = await Movie.all()
+
+      if (allMovies.length === 0) {
+        return {
+          success: true,
+          message: 'No movies found to delete',
+          moviesDeleted: 0,
+          spaceFreed: 0,
+          errors: 0,
+          errorMessages: [],
+        }
+      }
+
+      const result = {
+        success: true,
+        message: '',
+        moviesDeleted: 0,
+        spaceFreed: 0,
+        errors: 0,
+        errorMessages: [] as string[],
+      }
+
+      console.log(`Starting deletion of ${allMovies.length} movies`)
+
+      for (const movie of allMovies) {
+        try {
+          const tmdbId = movie.tmdbId
+          const movieTitle = movie.title || 'Unknown title'
+          const hlsPath = path.join(process.cwd(), 'hls-output', tmdbId.toString())
+          const cachePath = path.join(process.cwd(), 'torrent-cache', tmdbId.toString())
+
+          const spaceFreed =
+            (await this.calculateDirectorySize(hlsPath)) +
+            (await this.calculateDirectorySize(cachePath))
+
+          if (!this.isValidCleanupPath(hlsPath) || !this.isValidCleanupPath(cachePath)) {
+            throw new Error(`Invalid cleanup path detected for movie ${tmdbId}`)
+          }
+
+          if (fs.existsSync(hlsPath)) {
+            try {
+              fs.rmSync(hlsPath, { recursive: true })
+            } catch (error) {
+              throw new Error(`Failed to remove HLS directory ${hlsPath}: ${error}`)
+            }
+          }
+
+          if (fs.existsSync(cachePath)) {
+            try {
+              fs.rmSync(cachePath, { recursive: true })
+            } catch (error) {
+              throw new Error(`Failed to remove cache directory ${cachePath}: ${error}`)
+            }
+          }
+
+          await movie.delete()
+          console.log(`Deleted movie ${tmdbId} (${movieTitle})`)
+
+          result.moviesDeleted++
+          result.spaceFreed += spaceFreed
+        } catch (error) {
+          const errorMessage = `Error deleting movie ${movie.tmdbId}: ${error}`
+          console.error(errorMessage)
+          result.errors++
+          result.errorMessages.push(errorMessage)
+        }
+      }
+
+      if (result.errors > 0) {
+        result.message = `Deleted ${result.moviesDeleted} movies with ${result.errors} errors`
+      } else {
+        result.message = `Successfully deleted all ${result.moviesDeleted} movies`
+      }
+
+      console.log(`Deletion completed: ${result.moviesDeleted} deleted, ${result.errors} errors`)
+      return result
+    } catch (error) {
+      console.error('Failed to delete all movies:', error)
+      return {
+        success: false,
+        message: 'Failed to delete all movies',
+        moviesDeleted: 0,
+        spaceFreed: 0,
+        errors: 1,
+        errorMessages: [error instanceof Error ? error.message : 'Unknown error'],
+      }
+    }
+  }
+
   private formatBytes(bytes: number): string {
     if (bytes === 0) return '0 B'
 
