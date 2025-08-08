@@ -3,8 +3,8 @@
 	import { goto } from '$app/navigation';
 	import { _ } from 'svelte-i18n';
 	import { PUBLIC_BACK_URL } from '$env/static/public';
-	import { VideoLoading } from '$lib/components/tadflix/loading';
-	import { VideoError } from '$lib/components/tadflix/error';
+	import VideoLoading from '$lib/components/tadflix/loading/video-loading.svelte';
+	import VideoError from '$lib/components/tadflix/error/video-error.svelte';
 	import VideoPlayer from '$lib/components/tadflix/video-player/video-player.svelte';
 	import VideoReadinessPoller from '$lib/components/tadflix/video-player/video-readiness-poller.svelte';
 
