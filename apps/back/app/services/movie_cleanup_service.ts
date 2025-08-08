@@ -2,6 +2,7 @@ import Movie from '#models/movies'
 import fs from 'node:fs'
 import path from 'node:path'
 import { DateTime } from 'luxon'
+import { formatBytes } from '../utils/format.js'
 
 export interface CleanupResult {
   moviesProcessed: number
@@ -79,9 +80,7 @@ export default class MovieCleanupService {
             await this.resetMovieStatus(movie)
             result.moviesCleaned.push(`${movieId} (${movieTitle})`)
           } else {
-            result.moviesCleaned.push(
-              `${movieId} (${movieTitle}) - ${this.formatBytes(spaceFreed)}`
-            )
+            result.moviesCleaned.push(`${movieId} (${movieTitle}) - ${formatBytes(spaceFreed)}`)
           }
 
           result.spaceFreed += spaceFreed
@@ -95,9 +94,7 @@ export default class MovieCleanupService {
       }
 
       logProgress(`Cleanup completed: ${result.moviesProcessed} processed, ${result.errors} errors`)
-      logProgress(
-        `Space ${dryRun ? 'would be freed' : 'freed'}: ${this.formatBytes(result.spaceFreed)}`
-      )
+      logProgress(`Space ${dryRun ? 'would be freed' : 'freed'}: ${formatBytes(result.spaceFreed)}`)
     } catch (error) {
       const errorMessage = `Cleanup failed: ${error}`
       result.errorMessages.push(errorMessage)
@@ -241,7 +238,7 @@ export default class MovieCleanupService {
 
       for (const movie of allMovies) {
         const deleteResult = await this.deleteSingleMovie(movie)
-        
+
         if (deleteResult.success) {
           result.moviesDeleted++
           result.spaceFreed += deleteResult.spaceFreed
@@ -322,15 +319,5 @@ export default class MovieCleanupService {
         error: errorMessage,
       }
     }
-  }
-
-  private formatBytes(bytes: number): string {
-    if (bytes === 0) return '0 B'
-
-    const k = 1024
-    const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-
-    return `${Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
   }
 }
