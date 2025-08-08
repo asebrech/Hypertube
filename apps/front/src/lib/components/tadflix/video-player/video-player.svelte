@@ -42,11 +42,13 @@
 
 	onMount(() => {
 		api = new VideoPlayerAPI(token, movieId);
+		document.body.style.overflow = 'hidden';
 		initializePlayer();
 	});
 
 	onDestroy(() => {
 		cleanup();
+		document.body.style.overflow = '';
 	});
 
 	function cleanup() {
@@ -57,6 +59,7 @@
 			player.dispose();
 			player = null;
 		}
+		document.body.style.overflow = '';
 	}
 
 	const BackButton = videojs.getComponent('Button');
@@ -196,20 +199,23 @@
 		VideoPlayerHooks.setupAuthentication(token, videojs as any);
 
 		const options = {
-			autoplay: false,
+			autoplay: true,
 			controls: true,
 			responsive: true,
-			fluid: true,
+			fluid: false,
 			liveui: true,
 			preload: 'auto',
-			aspectRatio: '16:9',
 			fill: true,
+			normalizeAutoplay: false,
 			sources: [{ src: selectedSource.src, type: 'application/x-mpegURL' }],
 			html5: {
 				vhs: {
 					withCredentials: false
 				}
-			}
+			},
+			breakpoints: {},
+			width: '100%',
+			height: '100%'
 		};
 
 		try {
@@ -244,9 +250,35 @@
 
 <style>
 	.video-container {
-		width: 100%;
+		width: 100vw;
 		height: 100vh;
 		background-color: #000;
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 9999;
+		overflow: hidden;
+	}
+
+	:global(body:has(.video-container)) {
+		overflow: hidden !important;
+	}
+
+	:global(body) {
+		overflow: hidden !important;
+	}
+
+	:global(.video-container .video-js) {
+		width: 100% !important;
+		height: 100% !important;
+		max-width: 100% !important;
+		max-height: 100% !important;
+	}
+
+	:global(.video-container .video-js .vjs-tech) {
+		width: 100% !important;
+		height: 100% !important;
+		object-fit: contain !important;
 	}
 
 	:global(.vjs-back-button) {
