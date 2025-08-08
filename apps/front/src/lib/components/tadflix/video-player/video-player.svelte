@@ -31,7 +31,7 @@
 	let container: HTMLElement;
 	let hasMarkedAsWatched = false;
 	let lastWatchTimeCheck = 0;
-	let progressSaveInterval: number;
+	let progressSaveInterval: ReturnType<typeof setInterval>;
 	let api: VideoPlayerAPI;
 
 	const readyResolutions = $derived(new Set(availableResolutions));
@@ -57,39 +57,38 @@
 		}
 	}
 
-	function createBackButton() {
-		const BackButton = videojs.getComponent('Button');
-
-		class CustomBackButton extends BackButton {
-			constructor(player: any, options: any) {
-				super(player, options);
-				this.addClass('vjs-back-button');
-			}
-
-			createEl() {
-				const button = super.createEl('button', {
-					className: 'vjs-back-button vjs-control vjs-button'
-				});
-
-				button.innerHTML = `
-					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<path d="m12 19-7-7 7-7"/>
-						<path d="M19 12H5"/>
-					</svg>
-				`;
-
-				const backToHomeText = $_('video-player.back-to-home');
-				button.setAttribute('title', backToHomeText);
-				button.setAttribute('aria-label', backToHomeText);
-
-				return button;
-			}
-
-			handleClick() {
-				goto('/');
-			}
+	const BackButton = videojs.getComponent('Button');
+	class CustomBackButton extends BackButton {
+		constructor(player: any, options: any) {
+			super(player, options);
+			this.addClass('vjs-back-button');
 		}
 
+		createEl() {
+			const button = super.createEl('button', {
+				className: 'vjs-back-button vjs-control vjs-button'
+			});
+
+			button.innerHTML = `
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="m12 19-7-7 7-7"/>
+					<path d="M19 12H5"/>
+				</svg>
+			`;
+
+			const backToHomeText = $_('video-player.back-to-home');
+			button.setAttribute('title', backToHomeText);
+			button.setAttribute('aria-label', backToHomeText);
+
+			return button;
+		}
+
+		handleClick() {
+			goto('/');
+		}
+	}
+
+	function createBackButton() {
 		videojs.registerComponent('CustomBackButton', CustomBackButton);
 		return CustomBackButton;
 	}
@@ -208,7 +207,7 @@
 		
 		if (!selectedSource) return;
 
-		VideoPlayerHooks.setupAuthentication(token, videojs);
+		VideoPlayerHooks.setupAuthentication(token, videojs as any);
 
 		const options = {
 			autoplay: true,

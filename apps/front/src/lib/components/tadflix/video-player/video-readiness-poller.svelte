@@ -19,8 +19,8 @@
 		onTimeout
 	}: Props = $props();
 
-	let pollingInterval: number;
-	let timeoutId: number;
+	let pollingInterval: ReturnType<typeof setInterval>;
+	let timeoutId: ReturnType<typeof setTimeout>;
 
 	onMount(() => {
 		if (!isReady && !hasError) {

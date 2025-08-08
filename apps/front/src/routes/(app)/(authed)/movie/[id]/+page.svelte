@@ -60,7 +60,6 @@
 	}
 </script>
 
-<!-- Video Readiness Poller -->
 {#if !data.isAllVideoReady && !error}
 	<VideoReadinessPoller
 		isReady={data.isAllVideoReady}
@@ -74,11 +73,7 @@
 {#if shouldShowLoading}
 	<VideoLoading message={$_('video-player.converting')} />
 {:else if shouldShowError}
-	<VideoError 
-		title={$_('video-player.error-title')}
-		message={error}
-		onGoHome={handleGoHome}
-	/>
+	<VideoError title={$_('video-player.error-title')} message={error || 'Unknown error'} onGoHome={handleGoHome} />
 {:else if shouldShowPlayer}
 	<VideoPlayer
 		movieId={data.movieId}
@@ -89,5 +84,3 @@
 		onError={handlePlayerError}
 	/>
 {/if}
-
-
