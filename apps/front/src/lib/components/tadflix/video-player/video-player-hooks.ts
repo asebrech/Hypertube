@@ -1,24 +1,20 @@
 import { PUBLIC_BACK_URL } from '$env/static/public';
 
-interface VideoPlayerAPIHeaders {
-	'Content-Type': string;
-	Authorization?: string;
-	[key: string]: string | undefined;
-}
-
 // API service for video player operations
 export class VideoPlayerAPI {
 	private token: string | undefined;
 	private movieId: string;
-	private headers: VideoPlayerAPIHeaders;
+	private headers: Record<string, string>;
 
 	constructor(token: string | undefined, movieId: string) {
 		this.token = token;
 		this.movieId = movieId;
 		this.headers = {
-			'Content-Type': 'application/json',
-			...(token && { Authorization: `Bearer ${token}` })
+			'Content-Type': 'application/json'
 		};
+		if (token) {
+			this.headers.Authorization = `Bearer ${token}`;
+		}
 	}
 
 	async markAsWatched(): Promise<boolean> {

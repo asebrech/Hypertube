@@ -1,60 +1,58 @@
 <script lang="ts">
 	import { _ } from 'svelte-i18n';
 	import { onMount } from 'svelte';
-	
+
 	interface Props {
 		title?: string;
 		message: string;
 		showGoHome?: boolean;
 		onGoHome?: () => void;
 	}
-	
-	let { 
-		title = $_('video-player.error-title'), 
+
+	let {
+		title = $_('video-player.error-title'),
 		message,
 		showGoHome = true,
-		onGoHome = () => window.location.href = '/'
+		onGoHome = () => (window.location.href = '/')
 	}: Props = $props();
-	
+
 	let mounted = $state(false);
 	let accordionOpen = $state(false);
-	
+
 	onMount(() => {
 		mounted = true;
 	});
 </script>
 
-<div class="min-h-screen bg-black text-white flex flex-col items-center justify-center p-8">
-	<div class="text-center max-w-md">
-		<!-- Animated Error Icon -->
+<div class="flex min-h-screen flex-col items-center justify-center bg-black p-8 text-white">
+	<div class="max-w-md text-center">
 		<div class="mb-8">
-			<div class="text-red-600 text-8xl font-bold {mounted ? 'animate-bounce' : ''}">!</div>
+			<div class="text-8xl font-bold text-red-600 {mounted ? 'animate-bounce' : ''}">!</div>
 		</div>
-		
-		<!-- Error Title -->
-		<h1 class="text-3xl font-bold text-red-600 mb-6">{title}</h1>
-		
-		<!-- Error Message -->
+
+		<h1 class="mb-6 text-3xl font-bold text-red-600">{title}</h1>
+
 		<div class="mb-8 w-full">
-			<button 
-				onclick={() => accordionOpen = !accordionOpen}
-				class="text-zinc-400 hover:text-white text-sm underline transition-colors duration-200"
+			<button
+				onclick={() => (accordionOpen = !accordionOpen)}
+				class="text-sm text-zinc-400 underline transition-colors duration-200 hover:text-white"
 			>
 				{accordionOpen ? $_('video-player.hide-details') : $_('video-player.show-details')}
 			</button>
-			
+
 			{#if accordionOpen}
-				<div class="mt-4 p-4 bg-zinc-900/50 rounded text-left border-l-4 border-red-600 transition-all duration-300 ease-in-out">
-					<p class="text-zinc-300 text-sm break-words">{message}</p>
+				<div
+					class="mt-4 rounded border-l-4 border-red-600 bg-zinc-900/50 p-4 text-left transition-all duration-300 ease-in-out"
+				>
+					<p class="text-sm break-words text-zinc-300">{message}</p>
 				</div>
 			{/if}
 		</div>
-		
-		<!-- Go Home Button -->
+
 		{#if showGoHome}
-			<button 
+			<button
 				onclick={onGoHome}
-				class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 transform hover:scale-105"
+				class="transform rounded-lg bg-red-600 px-8 py-3 font-semibold text-white transition-colors duration-200 hover:scale-105 hover:bg-red-700"
 			>
 				{$_('video-player.back-to-home')}
 			</button>
