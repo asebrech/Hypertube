@@ -47,6 +47,18 @@ export class OpenSubtitleService {
     }
   }
 
+  public async getAllSubtitles(tmdb_id: string): Promise<SubtitleResult[]> {
+    const endpoint = `/subtitles?tmdb_id=${encodeURIComponent(tmdb_id)}`
+    const data: SubtitleApiResponse = await this.getSomethingFromApi(endpoint) as SubtitleApiResponse;
+    const uniqueSubtitlesPerLanguage = new Map<string, SubtitleResult>();
+    data.data.forEach((subtitle: SubtitleResult) => {
+      const lang = subtitle.attributes.language;
+      if (subtitle.attributes.tmdb_id === tmdb_id && !uniqueSubtitlesPerLanguage.has(lang)) {
+        uniqueSubtitlesPerLanguage.set(lang, subtitle);
+      }
+    });
+    return Array.from(uniqueSubtitlesPerLanguage.values());
+  }
 
   public async searchSubtitles(tmdb_id: string, lang: string = 'en'): Promise<SubtitleResult> {
     const endpoint = `/subtitles?tmdb_id=${encodeURIComponent(tmdb_id)}&languages=${encodeURIComponent(lang)}`
