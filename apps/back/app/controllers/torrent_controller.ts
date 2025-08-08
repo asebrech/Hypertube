@@ -6,6 +6,22 @@ import { join } from 'node:path'
 import app from '@adonisjs/core/services/app'
 import { HttpContext } from '@adonisjs/core/http'
 
+interface DeleteMovieResult {
+  success: boolean
+  message: string
+  spaceFreed: number
+  error?: string
+}
+
+interface DeleteAllMoviesResult {
+  success: boolean
+  message: string
+  moviesDeleted: number
+  spaceFreed: number
+  errors: number
+  errorMessages: string[]
+}
+
 @inject()
 export default class TorrentController {
   constructor(
@@ -78,7 +94,7 @@ export default class TorrentController {
     }
   }
 
-  private handleDeleteResponse(response: any, result: any) {
+  private handleDeleteResponse(response: HttpContext['response'], result: DeleteMovieResult) {
     if (result.success) {
       return response.ok({
         success: true,
@@ -95,7 +111,10 @@ export default class TorrentController {
     }
   }
 
-  private handleDeleteAllResponse(response: any, result: any) {
+  private handleDeleteAllResponse(
+    response: HttpContext['response'],
+    result: DeleteAllMoviesResult
+  ) {
     if (result.success) {
       return response.ok({
         success: true,
@@ -116,7 +135,7 @@ export default class TorrentController {
     }
   }
 
-  private handleDeleteError(response: any, error: any, operation: string) {
+  private handleDeleteError(response: HttpContext['response'], error: unknown, operation: string) {
     console.error(`Error ${operation}:`, error)
     return response.internalServerError({
       success: false,
