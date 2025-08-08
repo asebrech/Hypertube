@@ -63,61 +63,66 @@ export default class TorrentController {
       }
 
       const result = await this.movieCleanupService.deleteMovie(tmdbId)
-
-      if (result.success) {
-        return response.ok({
-          success: true,
-          message: result.message,
-          spaceFreed: result.spaceFreed,
-          spaceFreedFormatted: this.formatBytes(result.spaceFreed),
-        })
-      } else {
-        return response.internalServerError({
-          success: false,
-          message: result.message,
-          error: result.error,
-        })
-      }
+      return this.handleDeleteResponse(response, result)
     } catch (error) {
-      console.error('Error deleting movie:', error)
-      return response.internalServerError({
-        success: false,
-        message: 'An unexpected error occurred while deleting the movie',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      })
+      return this.handleDeleteError(response, error, 'deleting the movie')
     }
   }
 
   async deleteAll({ response }: HttpContext) {
     try {
       const result = await this.movieCleanupService.deleteAllMovies()
-
-      if (result.success) {
-        return response.ok({
-          success: true,
-          message: result.message,
-          moviesDeleted: result.moviesDeleted,
-          spaceFreed: result.spaceFreed,
-          spaceFreedFormatted: this.formatBytes(result.spaceFreed),
-          errors: result.errors,
-          errorMessages: result.errorMessages,
-        })
-      } else {
-        return response.internalServerError({
-          success: false,
-          message: result.message,
-          errors: result.errors,
-          errorMessages: result.errorMessages,
-        })
-      }
+      return this.handleDeleteAllResponse(response, result)
     } catch (error) {
-      console.error('Error deleting all movies:', error)
+      return this.handleDeleteError(response, error, 'deleting all movies')
+    }
+  }
+
+  private handleDeleteResponse(response: any, result: any) {
+    if (result.success) {
+      return response.ok({
+        success: true,
+        message: result.message,
+        spaceFreed: result.spaceFreed,
+        spaceFreedFormatted: this.formatBytes(result.spaceFreed),
+      })
+    } else {
       return response.internalServerError({
         success: false,
-        message: 'An unexpected error occurred while deleting all movies',
-        error: error instanceof Error ? error.message : 'Unknown error',
+        message: result.message,
+        error: result.error,
       })
     }
+  }
+
+  private handleDeleteAllResponse(response: any, result: any) {
+    if (result.success) {
+      return response.ok({
+        success: true,
+        message: result.message,
+        moviesDeleted: result.moviesDeleted,
+        spaceFreed: result.spaceFreed,
+        spaceFreedFormatted: this.formatBytes(result.spaceFreed),
+        errors: result.errors,
+        errorMessages: result.errorMessages,
+      })
+    } else {
+      return response.internalServerError({
+        success: false,
+        message: result.message,
+        errors: result.errors,
+        errorMessages: result.errorMessages,
+      })
+    }
+  }
+
+  private handleDeleteError(response: any, error: any, operation: string) {
+    console.error(`Error ${operation}:`, error)
+    return response.internalServerError({
+      success: false,
+      message: `An unexpected error occurred while ${operation}`,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    })
   }
 
   private formatBytes(bytes: number): string {
