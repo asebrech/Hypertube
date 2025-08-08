@@ -3,12 +3,14 @@ import { inject } from '@adonisjs/core'
 import { TMDBService } from '#services/tmdb_service'
 import { BackDropImage } from '@hypertube/shared'
 import MovieService from '#services/movie_service'
+import { OpenSubtitleService } from '#services/opensubtitle_service'
 
 @inject()
 export default class MoviesController {
   constructor(
     private tmdbService: TMDBService,
-    private movieService: MovieService
+    private movieService: MovieService,
+    private openSubtitleService: OpenSubtitleService
   ) {}
 
   async index({ request, response, auth }: HttpContext) {
@@ -87,6 +89,9 @@ export default class MoviesController {
         }
       })
     )
+    // const firstmovieSubtitleLinks = await this.openSubtitleService.getAllSubtitles('9614')
+    // console.log('First movie subtitle links:', firstmovieSubtitleLinks)
+    // const link = await this.openSubtitleService.getSubtitleLink('9614', 'en')
     const hasMorePages = finalMovieListByGenre.length > offset + limit
     return { movies: moviesFinalResult, hasMorePages }
   }

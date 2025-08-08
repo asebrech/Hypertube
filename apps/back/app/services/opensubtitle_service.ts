@@ -18,24 +18,25 @@ export class OpenSubtitleService {
       url: url,
       headers: {
         'Api-Key': this.apiKey,
+        'User-Agent': 'HypertubeLaBoiteDeCarton/1.0',
       },
     }
     try {
       const response = await axios(options)
       return response.data
     } catch (error) {
-      throw new Error('Failed to fetch data from TMDB. Endpoint : ' + endpoint)
+      throw new Error('Failed to fetch data from OpenSubtitleApi. Endpoint : ' + endpoint)
     }
   }
-
   private async postSomethingToApi(endpoint: string, data: any) {
     const url = `${this.apiUrl}${endpoint}`
     const options = {
       method: 'POST',
       url: url,
       headers: {
-        'Api-Key': this.apiKey,
+        'Authorization': `Bearer ${this.apiKey}`,
         'Content-Type': 'application/json',
+        'User-Agent': 'HypertubeLaBoiteDeCarton/1.0',
       },
       data: data,
     }
@@ -43,7 +44,7 @@ export class OpenSubtitleService {
       const response = await axios(options)
       return response.data
     } catch (error) {
-      throw new Error('Failed to post data to TMDB. Endpoint : ' + endpoint)
+      throw new Error('Failed to post data to OpenSubtitleApi. Endpoint : ' + endpoint)
     }
   }
 
@@ -53,7 +54,7 @@ export class OpenSubtitleService {
     const uniqueSubtitlesPerLanguage = new Map<string, SubtitleResult>();
     data.data.forEach((subtitle: SubtitleResult) => {
       const lang = subtitle.attributes.language;
-      if (subtitle.attributes.tmdb_id === tmdb_id && !uniqueSubtitlesPerLanguage.has(lang)) {
+      if (!uniqueSubtitlesPerLanguage.has(lang)) {
         uniqueSubtitlesPerLanguage.set(lang, subtitle);
       }
     });
@@ -63,7 +64,7 @@ export class OpenSubtitleService {
   public async searchSubtitles(tmdb_id: string, lang: string = 'en'): Promise<SubtitleResult> {
     const endpoint = `/subtitles?tmdb_id=${encodeURIComponent(tmdb_id)}&languages=${encodeURIComponent(lang)}`
     const data: SubtitleApiResponse = await this.getSomethingFromApi(endpoint) as SubtitleApiResponse;
-    const subtitle = await data.data.find((item: any) => item.attributes.language === lang && item.attributes.tmdb_id == tmdb_id);
+    const subtitle = await data.data.find((item: any) => item.attributes.language === lang && item.attributes.feature_details.tmdb_id == tmdb_id);
     return subtitle;
   }
 
@@ -72,8 +73,8 @@ export class OpenSubtitleService {
     const data = {
       file_id: file_id,
     };
-    const data: { link: string } = await this.postSomethingToApi(endpoint, data);
-    return data.link;
+    const data2: { link: string } = await this.postSomethingToApi(endpoint, data);
+    return data2.link;
   }
 
   public async getSubtitleLink(tmdb_id: string, lang: string = 'en'): Promise<string | null> {
