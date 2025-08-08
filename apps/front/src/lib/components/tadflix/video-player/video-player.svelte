@@ -1,7 +1,7 @@
 <script lang="ts">
 	import videojs from 'video.js';
 	import 'video.js/dist/video-js.css';
-	import { goto } from '$app/navigation';
+	import { goto, beforeNavigate } from '$app/navigation';
 	import { _ } from 'svelte-i18n';
 	import { onMount, onDestroy } from 'svelte';
 	import { VideoPlayerAPI, VideoPlayerHooks } from './video-player-hooks.js';
@@ -42,13 +42,18 @@
 
 	onMount(() => {
 		api = new VideoPlayerAPI(token, movieId);
-		document.body.style.overflow = 'hidden';
+		document.body.classList.add('video-player-active');
 		initializePlayer();
 	});
 
 	onDestroy(() => {
 		cleanup();
-		document.body.style.overflow = '';
+		document.body.classList.remove('video-player-active');
+	});
+
+	beforeNavigate(() => {
+		document.body.classList.remove('video-player-active');
+		cleanup();
 	});
 
 	function cleanup() {
@@ -59,7 +64,7 @@
 			player.dispose();
 			player = null;
 		}
-		document.body.style.overflow = '';
+		document.body.classList.remove('video-player-active');
 	}
 
 	const BackButton = videojs.getComponent('Button');
@@ -89,6 +94,8 @@
 		}
 
 		handleClick() {
+			document.body.classList.remove('video-player-active');
+			cleanup();
 			goto('/');
 		}
 	}
@@ -260,11 +267,7 @@
 		overflow: hidden;
 	}
 
-	:global(body:has(.video-container)) {
-		overflow: hidden !important;
-	}
-
-	:global(body) {
+	:global(body.video-player-active) {
 		overflow: hidden !important;
 	}
 
