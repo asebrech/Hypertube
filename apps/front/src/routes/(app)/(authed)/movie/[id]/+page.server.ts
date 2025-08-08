@@ -46,6 +46,23 @@ async function fetchWithAuth(url: string, token?: string, fetchFn: typeof fetch 
 	return fetchFn(url, { headers });
 }
 
+async function getErrorMessage(response: Response): Promise<string> {
+	try {
+		const errorData = await response.json();
+		if (errorData.message) {
+			return errorData.message;
+		}
+		if (errorData.error) {
+			return errorData.error;
+		}
+		if (errorData.details) {
+			return errorData.details;
+		}
+	} catch {
+	}
+	return response.statusText || 'Unknown error occurred';
+}
+
 export const load: PageServerLoad = async ({ params, fetch: fetchFn, cookies }): Promise<LoadResult> => {
 	const movieId = params.id!;
 	const token = cookies.get('session');
@@ -63,18 +80,20 @@ export const load: PageServerLoad = async ({ params, fetch: fetchFn, cookies }):
 		// Check if torrent exists
 		const torrentResponse = await fetchWithAuth(`${PUBLIC_BACK_URL}/torrent/${movieId}`, token, fetchFn);
 		if (!torrentResponse.ok) {
+			const errorMessage = await getErrorMessage(torrentResponse);
 			return {
 				...defaultResult,
-				error: torrentResponse.status === 404 ? 'Movie not found' : 'Failed to fetch movie data'
+				error: torrentResponse.status === 404 ? 'Movie not found' : errorMessage
 			};
 		}
 
 		// Check video readiness
 		const readinessResponse = await fetchWithAuth(`${PUBLIC_BACK_URL}/torrent/ready/${movieId}`, token, fetchFn);
 		if (!readinessResponse.ok) {
+			const errorMessage = await getErrorMessage(readinessResponse);
 			return {
 				...defaultResult,
-				error: 'Failed to check video readiness'
+				error: errorMessage
 			};
 		}
 
