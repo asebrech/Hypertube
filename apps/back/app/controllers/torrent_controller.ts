@@ -1,5 +1,6 @@
 import TorrentService from '#services/torrent_service'
 import MovieService from '#services/movie_service'
+import MovieCleanupService from '#services/movie_cleanup_service'
 import { inject } from '@adonisjs/core'
 import { join } from 'node:path'
 import app from '@adonisjs/core/services/app'
@@ -9,7 +10,8 @@ import { HttpContext } from '@adonisjs/core/http'
 export default class TorrentController {
   constructor(
     protected torrentService: TorrentService,
-    protected movieService: MovieService
+    protected movieService: MovieService,
+    protected movieCleanupService: MovieCleanupService
   ) {}
 
   async torrent({ request }: HttpContext) {
@@ -39,5 +41,60 @@ export default class TorrentController {
     }
 
     return response.download(filePath)
+  }
+
+  async delete({ request, response }: HttpContext) {
+    try {
+      const tmdbId = Number.parseInt(request.param('id'))
+
+      if (Number.isNaN(tmdbId)) {
+        return response.badRequest({
+          success: false,
+          message: 'Invalid movie ID provided',
+        })
+      }
+
+      const movieExists = await this.movieService.exists(tmdbId)
+      if (!movieExists) {
+        return response.notFound({
+          success: false,
+          message: 'Movie not found',
+        })
+      }
+
+      const result = await this.movieCleanupService.deleteMovie(tmdbId)
+
+      if (result.success) {
+        return response.ok({
+          success: true,
+          message: result.message,
+          spaceFreed: result.spaceFreed,
+          spaceFreedFormatted: this.formatBytes(result.spaceFreed),
+        })
+      } else {
+        return response.internalServerError({
+          success: false,
+          message: result.message,
+          error: result.error,
+        })
+      }
+    } catch (error) {
+      console.error('Error deleting movie:', error)
+      return response.internalServerError({
+        success: false,
+        message: 'An unexpected error occurred while deleting the movie',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      })
+    }
+  }
+
+  private formatBytes(bytes: number): string {
+    if (bytes === 0) return '0 B'
+
+    const k = 1024
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+    return `${Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
   }
 }

@@ -159,6 +159,74 @@ export default class MovieCleanupService {
     return totalSize
   }
 
+  async deleteMovie(tmdbId: number): Promise<{
+    success: boolean
+    message: string
+    spaceFreed: number
+    error?: string
+  }> {
+    try {
+      const movie = await Movie.query().where('tmdbId', tmdbId).first()
+
+      if (!movie) {
+        return {
+          success: false,
+          message: 'Movie not found',
+          spaceFreed: 0,
+          error: 'Movie with this TMDB ID does not exist',
+        }
+      }
+
+      const movieTitle = movie.title || 'Unknown title'
+      const hlsPath = path.join(process.cwd(), 'hls-output', tmdbId.toString())
+      const cachePath = path.join(process.cwd(), 'torrent-cache', tmdbId.toString())
+
+      const spaceFreed =
+        (await this.calculateDirectorySize(hlsPath)) +
+        (await this.calculateDirectorySize(cachePath))
+
+      if (!this.isValidCleanupPath(hlsPath) || !this.isValidCleanupPath(cachePath)) {
+        throw new Error(`Invalid cleanup path detected for movie ${tmdbId}`)
+      }
+
+      if (fs.existsSync(hlsPath)) {
+        try {
+          fs.rmSync(hlsPath, { recursive: true })
+          console.log(`Removed HLS directory for movie ${tmdbId}`)
+        } catch (error) {
+          throw new Error(`Failed to remove HLS directory ${hlsPath}: ${error}`)
+        }
+      }
+
+      if (fs.existsSync(cachePath)) {
+        try {
+          fs.rmSync(cachePath, { recursive: true })
+          console.log(`Removed cache directory for movie ${tmdbId}`)
+        } catch (error) {
+          throw new Error(`Failed to remove cache directory ${cachePath}: ${error}`)
+        }
+      }
+
+      await movie.delete()
+      console.log(`Deleted movie ${tmdbId} from database`)
+
+      return {
+        success: true,
+        message: `Movie "${movieTitle}" (ID: ${tmdbId}) has been successfully deleted`,
+        spaceFreed,
+      }
+    } catch (error) {
+      const errorMessage = `Failed to delete movie ${tmdbId}: ${error}`
+      console.error(errorMessage)
+      return {
+        success: false,
+        message: 'Failed to delete movie',
+        spaceFreed: 0,
+        error: errorMessage,
+      }
+    }
+  }
+
   private formatBytes(bytes: number): string {
     if (bytes === 0) return '0 B'
 

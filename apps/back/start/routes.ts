@@ -49,6 +49,7 @@ router
   .group(() => {
     router.get('/:id', [TorrentController, 'torrent'])
     router.get('/:resolution/:id', [TorrentController, 'ready'])
+    router.delete('/:id', [TorrentController, 'delete'])
   })
   .prefix('torrent')
   .use(middleware.auth())
