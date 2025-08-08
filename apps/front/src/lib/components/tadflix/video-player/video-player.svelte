@@ -247,23 +247,6 @@
 		width: 100%;
 		height: 100vh;
 		background-color: #000;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		overflow: hidden;
-	}
-
-	:global(.video-container .video-js) {
-		width: 100% !important;
-		height: 100% !important;
-		max-width: 100vw !important;
-		max-height: 100vh !important;
-	}
-
-	:global(.video-container .video-js .vjs-tech) {
-		width: 100% !important;
-		height: 100% !important;
-		object-fit: contain !important;
 	}
 
 	:global(.vjs-back-button) {
