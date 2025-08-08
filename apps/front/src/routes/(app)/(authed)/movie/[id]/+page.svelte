@@ -5,7 +5,8 @@
 	import { PUBLIC_BACK_URL } from '$env/static/public';
 	import { VideoLoading } from '$lib/components/tadflix/loading';
 	import { VideoError } from '$lib/components/tadflix/error';
-	import { VideoPlayer, VideoReadinessPoller } from '$lib/components/tadflix/video-player';
+	import VideoPlayer from '$lib/components/tadflix/video-player/video-player.svelte';
+	import VideoReadinessPoller from '$lib/components/tadflix/video-player/video-readiness-poller.svelte';
 
 	interface Props {
 		data: {
