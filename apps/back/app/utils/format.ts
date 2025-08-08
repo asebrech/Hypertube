@@ -7,3 +7,7 @@ export function formatBytes(bytes: number): string {
 
   return `${Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
 }
+
+export function isValidTmdbId(tmdbId: number | string): boolean {
+  return /^\d+$/.test(tmdbId.toString())
+}

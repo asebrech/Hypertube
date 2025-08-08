@@ -2,7 +2,7 @@ import Movie from '#models/movies'
 import fs from 'node:fs'
 import path from 'node:path'
 import { DateTime } from 'luxon'
-import { formatBytes } from '../utils/format.js'
+import { formatBytes, isValidTmdbId } from '../utils/format.js'
 
 export interface CleanupResult {
   moviesProcessed: number
@@ -48,6 +48,10 @@ export default class MovieCleanupService {
         try {
           const movieId = movie.tmdbId
           const movieTitle = movie.title || 'Unknown title'
+
+          if (!isValidTmdbId(movieId)) {
+            throw new Error(`Invalid tmdbId: ${movieId}`)
+          }
 
           const hlsPath = path.join(process.cwd(), 'hls-output', movieId.toString())
           const cachePath = path.join(process.cwd(), 'torrent-cache', movieId.toString())
@@ -163,6 +167,15 @@ export default class MovieCleanupService {
     error?: string
   }> {
     try {
+      if (!isValidTmdbId(tmdbId)) {
+        return {
+          success: false,
+          message: 'Invalid movie ID',
+          spaceFreed: 0,
+          error: `Invalid tmdbId: ${tmdbId}`,
+        }
+      }
+
       const movie = await Movie.query().where('tmdbId', tmdbId).first()
 
       if (!movie) {
@@ -277,6 +290,11 @@ export default class MovieCleanupService {
   }> {
     try {
       const tmdbId = movie.tmdbId
+      
+      if (!isValidTmdbId(tmdbId)) {
+        throw new Error(`Invalid tmdbId: ${tmdbId}`)
+      }
+
       const hlsPath = path.join(process.cwd(), 'hls-output', tmdbId.toString())
       const cachePath = path.join(process.cwd(), 'torrent-cache', tmdbId.toString())
 

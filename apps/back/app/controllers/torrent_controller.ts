@@ -5,7 +5,7 @@ import { inject } from '@adonisjs/core'
 import { join } from 'node:path'
 import app from '@adonisjs/core/services/app'
 import { HttpContext } from '@adonisjs/core/http'
-import { formatBytes } from '../utils/format.js'
+import { formatBytes, isValidTmdbId } from '../utils/format.js'
 
 interface DeleteMovieResult {
   success: boolean
@@ -64,7 +64,7 @@ export default class TorrentController {
     try {
       const tmdbId = Number.parseInt(request.param('id'))
 
-      if (Number.isNaN(tmdbId)) {
+      if (Number.isNaN(tmdbId) || !isValidTmdbId(tmdbId)) {
         return response.badRequest({
           success: false,
           message: 'Invalid movie ID provided',
