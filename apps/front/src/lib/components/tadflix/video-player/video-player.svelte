@@ -36,7 +36,9 @@
 
 	const readyResolutions = $derived(new Set(availableResolutions));
 	const resolutionSources = $derived(VideoPlayerUtils.getResolutionSources(baseUrl, movieId));
-	const availableSources = $derived(resolutionSources.filter(res => readyResolutions.has(res.value)));
+	const availableSources = $derived(
+		resolutionSources.filter((res) => readyResolutions.has(res.value))
+	);
 
 	onMount(() => {
 		api = new VideoPlayerAPI(token, movieId);
@@ -123,25 +125,6 @@
 
 		player.on('ended', handleMarkAsWatched);
 
-		player.on('play', () => {
-			if (!player.isFullscreen()) {
-				player.requestFullscreen();
-			}
-		});
-
-		player.ready(() => {
-			const bigPlayButton = player.getChild('BigPlayButton');
-			if (bigPlayButton) {
-				bigPlayButton.on('click', () => {
-					setTimeout(() => {
-						if (!player.isFullscreen()) {
-							player.requestFullscreen();
-						}
-					}, 100);
-				});
-			}
-		});
-
 		player.on('timeupdate', () => {
 			if (hasMarkedAsWatched || !player.duration?.() || player.duration() <= 0) return;
 
@@ -202,15 +185,18 @@
 	async function initializePlayer() {
 		if (!container || player || readyResolutions.size === 0) return;
 
-		const preferredSource = VideoPlayerUtils.getPreferredSource(availableResolutions, preferredResolution);
-		const selectedSource = availableSources.find(s => s.value === preferredSource?.value);
-		
+		const preferredSource = VideoPlayerUtils.getPreferredSource(
+			availableResolutions,
+			preferredResolution
+		);
+		const selectedSource = availableSources.find((s) => s.value === preferredSource?.value);
+
 		if (!selectedSource) return;
 
 		VideoPlayerHooks.setupAuthentication(token, videojs as any);
 
 		const options = {
-			autoplay: true,
+			autoplay: false,
 			controls: true,
 			responsive: true,
 			fluid: true,
@@ -219,9 +205,6 @@
 			aspectRatio: '16:9',
 			fill: true,
 			sources: [{ src: selectedSource.src, type: 'application/x-mpegURL' }],
-			controlBar: {
-				fullscreenToggle: false
-			},
 			html5: {
 				vhs: {
 					withCredentials: false
@@ -250,7 +233,6 @@
 					handleProgressSave();
 				}
 			}, VIDEO_CONFIG.PROGRESS_SAVE_INTERVAL);
-
 		} catch (error) {
 			console.error('Error initializing video player:', error);
 			onError?.('Failed to initialize video player');
