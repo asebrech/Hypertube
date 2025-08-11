@@ -159,10 +159,8 @@
 		</div>
 
 		<!-- Description -->
-		{#if movie.overview}
-			<p class="line-clamp-2 text-xs leading-relaxed text-gray-400">
-				{movie.overview}
-			</p>
-		{/if}
+		<p class="line-clamp-2 text-xs leading-relaxed text-gray-400 min-h-[2.5rem]">
+			{movie.overview || ''}
+		</p>
 	</div>
 </div>
