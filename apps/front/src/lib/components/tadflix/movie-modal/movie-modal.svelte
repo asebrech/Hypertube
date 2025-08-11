@@ -320,24 +320,7 @@
 			<!-- Loading State -->
 			<div class="relative">
 				<!-- Loading buttons -->
-				<div class="absolute top-2 right-2 z-50 flex gap-2 sm:top-3 sm:right-3 md:top-4 md:right-4">
-					{#if modalData.history.length > 0}
-						<button
-							onclick={goBack}
-							class="flex h-8 w-8 items-center justify-center rounded-full border-none bg-[#2A2A2A] opacity-75 transition-opacity hover:opacity-100 md:h-9 md:w-9"
-							aria-label={$_('movie-modal.go-back')}
-						>
-							<ArrowLeft size={20} class="text-white md:size-[22px]" />
-						</button>
-					{/if}
-
-					<button
-						onclick={closeModal}
-						class="flex h-8 w-8 items-center justify-center rounded-full border-none bg-[#2A2A2A] opacity-75 transition-opacity hover:opacity-100 md:h-9 md:w-9"
-					>
-						<X size={20} class="text-white md:size-[22px]" />
-					</button>
-				</div>
+				{@render topButtons()}
 
 				<!-- Loading Banner -->
 				<div class="relative max-h-[50vh] bg-neutral-800 md:max-h-[60vh]">
@@ -414,26 +397,7 @@
 		{:else if movie}
 			<!-- Actual Content -->
 			<div class="relative">
-				<div class="absolute top-2 right-2 z-50 flex gap-2 sm:top-3 sm:right-3 md:top-4 md:right-4">
-					<!-- Back Button (only show if there's history) -->
-					{#if modalData.history.length > 0}
-						<button
-							onclick={goBack}
-							class="flex h-8 w-8 items-center justify-center rounded-full border-none bg-[#2A2A2A] opacity-75 transition-opacity hover:opacity-100 md:h-9 md:w-9"
-							aria-label={$_('movie-modal.go-back')}
-						>
-							<ArrowLeft size={20} class="text-white md:size-[22px]" />
-						</button>
-					{/if}
-
-					<!-- Close Button -->
-					<button
-						onclick={closeModal}
-						class="flex h-8 w-8 items-center justify-center rounded-full border-none bg-[#2A2A2A] opacity-75 transition-opacity hover:opacity-100 md:h-9 md:w-9"
-					>
-						<X size={20} class="text-white md:size-[22px]" />
-					</button>
-				</div>
+				{@render topButtons()}
 
 				<!-- Reusable action buttons snippet -->
 				{#snippet actionButtons()}
@@ -706,6 +670,27 @@
 			>{#if i < cast.slice(0, 4).length - 1},&nbsp;{/if}
 		{/each}
 	{/if}
+{/snippet}
+
+{#snippet topButtons()}
+	<div class="absolute top-2 right-2 z-50 flex gap-2 sm:top-3 sm:right-3 md:top-4 md:right-4">
+		{#if modalData.history.length > 0}
+			<button
+				onclick={goBack}
+				class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-none bg-black md:h-9 md:w-9"
+				aria-label={$_('movie-modal.go-back')}
+			>
+				<ArrowLeft size={20} class="text-white md:size-[22px]" />
+			</button>
+		{/if}
+
+		<button
+			onclick={closeModal}
+			class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-none bg-black md:h-9 md:w-9"
+		>
+			<X size={20} class="text-white md:size-[22px]" />
+		</button>
+	</div>
 {/snippet}
 
 <style>
