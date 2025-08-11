@@ -51,5 +51,13 @@
 		"mature-audiences": "适合成年观众。",
 		"audiences-13": "适合13岁及以上观众。",
 		"more": "更多"
+	},
+	"video-player": {
+		"back-to-home": "返回首页",
+		"converting": "正在下载和转换电影...",
+		"error-title": "哎呀！出了点问题",
+		"timeout-error": "视频处理超时。请稍后重试。",
+		"show-details": "显示详情",
+		"hide-details": "隐藏详情"
 	}
 }

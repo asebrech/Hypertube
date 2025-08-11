@@ -51,5 +51,13 @@
 		"mature-audiences": "Para audiencias maduras.",
 		"audiences-13": "Para audiencias de 13 años en adelante.",
 		"more": "más"
+	},
+	"video-player": {
+		"back-to-home": "Volver al inicio",
+		"converting": "Descargando y convirtiendo la película...",
+		"error-title": "¡Ups! Algo salió mal",
+		"timeout-error": "El procesamiento de video expiró. Por favor, inténtalo de nuevo más tarde.",
+		"show-details": "Mostrar detalles",
+		"hide-details": "Ocultar detalles"
 	}
 }

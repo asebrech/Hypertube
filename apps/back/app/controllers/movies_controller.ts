@@ -45,7 +45,12 @@ export default class MoviesController {
       {
         id: 0,
         name: 'TOP 10',
-        movies: popularMovies.results.slice(0, 10),
+        movies: popularMovies.results.slice(0, 10).map((movie: any) => {
+          return {
+            media_type: movieType,
+            ...movie,
+          }
+        }),
       },
       ...movieListByGenreResults,
     ]
@@ -237,7 +242,11 @@ export default class MoviesController {
     )
     const hasMorePages = discoverResults.total_pages > page
     if (discoverResults) {
-      return { movies: discoverResults.results, hasMorePages }
+      const moviesWithMediaType = discoverResults.results.map((movie: any) => ({
+        media_type: movieType,
+        ...movie,
+      }))
+      return { movies: moviesWithMediaType, hasMorePages }
     } else {
       return response.notFound({ error: 'Discover results not found' })
     }
@@ -267,7 +276,11 @@ export default class MoviesController {
     )
     const hasMorePages = similarMovies.total_pages > page
     if (similarMovies) {
-      return { movies: similarMovies.results, hasMorePages }
+      const moviesWithMediaType = similarMovies.results.map((movie: any) => ({
+        media_type: movieType,
+        ...movie,
+      }))
+      return { movies: moviesWithMediaType, hasMorePages }
     } else {
       return response.notFound({ error: 'Similar movies not found' })
     }

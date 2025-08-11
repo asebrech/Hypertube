@@ -51,5 +51,13 @@
 		"mature-audiences": "Pour un public mature.",
 		"audiences-13": "Pour les 13 ans et plus.",
 		"more": "plus"
+	},
+	"video-player": {
+		"back-to-home": "Retour à l'accueil",
+		"converting": "Téléchargement et conversion du film en cours...",
+		"error-title": "Oups ! Une erreur s'est produite",
+		"timeout-error": "Le traitement vidéo a expiré. Veuillez réessayer plus tard.",
+		"show-details": "Afficher les détails",
+		"hide-details": "Masquer les détails"
 	}
 }
