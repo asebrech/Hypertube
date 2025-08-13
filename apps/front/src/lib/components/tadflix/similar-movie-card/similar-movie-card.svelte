@@ -87,9 +87,9 @@
 
 		// Scroll to top of modal content
 		setTimeout(() => {
-			const modalContent = document.querySelector('[data-dialog-content]');
-			if (modalContent) {
-				modalContent.scrollTo({ top: 0, behavior: 'smooth' });
+			const scrollContainer = document.querySelector('[data-dialog-content] > div > div > div');
+			if (scrollContainer) {
+				scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
 			}
 		}, 50);
 	}
@@ -159,7 +159,7 @@
 		</div>
 
 		<!-- Description -->
-		<p class="line-clamp-2 text-xs leading-relaxed text-gray-400 min-h-[2.5rem]">
+		<p class="line-clamp-2 min-h-[2.5rem] text-xs leading-relaxed text-gray-400">
 			{movie.overview || ''}
 		</p>
 	</div>
