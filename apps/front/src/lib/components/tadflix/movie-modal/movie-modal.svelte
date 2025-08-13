@@ -569,10 +569,16 @@
 
 										<!-- Show More/Less Button - Overlayed at bottom -->
 										{#if hasMoreMovies}
-											<div class="absolute -bottom-4 left-1/2 z-10 -translate-x-1/2 transform">
+											<div
+												class={`absolute left-1/2 z-10 -translate-x-1/2 transform ${showAllSimilarMovies ? 'bottom-0 translate-y-12' : '-bottom-4'}`}
+											>
+												<!-- Full-width horizontal line going through the button -->
+												<div
+													class="absolute top-1/2 left-1/2 h-px w-screen -translate-x-1/2 -translate-y-1/2 bg-gray-600"
+												></div>
 												<button
 													onclick={toggleSimilarMovies}
-													class="group flex h-12 w-12 items-center justify-center rounded-full border border-gray-600 bg-gradient-to-b from-black/60 to-black/80 text-gray-400 shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:border-gray-400 hover:from-black/70 hover:to-black/90 hover:text-white hover:shadow-xl"
+													class="group relative z-10 flex h-12 w-12 items-center justify-center rounded-full border border-gray-600 bg-gradient-to-b from-black/60 to-black/80 text-gray-400 shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:border-gray-400 hover:from-black/70 hover:to-black/90 hover:text-white hover:shadow-xl"
 													aria-label={showAllSimilarMovies
 														? 'Show less'
 														: `Show ${similarMovies.length - maxItemsToShow} more similar movies`}
