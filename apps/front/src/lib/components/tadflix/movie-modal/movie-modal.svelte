@@ -46,6 +46,9 @@
 	let currentMovieId: number | undefined = $state(undefined);
 	let showAllSimilarMovies = $state(false);
 	let isExpanding = $state(false);
+	
+	// Reference to the scrollable container
+	let scrollContainer: HTMLElement;
 
 	// Subscribe to modal store
 	$effect(() => {
@@ -74,6 +77,13 @@
 				similarMovies = [];
 				showAllSimilarMovies = false; // Reset show more state
 				isExpanding = false; // Reset expansion state
+
+				// Scroll to top when movie changes
+				setTimeout(() => {
+					if (scrollContainer) {
+						scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+					}
+				}, 50);
 			}
 
 			const cacheKey = `${modalData.movieId}_${modalData.type}`;
@@ -288,7 +298,6 @@
 
 		// Scroll to top after going back
 		setTimeout(() => {
-			const scrollContainer = document.querySelector('[data-dialog-content] > div > div > div');
 			if (scrollContainer) {
 				scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
 			}
@@ -318,6 +327,7 @@
 	>
 		<div
 			class="h-full w-full overflow-x-hidden overflow-y-auto p-4 md:p-8"
+			bind:this={scrollContainer}
 			role="button"
 			tabindex="0"
 			onclick={(e) => {
