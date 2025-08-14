@@ -567,10 +567,17 @@
 											{/each}
 										</div>
 
+										<!-- Gradient overlay when not showing all movies -->
+										{#if hasMoreMovies && !showAllSimilarMovies}
+											<div
+												class="pointer-events-none absolute right-0 bottom-0 left-0 h-32 bg-gradient-to-t from-[#181818] via-[#181818]/60 to-transparent"
+											></div>
+										{/if}
+
 										<!-- Show More/Less Button - Overlayed at bottom -->
 										{#if hasMoreMovies}
 											<div
-												class={`absolute left-1/2 z-10 -translate-x-1/2 transform ${showAllSimilarMovies ? 'bottom-0 translate-y-12' : '-bottom-4'}`}
+												class={`absolute left-1/2 z-10 -translate-x-1/2 transform ${showAllSimilarMovies ? 'bottom-0 translate-y-16' : '-bottom-4'}`}
 											>
 												<!-- Full-width horizontal line going through the button -->
 												<div
@@ -578,7 +585,7 @@
 												></div>
 												<button
 													onclick={toggleSimilarMovies}
-													class="group relative z-10 flex h-12 w-12 items-center justify-center rounded-full border border-gray-600 bg-gradient-to-b from-black/60 to-black/80 text-gray-400 shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:border-gray-400 hover:from-black/70 hover:to-black/90 hover:text-white hover:shadow-xl"
+													class="group relative z-10 flex h-12 w-12 items-center justify-center rounded-full border border-white bg-gradient-to-b from-black/60 to-black/80 text-white shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:border-white hover:from-black/70 hover:to-black/90 hover:text-white hover:shadow-xl"
 													aria-label={showAllSimilarMovies
 														? 'Show less'
 														: `Show ${similarMovies.length - maxItemsToShow} more similar movies`}
@@ -605,7 +612,7 @@
 
 							<!-- About Section -->
 							{#if movie}
-								<div class="mt-12">
+								<div class={`${showAllSimilarMovies ? 'mt-24' : 'mt-12'}`}>
 									<div class="mb-6 flex items-center gap-4">
 										<h3 class="text-xl font-bold text-white">{$_('movie-modal.about')}</h3>
 										<span class="text-lg text-white">{movie.title || movie.name}</span>
