@@ -286,8 +286,11 @@
 					{#if customActions}
 						{@render customActions()}
 					{/if}
+				</div>
+
+				<div class="hidden items-center gap-2 sm:flex sm:gap-3">
 					{#if movieVideo?.key && movie.vote_average}
-						<div class="flex items-center gap-5">
+						<div class={`flex items-center gap-5 ${!showVoteAverage || !movie.vote_average ? 'pr-3' : ''}`}>
 							{#if playerReady && !videoEnded}
 								<button onclick={toggleMute} aria-label={isMuted ? 'Unmute' : 'Mute'}>
 									<ButtonPreview variant="outline" size="default">
@@ -307,9 +310,6 @@
 							{/if}
 						</div>
 					{/if}
-				</div>
-
-				<div class="hidden items-center gap-2 sm:flex sm:gap-3">
 					{#if showVoteAverage && movie.vote_average}
 						<div
 							class="bg-secondary/50 flex items-center gap-1 border-l-4 py-1 pr-3 pl-2 text-sm font-light text-nowrap"
