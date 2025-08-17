@@ -39,6 +39,19 @@
 	"browse": {
 		"explore": "探索全部"
 	},
+	"movie-modal": {
+		"new": "新片",
+		"go-back": "返回上一部电影",
+		"about": "关于",
+		"more-like-this": "更多类似作品",
+		"director": "导演",
+		"cast": "演员阵容",
+		"genres": "类型",
+		"maturity-rating": "年龄分级",
+		"mature-audiences": "适合成年观众。",
+		"audiences-13": "适合13岁及以上观众。",
+		"more": "更多"
+	},
 	"video-player": {
 		"back-to-home": "返回首页",
 		"converting": "正在下载和转换电影...",

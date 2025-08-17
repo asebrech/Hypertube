@@ -84,6 +84,27 @@ export type MovieDetails = {
   video: boolean;
   vote_average: number;
   vote_count: number;
+  // TV Show specific properties (optional)
+  first_air_date?: string;
+  last_air_date?: string;
+  number_of_episodes?: number;
+  number_of_seasons?: number;
+  episode_run_time?: number[];
+  in_production?: boolean;
+  type?: string;
+  created_by?: {
+    id: number;
+    credit_id: string;
+    name: string;
+    gender: number;
+    profile_path: string | null;
+  }[];
+  networks?: {
+    id: number;
+    name: string;
+    logo_path: string | null;
+    origin_country: string;
+  }[];
 };
 
 export type MovieVideo = {

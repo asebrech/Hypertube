@@ -2,9 +2,11 @@
 	import { goto } from '$app/navigation';
 	import { Skeleton } from '@/components/ui/skeleton';
 	import { getMovieDetails, getMovieVideos } from '@/services/api';
+	import { movieModalActions } from '@/services/store';
 	import type { MovieDetails, MovieType, MovieVideo } from '@hypertube/shared';
 	import { onMount } from 'svelte';
 	import ButtonPreview from '$lib/components/tadflix/buttons/button-preview/button-preview.svelte';
+	import { MovieBadges } from '$lib/components/tadflix/movie-badges';
 	import { Play, Plus, ChevronDown, Languages, VolumeOff, Volume2, RotateCw } from 'lucide-svelte';
 	import Icon from '@/assets/datflix-small.svelte';
 	import { Dot } from 'lucide-svelte';
@@ -127,12 +129,15 @@
 		showSkeleton = !movie?.backdrop_path && (!playerReady || videoEnded);
 	});
 
-	function toggleModalMovie(arg0: { movieId: number | undefined; type: any }) {
-		throw new Error('Function not implemented.');
+	function toggleModalMovie(options: { movieId: number | undefined; type: MovieType }) {
+		if (options.movieId && options.type) {
+			movieModalActions.open(options.movieId, options.type);
+		}
 	}
 
-	function addMovieToWatchlist(arg0: { movieId: number | undefined; type: any }) {
-		throw new Error('Function not implemented.');
+	function addMovieToWatchlist(options: { movieId: number | undefined; type: MovieType }) {
+		// TODO: Implement watchlist functionality
+		console.log('Add to watchlist:', options);
 	}
 </script>
 
@@ -203,7 +208,7 @@
 								e.stopPropagation();
 								toggleMute();
 							}}
-							class="absolute bottom-0 right-0 z-20 m-4"
+							class="absolute right-0 bottom-0 z-20 m-4"
 						>
 							{#if isMuted}
 								<VolumeOff />
@@ -269,9 +274,7 @@
 					<p class="text-sm text-gray-300">
 						{Math.floor(movie?.runtime / 60)} h {movie?.runtime % 60} min
 					</p>
-					<p class="border border-gray-300 px-[4px] py-[0px] text-[12px] text-gray-300 uppercase">
-						{movie.original_language}
-					</p>
+					<MovieBadges {movie} showQuality={true} showLanguage={true} />
 				</div>
 			{/if}
 			{#if movie && movie?.genres.length > 0}
