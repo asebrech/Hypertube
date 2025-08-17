@@ -1,42 +1,50 @@
 {
-    "sign_up": "Registrarse",
-    "sign_in": "Iniciar sesión",
-    "log_out": "Cerrar sesión",
-    "navbar": {
-        "home": "Inicio",
-        "shows": "Programas de TV",
-        "movies": "Películas",
-        "news-popular": "Noticias y populares",
-        "my-list": "Mis listas",
-        "by-language": "Explorar por idioma",
-        "browse": "Explorar"
-    },
-    "movie-banner": {
-        "play": "Reproducir",
-        "more-info": "Más información",
-        "see-more": "Ver más"
-    },
-    "search": {
-        "placeholder": "Películas, Programas, Personas...",
-        "noresults": "No se encontraron resultados"
-    },
-    "filters": {
+	"sign_up": "Registrarse",
+	"sign_in": "Iniciar sesión",
+	"log_out": "Cerrar sesión",
+	"navbar": {
+		"home": "Inicio",
+		"shows": "Programas de TV",
+		"movies": "Películas",
+		"news-popular": "Noticias y populares",
+		"my-list": "Mis listas",
+		"by-language": "Explorar por idioma",
+		"browse": "Explorar"
+	},
+	"movie-banner": {
+		"play": "Reproducir",
+		"more-info": "Más información",
+		"see-more": "Ver más"
+	},
+	"search": {
+		"placeholder": "Películas, Programas, Personas...",
+		"noresults": "No se encontraron resultados"
+	},
+	"filters": {
 		"select_genre": "Género",
 		"select_year": "Año de lanzamiento",
 		"select_sort": "Ordenar por ...",
 		"select_language": "País de origen",
-        "mostpopular": "Más popular",
-        "latestrelease": "Último lanzamiento",
-        "toprated": "Mejor valorados",
-        "originaltitle": "De la A a la Z",
-        "originaltitle_desc": "De la Z a la A",
-        "selected_cast": "Reparto seleccionado"
+		"mostpopular": "Más popular",
+		"latestrelease": "Último lanzamiento",
+		"toprated": "Mejor valorados",
+		"originaltitle": "De la A a la Z",
+		"originaltitle_desc": "De la Z a la A",
+		"selected_cast": "Reparto seleccionado"
 	},
-    "movie-action": {
-        "bookmarked": "Lista de seguimiento",
-        "watched": "Ya visto"
-    },
-    "browse": {
-        "explore": "Explorar todo"
-    }
+	"movie-action": {
+		"bookmarked": "Lista de seguimiento",
+		"watched": "Ya visto"
+	},
+	"browse": {
+		"explore": "Explorar todo"
+	},
+	"video-player": {
+		"back-to-home": "Volver al inicio",
+		"converting": "Descargando y convirtiendo la película...",
+		"error-title": "¡Ups! Algo salió mal",
+		"timeout-error": "El procesamiento de video expiró. Por favor, inténtalo de nuevo más tarde.",
+		"show-details": "Mostrar detalles",
+		"hide-details": "Ocultar detalles"
+	}
 }

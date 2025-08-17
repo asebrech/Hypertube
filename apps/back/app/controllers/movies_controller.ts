@@ -18,8 +18,8 @@ export default class MoviesController {
     const offset = (page - 1) * limit
     const lang = request.input('lang', 'en')
 
-    const genresList = await this.tmdbService.getGenresList(lang)
-    const popularMovies = await this.tmdbService.getPopularMovies(lang, page)
+    const genresList = await this.tmdbService.getGenresList(lang, movieType)
+    const popularMovies = await this.tmdbService.getPopularMovies(lang, page, movieType)
 
     const movieListByGenre = genresList.genres.map(async (genre: any) => {
       const movies = await this.tmdbService.getDiscover(
@@ -45,7 +45,12 @@ export default class MoviesController {
       {
         id: 0,
         name: 'TOP 10',
-        movies: popularMovies.results.slice(0, 10),
+        movies: popularMovies.results.slice(0, 10).map((movie: any) => {
+          return {
+            media_type: movieType,
+            ...movie,
+          }
+        }),
       },
       ...movieListByGenreResults,
     ]
@@ -237,7 +242,11 @@ export default class MoviesController {
     )
     const hasMorePages = discoverResults.total_pages > page
     if (discoverResults) {
-      return { movies: discoverResults.results, hasMorePages }
+      const moviesWithMediaType = discoverResults.results.map((movie: any) => ({
+        media_type: movieType,
+        ...movie,
+      }))
+      return { movies: moviesWithMediaType, hasMorePages }
     } else {
       return response.notFound({ error: 'Discover results not found' })
     }
@@ -267,7 +276,11 @@ export default class MoviesController {
     )
     const hasMorePages = similarMovies.total_pages > page
     if (similarMovies) {
-      return { movies: similarMovies.results, hasMorePages }
+      const moviesWithMediaType = similarMovies.results.map((movie: any) => ({
+        media_type: movieType,
+        ...movie,
+      }))
+      return { movies: moviesWithMediaType, hasMorePages }
     } else {
       return response.notFound({ error: 'Similar movies not found' })
     }
