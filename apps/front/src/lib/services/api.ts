@@ -9,7 +9,8 @@ import type {
 	MovieDetails,
 	MovieType,
 	Comment,
-	PaginatedComments
+	PaginatedComments,
+	PersonDetails
 } from '@hypertube/shared';
 
 export async function getMovies(
