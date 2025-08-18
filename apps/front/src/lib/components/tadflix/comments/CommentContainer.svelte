@@ -18,6 +18,7 @@
 	const user = $derived($page.data.user);
 	const token = $derived($page.data.token);
 	const currentUser = $derived(user?.username || user?.name || 'User');
+	const currentUserId = $derived(user?.id);
 
 	let comments = $state<Comment[]>(initialComments);
 	let isLoading = $state(false);
@@ -99,6 +100,7 @@
 						<CommentItem
 							{comment}
 							{currentUser}
+							{currentUserId}
 							onEdit={handleEditComment}
 							onDelete={handleDeleteComment}
 						/>

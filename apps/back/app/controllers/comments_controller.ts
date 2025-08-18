@@ -127,6 +127,7 @@ class CommentsController {
         content: comment.content,
         date: comment.createdAt,
         username: comment.user.username || comment.user.email || 'Anonymous',
+        userId: comment.user.id,
       }))
 
       return response.ok(formattedComments)
@@ -171,6 +172,7 @@ class CommentsController {
         content: comment.content,
         date: comment.createdAt,
         username: comment.user.username || comment.user.email || 'Anonymous',
+        userId: comment.user.id,
         movieId: comment.movieId,
       }
 

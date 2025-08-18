@@ -194,6 +194,7 @@ export type Comment = {
   content: string;
   date: string; // ISO date string
   username: string;
+  userId: number;
   movieId?: number;
   movieTitle?: string;
 };
