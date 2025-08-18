@@ -11,6 +11,7 @@
 
 	import { MovieCarousel } from '@/components/tadflix/movie-carousel';
 	import MovieBanner from '@/components/tadflix/movie-banner/MovieBanner.svelte';
+	import { MovieModal } from '@/components/tadflix/movie-modal';
 	import Skeleton from '@/components/ui/skeleton/skeleton.svelte';
 
 	const { data } = $props();
@@ -67,7 +68,7 @@
 
 <div class="flex flex-col gap-8">
 	{#if movieBanner}
-		<MovieBanner logo={movieLogo} movie={movieBanner} movieVideo={movieVideoResponse} />
+		<MovieBanner logo={movieLogo} movie={movieBanner} movieVideo={movieVideoResponse} type="tv" />
 	{:else}
 		<Skeleton class="h-[80vh]" />
 	{/if}
@@ -84,3 +85,6 @@
 </div>
 
 <div bind:this={sentinel}></div>
+
+<!-- Movie Modal -->
+<MovieModal />

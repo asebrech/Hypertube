@@ -3,6 +3,7 @@
 	import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 	import { Skeleton } from '@/components/ui/skeleton';
 	import { getBackdropImage } from '@/services/api';
+	import { movieModalActions } from '@/services/store';
 	import type { BackDropImage, ImageSizeType, MovieType } from '@hypertube/shared';
 	import { _ } from 'svelte-i18n';
 
@@ -18,7 +19,14 @@
 		isBookmarked?: boolean;
 	}
 
-	let { movieId, isVisible, title, type, isWatched = false, isBookmarked = false }: Props = $props();
+	let {
+		movieId,
+		isVisible,
+		title,
+		type,
+		isWatched = false,
+		isBookmarked = false
+	}: Props = $props();
 
 	const loadBackdropImage = async (movieId: any, size: ImageSizeType): Promise<BackDropImage> => {
 		const backdrop_image_data = await getBackdropImage(movieId, size, type);
@@ -51,19 +59,26 @@
 				});
 		}
 	});
+
+	function openModal() {
+		if (type) {
+			movieModalActions.open(movieId, type);
+		}
+	}
 </script>
 
 <Card
-	class="flex aspect-[5/3] flex-row rounded-[2px] border-none p-0"
+	class="flex aspect-[5/3] cursor-pointer flex-row rounded-[2px] border-none p-0 transition-transform duration-200 hover:scale-105"
 	style="background-size: cover; background-position: center; background-image: url({backdropImage?.url});"
+	onclick={openModal}
 >
 	{#if isLoading}
 		<div class="h-full w-full">
 			<Skeleton class="h-full w-full rounded-[2px]" />
 		</div>
 	{:else if !backdropImage?.langFound}
-		<CardHeader class="bg-black bg-opacity-50 p-4">
-			<CardTitle>{title}</CardTitle>
+		<CardHeader class="relative z-10 flex h-full items-end p-4">
+			<CardTitle class="text-white">{title}</CardTitle>
 		</CardHeader>
 	{/if}
 	{#if isWatched && isBookmarked}
