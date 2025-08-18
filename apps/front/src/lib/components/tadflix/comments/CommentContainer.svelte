@@ -3,16 +3,21 @@
 	import CommentInput from './CommentInput.svelte';
 	import { getMovieComments } from '$lib/services/api';
 	import type { Comment, PaginatedComments } from '@hypertube/shared';
+	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 
 	interface CommentContainerProps {
 		movieId: number;
 		movieTitle: string;
-		currentUser: string;
-		token: string;
 		initialComments?: Comment[];
 	}
 
-	const { movieId, movieTitle, currentUser, token, initialComments = [] }: CommentContainerProps = $props();
+	const { movieId, movieTitle, initialComments = [] }: CommentContainerProps = $props();
+
+	// Access user and token from page data
+	const user = $derived($page.data.user);
+	const token = $derived($page.data.token);
+	const currentUser = $derived(user?.username || user?.name || 'User');
 
 	let comments = $state<Comment[]>(initialComments);
 	let isLoading = $state(false);
@@ -22,19 +27,19 @@
 
 	const loadComments = async (page: number = 1, append: boolean = false) => {
 		if (isLoading) return;
-		
+
 		isLoading = true;
 		error = null;
 
 		try {
 			const response: PaginatedComments = await getMovieComments(movieId, page, 20, token);
-			
+
 			if (append) {
 				comments = [...comments, ...response.data];
 			} else {
 				comments = response.data;
 			}
-			
+
 			hasMore = response.meta.current_page < response.meta.last_page;
 			currentPage = response.meta.current_page;
 		} catch (err) {
@@ -64,78 +69,61 @@
 		console.log('Delete comment:', commentId);
 	};
 
-	// Load initial comments if none provided
-	$effect(() => {
-		if (initialComments.length === 0) {
-			loadComments();
-		}
+	onMount(() => {
+		loadComments();
 	});
 </script>
 
-<div class="w-full flex flex-col gap-7">
+<div class="flex w-full flex-col gap-7">
 	<!-- Header -->
-	<div class="flex justify-between items-center">
-		<div class="flex items-center gap-32">
-			<h2 class="text-white text-2xl font-medium leading-[1.5] tracking-wide font-poppins">
-				Commentary
-			</h2>
-			<span class="text-white text-lg leading-[1.22] font-montserrat">
-				{movieTitle}
-			</span>
-		</div>
+	<div class="flex items-center justify-between">
+		<h2 class="font-poppins text-2xl leading-[1.5] font-medium tracking-wide text-white">
+			Commentary
+		</h2>
+		<span class="font-montserrat text-lg leading-[1.22] text-white">
+			{movieTitle}
+		</span>
 	</div>
 
 	<!-- Comments Section -->
-	<div class="flex flex-col gap-4">
-		<!-- Comment Input -->
-		<CommentInput 
-			{movieId} 
-			{currentUser} 
-			{token} 
-			onCommentAdded={handleCommentAdded} 
-		/>
+	{#if user && token}
+		<div class="flex flex-col gap-4">
+			<!-- Comments List -->
+			{#if isLoading && comments.length === 0}
+				<div class="py-8 text-center text-white">Loading comments...</div>
+			{:else if error && comments.length === 0}
+				<div class="py-8 text-center text-red-500">{error}</div>
+			{:else if comments.length > 0}
+				<div class="flex flex-col gap-4">
+					{#each comments as comment (comment.id)}
+						<CommentItem
+							{comment}
+							{currentUser}
+							onEdit={handleEditComment}
+							onDelete={handleDeleteComment}
+						/>
+					{/each}
 
-		<!-- Comments List -->
-		{#if isLoading && comments.length === 0}
-			<div class="text-white text-center py-8">Loading comments...</div>
-		{:else if error && comments.length === 0}
-			<div class="text-red-500 text-center py-8">{error}</div>
-		{:else if comments.length > 0}
-			<div class="flex flex-col gap-4">
-				{#each comments as comment (comment.id)}
-					<CommentItem 
-						{comment} 
-						{currentUser}
-						onEdit={handleEditComment}
-						onDelete={handleDeleteComment}
-					/>
-				{/each}
-				
-				<!-- Load More Button -->
-				{#if hasMore}
-					<button
-						onclick={loadMoreComments}
-						disabled={isLoading}
-						class="text-white bg-[#2A2A2A] hover:bg-[#3A3A3A] border border-[rgba(255,255,255,0.5)] rounded px-6 py-2 self-center mt-4"
-						class:opacity-50={isLoading}
-						class:cursor-not-allowed={isLoading}
-					>
-						{isLoading ? 'Loading...' : 'Load More Comments'}
-					</button>
-				{/if}
-			</div>
-		{:else}
-			<div class="text-white text-center py-8">No comments found</div>
-		{/if}
-	</div>
+					<!-- Load More Button -->
+					{#if hasMore}
+						<button
+							onclick={loadMoreComments}
+							disabled={isLoading}
+							class="mt-4 self-center rounded border border-[rgba(255,255,255,0.5)] bg-[#2A2A2A] px-6 py-2 text-white hover:bg-[#3A3A3A]"
+							class:opacity-50={isLoading}
+							class:cursor-not-allowed={isLoading}
+						>
+							{isLoading ? 'Loading...' : 'Load More Comments'}
+						</button>
+					{/if}
+				</div>
+			{:else}
+				<div class="py-8 text-center text-white">No comments found</div>
+			{/if}
+			<!-- Comment Input -->
+			<CommentInput {movieId} username={currentUser} {token} onCommentAdded={handleCommentAdded} />
+		</div>
+	{:else}
+		<div class="py-8 text-center text-white">Please log in to view and post comments</div>
+	{/if}
 </div>
-
-<style>
-	.font-poppins {
-		font-family: Poppins, sans-serif;
-	}
-	
-	.font-montserrat {
-		font-family: Montserrat, sans-serif;
-	}
-</style>

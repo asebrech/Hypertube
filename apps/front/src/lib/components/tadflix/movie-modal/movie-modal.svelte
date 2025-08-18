@@ -24,6 +24,7 @@
 	import ButtonPreview from '../buttons/button-preview/button-preview.svelte';
 	import { Button } from '@/components/ui/button';
 	import { Skeleton } from '@/components/ui/skeleton';
+	import { CommentContainer } from '../comments';
 	import { _ } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	import { goto } from '$app/navigation';
@@ -536,6 +537,16 @@
 									{/if}
 								</div>
 							</div>
+
+							<!-- Comments Section -->
+							{#if movie}
+								<div class="mt-12">
+									<CommentContainer 
+										movieId={movie.id} 
+										movieTitle={movie.title || movie.name || 'Unknown Movie'}
+									/>
+								</div>
+							{/if}
 
 							<!-- Similar Movies Section -->
 							{#if similarMovies.length > 0}

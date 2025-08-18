@@ -1,10 +1,10 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Comment from '#models/comment'
 import Movie from '#models/movies'
+import MovieService from '#services/movie_service'
 import { createCommentValidator, createMovieCommentValidator } from '#validators/comment'
 
 class CommentsController {
-
   /**
    * GET /comments/:id
    * Returns comment, author's username, comment id, date posted
@@ -88,11 +88,33 @@ class CommentsController {
       const page = request.input('page', 1)
       const limit = request.input('limit', 20)
 
-      // Verify movie exists
-      await Movie.findOrFail(params.movie_id)
+      if (!params.id) {
+        return response.badRequest({ error: 'Movie ID is required' })
+      }
+
+      // Find movie by tmdbId - use first() instead of firstOrFail()
+      const movie = await Movie.query().where('tmdbId', params.id).first()
+
+      if (!movie) {
+        // Movie doesn't exist in our database yet, return empty comments
+        return response.ok({
+          data: [],
+          meta: {
+            total: 0,
+            per_page: limit,
+            current_page: page,
+            last_page: 1,
+            first_page: 1,
+            first_page_url: '/?page=1',
+            last_page_url: '/?page=1',
+            next_page_url: null,
+            previous_page_url: null,
+          },
+        })
+      }
 
       const comments = await Comment.query()
-        .where('movie_id', params.movie_id)
+        .where('movie_id', movie.id)
         .preload('user', (userQuery) => {
           userQuery.select('id', 'username', 'email')
         })
@@ -121,7 +143,7 @@ class CommentsController {
   }
 
   /**
-   * POST /movies/:movie_id/comments
+   * POST /movies/:id/comments
    * Creates a new comment for a specific movie
    * Expected data: content
    */
@@ -130,8 +152,9 @@ class CommentsController {
       const user = auth.getUserOrFail()
       const { content } = await request.validateUsing(createMovieCommentValidator)
 
-      // Verify movie exists
-      const movie = await Movie.findOrFail(params.movie_id)
+      // Get or create movie by tmdbId using MovieService
+      const movieService = new MovieService()
+      const movie = await movieService.getOrCreate(parseInt(params.id))
 
       const comment = await Comment.create({
         content,
