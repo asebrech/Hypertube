@@ -22,7 +22,7 @@
 
 	const getLangName = (langToTranslate: string) => {
 		const langCode = langToTranslate.split('-')[0];
-		return lang[langCode as keyof typeof lang]?.nativeName;
+		return lang[langCode as keyof typeof lang]?.nativeName ?? langToTranslate ?? "Unknown language";
 	};
 
 	let language = $derived(getLangName($locale || ""));
