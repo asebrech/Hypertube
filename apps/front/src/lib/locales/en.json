@@ -39,6 +39,19 @@
 	"browse": {
 		"explore": "Explore All"
 	},
+	"movie-modal": {
+		"new": "New",
+		"go-back": "Go back to previous movie",
+		"about": "About",
+		"more-like-this": "More Like This",
+		"director": "Director",
+		"cast": "Cast",
+		"genres": "Genres",
+		"maturity-rating": "Maturity rating",
+		"mature-audiences": "For mature audiences.",
+		"audiences-13": "For audiences 13 and older.",
+		"more": "more"
+	},
 	"video-player": {
 		"back-to-home": "Back to Home",
 		"converting": "Downloading and converting movie files...",

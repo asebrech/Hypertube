@@ -1,5 +1,6 @@
 <script lang="ts">
 	import MovieList from '@/components/tadflix/movie-list/movie-list.svelte';
+	import { MovieModal } from '@/components/tadflix/movie-modal';
 	import type { Movie, Genre, PersonDetails } from '@hypertube/shared';
 	import { getMovieDiscover, getGenresList, getPeopleDetails } from '@/services/api';
 	import { _ } from 'svelte-i18n';
@@ -262,3 +263,6 @@
 {/if}
 
 <div bind:this={sentinel}></div>
+
+<!-- Movie Modal -->
+<MovieModal />

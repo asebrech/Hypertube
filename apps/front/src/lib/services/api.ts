@@ -2,9 +2,20 @@ import axios from 'axios';
 import { locale } from 'svelte-i18n';
 import { PUBLIC_BACK_URL } from '$env/static/public';
 import { get } from 'svelte/store';
-import type { ImageSizeType, Movie, MovieCredits, MovieDetails, MovieType } from '@hypertube/shared';
+import type {
+	ImageSizeType,
+	Movie,
+	MovieCredits,
+	MovieDetails,
+	MovieType,
+	PersonDetails
+} from '@hypertube/shared';
 
-export async function getMovies(page_to_load: number, type: MovieType = 'movie', token: string | null = null) {
+export async function getMovies(
+	page_to_load: number,
+	type: MovieType = 'movie',
+	token: string | null = null
+) {
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies`,
@@ -15,7 +26,7 @@ export async function getMovies(page_to_load: number, type: MovieType = 'movie',
 		},
 		headers: {
 			...(token && { Authorization: `Bearer ${token}` })
-		},
+		}
 	};
 	try {
 		const response = await axios(config);
@@ -39,7 +50,7 @@ export async function getMovieDiscover(
 		page,
 		type,
 		sortBy,
-		lang: get(locale),
+		lang: get(locale)
 	};
 
 	if (genreIds && genreIds.length > 0) params.genreId = genreIds.join(',');
@@ -62,7 +73,10 @@ export async function getMovieDiscover(
 	}
 }
 
-export async function getMovieDetails(movieId: number, type: MovieType = 'movie'): Promise<MovieDetails> {
+export async function getMovieDetails(
+	movieId: number,
+	type: MovieType = 'movie'
+): Promise<MovieDetails> {
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies/${movieId}`,
@@ -80,7 +94,11 @@ export async function getMovieDetails(movieId: number, type: MovieType = 'movie'
 	}
 }
 
-export async function getBackdropImage(movieId: any, size: ImageSizeType, type: MovieType = 'movie') {
+export async function getBackdropImage(
+	movieId: any,
+	size: ImageSizeType,
+	type: MovieType = 'movie'
+) {
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies/backdropImage`,
@@ -201,7 +219,11 @@ export async function getGenresList() {
 	}
 }
 
-export async function getSimilarMovies(movieId: number, page: number, type: MovieType = 'movie'): Promise<{ movies: Movie[], hasMorePages: boolean }> {
+export async function getSimilarMovies(
+	movieId: number,
+	page: number,
+	type: MovieType = 'movie'
+): Promise<{ movies: Movie[]; hasMorePages: boolean }> {
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies/similar`,
@@ -221,7 +243,10 @@ export async function getSimilarMovies(movieId: number, page: number, type: Movi
 	}
 }
 
-export async function getMovieCredits(movieId: number, type: MovieType = 'movie'): Promise<MovieCredits> {
+export async function getMovieCredits(
+	movieId: number,
+	type: MovieType = 'movie'
+): Promise<MovieCredits> {
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies/credits`,

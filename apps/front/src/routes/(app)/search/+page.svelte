@@ -3,6 +3,7 @@
 	import type { Movie } from '@hypertube/shared';
 	import { searchQuery } from '@/services/store';
 	import { MovieList } from '@/components/tadflix/movie-list';
+	import { MovieModal } from '@/components/tadflix/movie-modal';
 	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
 	import { goto } from '$app/navigation';
@@ -100,3 +101,6 @@
 {/if}
 
 <div bind:this={sentinel}></div>
+
+<!-- Movie Modal -->
+<MovieModal />
