@@ -105,10 +105,6 @@ class CommentsController {
             current_page: page,
             last_page: 1,
             first_page: 1,
-            first_page_url: '/?page=1',
-            last_page_url: '/?page=1',
-            next_page_url: null,
-            previous_page_url: null,
           },
         })
       }
@@ -185,6 +181,58 @@ class CommentsController {
         return response.badRequest({ error: 'Validation failed', messages: error.messages })
       }
       return response.badRequest({ error: 'Failed to create comment' })
+    }
+  }
+
+  /**
+   * DELETE /movies/comments/:commentId
+   * Deletes a comment by ID (ownership verified by middleware)
+   */
+  async deleteComment({ response, comment }: HttpContext & { comment: Comment }) {
+    try {
+      // Delete the comment (ownership already verified by middleware)
+      await comment.delete()
+
+      return response.ok({ message: 'Comment deleted successfully' })
+    } catch (error) {
+      console.log('Delete comment error:', error.message)
+      return response.badRequest({ error: 'Failed to delete comment' })
+    }
+  }
+
+  /**
+   * PUT /movies/comments/:commentId
+   * Updates a comment by ID (ownership verified by middleware)
+   */
+  async updateComment({ request, response, comment }: HttpContext & { comment: Comment }) {
+    try {
+      const { content } = await request.validateUsing(createMovieCommentValidator)
+
+      // Update the comment (ownership already verified by middleware)
+      comment.content = content
+      await comment.save()
+
+      // Load user relationship for response
+      await comment.load('user', (userQuery) => {
+        userQuery.select('id', 'username', 'email')
+      })
+
+      const formattedComment = {
+        id: comment.id,
+        content: comment.content,
+        date: comment.createdAt,
+        username: comment.user.username || comment.user.email || 'Anonymous',
+        userId: comment.user.id,
+        movieId: comment.movieId,
+      }
+
+      return response.ok(formattedComment)
+    } catch (error) {
+      console.log('Update comment error:', error.message)
+      if (error.code === 'E_VALIDATION_ERROR') {
+        return response.badRequest({ error: 'Validation failed', messages: error.messages })
+      }
+      return response.badRequest({ error: 'Failed to update comment' })
     }
   }
 }

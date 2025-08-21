@@ -379,3 +379,46 @@ export async function createComment(
 		throw error;
 	}
 }
+
+export async function deleteComment(commentId: number, token: string): Promise<void> {
+	try {
+		const config = {
+			method: 'delete',
+			url: `${PUBLIC_BACK_URL}/movies/comments/${commentId}`,
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
+		};
+
+		await axios(config);
+	} catch (error) {
+		console.error('Error deleting comment:', error);
+		throw error;
+	}
+}
+
+export async function updateComment(
+	commentId: number,
+	content: string,
+	token: string
+): Promise<Comment> {
+	try {
+		const config = {
+			method: 'put',
+			url: `${PUBLIC_BACK_URL}/movies/comments/${commentId}`,
+			data: {
+				content
+			},
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'Content-Type': 'application/json'
+			}
+		};
+
+		const response = await axios(config);
+		return response.data;
+	} catch (error) {
+		console.error('Error updating comment:', error);
+		throw error;
+	}
+}
