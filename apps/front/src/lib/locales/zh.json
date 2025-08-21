@@ -59,5 +59,23 @@
 		"timeout-error": "视频处理超时。请稍后重试。",
 		"show-details": "显示详情",
 		"hide-details": "隐藏详情"
+	},
+	"comments": {
+		"title": "评论",
+		"loading": "加载评论中...",
+		"no-comments": "未找到评论",
+		"load-more": "加载更多评论",
+		"login-required": "请登录以查看和发表评论",
+		"auth-required": "删除评论需要身份验证",
+		"delete-title": "删除评论",
+		"delete-message": "您确定要删除此评论吗？此操作无法撤销。",
+		"cancel": "取消",
+		"delete": "删除",
+		"deleting": "删除中...",
+		"failed-to-load": "加载评论失败",
+		"failed-to-delete": "删除评论失败",
+		"placeholder": "您的评论...",
+		"failed-to-post": "发表评论失败",
+		"send": "发送评论"
 	}
 }

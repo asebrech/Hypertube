@@ -59,5 +59,23 @@
 		"timeout-error": "El procesamiento de video expiró. Por favor, inténtalo de nuevo más tarde.",
 		"show-details": "Mostrar detalles",
 		"hide-details": "Ocultar detalles"
+	},
+	"comments": {
+		"title": "Comentarios",
+		"loading": "Cargando comentarios...",
+		"no-comments": "No se encontraron comentarios",
+		"load-more": "Cargar más comentarios",
+		"login-required": "Por favor, inicia sesión para ver y publicar comentarios",
+		"auth-required": "Se requiere autenticación para eliminar el comentario",
+		"delete-title": "Eliminar comentario",
+		"delete-message": "¿Estás seguro de que quieres eliminar este comentario? Esta acción no se puede deshacer.",
+		"cancel": "Cancelar",
+		"delete": "Eliminar",
+		"deleting": "Eliminando...",
+		"failed-to-load": "Error al cargar comentarios",
+		"failed-to-delete": "Error al eliminar comentario",
+		"placeholder": "Tu comentario...",
+		"failed-to-post": "Error al publicar comentario",
+		"send": "Enviar comentario"
 	}
 }
