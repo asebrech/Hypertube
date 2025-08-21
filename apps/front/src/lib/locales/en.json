@@ -76,6 +76,10 @@
 		"failed-to-delete": "Failed to delete comment",
 		"placeholder": "Your comment...",
 		"failed-to-post": "Failed to post comment",
-		"send": "Send comment"
+		"send": "Send comment",
+		"edit": "Edit comment",
+		"save": "Save",
+		"updating": "Updating...",
+		"failed-to-update": "Failed to update comment"
 	}
 }

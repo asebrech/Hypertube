@@ -65,8 +65,17 @@
 	};
 
 	const handleEditComment = (commentId: number) => {
-		// TODO: Implement edit functionality
+		// Edit functionality is handled directly in CommentItem
 		console.log('Edit comment:', commentId);
+	};
+
+	const handleUpdateComment = (updatedComment: Comment) => {
+		// Update the comment in the local state
+		comments = comments.map(comment => 
+			comment.id === updatedComment.id 
+				? updatedComment
+				: comment
+		);
 	};
 
 	const handleDeleteComment = async (commentId: number) => {
@@ -146,8 +155,10 @@
 							{comment}
 							{currentUser}
 							{currentUserId}
+							{token}
 							onEdit={handleEditComment}
 							onDelete={handleDeleteComment}
+							onUpdate={handleUpdateComment}
 						/>
 					{/each}
 

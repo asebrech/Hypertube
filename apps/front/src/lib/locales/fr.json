@@ -1,7 +1,28 @@
 {
 	"sign_in": "S'enregistrer",
 	"sign_up": "Se connecter",
-	"log_out": "Déconnexion",
+	"comments": {
+		"title": "Commentaires",
+		"loading": "Chargement des commentaires...",
+		"no-comments": "Aucun commentaire trouvé",
+		"load-more": "Charger plus de commentaires",
+		"login-required": "Veuillez vous connecter pour voir et poster des commentaires",
+		"auth-required": "Authentification requise pour supprimer le commentaire",
+		"delete-title": "Supprimer le commentaire",
+		"delete-message": "Êtes-vous sûr de vouloir supprimer ce commentaire ? Cette action ne peut pas être annulée.",
+		"cancel": "Annuler",
+		"delete": "Supprimer",
+		"deleting": "Suppression...",
+		"failed-to-load": "Échec du chargement des commentaires",
+		"failed-to-delete": "Échec de la suppression du commentaire",
+		"placeholder": "Votre commentaire...",
+		"failed-to-post": "Échec de l'envoi du commentaire",
+		"send": "Envoyer le commentaire",
+		"edit": "Modifier le commentaire",
+		"save": "Sauvegarder",
+		"updating": "Mise à jour...",
+		"failed-to-update": "Échec de la mise à jour du commentaire"
+	},
 	"navbar": {
 		"home": "Acceuil",
 		"shows": "Shows",
@@ -59,23 +80,5 @@
 		"timeout-error": "Le traitement vidéo a expiré. Veuillez réessayer plus tard.",
 		"show-details": "Afficher les détails",
 		"hide-details": "Masquer les détails"
-	},
-	"comments": {
-		"title": "Commentaires",
-		"loading": "Chargement des commentaires...",
-		"no-comments": "Aucun commentaire trouvé",
-		"load-more": "Charger plus de commentaires",
-		"login-required": "Veuillez vous connecter pour voir et poster des commentaires",
-		"auth-required": "Authentification requise pour supprimer le commentaire",
-		"delete-title": "Supprimer le commentaire",
-		"delete-message": "Êtes-vous sûr de vouloir supprimer ce commentaire ? Cette action ne peut pas être annulée.",
-		"cancel": "Annuler",
-		"delete": "Supprimer",
-		"deleting": "Suppression...",
-		"failed-to-load": "Échec du chargement des commentaires",
-		"failed-to-delete": "Échec de la suppression du commentaire",
-		"placeholder": "Votre commentaire...",
-		"failed-to-post": "Échec de la publication du commentaire",
-		"send": "Envoyer le commentaire"
 	}
 }

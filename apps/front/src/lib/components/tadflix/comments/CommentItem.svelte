@@ -1,22 +1,39 @@
 <script lang="ts">
 	import { EditIcon, XIcon } from 'lucide-svelte';
 	import UserAvatar from './UserAvatar.svelte';
+	import CommentInput from './CommentInput.svelte';
 	import type { Comment } from '@hypertube/shared';
+	import { _ } from 'svelte-i18n';
 
 	interface CommentItemProps {
 		comment: Comment;
 		currentUser?: string;
 		currentUserId?: number;
+		token?: string;
 		onEdit?: (commentId: number) => void;
 		onDelete?: (commentId: number) => void;
+		onUpdate?: (updatedComment: Comment) => void;
 	}
 
-	const { comment, currentUserId, onEdit, onDelete }: CommentItemProps = $props();
+	const { comment, currentUserId, token, onEdit, onDelete, onUpdate }: CommentItemProps = $props();
 
-	let expanded = $state(false);
+	let isEditing = $state(false);
 
 	// Check if current user owns this comment
 	const isOwner = $derived(currentUserId === comment.userId);
+
+	const startEdit = () => {
+		isEditing = true;
+	};
+
+	const cancelEdit = () => {
+		isEditing = false;
+	};
+
+	const handleCommentUpdated = (updatedComment: Comment) => {
+		isEditing = false;
+		onUpdate?.(updatedComment);
+	};
 
 	// Format date
 </script>
@@ -30,33 +47,46 @@
 
 		<!-- Comment Content -->
 		<div class="flex flex-1 flex-col gap-2">
-			<!-- Comment Text -->
-			<p class="text-xl leading-[1.19] text-white transition-all duration-300">
-				{comment.content}
-			</p>
+			{#if isEditing}
+				<!-- Edit Mode using CommentInput -->
+				<CommentInput
+					token={token || ''}
+					username={comment.username}
+					isEditMode={true}
+					existingComment={comment}
+					onCommentUpdated={handleCommentUpdated}
+					onCancel={cancelEdit}
+					showAvatar={false}
+					fullWidth={true}
+				/>
+			{:else}
+				<!-- Display Mode -->
+				<p class="text-xl leading-[1.19] text-white transition-all duration-300">
+					{comment.content}
+				</p>
+			{/if}
 		</div>
 	</div>
 	<!-- Action Buttons (Only show for comment owner) -->
 	{#if isOwner}
 		<div class="flex flex-col items-center gap-4">
 			<!-- Edit Button -->
-			{#if onEdit}
+			{#if !isEditing}
 				<button
-					onclick={() => onEdit?.(comment.id)}
+					onclick={startEdit}
 					class="flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-gray-700"
-					aria-label="Edit comment"
+					aria-label={$_('comments.edit')}
 				>
-					<!-- Lucide Edit Icon -->
 					<EditIcon />
 				</button>
 			{/if}
 
 			<!-- Delete Button -->
-			{#if onDelete}
+			{#if onDelete && !isEditing}
 				<button
 					onclick={() => onDelete?.(comment.id)}
 					class="flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-red-700"
-					aria-label="Delete comment"
+					aria-label={$_('comments.delete')}
 				>
 					<XIcon />
 				</button>
