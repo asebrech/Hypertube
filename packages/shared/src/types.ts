@@ -187,3 +187,25 @@ export type PersonDetails = {
   popularity: number;
   profile_path: string;
 };
+
+// Comment types
+export type Comment = {
+  id: number;
+  content: string;
+  date: string; // ISO date string
+  username: string;
+  userId: number;
+  movieId?: number;
+  movieTitle?: string;
+};
+
+export type PaginatedComments = {
+  data: Comment[];
+  meta: {
+    current_page: number;
+    first_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+  };
+};
