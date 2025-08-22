@@ -10,12 +10,11 @@
 		currentUser?: string;
 		currentUserId?: number;
 		token?: string;
-		onEdit?: (commentId: number) => void;
 		onDelete?: (commentId: number) => void;
 		onUpdate?: (updatedComment: Comment) => void;
 	}
 
-	const { comment, currentUserId, token, onEdit, onDelete, onUpdate }: CommentItemProps = $props();
+	const { comment, currentUserId, token, onDelete, onUpdate }: CommentItemProps = $props();
 
 	let isEditing = $state(false);
 

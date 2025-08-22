@@ -66,11 +66,6 @@
 		comments = [newComment, ...comments];
 	};
 
-	const handleEditComment = (commentId: number) => {
-		// Edit functionality is handled directly in CommentItem
-		console.log('Edit comment:', commentId);
-	};
-
 	const handleUpdateComment = (updatedComment: Comment) => {
 		// Update the comment in the local state
 		comments = comments.map(comment => 
@@ -161,7 +156,6 @@
 							{currentUser}
 							{currentUserId}
 							{token}
-							onEdit={handleEditComment}
 							onDelete={handleDeleteComment}
 							onUpdate={handleUpdateComment}
 						/>
