@@ -104,6 +104,14 @@ export default class TorrentController {
         spaceFreedFormatted: formatBytes(result.spaceFreed),
       })
     } else {
+      if (result.error?.includes('currently')) {
+        return response.conflict({
+          success: false,
+          message: result.message,
+          error: result.error,
+        })
+      }
+      
       return response.internalServerError({
         success: false,
         message: result.message,

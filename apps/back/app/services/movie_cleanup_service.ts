@@ -187,6 +187,15 @@ export default class MovieCleanupService {
         }
       }
 
+      if (movie.conversionStatus === 'converting' || movie.downloadStatus === 'downloading') {
+        return {
+          success: false,
+          message: 'Cannot delete movie during processing',
+          spaceFreed: 0,
+          error: `Movie is currently ${movie.conversionStatus === 'converting' ? 'being converted' : 'downloading'}. Please wait for the process to complete before deleting.`,
+        }
+      }
+
       const result = await this.deleteSingleMovie(movie)
       const movieTitle = movie.title || 'Unknown title'
 
@@ -250,6 +259,15 @@ export default class MovieCleanupService {
       console.log(`Starting deletion of ${allMovies.length} movies`)
 
       for (const movie of allMovies) {
+        if (movie.conversionStatus === 'converting' || movie.downloadStatus === 'downloading') {
+          console.log(
+            `Skipping movie ${movie.tmdbId} (${movie.title || 'Unknown title'}) - currently ${movie.conversionStatus === 'converting' ? 'converting' : 'downloading'}`
+          )
+          result.errors++
+          result.errorMessages.push(`Movie ${movie.tmdbId} skipped - currently being processed`)
+          continue
+        }
+
         const deleteResult = await this.deleteSingleMovie(movie)
 
         if (deleteResult.success) {
@@ -293,6 +311,12 @@ export default class MovieCleanupService {
       
       if (!isValidTmdbId(tmdbId)) {
         throw new Error(`Invalid tmdbId: ${tmdbId}`)
+      }
+
+      if (movie.conversionStatus === 'converting' || movie.downloadStatus === 'downloading') {
+        throw new Error(
+          `Cannot delete movie ${tmdbId} - currently ${movie.conversionStatus === 'converting' ? 'converting' : 'downloading'}`
+        )
       }
 
       const hlsPath = path.join(process.cwd(), 'hls-output', tmdbId.toString())
