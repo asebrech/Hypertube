@@ -4,6 +4,8 @@ import { SECRET_BACK_URL } from '$env/static/private';
 
 const register = async ({ request }: RequestEvent) => {
 	const data = await request.formData();
+	const firstName = data.get('firstName');
+	const lastName = data.get('lastName');
 	const username = data.get('username');
 	const email = data.get('email');
 	const password = data.get('password');
@@ -13,6 +15,8 @@ const register = async ({ request }: RequestEvent) => {
 	}
 
 	const payload = JSON.stringify({
+		firstName,
+		lastName,
 		username,
 		email,
 		password

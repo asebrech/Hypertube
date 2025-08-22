@@ -25,7 +25,7 @@ export const registerValidator = vine.compile(
       }),
     password: passwordRules,
     username: vine.string().minLength(3).maxLength(64).optional(),
-    firstName: vine.string().minLength(2).maxLength(64),
-    lastName: vine.string().minLength(2).maxLength(64),
+    firstName: vine.string().minLength(2).maxLength(64).optional(),
+    lastName: vine.string().minLength(2).maxLength(64).optional(),
   })
 )

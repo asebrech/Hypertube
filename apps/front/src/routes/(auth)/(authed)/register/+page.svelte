@@ -22,13 +22,17 @@
 					{/if}
 					<div class="grid grid-cols-2 gap-4">
 						<div class="grid gap-2">
-							<Label for="first-name">First name</Label>
+							<Label for="firstName">First name</Label>
 							<Input id="first-name" placeholder="Max" required />
 						</div>
 						<div class="grid gap-2">
-							<Label for="last-name">Last name</Label>
+							<Label for="lastName">Last name</Label>
 							<Input id="last-name" placeholder="Robinson" required />
 						</div>
+					</div>
+					<div class="grid gap-2">
+						<Label for="username">Username</Label>
+						<Input id="username" name="username" placeholder="username" required />
 					</div>
 					<div class="grid gap-2">
 						<Label for="email">Email</Label>
