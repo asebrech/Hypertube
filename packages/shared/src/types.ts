@@ -202,10 +202,10 @@ export type Comment = {
 export type PaginatedComments = {
   data: Comment[];
   meta: {
-    current_page: number;
-    first_page: number;
-    last_page: number;
-    per_page: number;
+    currentPage: number;
+    firstPage: number;
+    lastPage: number;
+    perPage: number;
     total: number;
   };
 };
