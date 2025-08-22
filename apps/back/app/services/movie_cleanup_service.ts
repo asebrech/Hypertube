@@ -187,12 +187,12 @@ export default class MovieCleanupService {
         }
       }
 
-      if (movie.conversionStatus === 'converting' || movie.downloadStatus === 'downloading') {
+      if (movie.conversionStatus === 'converting') {
         return {
           success: false,
-          message: 'Cannot delete movie during processing',
+          message: 'Cannot delete movie during conversion',
           spaceFreed: 0,
-          error: `Movie is currently ${movie.conversionStatus === 'converting' ? 'being converted' : 'downloading'}. Please wait for the process to complete before deleting.`,
+          error: `Movie is currently being converted. Please wait for the conversion to complete before deleting.`,
         }
       }
 
@@ -259,12 +259,12 @@ export default class MovieCleanupService {
       console.log(`Starting deletion of ${allMovies.length} movies`)
 
       for (const movie of allMovies) {
-        if (movie.conversionStatus === 'converting' || movie.downloadStatus === 'downloading') {
+        if (movie.conversionStatus === 'converting') {
           console.log(
-            `Skipping movie ${movie.tmdbId} (${movie.title || 'Unknown title'}) - currently ${movie.conversionStatus === 'converting' ? 'converting' : 'downloading'}`
+            `Skipping movie ${movie.tmdbId} (${movie.title || 'Unknown title'}) - currently converting`
           )
           result.errors++
-          result.errorMessages.push(`Movie ${movie.tmdbId} skipped - currently being processed`)
+          result.errorMessages.push(`Movie ${movie.tmdbId} skipped - currently being converted`)
           continue
         }
 
@@ -313,10 +313,8 @@ export default class MovieCleanupService {
         throw new Error(`Invalid tmdbId: ${tmdbId}`)
       }
 
-      if (movie.conversionStatus === 'converting' || movie.downloadStatus === 'downloading') {
-        throw new Error(
-          `Cannot delete movie ${tmdbId} - currently ${movie.conversionStatus === 'converting' ? 'converting' : 'downloading'}`
-        )
+      if (movie.conversionStatus === 'converting') {
+        throw new Error(`Cannot delete movie ${tmdbId} - currently being converted`)
       }
 
       const hlsPath = path.join(process.cwd(), 'hls-output', tmdbId.toString())
