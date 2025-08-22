@@ -38,7 +38,7 @@
 		error = null;
 
 		try {
-			const response: PaginatedComments = await getMovieComments(movieId, page, 5, token);
+			const response: PaginatedComments = await getMovieComments(movieId, page, 6, token);
 
 			if (append) {
 				comments = [...comments, ...response.data];
@@ -68,10 +68,8 @@
 
 	const handleUpdateComment = (updatedComment: Comment) => {
 		// Update the comment in the local state
-		comments = comments.map(comment => 
-			comment.id === updatedComment.id 
-				? updatedComment
-				: comment
+		comments = comments.map((comment) =>
+			comment.id === updatedComment.id ? updatedComment : comment
 		);
 	};
 
@@ -93,7 +91,7 @@
 		try {
 			await deleteComment(commentToDelete, token);
 			// Remove the deleted comment from the local state
-			comments = comments.filter(comment => comment.id !== commentToDelete);
+			comments = comments.filter((comment) => comment.id !== commentToDelete);
 			showDeleteModal = false;
 			commentToDelete = null;
 		} catch (err) {
@@ -142,7 +140,7 @@
 		<div class="flex flex-col gap-4">
 			<!-- Comments List -->
 			{#if isLoading && comments.length === 0}
-				<div class="py-8 text-center text-white flex items-center justify-center gap-2">
+				<div class="flex items-center justify-center gap-2 py-8 text-center text-white">
 					<Loader2 class="size-5 animate-spin" />
 					{$_('comments.loading')}
 				</div>
@@ -166,7 +164,7 @@
 						<button
 							onclick={loadMoreComments}
 							disabled={isLoading}
-							class="mt-4 self-center rounded border border-[rgba(255,255,255,0.5)] bg-[#2A2A2A] px-6 py-2 text-white hover:bg-[#3A3A3A] flex items-center gap-2"
+							class="mt-4 flex items-center gap-2 self-center rounded border border-[rgba(255,255,255,0.5)] bg-[#2A2A2A] px-6 py-2 text-white hover:bg-[#3A3A3A]"
 							class:opacity-50={isLoading}
 							class:cursor-not-allowed={isLoading}
 						>
@@ -191,7 +189,7 @@
 <!-- Delete Confirmation Modal -->
 {#if showDeleteModal}
 	<!-- Modal Backdrop -->
-	<div 
+	<div
 		class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
 		onclick={handleBackdropClick}
 		onkeydown={handleKeydown}
@@ -203,12 +201,12 @@
 		<div class="mx-4 w-full max-w-md rounded-lg bg-[#1a1a1a] p-6 shadow-xl">
 			<!-- Modal Header -->
 			<h3 class="mb-4 text-xl font-semibold text-white">{$_('comments.delete-title')}</h3>
-			
+
 			<!-- Modal Body -->
 			<p class="mb-6 text-gray-300">
 				{$_('comments.delete-message')}
 			</p>
-			
+
 			<!-- Modal Actions -->
 			<div class="flex justify-end gap-3">
 				<button
@@ -221,7 +219,7 @@
 				<button
 					onclick={confirmDelete}
 					disabled={isDeletingComment}
-					class="rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50 flex items-center gap-2"
+					class="flex items-center gap-2 rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
 				>
 					{#if isDeletingComment}
 						<Loader2 class="size-4 animate-spin" />
