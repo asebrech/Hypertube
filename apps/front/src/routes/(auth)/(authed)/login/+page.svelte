@@ -7,8 +7,7 @@
 	let { form } = $props();
 </script>
 
-<div class="flex flex-1 items-center justify-center">
-	<Card.Root class="mx-auto max-w-sm">
+<Card.Root class="mx-auto max-w-sm border-none bg-black/70">
 		<Card.Header>
 			<Card.Title class="text-2xl">Login</Card.Title>
 			<Card.Description>Enter your email below to login to your account</Card.Description>
@@ -52,4 +51,3 @@
 			</div>
 		</Card.Content>
 	</Card.Root>
-</div>
