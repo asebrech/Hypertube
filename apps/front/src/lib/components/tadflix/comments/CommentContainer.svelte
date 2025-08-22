@@ -6,6 +6,7 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
+	import { Loader2 } from 'lucide-svelte';
 
 	interface CommentContainerProps {
 		movieId: number;
@@ -37,7 +38,7 @@
 		error = null;
 
 		try {
-			const response: PaginatedComments = await getMovieComments(movieId, page, 20, token);
+			const response: PaginatedComments = await getMovieComments(movieId, page, 5, token);
 
 			if (append) {
 				comments = [...comments, ...response.data];
@@ -45,8 +46,9 @@
 				comments = response.data;
 			}
 
-			hasMore = response.meta.current_page < response.meta.last_page;
-			currentPage = response.meta.current_page;
+			currentPage = Number(response.meta?.currentPage) || page;
+			const lastPage = Number(response.meta?.lastPage) || 1;
+			hasMore = currentPage < lastPage;
 		} catch (err) {
 			error = err instanceof Error ? err.message : $_('comments.failed-to-load');
 		} finally {
@@ -145,7 +147,10 @@
 		<div class="flex flex-col gap-4">
 			<!-- Comments List -->
 			{#if isLoading && comments.length === 0}
-				<div class="py-8 text-center text-white">{$_('comments.loading')}</div>
+				<div class="py-8 text-center text-white flex items-center justify-center gap-2">
+					<Loader2 class="size-5 animate-spin" />
+					{$_('comments.loading')}
+				</div>
 			{:else if error && comments.length === 0}
 				<div class="py-8 text-center text-red-500">{error}</div>
 			{:else if comments.length > 0}
@@ -167,10 +172,13 @@
 						<button
 							onclick={loadMoreComments}
 							disabled={isLoading}
-							class="mt-4 self-center rounded border border-[rgba(255,255,255,0.5)] bg-[#2A2A2A] px-6 py-2 text-white hover:bg-[#3A3A3A]"
+							class="mt-4 self-center rounded border border-[rgba(255,255,255,0.5)] bg-[#2A2A2A] px-6 py-2 text-white hover:bg-[#3A3A3A] flex items-center gap-2"
 							class:opacity-50={isLoading}
 							class:cursor-not-allowed={isLoading}
 						>
+							{#if isLoading}
+								<Loader2 class="size-4 animate-spin" />
+							{/if}
 							{isLoading ? $_('comments.loading') : $_('comments.load-more')}
 						</button>
 					{/if}
@@ -219,8 +227,11 @@
 				<button
 					onclick={confirmDelete}
 					disabled={isDeletingComment}
-					class="rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+					class="rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50 flex items-center gap-2"
 				>
+					{#if isDeletingComment}
+						<Loader2 class="size-4 animate-spin" />
+					{/if}
 					{isDeletingComment ? $_('comments.deleting') : $_('comments.delete')}
 				</button>
 			</div>

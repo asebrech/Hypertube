@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createMovieComment, updateComment } from '$lib/services/api';
-	import { SendIcon, CheckIcon, XIcon } from 'lucide-svelte';
+	import { SendIcon, CheckIcon, XIcon, Loader2 } from 'lucide-svelte';
 	import UserAvatar from './UserAvatar.svelte';
 	import type { Comment } from '@hypertube/shared';
 	import { _ } from 'svelte-i18n';
@@ -88,9 +88,10 @@
 		rows="4"
 		maxlength="1000"
 		placeholder={$_('comments.placeholder')}
-		class="w-full resize-none rounded-[4px] border-[1px] border-[#808080] bg-[#00000080] px-4 py-5 text-base font-medium text-white placeholder-[#BDBCBB] outline-none"
+		class="w-full resize-none rounded-[4px] border-[1px] border-[#808080] bg-[#00000080] px-4 py-5 text-base font-medium text-white placeholder-[#BDBCBB] outline-none transition-opacity"
 		class:md:max-w-[60%]={!fullWidth}
 		class:cursor-not-allowed={isSubmitting}
+		class:opacity-60={isSubmitting}
 		disabled={isSubmitting}
 	></textarea>
 	{#if showAvatar}
@@ -105,7 +106,11 @@
 						class="hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
 						aria-label={$_('comments.save')}
 					>
-						<CheckIcon color="white" size={20} />
+						{#if isSubmitting}
+							<Loader2 class="size-5 animate-spin" />
+						{:else}
+							<CheckIcon color="white" size={20} />
+						{/if}
 					</button>
 					<!-- Cancel button -->
 					<button
@@ -124,7 +129,11 @@
 						class="hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
 						aria-label={$_('comments.send')}
 					>
-						<SendIcon color="white" />
+						{#if isSubmitting}
+							<Loader2 class="size-4 animate-spin" />
+						{:else}
+							<SendIcon color="white" />
+						{/if}
 					</button>
 				{/if}
 			</div>
@@ -141,7 +150,11 @@
 						class="hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
 						aria-label={$_('comments.save')}
 					>
-						<CheckIcon color="white" size={20} />
+						{#if isSubmitting}
+							<Loader2 class="size-5 animate-spin" />
+						{:else}
+							<CheckIcon color="white" size={20} />
+						{/if}
 					</button>
 					<!-- Cancel button -->
 					<button
@@ -160,7 +173,11 @@
 						class="hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
 						aria-label={$_('comments.send')}
 					>
-						<SendIcon color="white" />
+						{#if isSubmitting}
+							<Loader2 class="size-4 animate-spin" />
+						{:else}
+							<SendIcon color="white" />
+						{/if}
 					</button>
 				{/if}
 			</div>
