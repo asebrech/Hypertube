@@ -1,10 +1,9 @@
 import { register, init, getLocaleFromNavigator } from 'svelte-i18n';
+import { lang } from '@hypertube/shared';
 
-register('en-GB', () => import('$lib/locales/en.json'));
-register('fr-FR', () => import('$lib/locales/fr.json'));
-register('zh-CN', () => import('$lib/locales/zh.json'));
-register('es-ES', () => import('$lib/locales/es.json'));
-register('ar-SA', () => import('$lib/locales/ar.json'));
+for (const locale of Object.values(lang)) {
+	register(locale.iso_639_1, () => import(`$lib/locales/${locale.iso}.json`));
+}
 
 let savedLocale: string | null = null;
 if (typeof window !== 'undefined') {
