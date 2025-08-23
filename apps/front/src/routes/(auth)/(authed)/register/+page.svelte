@@ -23,11 +23,11 @@
 					<div class="grid grid-cols-2 gap-4">
 						<div class="grid gap-2">
 							<Label for="firstName">First name</Label>
-							<Input id="first-name" placeholder="Max" required />
+							<Input id="firstName" name="firstName" placeholder="Max" required />
 						</div>
 						<div class="grid gap-2">
 							<Label for="lastName">Last name</Label>
-							<Input id="last-name" placeholder="Robinson" required />
+							<Input id="lastName" name="lastName" placeholder="Robinson" required />
 						</div>
 					</div>
 					<div class="grid gap-2">
