@@ -59,5 +59,44 @@
 		"timeout-error": "视频处理超时。请稍后重试。",
 		"show-details": "显示详情",
 		"hide-details": "隐藏详情"
+	},
+	"validation": {
+		"password": {
+			"min_length": "必须包含至少12个字符",
+			"special_char": "必须包含至少1个特殊字符",
+			"uppercase": "必须包含至少1个大写字母",
+			"lowercase": "必须包含至少1个小写字母",
+			"number": "必须包含至少1个数字"
+		},
+		"email": {
+			"invalid": "必须是有效的邮箱地址"
+		},
+		"username": {
+			"min_length": "必须至少3个字符",
+			"invalid_chars": "只能包含字母、数字和下划线"
+		},
+		"firstName": {
+			"min_length": "必须至少2个字符",
+			"max_length": "不能超过64个字符"
+		},
+		"lastName": {
+			"min_length": "必须至少2个字符",
+			"max_length": "不能超过64个字符"
+		}
+	},
+	"auth": {
+		"sign_up": "注册",
+		"sign_in": "登录",
+		"create_account": "创建账户",
+		"enter_info": "输入您的信息以创建账户",
+		"first_name": "名字",
+		"last_name": "姓氏",
+		"username": "用户名",
+		"email": "邮箱",
+		"password": "密码",
+		"already_have_account": "已经有账户了？",
+		"register_with_google": "使用Google注册",
+		"register_with_github": "使用Github注册",
+		"form_error": "密码太短或邮箱已被使用"
 	}
 }

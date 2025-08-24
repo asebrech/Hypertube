@@ -59,5 +59,44 @@
 		"timeout-error": "El procesamiento de video expiró. Por favor, inténtalo de nuevo más tarde.",
 		"show-details": "Mostrar detalles",
 		"hide-details": "Ocultar detalles"
+	},
+	"validation": {
+		"password": {
+			"min_length": "Debe contener al menos 12 caracteres",
+			"special_char": "Debe contener al menos 1 carácter especial",
+			"uppercase": "Debe contener al menos 1 letra mayúscula",
+			"lowercase": "Debe contener al menos 1 letra minúscula",
+			"number": "Debe contener al menos 1 número"
+		},
+		"email": {
+			"invalid": "Debe ser una dirección de correo electrónico válida"
+		},
+		"username": {
+			"min_length": "Debe tener al menos 3 caracteres",
+			"invalid_chars": "Solo puede contener letras, números y guiones bajos"
+		},
+		"firstName": {
+			"min_length": "Debe tener al menos 2 caracteres",
+			"max_length": "No debe exceder los 64 caracteres"
+		},
+		"lastName": {
+			"min_length": "Debe tener al menos 2 caracteres",
+			"max_length": "No debe exceder los 64 caracteres"
+		}
+	},
+	"auth": {
+		"sign_up": "Registrarse",
+		"sign_in": "Iniciar sesión",
+		"create_account": "Crear una cuenta",
+		"enter_info": "Ingresa tu información para crear una cuenta",
+		"first_name": "Nombre",
+		"last_name": "Apellido",
+		"username": "Nombre de usuario",
+		"email": "Correo electrónico",
+		"password": "Contraseña",
+		"already_have_account": "¿Ya tienes una cuenta?",
+		"register_with_google": "Registrarse con Google",
+		"register_with_github": "Registrarse con Github",
+		"form_error": "Contraseña muy corta o correo ya en uso"
 	}
 }

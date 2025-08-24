@@ -59,5 +59,44 @@
 		"timeout-error": "Le traitement vidéo a expiré. Veuillez réessayer plus tard.",
 		"show-details": "Afficher les détails",
 		"hide-details": "Masquer les détails"
+	},
+	"validation": {
+		"password": {
+			"min_length": "Doit contenir au moins 12 caractères",
+			"special_char": "Doit contenir au moins 1 caractère spécial",
+			"uppercase": "Doit contenir au moins 1 lettre majuscule",
+			"lowercase": "Doit contenir au moins 1 lettre minuscule",
+			"number": "Doit contenir au moins 1 chiffre"
+		},
+		"email": {
+			"invalid": "Doit être une adresse email valide"
+		},
+		"username": {
+			"min_length": "Doit contenir au moins 3 caractères",
+			"invalid_chars": "Ne peut contenir que des lettres, des chiffres et des traits de soulignement"
+		},
+		"firstName": {
+			"min_length": "Doit contenir au moins 2 caractères",
+			"max_length": "Ne doit pas dépasser 64 caractères"
+		},
+		"lastName": {
+			"min_length": "Doit contenir au moins 2 caractères",
+			"max_length": "Ne doit pas dépasser 64 caractères"
+		}
+	},
+	"auth": {
+		"sign_up": "S'inscrire",
+		"sign_in": "Se connecter",
+		"create_account": "Créer un compte",
+		"enter_info": "Entrez vos informations pour créer un compte",
+		"first_name": "Prénom",
+		"last_name": "Nom",
+		"username": "Nom d'utilisateur",
+		"email": "Email",
+		"password": "Mot de passe",
+		"already_have_account": "Vous avez déjà un compte ?",
+		"register_with_google": "S'inscrire avec Google",
+		"register_with_github": "S'inscrire avec Github",
+		"form_error": "Mot de passe trop court ou email déjà utilisé"
 	}
 }
