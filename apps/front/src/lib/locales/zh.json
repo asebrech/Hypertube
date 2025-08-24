@@ -82,6 +82,15 @@
 		"lastName": {
 			"min_length": "必须至少2个字符",
 			"max_length": "不能超过64个字符"
+		},
+		"server_errors": {
+			"email_already_used": "此邮箱地址已被使用",
+			"username_already_used": "此用户名已被占用",
+			"already_used": "此值已被使用",
+			"email_invalid": "请输入有效的邮箱地址",
+			"password_invalid": "密码不符合要求",
+			"length_invalid": "长度不符合要求",
+			"invalid": "此字段包含无效数据"
 		}
 	},
 	"auth": {

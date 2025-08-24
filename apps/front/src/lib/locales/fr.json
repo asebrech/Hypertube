@@ -82,6 +82,15 @@
 		"lastName": {
 			"min_length": "Doit contenir au moins 2 caractères",
 			"max_length": "Ne doit pas dépasser 64 caractères"
+		},
+		"server_errors": {
+			"email_already_used": "Cette adresse email est déjà utilisée",
+			"username_already_used": "Ce nom d'utilisateur est déjà pris",
+			"already_used": "Cette valeur est déjà utilisée",
+			"email_invalid": "Veuillez entrer une adresse email valide",
+			"password_invalid": "Le mot de passe ne respecte pas les exigences",
+			"length_invalid": "La longueur ne respecte pas les exigences",
+			"invalid": "Ce champ contient des données invalides"
 		}
 	},
 	"auth": {

@@ -17,11 +17,84 @@ export default class AuthController {
   }
 
   async register({ request, response }: HttpContext) {
-    const payload = await request.validateUsing(registerValidator)
+    try {
+      const payload = await request.validateUsing(registerValidator)
 
-    const user = await User.create(payload)
+      const user = await User.create(payload)
 
-    return response.created(user)
+      return response.created(user)
+    } catch (error) {
+      // Handle Vine.js validation errors (including unique constraint violations)
+      if (error.messages) {
+        const formattedErrors: any[] = []
+
+        // Vine.js errors can be structured differently
+        if (Array.isArray(error.messages)) {
+          // If messages is an array of error objects
+          for (const errorObj of error.messages) {
+
+            let rule = 'validation'
+            if (errorObj.rule === 'database.unique') {
+              rule = 'unique'
+            } else if (errorObj.rule && errorObj.rule.includes('email')) {
+              rule = 'email'
+            } else if (errorObj.rule && errorObj.rule.includes('password')) {
+              rule = 'password'
+            }
+
+            formattedErrors.push({
+              field: errorObj.field,
+              message: errorObj.message,
+              rule: rule,
+            })
+          }
+        } else if (typeof error.messages === 'object') {
+          // If messages is an object with field keys
+          for (const [field, fieldErrors] of Object.entries(error.messages)) {
+            if (Array.isArray(fieldErrors)) {
+              for (const fieldError of fieldErrors) {
+                let rule = 'validation'
+                if (typeof fieldError === 'string') {
+                  if (fieldError.includes('unique') || fieldError.includes('already')) {
+                    rule = 'unique'
+                  } else if (fieldError.includes('email')) {
+                    rule = 'email'
+                  } else if (fieldError.includes('password')) {
+                    rule = 'password'
+                  }
+                } else if (fieldError.rule === 'database.unique') {
+                  rule = 'unique'
+                }
+
+                formattedErrors.push({
+                  field: field,
+                  message: typeof fieldError === 'string' ? fieldError : fieldError.message,
+                  rule: rule,
+                })
+              }
+            }
+          }
+        }
+
+        return response.status(422).json({
+          message: 'Validation failed',
+          errors: formattedErrors,
+        })
+      }
+
+      // Generic error fallback
+      console.error('Unexpected registration error:', error)
+      return response.status(500).json({
+        message: 'Internal server error',
+        errors: [
+          {
+            field: 'general',
+            message: 'An unexpected error occurred',
+            rule: 'server_error',
+          },
+        ],
+      })
+    }
   }
 
   async logout({ auth, response }: HttpContext) {

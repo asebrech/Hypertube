@@ -5,15 +5,64 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { _ } from 'svelte-i18n';
 
-	let { form } = $props();
+	// Define the form data type
+	type FormData = {
+		invalid?: boolean;
+		errors?: {
+			email?: string;
+			username?: string;
+			password?: string;
+			firstName?: string;
+			lastName?: string;
+			general?: string;
+		};
+	};
+
+	let { form }: { form: FormData | null } = $props();
 	import { enhance } from '$app/forms';
 
-	// Example validation state - you can replace this with actual validation logic
+	// Client-side validation errors
+	let clientPasswordErrors: string[] = $state([]);
+	let clientEmailErrors: string[] = $state([]);
+	let clientUsernameErrors: string[] = $state([]);
+	let clientFirstNameErrors: string[] = $state([]);
+	let clientLastNameErrors: string[] = $state([]);
+
+	// Combined errors (client + server)
 	let passwordErrors: string[] = $state([]);
 	let emailErrors: string[] = $state([]);
 	let usernameErrors: string[] = $state([]);
 	let firstNameErrors: string[] = $state([]);
 	let lastNameErrors: string[] = $state([]);
+
+	// Effect to merge client and server errors
+	$effect(() => {
+		// Start with client errors
+		passwordErrors = [...clientPasswordErrors];
+		emailErrors = [...clientEmailErrors];
+		usernameErrors = [...clientUsernameErrors];
+		firstNameErrors = [...clientFirstNameErrors];
+		lastNameErrors = [...clientLastNameErrors];
+
+		// Add server errors if they exist
+		if (form?.errors) {
+			if (form.errors.password) {
+				passwordErrors.push($_(`validation.server_errors.${form.errors.password}`));
+			}
+			if (form.errors.email) {
+				emailErrors.push($_(`validation.server_errors.${form.errors.email}`));
+			}
+			if (form.errors.username) {
+				usernameErrors.push($_(`validation.server_errors.${form.errors.username}`));
+			}
+			if (form.errors.firstName) {
+				firstNameErrors.push($_(`validation.server_errors.${form.errors.firstName}`));
+			}
+			if (form.errors.lastName) {
+				lastNameErrors.push($_(`validation.server_errors.${form.errors.lastName}`));
+			}
+		}
+	});
 
 	// Example function to validate password
 	function validatePassword(password: string) {
@@ -91,7 +140,7 @@
 		<div class="grid gap-4">
 			<form action="?/register" method="POST" use:enhance>
 				<div class="grid gap-4">
-					{#if form?.invalid}
+					{#if form?.invalid && !form?.errors}
 						<p class="error">{$_('auth.form_error')}</p>
 					{/if}
 					<div class="grid grid-cols-2 gap-4">
@@ -105,7 +154,7 @@
 								errors={firstNameErrors}
 								onfocusout={(e) => {
 									const target = e.target as HTMLInputElement;
-									firstNameErrors = validateFirstName(target.value);
+									clientFirstNameErrors = validateFirstName(target.value);
 								}}
 							/>
 						</div>
@@ -119,7 +168,7 @@
 								errors={lastNameErrors}
 								onfocusout={(e) => {
 									const target = e.target as HTMLInputElement;
-									lastNameErrors = validateLastName(target.value);
+									clientLastNameErrors = validateLastName(target.value);
 								}}
 							/>
 						</div>
@@ -134,7 +183,7 @@
 							errors={usernameErrors}
 							onfocusout={(e) => {
 								const target = e.target as HTMLInputElement;
-								usernameErrors = validateUsername(target.value);
+								clientUsernameErrors = validateUsername(target.value);
 							}}
 						/>
 					</div>
@@ -149,7 +198,7 @@
 							errors={emailErrors}
 							onfocusout={(e) => {
 								const target = e.target as HTMLInputElement;
-								emailErrors = validateEmail(target.value);
+								clientEmailErrors = validateEmail(target.value);
 							}}
 						/>
 					</div>
@@ -162,7 +211,7 @@
 							errors={passwordErrors}
 							onfocusout={(e) => {
 								const target = e.target as HTMLInputElement;
-								passwordErrors = validatePassword(target.value);
+								clientPasswordErrors = validatePassword(target.value);
 							}}
 						/>
 					</div>

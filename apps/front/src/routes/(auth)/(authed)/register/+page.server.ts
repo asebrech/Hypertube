@@ -36,7 +36,45 @@ const register = async ({ request }: RequestEvent) => {
 		redirect(303, '/login');
 	} catch (error) {
 		if (axios.isAxiosError(error) && error.response && error.response.status === 422) {
-			return fail(400, { invalid: true });
+			// Parse the backend error response
+			const backendErrors = error.response.data?.errors || [];
+
+			// Transform backend errors to frontend format
+			const errors: Record<string, string> = {};
+
+			backendErrors.forEach((errorObj: any) => {
+				if (errorObj.field && errorObj.rule) {
+					// Map the rule to a translation key
+					let errorKey = '';
+
+					if (errorObj.rule === 'unique') {
+						if (errorObj.field === 'email') {
+							errorKey = 'email_already_used';
+						} else if (errorObj.field === 'username') {
+							errorKey = 'username_already_used';
+						} else {
+							errorKey = 'already_used';
+						}
+					} else if (errorObj.rule === 'email') {
+						errorKey = 'email_invalid';
+					} else if (errorObj.rule === 'password') {
+						errorKey = 'password_invalid';
+					} else if (errorObj.rule === 'length') {
+						errorKey = 'length_invalid';
+					} else {
+						errorKey = 'invalid';
+					}
+
+					errors[errorObj.field] = errorKey;
+				}
+			});
+
+			console.log('Transformed errors for frontend:', errors);
+
+			return fail(422, {
+				invalid: true,
+				errors: errors
+			});
 		} else {
 			throw error;
 		}
