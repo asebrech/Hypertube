@@ -192,7 +192,8 @@ export type PersonDetails = {
 export type Comment = {
   id: number;
   content: string;
-  date: string; // ISO date string
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
   username: string;
   userId: number;
   movieId?: number;

@@ -21,7 +21,8 @@
 		"edit": "Editar comentario",
 		"save": "Guardar",
 		"updating": "Actualizando...",
-		"failed-to-update": "Error al actualizar el comentario"
+		"failed-to-update": "Error al actualizar el comentario",
+		"edited": "editado"
 	},
 	"navbar": {
 		"home": "Inicio",

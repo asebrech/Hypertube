@@ -3,7 +3,7 @@
 	import UserAvatar from './UserAvatar.svelte';
 	import CommentInput from './CommentInput.svelte';
 	import type { Comment } from '@hypertube/shared';
-	import { _ } from 'svelte-i18n';
+	import { _, locale } from 'svelte-i18n';
 
 	interface CommentItemProps {
 		comment: Comment;
@@ -34,7 +34,19 @@
 		onUpdate?.(updatedComment);
 	};
 
-	// Format date
+	// Format date - show time if today, date if not
+	const formatDate = (dateString: string) => {
+		const date = new Date(dateString);
+		const today = new Date();
+		const isToday = date.toDateString() === today.toDateString();
+		const currentLocale = $locale || 'en';
+		
+		if (isToday) {
+			return date.toLocaleTimeString(currentLocale, { hour: '2-digit', minute: '2-digit' });
+		} else {
+			return date.toLocaleDateString(currentLocale);
+		}
+	};
 </script>
 
 <div class={`flex w-full gap-2 rounded-none`}>
@@ -60,9 +72,22 @@
 				/>
 			{:else}
 				<!-- Display Mode -->
-				<p class="text-xl leading-[1.19] text-white transition-all duration-300">
-					{comment.content}
-				</p>
+				<div class="flex flex-col gap-2">
+					<!-- Username and Date Header -->
+					<div class="flex items-center gap-2 text-sm text-gray-400">
+						<span class="font-medium text-white">{comment.username}</span>
+						<span>•</span>
+						<span>{formatDate(comment.createdAt)}</span>
+						{#if comment.updatedAt && comment.updatedAt !== comment.createdAt}
+							<span>•</span>
+							<span class="italic">{$_('comments.edited')} {formatDate(comment.updatedAt)}</span>
+						{/if}
+					</div>
+					<!-- Comment Content -->
+					<p class="text-xl leading-[1.19] text-white transition-all duration-300 break-all">
+						{comment.content}
+					</p>
+				</div>
 			{/if}
 		</div>
 	</div>

@@ -138,6 +138,9 @@
 	<!-- Comments Section -->
 	{#if user && token}
 		<div class="flex flex-col gap-4">
+			<!-- Comment Input -->
+			<CommentInput {movieId} username={currentUser} {token} onCommentAdded={handleCommentAdded} />
+			
 			<!-- Comments List -->
 			{#if isLoading && comments.length === 0}
 				<div class="flex items-center justify-center gap-2 py-8 text-center text-white">
@@ -178,8 +181,6 @@
 			{:else}
 				<div class="py-8 text-center text-white">{$_('comments.no-comments')}</div>
 			{/if}
-			<!-- Comment Input -->
-			<CommentInput {movieId} username={currentUser} {token} onCommentAdded={handleCommentAdded} />
 		</div>
 	{:else}
 		<div class="py-8 text-center">

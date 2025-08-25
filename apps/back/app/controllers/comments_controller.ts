@@ -30,8 +30,10 @@ class CommentsController {
       const formattedComment = {
         id: comment.id,
         content: comment.content,
-        date: comment.createdAt,
+        createdAt: comment.createdAt.toISO(),
+        updatedAt: comment.updatedAt.toISO(),
         username: comment.user.username || comment.user.email || 'Anonymous',
+        userId: comment.user.id,
         movieId: comment.movieId,
         movieTitle: comment.movie.title,
       }
@@ -55,11 +57,9 @@ class CommentsController {
         return response.badRequest({ error: 'Movie ID is required' })
       }
 
-      // Find movie by tmdbId - use first() instead of firstOrFail()
       const movie = await Movie.query().where('tmdbId', params.id).first()
 
       if (!movie) {
-        // Movie doesn't exist in our database yet, return empty comments
         return response.ok({
           data: [],
           meta: {
@@ -84,7 +84,8 @@ class CommentsController {
       formattedComments.data = formattedComments.data.map((comment: any) => ({
         id: comment.id,
         content: comment.content,
-        date: comment.createdAt,
+        createdAt: comment.createdAt,
+        updatedAt: comment.updatedAt,
         username: comment.user.username || comment.user.email || 'Anonymous',
         userId: comment.user.id,
       }))
@@ -112,7 +113,6 @@ class CommentsController {
       const user = auth.getUserOrFail()
       const { content } = await request.validateUsing(createMovieCommentValidator)
 
-      // Get or create movie by tmdbId using MovieService
       const movieService = new MovieService()
       const movie = await movieService.getOrCreate(parseInt(params.id))
 
@@ -129,7 +129,8 @@ class CommentsController {
       const formattedComment = {
         id: comment.id,
         content: comment.content,
-        date: comment.createdAt,
+        createdAt: comment.createdAt.toISO(),
+        updatedAt: comment.updatedAt.toISO(),
         username: comment.user.username || comment.user.email || 'Anonymous',
         userId: comment.user.id,
         movieId: comment.movieId,
@@ -153,7 +154,6 @@ class CommentsController {
    */
   async deleteComment({ response, comment }: HttpContext) {
     try {
-      // Delete the comment (ownership already verified by middleware)
       await comment!.delete()
 
       return response.ok({ message: 'Comment deleted successfully' })
@@ -170,12 +170,9 @@ class CommentsController {
   async updateComment({ request, response, comment }: HttpContext) {
     try {
       const { content } = await request.validateUsing(createMovieCommentValidator)
-
-      // Update the comment (ownership already verified by middleware)
       comment!.content = content
       await comment!.save()
 
-      // Load user relationship for response
       await comment!.load('user', (userQuery: any) => {
         userQuery.select('id', 'username', 'email')
       })
@@ -183,7 +180,8 @@ class CommentsController {
       const formattedComment = {
         id: comment!.id,
         content: comment!.content,
-        date: comment!.createdAt,
+        createdAt: comment!.createdAt.toISO(),
+        updatedAt: comment!.updatedAt.toISO(),
         username: comment!.user.username || comment!.user.email || 'Anonymous',
         userId: comment!.user.id,
         movieId: comment!.movieId,

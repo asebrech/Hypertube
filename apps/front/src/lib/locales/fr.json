@@ -21,7 +21,8 @@
 		"edit": "Modifier le commentaire",
 		"save": "Sauvegarder",
 		"updating": "Mise à jour...",
-		"failed-to-update": "Échec de la mise à jour du commentaire"
+		"failed-to-update": "Échec de la mise à jour du commentaire",
+		"edited": "modifié"
 	},
 	"navbar": {
 		"home": "Acceuil",

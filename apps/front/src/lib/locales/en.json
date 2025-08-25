@@ -80,6 +80,7 @@
 		"edit": "Edit comment",
 		"save": "Save",
 		"updating": "Updating...",
-		"failed-to-update": "Failed to update comment"
+		"failed-to-update": "Failed to update comment",
+		"edited": "edited"
 	}
 }
