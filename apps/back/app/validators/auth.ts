@@ -29,14 +29,14 @@ export const registerValidator = vine.compile(
     username: vine
       .string()
       .minLength(3)
-      .maxLength(64)
+      .maxLength(32)
       .unique(async (query, field) => {
         const user = await query.from('users').where('username', field).first()
         return !user
       })
       .optional(),
-    firstName: vine.string().minLength(2).maxLength(64).optional(),
-    lastName: vine.string().minLength(2).maxLength(64).optional(),
+    firstName: vine.string().minLength(2).maxLength(32).optional(),
+    lastName: vine.string().minLength(2).maxLength(32).optional(),
   })
 )
 
