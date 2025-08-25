@@ -106,6 +106,49 @@
 		"already_have_account": "¿Ya tienes una cuenta?",
 		"register_with_google": "Registrarse con Google",
 		"register_with_github": "Registrarse con Github",
-		"form_error": "Contraseña muy corta o correo ya en uso"
+		"form_error": "Contraseña muy corta o correo ya en uso",
+		"login": {
+			"title": "Iniciar Sesión",
+			"description": "Ingresa tu correo electrónico a continuación para iniciar sesión en tu cuenta",
+			"email_label": "Correo electrónico",
+			"email_placeholder": "m@ejemplo.com",
+			"password_label": "Contraseña",
+			"forgot_password": "¿Olvidaste tu contraseña?",
+			"login_button": "Iniciar Sesión",
+			"login_with_google": "Iniciar sesión con Google",
+			"login_with_github": "Iniciar sesión con Github",
+			"login_with_42": "Iniciar sesión con 42",
+			"no_account": "¿No tienes una cuenta?",
+			"sign_up_link": "Registrarse",
+			"error_credentials": "Has ingresado credenciales incorrectas."
+		},
+		"forgot_password": {
+			"title": "Contraseña olvidada",
+			"description": "Ingresa tu dirección de correo electrónico y te enviaremos un enlace para restablecer tu contraseña",
+			"email_label": "Correo electrónico",
+			"email_placeholder": "m@example.com",
+			"send_button": "Enviar enlace",
+			"remember_password": "¿Recuerdas tu contraseña?",
+			"back_to_login": "Volver al inicio de sesión",
+			"email_sent": "Correo enviado",
+			"email_sent_message": "Si este correo existe en nuestro sistema, se ha enviado un enlace de restablecimiento.",
+			"link_expires": "El enlace expira en 1 hora.",
+			"error_general": "Algo salió mal. Por favor intenta de nuevo.",
+			"error_invalid_email": "Por favor ingresa una dirección de correo electrónico válida."
+		},
+		"reset_password": {
+			"title": "Restablecer contraseña",
+			"description": "Ingresa tu nueva contraseña",
+			"new_password_label": "Nueva contraseña",
+			"confirm_password_label": "Confirmar nueva contraseña",
+			"password_requirements": "La contraseña debe tener entre 12 y 32 caracteres e incluir al menos una letra mayúscula, una letra minúscula, un número y un carácter especial.",
+			"reset_button": "Restablecer contraseña",
+			"success_message": "Contraseña restablecida exitosamente",
+			"redirect_message": "Serás redirigido a la página de inicio de sesión en unos segundos.",
+			"go_to_login": "Ir al inicio de sesión ahora",
+			"remember_password": "¿Recuerdas tu contraseña?",
+			"back_to_login": "Volver al inicio de sesión",
+			"error_message": "Por favor verifica tu información e intenta de nuevo."
+		}
 	}
 }

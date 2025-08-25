@@ -4,13 +4,14 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { enhance } from '$app/forms';
+	import { _ } from 'svelte-i18n';
 	let { form } = $props();
 </script>
 
 <Card.Root class="mx-auto max-w-sm border-none bg-black/70">
 		<Card.Header>
-			<Card.Title class="text-2xl">Login</Card.Title>
-			<Card.Description>Enter your email below to login to your account</Card.Description>
+			<Card.Title class="text-2xl">{$_('auth.login.title')}</Card.Title>
+			<Card.Description>{$_('auth.login.description')}</Card.Description>
 		</Card.Header>
 		<Card.Content>
 			<div class="grid gap-4">
@@ -18,36 +19,36 @@
 					<div class="grid gap-4">
 						<div class="grid gap-2">
 							{#if form?.credentials}
-								<p class="error">You have entered the wrong credentials.</p>
+								<p class="error">{$_('auth.login.error_credentials')}</p>
 							{/if}
-							<Label for="email">Email</Label>
-							<Input id="email" type="email" name="email" placeholder="m@example.com" required />
+							<Label for="email">{$_('auth.login.email_label')}</Label>
+							<Input id="email" type="email" name="email" placeholder={$_('auth.login.email_placeholder')} required />
 						</div>
 						<div class="grid gap-2">
 							<div class="flex items-center">
-								<Label for="password">Password</Label>
-								<a href="##" class="ml-auto inline-block text-sm underline">
-									Forgot your password?
+								<Label for="password">{$_('auth.login.password_label')}</Label>
+								<a href="/forgot-password" class="ml-auto inline-block text-sm underline">
+									{$_('auth.login.forgot_password')}
 								</a>
 							</div>
 							<Input id="password" type="password" name="password" required />
 						</div>
-						<Button type="submit" class="w-full">Login</Button>
+						<Button type="submit" class="w-full">{$_('auth.login.login_button')}</Button>
 					</div>
 				</form>
 				<form method="POST" action="/login/google" use:enhance>
-					<Button variant="outline" class="w-full" type="submit">Login with Google</Button>
+					<Button variant="outline" class="w-full" type="submit">{$_('auth.login.login_with_google')}</Button>
 				</form>
 				<form method="POST" action="/login/github" use:enhance>
-					<Button variant="outline" class="w-full" type="submit">Login with Gihub</Button>
+					<Button variant="outline" class="w-full" type="submit">{$_('auth.login.login_with_github')}</Button>
 				</form>
 				<form method="POST" action="/login/fortyTwo" use:enhance>
-					<Button variant="outline" class="w-full" type="submit">Login with 42</Button>
+					<Button variant="outline" class="w-full" type="submit">{$_('auth.login.login_with_42')}</Button>
 				</form>
 			</div>
 			<div class="mt-4 text-center text-sm">
-				Don&apos;t have an account?
-				<a href="/register" class="underline">Sign up</a>
+				{$_('auth.login.no_account')}
+				<a href="/register" class="underline">{$_('auth.login.sign_up_link')}</a>
 			</div>
 		</Card.Content>
 	</Card.Root>

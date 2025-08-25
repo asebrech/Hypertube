@@ -106,6 +106,49 @@
 		"already_have_account": "Already have an account?",
 		"register_with_google": "Register with Google",
 		"register_with_github": "Register with Github",
-		"form_error": "Email already used"
+		"form_error": "Email already used",
+		"login": {
+			"title": "Login",
+			"description": "Enter your email below to login to your account",
+			"email_label": "Email",
+			"email_placeholder": "m@example.com",
+			"password_label": "Password",
+			"forgot_password": "Forgot your password?",
+			"login_button": "Login",
+			"login_with_google": "Login with Google",
+			"login_with_github": "Login with Github",
+			"login_with_42": "Login with 42",
+			"no_account": "Don't have an account?",
+			"sign_up_link": "Sign up",
+			"error_credentials": "You have entered the wrong credentials."
+		},
+		"forgot_password": {
+			"title": "Forgot Password",
+			"description": "Enter your email address and we'll send you a link to reset your password",
+			"email_label": "Email",
+			"email_placeholder": "m@example.com",
+			"send_button": "Send Reset Link",
+			"remember_password": "Remember your password?",
+			"back_to_login": "Back to Login",
+			"email_sent": "Email sent",
+			"email_sent_message": "If this email exists in our system, a reset link has been sent.",
+			"link_expires": "Link expires in 1 hour.",
+			"error_general": "Something went wrong. Please try again.",
+			"error_invalid_email": "Please enter a valid email address."
+		},
+		"reset_password": {
+			"title": "Reset Password",
+			"description": "Enter your new password",
+			"new_password_label": "New Password",
+			"confirm_password_label": "Confirm New Password",
+			"password_requirements": "Password must be 12-32 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
+			"reset_button": "Reset Password",
+			"success_message": "Password reset successfully",
+			"redirect_message": "You will be redirected to the login page in a few seconds.",
+			"go_to_login": "Go to Login Now",
+			"remember_password": "Remember your password?",
+			"back_to_login": "Back to Login",
+			"error_message": "Please check your input and try again."
+		}
 	}
 }

@@ -39,3 +39,16 @@ export const registerValidator = vine.compile(
     lastName: vine.string().minLength(2).maxLength(64).optional(),
   })
 )
+
+export const forgotPasswordValidator = vine.compile(
+  vine.object({
+    email: vine.string().email(),
+  })
+)
+
+export const resetPasswordValidator = vine.compile(
+  vine.object({
+    token: vine.string(),
+    password: passwordRules,
+  })
+)

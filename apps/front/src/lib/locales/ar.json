@@ -106,6 +106,49 @@
 		"already_have_account": "هل لديك حساب بالفعل؟",
 		"register_with_google": "التسجيل بواسطة Google",
 		"register_with_github": "التسجيل بواسطة Github",
-		"form_error": "كلمة المرور قصيرة جداً أو البريد الإلكتروني مستخدم بالفعل"
+		"form_error": "كلمة المرور قصيرة جداً أو البريد الإلكتروني مستخدم بالفعل",
+		"login": {
+			"title": "تسجيل الدخول",
+			"description": "أدخل بريدك الإلكتروني أدناه لتسجيل الدخول إلى حسابك",
+			"email_label": "البريد الإلكتروني",
+			"email_placeholder": "m@example.com",
+			"password_label": "كلمة المرور",
+			"forgot_password": "نسيت كلمة المرور؟",
+			"login_button": "تسجيل الدخول",
+			"login_with_google": "تسجيل الدخول بواسطة Google",
+			"login_with_github": "تسجيل الدخول بواسطة Github",
+			"login_with_42": "تسجيل الدخول بواسطة 42",
+			"no_account": "ليس لديك حساب؟",
+			"sign_up_link": "إنشاء حساب",
+			"error_credentials": "لقد أدخلت بيانات اعتماد خاطئة."
+		},
+		"forgot_password": {
+			"title": "نسيت كلمة المرور",
+			"description": "أدخل عنوان بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور",
+			"email_label": "البريد الإلكتروني",
+			"email_placeholder": "m@example.com",
+			"send_button": "إرسال رابط الإعادة",
+			"remember_password": "تذكرت كلمة المرور؟",
+			"back_to_login": "العودة لتسجيل الدخول",
+			"email_sent": "تم إرسال البريد الإلكتروني",
+			"email_sent_message": "إذا كان هذا البريد الإلكتروني موجوداً في نظامنا، فقد تم إرسال رابط الإعادة.",
+			"link_expires": "ينتهي صلاحية الرابط خلال ساعة واحدة.",
+			"error_general": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+			"error_invalid_email": "يرجى إدخال عنوان بريد إلكتروني صالح."
+		},
+		"reset_password": {
+			"title": "إعادة تعيين كلمة المرور",
+			"description": "أدخل كلمة المرور الجديدة",
+			"new_password_label": "كلمة المرور الجديدة",
+			"confirm_password_label": "تأكيد كلمة المرور الجديدة",
+			"password_requirements": "يجب أن تحتوي كلمة المرور على 12-32 حرفاً وتتضمن على الأقل حرفاً كبيراً وحرفاً صغيراً ورقماً ورمزاً خاصاً.",
+			"reset_button": "إعادة تعيين كلمة المرور",
+			"success_message": "تم إعادة تعيين كلمة المرور بنجاح",
+			"redirect_message": "سيتم توجيهك إلى صفحة تسجيل الدخول خلال ثوانٍ قليلة.",
+			"go_to_login": "الذهاب لتسجيل الدخول الآن",
+			"remember_password": "تذكرت كلمة المرور؟",
+			"back_to_login": "العودة لتسجيل الدخول",
+			"error_message": "يرجى التحقق من معلوماتك والمحاولة مرة أخرى."
+		}
 	}
 }

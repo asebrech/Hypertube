@@ -61,6 +61,7 @@
     "@adonisjs/core": "^6.17.0",
     "@adonisjs/cors": "^2.2.1",
     "@adonisjs/lucid": "^21.5.1",
+    "@adonisjs/mail": "^9.2.2",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@hypertube/shared": "workspace:*",
     "@vinejs/vine": "^3.0.0",
