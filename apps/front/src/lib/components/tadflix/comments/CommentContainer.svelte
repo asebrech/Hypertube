@@ -182,7 +182,11 @@
 			<CommentInput {movieId} username={currentUser} {token} onCommentAdded={handleCommentAdded} />
 		</div>
 	{:else}
-		<div class="py-8 text-center text-white">{$_('comments.login-required')}</div>
+		<div class="py-8 text-center">
+			<a href="/login" class="text-white hover:text-red-400 transition-colors cursor-pointer">
+				{$_('comments.login-required')}
+			</a>
+		</div>
 	{/if}
 </div>
 
