@@ -169,22 +169,27 @@ class CommentsController {
    */
   async updateComment({ request, response, comment }: HttpContext) {
     try {
-      const { content } = await request.validateUsing(createMovieCommentValidator)
-      comment!.content = content
-      await comment!.save()
+      if (!comment) {
+        return response.badRequest({ error: 'Comment not found' })
+      }
 
-      await comment!.load('user', (userQuery: any) => {
+      const { content } = await request.validateUsing(createMovieCommentValidator)
+
+      comment.content = content
+      await comment.save()
+
+      await comment.load('user', (userQuery: any) => {
         userQuery.select('id', 'username', 'email')
       })
 
       const formattedComment = {
-        id: comment!.id,
-        content: comment!.content,
-        createdAt: comment!.createdAt.toISO(),
-        updatedAt: comment!.updatedAt.toISO(),
-        username: comment!.user.username || comment!.user.email || 'Anonymous',
-        userId: comment!.user.id,
-        movieId: comment!.movieId,
+        id: comment.id,
+        content: comment.content,
+        createdAt: comment.createdAt.toISO(),
+        updatedAt: comment.updatedAt.toISO(),
+        username: comment.user.username || comment!.user.email || 'Anonymous',
+        userId: comment.user.id,
+        movieId: comment.movieId,
       }
 
       return response.ok(formattedComment)
