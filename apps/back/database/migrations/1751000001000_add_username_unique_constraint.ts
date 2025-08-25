@@ -5,7 +5,6 @@ export default class extends BaseSchema {
 
   async up() {
     this.schema.alterTable(this.tableName, (table) => {
-      // Add unique constraint for username (only non-null values will be checked for uniqueness)
       table.unique(['username'])
     })
   }

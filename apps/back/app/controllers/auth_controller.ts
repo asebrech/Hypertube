@@ -198,7 +198,6 @@ export default class AuthController {
     const userName = user.username || user.firstName || 'User'
 
     try {
-      // Try to send email
       await mail.send(new PasswordResetMail(email, resetUrl, userName))
 
       return response.ok({
@@ -217,7 +216,6 @@ export default class AuthController {
         })
       }
 
-      // In production, just log the error and return generic message
       return response.ok({ message: 'If this email exists, a password reset link has been sent.' })
     }
   }
@@ -239,11 +237,9 @@ export default class AuthController {
       return response.badRequest({ message: 'User not found.' })
     }
 
-    // Update password
     user.password = password
     await user.save()
 
-    // Clean up used token
     await PasswordResetToken.query().where('id', resetToken.id).delete()
 
     return response.ok({ message: 'Password reset successfully.' })

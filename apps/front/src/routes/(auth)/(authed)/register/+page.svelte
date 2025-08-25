@@ -37,7 +37,6 @@
 
 	// Effect to merge client and server errors
 	$effect(() => {
-		// Start with client errors
 		passwordErrors = [...clientPasswordErrors];
 		emailErrors = [...clientEmailErrors];
 		usernameErrors = [...clientUsernameErrors];
@@ -64,7 +63,6 @@
 		}
 	});
 
-	// Example function to validate password
 	function validatePassword(password: string) {
 		const errors: string[] = [];
 		if (password.length < 12) {
@@ -85,7 +83,6 @@
 		return errors;
 	}
 
-	// Example function to validate email
 	function validateEmail(email: string) {
 		const errors: string[] = [];
 		if (!email.includes('@')) {
@@ -94,7 +91,6 @@
 		return errors;
 	}
 
-	// Example function to validate username
 	function validateUsername(username: string) {
 		const errors: string[] = [];
 		if (username.length < 3) {
@@ -106,7 +102,6 @@
 		return errors;
 	}
 
-	// Function to validate first name
 	function validateFirstName(firstName: string) {
 		const errors: string[] = [];
 		if (firstName.length > 0 && firstName.length < 2) {
@@ -118,7 +113,6 @@
 		return errors;
 	}
 
-	// Function to validate last name
 	function validateLastName(lastName: string) {
 		const errors: string[] = [];
 		if (lastName.length > 0 && lastName.length < 2) {
