@@ -59,5 +59,96 @@
 		"timeout-error": "Video processing timed out. Please try again later.",
 		"show-details": "Show details",
 		"hide-details": "Hide details"
+	},
+	"validation": {
+		"password": {
+			"min_length": "Must contain at least 12 characters",
+			"special_char": "Must contain at least 1 special character",
+			"uppercase": "Must contain at least 1 uppercase letter",
+			"lowercase": "Must contain at least 1 lowercase letter",
+			"number": "Must contain at least 1 number"
+		},
+		"email": {
+			"invalid": "Must be a valid email address"
+		},
+		"username": {
+			"min_length": "Must be at least 3 characters long",
+			"invalid_chars": "Can only contain letters, numbers, and underscores"
+		},
+		"firstName": {
+			"min_length": "Must be at least 2 characters long",
+			"max_length": "Must not exceed 64 characters"
+		},
+		"lastName": {
+			"min_length": "Must be at least 2 characters long",
+			"max_length": "Must not exceed 64 characters"
+		},
+		"server_errors": {
+			"email_already_used": "This email address is already in use",
+			"username_already_used": "This username is already taken",
+			"already_used": "This value is already in use",
+			"email_invalid": "Please enter a valid email address",
+			"password_invalid": "Password does not meet requirements",
+			"length_invalid": "Length does not meet requirements",
+			"invalid": "This field contains invalid data"
+		}
+	},
+	"auth": {
+		"sign_up": "Sign Up",
+		"sign_in": "Sign in",
+		"create_account": "Create an account",
+		"enter_info": "Enter your information to create an account",
+		"first_name": "First name",
+		"last_name": "Last name",
+		"username": "Username",
+		"email": "Email",
+		"password": "Password",
+		"already_have_account": "Already have an account?",
+		"register_with_google": "Register with Google",
+		"register_with_github": "Register with Github",
+		"form_error": "Email already used",
+		"login": {
+			"title": "Login",
+			"description": "Enter your email below to login to your account",
+			"email_label": "Email",
+			"email_placeholder": "m@example.com",
+			"password_label": "Password",
+			"forgot_password": "Forgot your password?",
+			"login_button": "Login",
+			"login_with_google": "Login with Google",
+			"login_with_github": "Login with Github",
+			"login_with_42": "Login with 42",
+			"no_account": "Don't have an account?",
+			"sign_up_link": "Sign up",
+			"error_credentials": "You have entered the wrong credentials."
+		},
+		"forgot_password": {
+			"title": "Forgot Password",
+			"description": "Enter your email address and we'll send you a link to reset your password",
+			"email_label": "Email",
+			"email_placeholder": "m@example.com",
+			"send_button": "Send Reset Link",
+			"remember_password": "Remember your password?",
+			"back_to_login": "Back to Login",
+			"email_sent": "Email sent",
+			"email_sent_message": "If this email exists in our system, a reset link has been sent.",
+			"link_expires": "Link expires in 1 hour.",
+			"error_general": "Something went wrong. Please try again.",
+			"error_invalid_email": "Please enter a valid email address."
+		},
+		"reset_password": {
+			"title": "Reset Password",
+			"description": "Enter your new password",
+			"new_password_label": "New Password",
+			"confirm_password_label": "Confirm New Password",
+			"password_requirements": "Password must be 12-32 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
+			"reset_button": "Reset Password",
+			"success_message": "Password reset successfully",
+			"redirect_message": "You will be redirected to the login page in a few seconds.",
+			"go_to_login": "Go to Login Now",
+			"remember_password": "Remember your password?",
+			"back_to_login": "Back to Login",
+			"error_message": "Please check your input and try again."
+		}
 	}
 }
