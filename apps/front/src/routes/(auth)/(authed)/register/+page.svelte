@@ -4,6 +4,14 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { _ } from 'svelte-i18n';
+	import {
+		validatePassword as sharedValidatePassword,
+		validateEmail as sharedValidateEmail,
+		validateUsername as sharedValidateUsername,
+		validateFirstName as sharedValidateFirstName,
+		validateLastName as sharedValidateLastName,
+		translateValidationErrors
+	} from '@hypertube/shared';
 
 	// Define the form data type
 	type FormData = {
@@ -64,64 +72,28 @@
 	});
 
 	function validatePassword(password: string) {
-		const errors: string[] = [];
-		if (password.length < 12) {
-			errors.push($_('validation.password.min_length'));
-		}
-		if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-			errors.push($_('validation.password.special_char'));
-		}
-		if (!/[A-Z]/.test(password)) {
-			errors.push($_('validation.password.uppercase'));
-		}
-		if (!/[a-z]/.test(password)) {
-			errors.push($_('validation.password.lowercase'));
-		}
-		if (!/[0-9]/.test(password)) {
-			errors.push($_('validation.password.number'));
-		}
-		return errors;
+		const errorKeys = sharedValidatePassword(password);
+		return translateValidationErrors(errorKeys, (key) => $_(key));
 	}
 
 	function validateEmail(email: string) {
-		const errors: string[] = [];
-		if (!email.includes('@')) {
-			errors.push($_('validation.email.invalid'));
-		}
-		return errors;
+		const errorKeys = sharedValidateEmail(email);
+		return translateValidationErrors(errorKeys, (key) => $_(key));
 	}
 
 	function validateUsername(username: string) {
-		const errors: string[] = [];
-		if (username.length < 3) {
-			errors.push($_('validation.username.min_length'));
-		}
-		if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-			errors.push($_('validation.username.invalid_chars'));
-		}
-		return errors;
+		const errorKeys = sharedValidateUsername(username);
+		return translateValidationErrors(errorKeys, (key) => $_(key));
 	}
 
 	function validateFirstName(firstName: string) {
-		const errors: string[] = [];
-		if (firstName.length > 0 && firstName.length < 2) {
-			errors.push($_('validation.firstName.min_length'));
-		}
-		if (firstName.length > 64) {
-			errors.push($_('validation.firstName.max_length'));
-		}
-		return errors;
+		const errorKeys = sharedValidateFirstName(firstName);
+		return translateValidationErrors(errorKeys, (key) => $_(key));
 	}
 
 	function validateLastName(lastName: string) {
-		const errors: string[] = [];
-		if (lastName.length > 0 && lastName.length < 2) {
-			errors.push($_('validation.lastName.min_length'));
-		}
-		if (lastName.length > 64) {
-			errors.push($_('validation.lastName.max_length'));
-		}
-		return errors;
+		const errorKeys = sharedValidateLastName(lastName);
+		return translateValidationErrors(errorKeys, (key) => $_(key));
 	}
 </script>
 
