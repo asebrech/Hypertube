@@ -150,5 +150,30 @@
 			"back_to_login": "Back to Login",
 			"error_message": "Please check your input and try again."
 		}
+	},
+	"account": {
+		"title": "Account Settings",
+		"description": "Manage your account information and security settings",
+		"personal_info": "Personal Information",
+		"security": "Security",
+		"current_password": "Current Password",
+		"new_password": "New Password",
+		"confirm_password": "Confirm Password",
+		"save_changes": "Save Changes",
+		"success_message": "Account updated successfully",
+		"error_current_password": "Current password is incorrect",
+		"error_general": "Failed to update account. Please try again.",
+		"required_for_password": "Required when changing password",
+		"confirm_password_required": "Please confirm your new password",
+		"passwords_do_not_match": "Passwords do not match",
+		"placeholders": {
+			"first_name": "John",
+			"last_name": "Doe",
+			"username": "username",
+			"email": "m@example.com",
+			"current_password": "Enter current password",
+			"new_password": "Enter new password (optional)",
+			"confirm_password": "Confirm new password"
+		}
 	}
 }

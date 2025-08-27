@@ -150,5 +150,30 @@
 			"back_to_login": "العودة لتسجيل الدخول",
 			"error_message": "يرجى التحقق من معلوماتك والمحاولة مرة أخرى."
 		}
+	},
+	"account": {
+		"title": "إعدادات الحساب",
+		"description": "إدارة معلومات حسابك وإعدادات الأمان",
+		"personal_info": "المعلومات الشخصية",
+		"security": "الأمان",
+		"current_password": "كلمة المرور الحالية",
+		"new_password": "كلمة المرور الجديدة",
+		"confirm_password": "تأكيد كلمة المرور",
+		"save_changes": "حفظ التغييرات",
+		"success_message": "تم تحديث الحساب بنجاح",
+		"error_current_password": "كلمة المرور الحالية غير صحيحة",
+		"error_general": "فشل في تحديث الحساب. يرجى المحاولة مرة أخرى.",
+		"required_for_password": "مطلوب عند تغيير كلمة المرور",
+		"confirm_password_required": "يرجى تأكيد كلمة المرور الجديدة",
+		"passwords_do_not_match": "كلمات المرور غير متطابقة",
+		"placeholders": {
+			"first_name": "أحمد",
+			"last_name": "علي",
+			"username": "اسم_المستخدم",
+			"email": "m@مثال.com",
+			"current_password": "أدخل كلمة المرور الحالية",
+			"new_password": "أدخل كلمة المرور الجديدة (اختياري)",
+			"confirm_password": "أكد كلمة المرور الجديدة"
+		}
 	}
 }

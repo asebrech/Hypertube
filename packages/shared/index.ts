@@ -1,5 +1,8 @@
 export * from './src/types.js';
 
+//Validation
+export * from './src/validation.js';
+
 //Models
 export * from './src/models/user.js';
 

@@ -4,6 +4,7 @@ import {
   loginValidator,
   forgotPasswordValidator,
   resetPasswordValidator,
+  updateUserValidator,
 } from '#validators/auth'
 import User from '#models/user'
 import PasswordResetToken from '#models/password_reset_token'
@@ -15,7 +16,6 @@ import env from '#start/env'
 
 export default class AuthController {
   /**
-   * AUTH CONTROLLER
    * Handle Vine.js validation errors and format them for consistent API responses
    */
   private formatValidationErrors(error: any): any[] {
@@ -256,5 +256,91 @@ export default class AuthController {
     await PasswordResetToken.query().where('id', resetToken.id).delete()
 
     return response.ok({ message: 'Password reset successfully.' })
+  }
+
+  async updateUser({ request, response, auth, params }: HttpContext) {
+    try {
+      const userId = params.id
+      const authenticatedUser = auth.getUserOrFail()
+
+      // Check if user is trying to update their own profile
+      if (authenticatedUser.id !== parseInt(userId)) {
+        return response.forbidden({ message: 'You can only update your own profile.' })
+      }
+
+      const user = await User.findOrFail(userId)
+
+      // Add userId to validation data for uniqueness checks
+      const payload = await request.validateUsing(updateUserValidator, {
+        meta: { userId: parseInt(userId) },
+      })
+
+      // If trying to change password, verify current password
+      if (payload.newPassword) {
+        if (!payload.currentPassword) {
+          return response.badRequest({
+            message: 'Current password is required to set a new password.',
+            errors: [
+              {
+                field: 'currentPassword',
+                message: 'Current password is required',
+                rule: 'required',
+              },
+            ],
+          })
+        }
+
+        try {
+          await User.verifyCredentials(user.email, payload.currentPassword)
+        } catch {
+          return response.badRequest({
+            message: 'Current password is incorrect.',
+            errors: [
+              {
+                field: 'currentPassword',
+                message: 'Current password is incorrect',
+                rule: 'invalid',
+              },
+            ],
+          })
+        }
+
+        user.password = payload.newPassword
+      }
+
+      // Update other fields if provided
+      if (payload.email !== undefined) user.email = payload.email
+      if (payload.username !== undefined) user.username = payload.username
+      if (payload.firstName !== undefined) user.firstName = payload.firstName
+      if (payload.lastName !== undefined) user.lastName = payload.lastName
+
+      await user.save()
+
+      return response.ok({
+        message: 'Profile updated successfully.',
+        user: user.serialize(),
+      })
+    } catch (error) {
+      // Handle Vine.js validation errors
+      if (error.messages) {
+        const formattedErrors = this.formatValidationErrors(error)
+
+        return response.status(422).json({
+          message: 'Validation failed',
+          errors: formattedErrors,
+        })
+      }
+
+      return response.status(500).json({
+        message: 'Internal server error',
+        errors: [
+          {
+            field: 'general',
+            message: 'An unexpected error occurred',
+            rule: 'server_error',
+          },
+        ],
+      })
+    }
   }
 }

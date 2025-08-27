@@ -150,5 +150,30 @@
 			"back_to_login": "Volver al inicio de sesión",
 			"error_message": "Por favor verifica tu información e intenta de nuevo."
 		}
+	},
+	"account": {
+		"title": "Configuración de cuenta",
+		"description": "Gestiona tu información de cuenta y configuración de seguridad",
+		"personal_info": "Información personal",
+		"security": "Seguridad",
+		"current_password": "Contraseña actual",
+		"new_password": "Nueva contraseña",
+		"confirm_password": "Confirmar contraseña",
+		"save_changes": "Guardar cambios",
+		"success_message": "Cuenta actualizada exitosamente",
+		"error_current_password": "La contraseña actual es incorrecta",
+		"error_general": "Error al actualizar la cuenta. Por favor intenta de nuevo.",
+		"required_for_password": "Requerido al cambiar contraseña",
+		"confirm_password_required": "Por favor confirma tu nueva contraseña",
+		"passwords_do_not_match": "Las contraseñas no coinciden",
+		"placeholders": {
+			"first_name": "Juan",
+			"last_name": "Pérez",
+			"username": "nombre_usuario",
+			"email": "m@ejemplo.com",
+			"current_password": "Ingresa contraseña actual",
+			"new_password": "Ingresa nueva contraseña (opcional)",
+			"confirm_password": "Confirma nueva contraseña"
+		}
 	}
 }

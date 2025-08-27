@@ -150,5 +150,30 @@
 			"back_to_login": "Retour à la connexion",
 			"error_message": "Veuillez vérifier vos informations et réessayer."
 		}
+	},
+	"account": {
+		"title": "Paramètres du compte",
+		"description": "Gérez vos informations de compte et paramètres de sécurité",
+		"personal_info": "Informations personnelles",
+		"security": "Sécurité",
+		"current_password": "Mot de passe actuel",
+		"new_password": "Nouveau mot de passe",
+		"confirm_password": "Confirmer le mot de passe",
+		"save_changes": "Enregistrer les modifications",
+		"success_message": "Compte mis à jour avec succès",
+		"error_current_password": "Le mot de passe actuel est incorrect",
+		"error_general": "Échec de la mise à jour du compte. Veuillez réessayer.",
+		"required_for_password": "Requis lors du changement de mot de passe",
+		"confirm_password_required": "Veuillez confirmer votre nouveau mot de passe",
+		"passwords_do_not_match": "Les mots de passe ne correspondent pas",
+		"placeholders": {
+			"first_name": "Jean",
+			"last_name": "Dupont",
+			"username": "nom_utilisateur",
+			"email": "m@exemple.com",
+			"current_password": "Entrez le mot de passe actuel",
+			"new_password": "Entrez le nouveau mot de passe (optionnel)",
+			"confirm_password": "Confirmez le nouveau mot de passe"
+		}
 	}
 }

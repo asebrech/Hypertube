@@ -120,7 +120,8 @@
 								errors={firstNameErrors}
 								onfocusout={(e) => {
 									const target = e.target as HTMLInputElement;
-									clientFirstNameErrors = validateFirstName(target.value);
+									const rawErrors = validateFirstName(target.value);
+									clientFirstNameErrors = translateValidationErrors(rawErrors, $_);
 								}}
 							/>
 						</div>
@@ -134,7 +135,8 @@
 								errors={lastNameErrors}
 								onfocusout={(e) => {
 									const target = e.target as HTMLInputElement;
-									clientLastNameErrors = validateLastName(target.value);
+									const rawErrors = validateLastName(target.value);
+									clientLastNameErrors = translateValidationErrors(rawErrors, $_);
 								}}
 							/>
 						</div>
@@ -149,7 +151,8 @@
 							errors={usernameErrors}
 							onfocusout={(e) => {
 								const target = e.target as HTMLInputElement;
-								clientUsernameErrors = validateUsername(target.value);
+								const rawErrors = validateUsername(target.value);
+								clientUsernameErrors = translateValidationErrors(rawErrors, $_);
 							}}
 						/>
 					</div>
@@ -164,7 +167,8 @@
 							errors={emailErrors}
 							onfocusout={(e) => {
 								const target = e.target as HTMLInputElement;
-								clientEmailErrors = validateEmail(target.value);
+								const rawErrors = validateEmail(target.value);
+								clientEmailErrors = translateValidationErrors(rawErrors, $_);
 							}}
 						/>
 					</div>
@@ -177,7 +181,8 @@
 							errors={passwordErrors}
 							onfocusout={(e) => {
 								const target = e.target as HTMLInputElement;
-								clientPasswordErrors = validatePassword(target.value);
+								const rawErrors = validatePassword(target.value);
+								clientPasswordErrors = translateValidationErrors(rawErrors, $_);
 							}}
 						/>
 					</div>

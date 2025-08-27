@@ -150,5 +150,30 @@
 			"back_to_login": "返回登录",
 			"error_message": "请检查您的输入并重试。"
 		}
+	},
+	"account": {
+		"title": "账户设置",
+		"description": "管理您的账户信息和安全设置",
+		"personal_info": "个人信息",
+		"security": "安全",
+		"current_password": "当前密码",
+		"new_password": "新密码",
+		"confirm_password": "确认密码",
+		"save_changes": "保存更改",
+		"success_message": "账户更新成功",
+		"error_current_password": "当前密码不正确",
+		"error_general": "更新账户失败。请重试。",
+		"required_for_password": "更改密码时需要",
+		"confirm_password_required": "请确认您的新密码",
+		"passwords_do_not_match": "密码不匹配",
+		"placeholders": {
+			"first_name": "小明",
+			"last_name": "王",
+			"username": "用户名",
+			"email": "m@例子.com",
+			"current_password": "输入当前密码",
+			"new_password": "输入新密码（可选）",
+			"confirm_password": "确认新密码"
+		}
 	}
 }
