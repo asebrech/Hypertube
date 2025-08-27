@@ -14,6 +14,67 @@ import { randomBytes } from 'node:crypto'
 import env from '#start/env'
 
 export default class AuthController {
+  /**
+   * AUTH CONTROLLER
+   * Handle Vine.js validation errors and format them for consistent API responses
+   */
+  private formatValidationErrors(error: any): any[] {
+    const formattedErrors: any[] = []
+
+    if (!error.messages) {
+      return formattedErrors
+    }
+
+    // Vine.js errors can be structured differently
+    if (Array.isArray(error.messages)) {
+      // If messages is an array of error objects
+      for (const errorObj of error.messages) {
+        let rule = 'validation'
+        if (errorObj.rule === 'database.unique') {
+          rule = 'unique'
+        } else if (errorObj.rule && errorObj.rule.includes('email')) {
+          rule = 'email'
+        } else if (errorObj.rule && errorObj.rule.includes('password')) {
+          rule = 'password'
+        }
+
+        formattedErrors.push({
+          field: errorObj.field,
+          message: errorObj.message,
+          rule: rule,
+        })
+      }
+    } else if (typeof error.messages === 'object') {
+      // If messages is an object with field keys
+      for (const [field, fieldErrors] of Object.entries(error.messages)) {
+        if (Array.isArray(fieldErrors)) {
+          for (const fieldError of fieldErrors) {
+            let rule = 'validation'
+            if (typeof fieldError === 'string') {
+              if (fieldError.includes('unique') || fieldError.includes('already')) {
+                rule = 'unique'
+              } else if (fieldError.includes('email')) {
+                rule = 'email'
+              } else if (fieldError.includes('password')) {
+                rule = 'password'
+              }
+            } else if (fieldError.rule === 'database.unique') {
+              rule = 'unique'
+            }
+
+            formattedErrors.push({
+              field: field,
+              message: typeof fieldError === 'string' ? fieldError : fieldError.message,
+              rule: rule,
+            })
+          }
+        }
+      }
+    }
+
+    return formattedErrors
+  }
+
   async login({ request, response }: HttpContext) {
     const { email, password } = await request.validateUsing(loginValidator)
 
@@ -36,54 +97,7 @@ export default class AuthController {
     } catch (error) {
       // Handle Vine.js validation errors (including unique constraint violations)
       if (error.messages) {
-        const formattedErrors: any[] = []
-
-        // Vine.js errors can be structured differently
-        if (Array.isArray(error.messages)) {
-          // If messages is an array of error objects
-          for (const errorObj of error.messages) {
-            let rule = 'validation'
-            if (errorObj.rule === 'database.unique') {
-              rule = 'unique'
-            } else if (errorObj.rule && errorObj.rule.includes('email')) {
-              rule = 'email'
-            } else if (errorObj.rule && errorObj.rule.includes('password')) {
-              rule = 'password'
-            }
-
-            formattedErrors.push({
-              field: errorObj.field,
-              message: errorObj.message,
-              rule: rule,
-            })
-          }
-        } else if (typeof error.messages === 'object') {
-          // If messages is an object with field keys
-          for (const [field, fieldErrors] of Object.entries(error.messages)) {
-            if (Array.isArray(fieldErrors)) {
-              for (const fieldError of fieldErrors) {
-                let rule = 'validation'
-                if (typeof fieldError === 'string') {
-                  if (fieldError.includes('unique') || fieldError.includes('already')) {
-                    rule = 'unique'
-                  } else if (fieldError.includes('email')) {
-                    rule = 'email'
-                  } else if (fieldError.includes('password')) {
-                    rule = 'password'
-                  }
-                } else if (fieldError.rule === 'database.unique') {
-                  rule = 'unique'
-                }
-
-                formattedErrors.push({
-                  field: field,
-                  message: typeof fieldError === 'string' ? fieldError : fieldError.message,
-                  rule: rule,
-                })
-              }
-            }
-          }
-        }
+        const formattedErrors = this.formatValidationErrors(error)
 
         return response.status(422).json({
           message: 'Validation failed',
@@ -204,7 +218,6 @@ export default class AuthController {
         message: 'If this email exists, a password reset link has been sent.',
       })
     } catch (error) {
-
       // In development, provide the reset URL directly
       if (env.get('NODE_ENV') === 'development') {
         return response.ok({

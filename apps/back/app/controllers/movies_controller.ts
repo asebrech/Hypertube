@@ -11,7 +11,7 @@ export default class MoviesController {
     private movieService: MovieService
   ) {}
 
-  async index({ request, response, auth }: HttpContext) {
+  async index({ request, auth }: HttpContext) {
     const page = request.input('page', 1)
     const movieType = request.input('type', 'movie')
     const limit = 4
