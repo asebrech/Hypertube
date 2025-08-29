@@ -5,6 +5,7 @@
 
 	import { MovieCarousel } from '@/components/tadflix/movie-carousel';
 	import MovieBanner from '@/components/tadflix/movie-banner/MovieBanner.svelte';
+	import { MovieModal } from '@/components/tadflix/movie-modal';
 	import Skeleton from '@/components/ui/skeleton/skeleton.svelte';
 	import { ChevronRight } from 'lucide-svelte';
 	import { _ } from 'svelte-i18n';
@@ -63,7 +64,12 @@
 
 <div class="flex flex-col gap-8">
 	{#if movieBanner}
-		<MovieBanner logo={movieLogo} movie={movieBanner} movieVideo={movieVideoResponse} />
+		<MovieBanner
+			logo={movieLogo}
+			movie={movieBanner}
+			movieVideo={movieVideoResponse}
+			type="movie"
+		/>
 	{:else}
 		<Skeleton class="h-[80vh]" />
 	{/if}
@@ -77,7 +83,7 @@
 					<div>{genre.name}</div>
 					<div class="relative flex items-center overflow-hidden text-[#54b9c5]">
 						<span
-							class="ml-1 inline-block max-w-0 overflow-hidden whitespace-nowrap text-xs font-light text-[#54b9c5] opacity-0 transition-all duration-1000 group-hover:max-w-[200px] group-hover:translate-y-0 group-hover:opacity-100"
+							class="ml-1 inline-block max-w-0 overflow-hidden text-xs font-light whitespace-nowrap text-[#54b9c5] opacity-0 transition-all duration-1000 group-hover:max-w-[200px] group-hover:translate-y-0 group-hover:opacity-100"
 						>
 							{$_('browse.explore')}
 						</span>
@@ -98,3 +104,6 @@
 </div>
 
 <div bind:this={sentinel}></div>
+
+<!-- Movie Modal -->
+<MovieModal />

@@ -1,0 +1,275 @@
+{
+    "en": {
+        "iso": "en",
+        "iso_639_1": "en-GB",
+        "name": "English",
+        "nativeName": "English",
+        "flag": "🇬🇧"
+    },
+    "es": {
+        "iso": "es",
+        "iso_639_1": "es-ES",
+        "name": "Spanish",
+        "nativeName": "Español",
+        "flag": "🇪🇸"
+    },
+    "fr": {
+        "iso": "fr",
+        "iso_639_1": "fr-FR",
+        "name": "French",
+        "nativeName": "Français",
+        "flag": "🇫🇷"
+    },
+    "de": {
+        "iso": "de",
+        "iso_639_1": "de-DE",
+        "name": "German",
+        "nativeName": "Deutsch",
+        "flag": "🇩🇪"
+    },
+    "zh": {
+        "iso": "zh",
+        "iso_639_1": "zh-CN",
+        "name": "Chinese",
+        "nativeName": "中文",
+        "flag": "🇨🇳"
+    },
+    "ar": {
+        "iso": "ar",
+        "iso_639_1": "ar-SA",
+        "name": "Arabic",
+        "nativeName": "العربية",
+        "flag": "🇸🇦"
+    },
+    "ru": {
+        "iso": "ru",
+        "iso_639_1": "ru-RU",
+        "name": "Russian",
+        "nativeName": "Русский",
+        "flag": "🇷🇺"
+    },
+    "pt": {
+        "iso": "pt",
+        "iso_639_1": "pt-PT",
+        "name": "Portuguese",
+        "nativeName": "Português",
+        "flag": "🇵🇹"
+    },
+    "it": {
+        "iso": "it",
+        "iso_639_1": "it-IT",
+        "name": "Italian",
+        "nativeName": "Italiano",
+        "flag": "🇮🇹"
+    },
+    "ja": {
+        "iso": "ja",
+        "iso_639_1": "ja-JP",
+        "name": "Japanese",
+        "nativeName": "日本語",
+        "flag": "🇯🇵"
+    },
+    "ko": {
+        "iso": "ko",
+        "iso_639_1": "ko-KR",
+        "name": "Korean",
+        "nativeName": "한국어",
+        "flag": "🇰🇷"
+    },
+    "hi": {
+        "iso": "hi",
+        "iso_639_1": "hi-IN",
+        "name": "Hindi",
+        "nativeName": "हिन्दी",
+        "flag": "🇮🇳"
+    },
+    "tr": {
+        "iso": "tr",
+        "iso_639_1": "tr-TR",
+        "name": "Turkish",
+        "nativeName": "Türkçe",
+        "flag": "🇹🇷"
+    },
+    "vi": {
+        "iso": "vi",
+        "iso_639_1": "vi-VN",
+        "name": "Vietnamese",
+        "nativeName": "Tiếng Việt",
+        "flag": "🇻🇳"
+    },
+    "el": {
+        "iso": "el",
+        "iso_639_1": "el-GR",
+        "name": "Greek",
+        "nativeName": "Ελληνικά",
+        "flag": "🇬🇷"
+    },
+    "sw": {
+        "iso": "sw",
+        "iso_639_1": "sw-TZ",
+        "name": "Swahili",
+        "nativeName": "Kiswahili",
+        "flag": "🇹🇿"
+    },
+    "nl": {
+        "iso": "nl",
+        "iso_639_1": "nl-NL",
+        "name": "Dutch",
+        "nativeName": "Nederlands",
+        "flag": "🇳🇱"
+    },
+    "pl": {
+        "iso": "pl",
+        "iso_639_1": "pl-PL",
+        "name": "Polish",
+        "nativeName": "Polski",
+        "flag": "🇵🇱"
+    },
+    "fa": {
+        "iso": "fa",
+        "iso_639_1": "fa-IR",
+        "name": "Persian",
+        "nativeName": "فارسی",
+        "flag": "🇮🇷"
+    },
+    "he": {
+        "iso": "he",
+        "iso_639_1": "he-IL",
+        "name": "Hebrew",
+        "nativeName": "עברית",
+        "flag": "🇮🇱"
+    },
+    "th": {
+        "iso": "th",
+        "iso_639_1": "th-TH",
+        "name": "Thai",
+        "nativeName": "ไทย",
+        "flag": "🇹🇭"
+    },
+    "id": {
+        "iso": "id",
+        "iso_639_1": "id-ID",
+        "name": "Indonesian",
+        "nativeName": "Bahasa Indonesia",
+        "flag": "🇮🇩"
+    },
+    "ms": {
+        "iso": "ms",
+        "iso_639_1": "ms-MY",
+        "name": "Malay",
+        "nativeName": "Bahasa Melayu",
+        "flag": "🇲🇾"
+    },
+    "ro": {
+        "iso": "ro",
+        "iso_639_1": "ro-RO",
+        "name": "Romanian",
+        "nativeName": "Română",
+        "flag": "🇷🇴"
+    },
+    "hu": {
+        "iso": "hu",
+        "iso_639_1": "hu-HU",
+        "name": "Hungarian",
+        "nativeName": "Magyar",
+        "flag": "🇭🇺"
+    },
+    "cs": {
+        "iso": "cs",
+        "iso_639_1": "cs-CZ",
+        "name": "Czech",
+        "nativeName": "Čeština",
+        "flag": "🇨🇿"
+    },
+    "sv": {
+        "iso": "sv",
+        "iso_639_1": "sv-SE",
+        "name": "Swedish",
+        "nativeName": "Svenska",
+        "flag": "🇸🇪"
+    },
+    "da": {
+        "iso": "da",
+        "iso_639_1": "da-DK",
+        "name": "Danish",
+        "nativeName": "Dansk",
+        "flag": "🇩🇰"
+    },
+    "fi": {
+        "iso": "fi",
+        "iso_639_1": "fi-FI",
+        "name": "Finnish",
+        "nativeName": "Suomi",
+        "flag": "🇫🇮"
+    },
+    "no": {
+        "iso": "no",
+        "iso_639_1": "no-NO",
+        "name": "Norwegian",
+        "nativeName": "Norsk",
+        "flag": "🇳🇴"
+    },
+    "uk": {
+        "iso": "uk",
+        "iso_639_1": "uk-UA",
+        "name": "Ukrainian",
+        "nativeName": "Українська",
+        "flag": "🇺🇦"
+    },
+    "bg": {
+        "iso": "bg",
+        "iso_639_1": "bg-BG",
+        "name": "Bulgarian",
+        "nativeName": "Български",
+        "flag": "🇧🇬"
+    },
+    "sr": {
+        "iso": "sr",
+        "iso_639_1": "sr-RS",
+        "name": "Serbian",
+        "nativeName": "Српски",
+        "flag": "🇷🇸"
+    },
+    "hr": {
+        "iso": "hr",
+        "iso_639_1": "hr-HR",
+        "name": "Croatian",
+        "nativeName": "Hrvatski",
+        "flag": "🇭🇷"
+    },
+    "sk": {
+        "iso": "sk",
+        "iso_639_1": "sk-SK",
+        "name": "Slovak",
+        "nativeName": "Slovenčina",
+        "flag": "🇸🇰"
+    },
+    "sl": {
+        "iso": "sl",
+        "iso_639_1": "sl-SI",
+        "name": "Slovenian",
+        "nativeName": "Slovenščina",
+        "flag": "🇸🇮"
+    },
+    "et": {
+        "iso": "et",
+        "iso_639_1": "et-EE",
+        "name": "Estonian",
+        "nativeName": "Eesti",
+        "flag": "🇪🇪"
+    },
+    "lv": {
+        "iso": "lv",
+        "iso_639_1": "lv-LV",
+        "name": "Latvian",
+        "nativeName": "Latviešu",
+        "flag": "🇱🇻"
+    },
+    "lt": {
+        "iso": "lt",
+        "iso_639_1": "lt-LT",
+        "name": "Lithuanian",
+        "nativeName": "Lietuvių",
+        "flag": "🇱🇹"
+    }
+}

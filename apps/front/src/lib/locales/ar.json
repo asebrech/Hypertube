@@ -39,6 +39,19 @@
 	"browse": {
 		"explore": "استكشاف الكل"
 	},
+	"movie-modal": {
+		"new": "جديد",
+		"go-back": "العودة إلى الفيلم السابق",
+		"about": "حول",
+		"more-like-this": "المزيد مثل هذا",
+		"director": "المخرج",
+		"cast": "الممثلون",
+		"genres": "الأنواع",
+		"maturity-rating": "تصنيف الأعمار",
+		"mature-audiences": "للجمهور البالغ.",
+		"audiences-13": "للجمهور من عمر 13 سنة فما فوق.",
+		"more": "المزيد"
+	},
 	"video-player": {
 		"back-to-home": "العودة إلى الرئيسية",
 		"converting": "جاري تحميل وتحويل الفيلم...",

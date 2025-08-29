@@ -10,8 +10,8 @@ export type BackDropImage = {
   langFound: boolean;
 };
 
-export type ImageSizeType = 'small' | 'medium' | 'large' | 'original'
-export type MovieType = 'movie'| 'tv'
+export type ImageSizeType = 'small' | 'medium' | 'large' | 'original';
+export type MovieType = 'movie' | 'tv';
 
 export type Movie = {
   id: number;
@@ -21,7 +21,7 @@ export type Movie = {
   poster_path: string;
   release_date: string;
   vote_average: number;
-  media_type: MovieType | undefined
+  media_type: MovieType | undefined;
   backdrop_image: BackDropImage | null | undefined;
   is_watched?: boolean;
   is_bookmarked?: boolean;
@@ -84,6 +84,27 @@ export type MovieDetails = {
   video: boolean;
   vote_average: number;
   vote_count: number;
+  // TV Show specific properties (optional)
+  first_air_date?: string;
+  last_air_date?: string;
+  number_of_episodes?: number;
+  number_of_seasons?: number;
+  episode_run_time?: number[];
+  in_production?: boolean;
+  type?: string;
+  created_by?: {
+    id: number;
+    credit_id: string;
+    name: string;
+    gender: number;
+    profile_path: string | null;
+  }[];
+  networks?: {
+    id: number;
+    name: string;
+    logo_path: string | null;
+    origin_country: string;
+  }[];
 };
 
 export type MovieVideo = {
@@ -116,55 +137,55 @@ export interface PaginationType<T> {
 }
 
 export type CastMember = {
-	id: number;
-	adult: boolean;
-	gender: number;
-	known_for_department: string;
-	name: string;
-	original_name: string;
-	popularity: number;
-	profile_path: string;
-	cast_id: number;
-	character: string;
-	credit_id: string;
-	order: number;
+  id: number;
+  adult: boolean;
+  gender: number;
+  known_for_department: string;
+  name: string;
+  original_name: string;
+  popularity: number;
+  profile_path: string;
+  cast_id: number;
+  character: string;
+  credit_id: string;
+  order: number;
 };
 
 export type CrewMember = {
-	id: number;
-	adult: boolean;
-	gender: number;
-	known_for_department: string;
-	name: string;
-	original_name: string;
-	popularity: number;
-	profile_path: string;
-	credit_id: string;
-	department: string;
-	job: string;
+  id: number;
+  adult: boolean;
+  gender: number;
+  known_for_department: string;
+  name: string;
+  original_name: string;
+  popularity: number;
+  profile_path: string;
+  credit_id: string;
+  department: string;
+  job: string;
 };
 
 export type MovieCredits = {
-	id: number;
-	cast: CastMember[];
-	crew: CrewMember[];
+  id: number;
+  cast: CastMember[];
+  crew: CrewMember[];
 };
 
 export type PersonDetails = {
-	adult: boolean;
-	also_known_as: string[];
-	biography: string;
-	birthday: string;
-	deathday: string;
-	gender: number;
-	homepage: string;
-	id: number;
-	imdb_id: string;
-	known_for_department: string;
-	name: string;
-	place_of_birth: string;
-	popularity: number;
-	profile_path: string;
+  adult: boolean;
+  also_known_as: string[];
+  biography: string;
+  birthday: string;
+  deathday: string;
+  gender: number;
+  homepage: string;
+  id: number;
+  imdb_id: string;
+  known_for_department: string;
+  name: string;
+  place_of_birth: string;
+  popularity: number;
+  profile_path: string;
 };
 
 export type SubtitleApiResponse = {

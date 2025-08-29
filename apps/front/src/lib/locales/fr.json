@@ -39,6 +39,19 @@
 	"browse": {
 		"explore": "Tout explorer"
 	},
+	"movie-modal": {
+		"new": "Nouveau",
+		"go-back": "Retour au film précédent",
+		"about": "À propos",
+		"more-like-this": "Autres titres similaires",
+		"director": "Réalisateur",
+		"cast": "Distribution",
+		"genres": "Genres",
+		"maturity-rating": "Classification d'âge",
+		"mature-audiences": "Pour un public mature.",
+		"audiences-13": "Pour les 13 ans et plus.",
+		"more": "plus"
+	},
 	"video-player": {
 		"back-to-home": "Retour à l'accueil",
 		"converting": "Téléchargement et conversion du film en cours...",
