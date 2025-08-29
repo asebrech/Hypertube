@@ -4,6 +4,7 @@
 	import { locale, locales } from 'svelte-i18n';
 	import { _ } from 'svelte-i18n';
 	import { isLoading } from 'svelte-i18n';
+	import { lang } from '@hypertube/shared';
 
 	let previousLocale = $locale;
 
@@ -19,24 +20,12 @@
 		}
 	});
 
-	const getLangName = (lang: string | null | undefined) => {
-		switch (lang) {
-			case 'fr-FR':
-				return 'Français';
-			case 'en-GB':
-				return 'English';
-			case 'zh-CN':
-				return '简体中文';
-			case 'es-ES':
-				return 'Español';
-			case 'ar-SA':
-				return 'العربية';
-			default:
-				return lang;
-		}
+	const getLangName = (langToTranslate: string) => {
+		const langCode = langToTranslate.split('-')[0];
+		return lang[langCode as keyof typeof lang]?.nativeName ?? langToTranslate ?? "Unknown language";
 	};
 
-	let language = $derived(getLangName($locale));
+	let language = $derived(getLangName($locale || ""));
 </script>
 
 {#if $isLoading}{:else}
