@@ -2,6 +2,7 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
+	import { PasswordInput } from '$lib/components/ui/password-input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { _ } from 'svelte-i18n';
 	import {
@@ -170,10 +171,9 @@
 					</div>
 					<div class="grid gap-2">
 						<Label for="password">{$_('auth.password')}</Label>
-						<Input
+						<PasswordInput
 							id="password"
 							name="password"
-							type="password"
 							errors={passwordErrors}
 							onfocusout={(e) => {
 								const target = e.target as HTMLInputElement;

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
-	import { Input } from '$lib/components/ui/input/index.js';
+	import { PasswordInput } from '$lib/components/ui/password-input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
@@ -40,9 +40,8 @@
 						{/if}
 						<div class="grid gap-2">
 							<Label for="password">{$_('auth.reset_password.new_password_label')}</Label>
-							<Input 
+							<PasswordInput 
 								id="password" 
-								type="password" 
 								name="password" 
 								autocomplete="new-password"
 								required 
@@ -53,9 +52,8 @@
 						</div>
 						<div class="grid gap-2">
 							<Label for="confirmPassword">{$_('auth.reset_password.confirm_password_label')}</Label>
-							<Input 
+							<PasswordInput 
 								id="confirmPassword" 
-								type="password" 
 								name="confirmPassword" 
 								autocomplete="new-password"
 								required 
