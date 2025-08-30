@@ -6,7 +6,7 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
-	import { Loader2 } from 'lucide-svelte';
+	import { Loader2, ExternalLink } from 'lucide-svelte';
 
 	interface CommentContainerProps {
 		movieId: number;
@@ -140,7 +140,7 @@
 		<div class="flex flex-col gap-4">
 			<!-- Comment Input -->
 			<CommentInput {movieId} username={currentUser} {token} onCommentAdded={handleCommentAdded} />
-			
+
 			<!-- Comments List -->
 			{#if isLoading && comments.length === 0}
 				<div class="flex items-center justify-center gap-2 py-8 text-center text-white">
@@ -184,8 +184,12 @@
 		</div>
 	{:else}
 		<div class="py-8 text-center">
-			<a href="/login" class="text-white hover:text-red-400 transition-colors cursor-pointer">
+			<a
+				href="/login"
+				class="inline-flex items-baseline justify-center gap-2 text-white underline transition-colors hover:text-red-400"
+			>
 				{$_('comments.login-required')}
+				<ExternalLink class="size-4 flex-shrink-0 self-center" />
 			</a>
 		</div>
 	{/if}
