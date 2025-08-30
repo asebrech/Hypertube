@@ -37,5 +37,15 @@ export default await Env.create(new URL('../', import.meta.url), {
   GITHUB_CLIENT_ID: Env.schema.string(),
   GITHUB_CLIENT_SECRET: Env.schema.string(),
   GOOGLE_CLIENT_ID: Env.schema.string(),
-  GOOGLE_CLIENT_SECRET: Env.schema.string()
+  GOOGLE_CLIENT_SECRET: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring OpenSubtitles API
+  |----------------------------------------------------------
+  */
+  OPENSUBTITLES_API_KEY: Env.schema.string(),
+  OPENSUBTITLES_API_URL: Env.schema.string(),
+  OPENSUBTITLES_USERNAME: Env.schema.string(),
+  OPENSUBTITLES_PASSWORD: Env.schema.string(),
 })

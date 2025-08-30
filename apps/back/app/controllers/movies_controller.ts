@@ -89,11 +89,15 @@ export default class MoviesController {
         }
       })
     )
-    // const firstmovieSubtitleLinks = await this.openSubtitleService.getAllSubtitles('9614')
-    // console.log('First movie subtitle links:', firstmovieSubtitleLinks)
-    // const link = await this.openSubtitleService.getSubtitleLink('9614', 'en')
     const hasMorePages = finalMovieListByGenre.length > offset + limit
     return { movies: moviesFinalResult, hasMorePages }
+  }
+
+  async subtitle({ request, response }: HttpContext) {
+    const all = await this.openSubtitleService.getAllSubtitles('950387', 'en')
+    console.log(all)
+    const res = await this.openSubtitleService.searchSubtitles('950387', 'en')
+    console.log(res)
   }
 
   async backdropImage({ request, response }: HttpContext): Promise<BackDropImage | void> {
@@ -167,14 +171,17 @@ export default class MoviesController {
     const lang = request.input('lang', 'en')
     const movieType = request.input('type', 'movie')
     const movieVideos = await this.tmdbService.getMovieVideos(tmdb_movie_id, lang, movieType)
-    if (!movieVideos) return response.notFound({ error: 'Movie videos not found' })
+    if (!movieVideos) {
+      return response.notFound({ error: 'Movie videos not found' })
+    }
     let movieVideo = movieVideos.results.find(
       (video: any) => video.site === 'YouTube' && video.type === 'Clip'
     )
-    if (!movieVideo)
+    if (!movieVideo) {
       movieVideo = movieVideos.results.find(
         (video: any) => video.site === 'YouTube' && video.type === 'Trailer'
       )
+    }
     return movieVideo
   }
 
@@ -348,7 +355,9 @@ export default class MoviesController {
       return response.ok({ message: 'Movie marked as watched successfully' })
     } catch (error) {
       console.error('Error marking movie as watched:', error)
-      return response.internalServerError({ error: 'Failed to mark movie as watched' })
+      return response.internalServerError({
+        error: 'Failed to mark movie as watched',
+      })
     }
   }
 
@@ -398,7 +407,9 @@ export default class MoviesController {
       })
     } catch (error) {
       console.error('Error saving watch progress:', error)
-      return response.internalServerError({ error: 'Failed to save watch progress' })
+      return response.internalServerError({
+        error: 'Failed to save watch progress',
+      })
     }
   }
 
@@ -430,7 +441,9 @@ export default class MoviesController {
       })
     } catch (error) {
       console.error('Error getting watch progress:', error)
-      return response.internalServerError({ error: 'Failed to get watch progress' })
+      return response.internalServerError({
+        error: 'Failed to get watch progress',
+      })
     }
   }
 
@@ -482,7 +495,9 @@ export default class MoviesController {
       })
     } catch (error) {
       console.error('Error toggling bookmark:', error)
-      return response.internalServerError({ error: 'Failed to toggle bookmark' })
+      return response.internalServerError({
+        error: 'Failed to toggle bookmark',
+      })
     }
   }
 }
