@@ -41,7 +41,9 @@
 			const response: PaginatedComments = await getMovieComments(movieId, page, 6, token);
 
 			if (append) {
-				comments = [...comments, ...response.data];
+				const existingIds = new Set(comments.map((c) => c.id));
+				const newComments = response.data.filter((comment) => !existingIds.has(comment.id));
+				comments = [...comments, ...newComments];
 			} else {
 				comments = response.data;
 			}
@@ -60,10 +62,6 @@
 		if (hasMore && !isLoading) {
 			loadComments(currentPage + 1, true);
 		}
-	};
-
-	const handleCommentAdded = (newComment: Comment) => {
-		comments = [newComment, ...comments];
 	};
 
 	const handleUpdateComment = (updatedComment: Comment) => {
@@ -139,7 +137,12 @@
 	{#if user && token}
 		<div class="flex flex-col gap-4">
 			<!-- Comment Input -->
-			<CommentInput {movieId} username={currentUser} {token} onCommentAdded={handleCommentAdded} />
+			<CommentInput
+				{movieId}
+				username={currentUser}
+				{token}
+				onCommentAdded={(newComment) => (comments = [newComment, ...comments])}
+			/>
 
 			<!-- Comments List -->
 			{#if isLoading && comments.length === 0}
