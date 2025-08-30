@@ -118,7 +118,8 @@ export class OpenSubtitleService {
     )) as SubtitleApiResponse
     const subtitle = await data.data.find(
       (item: any) =>
-        item.attributes.language === lang && item.attributes.feature_details.tmdb_id === tmdb_id
+        item.attributes.language === lang &&
+        item.attributes.feature_details.tmdb_id === Number(tmdb_id)
     )
     return subtitle
   }

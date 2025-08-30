@@ -94,8 +94,6 @@ export default class MoviesController {
   }
 
   async subtitle({ request, response }: HttpContext) {
-    const all = await this.openSubtitleService.getAllSubtitles('950387', 'en')
-    console.log(all)
     const res = await this.openSubtitleService.searchSubtitles('950387', 'en')
     console.log(res)
   }
