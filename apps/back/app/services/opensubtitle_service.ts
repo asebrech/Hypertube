@@ -33,7 +33,8 @@ export class OpenSubtitleService {
       headers: {
         'Api-Key': this.apiKey,
         'Content-Type': 'application/json',
-        'User-Agent': 'HypertubeLaBoiteDeCarton/1.0',
+        'Accept': '*/*',
+        'User-Agent': 'HypertubeApp v1.0',
       },
       data: {
         username: this.username,
@@ -46,14 +47,20 @@ export class OpenSubtitleService {
       this.userToken = response.data.token
     } catch (error: any) {
       if (error.response) {
+        console.error('Login error response:', {
+          status: error.response.status,
+          data: error.response.data,
+        })
         throw new Error(
           `Failed to login to OpenSubtitles API: ${error.response.status} - ${JSON.stringify(
             error.response.data
           )}`
         )
       } else if (error.request) {
+        console.error('Login error request:', error.request)
         throw new Error('Failed to login to OpenSubtitles API: No response received')
       } else {
+        console.error('Login error:', error.message)
         throw new Error(`Failed to login to OpenSubtitles API: ${error.message}`)
       }
     }
@@ -66,7 +73,8 @@ export class OpenSubtitleService {
       url: url,
       headers: {
         'Api-Key': this.apiKey,
-        'User-Agent': 'HypertubeLaBoiteDeCarton/1.0',
+        'Accept': '*/*',
+        'User-Agent': 'HypertubeApp v1.0',
       },
     }
     try {
@@ -99,7 +107,8 @@ export class OpenSubtitleService {
         'Api-Key': this.apiKey,
         'Authorization': `Bearer ${this.userToken}`,
         'Content-Type': 'application/json',
-        'User-Agent': 'HypertubeLaBoiteDeCarton/1.0',
+        'Accept': '*/*',
+        'User-Agent': 'HypertubeApp v1.0',
       },
       data: data,
     }
@@ -116,9 +125,6 @@ export class OpenSubtitleService {
           if (error.response.status === 503 && retryCount < maxRetries - 1) {
             retryCount++
             const waitTime = retryCount * 2000 // 2s, 4s, 6s
-            console.log(
-              `API returned 503, retrying in ${waitTime}ms (attempt ${retryCount}/${maxRetries})`
-            )
             await new Promise((resolve) => setTimeout(resolve, waitTime))
             continue
           }
