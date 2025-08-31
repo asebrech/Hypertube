@@ -72,8 +72,20 @@ export class OpenSubtitleService {
     try {
       const response = await axios(options)
       return response.data
-    } catch (error) {
-      throw new Error('Failed to fetch data from OpenSubtitleApi. Endpoint : ' + endpoint)
+    } catch (error: any) {
+      if (error.response) {
+        throw new Error(
+          `Failed to fetch data from OpenSubtitleApi. Endpoint: ${endpoint}, Status: ${error.response.status}, Response: ${JSON.stringify(error.response.data)}`
+        )
+      } else if (error.request) {
+        throw new Error(
+          `Failed to fetch data from OpenSubtitleApi. Endpoint: ${endpoint}, No response received`
+        )
+      } else {
+        throw new Error(
+          `Failed to fetch data from OpenSubtitleApi. Endpoint: ${endpoint}, Error: ${error.message}`
+        )
+      }
     }
   }
   private async postSomethingToApi(endpoint: string, data: any) {
@@ -91,11 +103,39 @@ export class OpenSubtitleService {
       },
       data: data,
     }
-    try {
-      const response = await axios(options)
-      return response.data
-    } catch (error) {
-      throw new Error('Failed to post data to OpenSubtitleApi. Endpoint : ' + endpoint)
+
+    const maxRetries = 3
+    let retryCount = 0
+
+    while (retryCount < maxRetries) {
+      try {
+        const response = await axios(options)
+        return response.data
+      } catch (error: any) {
+        if (error.response) {
+          if (error.response.status === 503 && retryCount < maxRetries - 1) {
+            retryCount++
+            const waitTime = retryCount * 2000 // 2s, 4s, 6s
+            console.log(
+              `API returned 503, retrying in ${waitTime}ms (attempt ${retryCount}/${maxRetries})`
+            )
+            await new Promise((resolve) => setTimeout(resolve, waitTime))
+            continue
+          }
+
+          throw new Error(
+            `Failed to post data to OpenSubtitleApi. Endpoint: ${endpoint}, Status: ${error.response.status}, Response: ${JSON.stringify(error.response.data)}`
+          )
+        } else if (error.request) {
+          throw new Error(
+            `Failed to post data to OpenSubtitleApi. Endpoint: ${endpoint}, No response received`
+          )
+        } else {
+          throw new Error(
+            `Failed to post data to OpenSubtitleApi. Endpoint: ${endpoint}, Error: ${error.message}`
+          )
+        }
+      }
     }
   }
 
@@ -138,8 +178,18 @@ export class OpenSubtitleService {
       file_id,
       ...options,
     }
-    const response: SubtitleDownloadResponse = await this.postSomethingToApi(endpoint, data)
-    return response
+
+    try {
+      const response: SubtitleDownloadResponse = await this.postSomethingToApi(endpoint, data)
+      return response
+    } catch (error: any) {
+      if (error.message.includes('Status: 503')) {
+        throw new Error(
+          'OpenSubtitles API is temporarily unavailable due to high traffic or maintenance. Please try again later.'
+        )
+      }
+      throw error
+    }
   }
 
   public async getSubtitleLink(tmdb_id: string, lang: string = 'en'): Promise<string | null> {
