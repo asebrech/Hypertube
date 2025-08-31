@@ -95,7 +95,11 @@ export default class MoviesController {
 
   async subtitle({ request, response }: HttpContext) {
     const res = await this.openSubtitleService.searchSubtitles('950387', 'en')
-    console.log(res)
+    console.log('res : ', res)
+    console.log('file_id', res.attributes.files[0].file_id)
+
+    const down = await this.openSubtitleService.downloadSubtitle(res.attributes.files[0].file_id)
+    console.log('down : ', down)
   }
 
   async backdropImage({ request, response }: HttpContext): Promise<BackDropImage | void> {

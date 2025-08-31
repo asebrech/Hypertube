@@ -1,6 +1,11 @@
 import axios from 'axios'
 import env from '#start/env'
-import { SubtitleApiResponse, SubtitleResult } from '@hypertube/shared'
+import {
+  SubtitleApiResponse,
+  SubtitleResult,
+  SubtitleDownloadRequest,
+  SubtitleDownloadResponse,
+} from '@hypertube/shared'
 
 export class OpenSubtitleService {
   private apiKey: string | undefined
@@ -124,19 +129,37 @@ export class OpenSubtitleService {
     return subtitle
   }
 
-  public async downloadSubtitle(file_id: string): Promise<string> {
+  public async downloadSubtitle(
+    file_id: number,
+    options?: Omit<SubtitleDownloadRequest, 'file_id'>
+  ): Promise<SubtitleDownloadResponse> {
     const endpoint = `/download`
-    const data = {
-      file_id: file_id,
+    const data: SubtitleDownloadRequest = {
+      file_id,
+      ...options,
     }
-    const data2: { link: string } = await this.postSomethingToApi(endpoint, data)
-    return data2.link
+    const response: SubtitleDownloadResponse = await this.postSomethingToApi(endpoint, data)
+    return response
   }
 
   public async getSubtitleLink(tmdb_id: string, lang: string = 'en'): Promise<string | null> {
     const subtitle = await this.searchSubtitles(tmdb_id, lang)
     if (subtitle) {
-      return await this.downloadSubtitle(subtitle.attributes.files[0].file_id.toString())
+      const downloadResponse = await this.downloadSubtitle(subtitle.attributes.files[0].file_id)
+      return downloadResponse.link
     }
+    return null
+  }
+
+  public async getSubtitleDownloadInfo(
+    tmdb_id: string,
+    lang: string = 'en',
+    options?: Omit<SubtitleDownloadRequest, 'file_id'>
+  ): Promise<SubtitleDownloadResponse | null> {
+    const subtitle = await this.searchSubtitles(tmdb_id, lang)
+    if (subtitle) {
+      return await this.downloadSubtitle(subtitle.attributes.files[0].file_id, options)
+    }
+    return null
   }
 }
