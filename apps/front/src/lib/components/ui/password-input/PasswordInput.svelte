@@ -1,14 +1,14 @@
 <script lang="ts">
 	import type { HTMLInputAttributes } from 'svelte/elements';
-	import { cn } from "$lib/utils.js";
+	import { cn } from '$lib/utils.js';
 	import { Eye, EyeOff, XCircle } from 'lucide-svelte';
-	
+
 	type Props = Omit<HTMLInputAttributes, 'type'> & {
 		id: string;
 		name: string;
 		errors?: string[];
 	};
-	
+
 	let {
 		id,
 		name,
@@ -21,10 +21,10 @@
 		class: className,
 		...restProps
 	}: Props = $props();
-	
+
 	let showPassword = $state(false);
 	const hasErrors = $derived(errors && errors.length > 0);
-	
+
 	const togglePasswordVisibility = () => {
 		showPassword = !showPassword;
 	};
@@ -42,7 +42,7 @@
 			{required}
 			{disabled}
 			class={cn(
-				"flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 pr-10",
+				'border-input file:text-foreground placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border bg-transparent px-3 py-1 pr-10 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50',
 				hasErrors && 'border-red-500 focus-visible:ring-red-500',
 				className
 			)}
@@ -50,7 +50,7 @@
 		/>
 		<button
 			type="button"
-			class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none transition-colors"
+			class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 transition-colors hover:text-gray-600 focus:outline-none"
 			onclick={togglePasswordVisibility}
 			aria-label={showPassword ? 'Hide password' : 'Show password'}
 		>
@@ -62,13 +62,13 @@
 		</button>
 	</div>
 	{#if hasErrors}
-		<div class="flex items-start space-x-2">
-			<XCircle class="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
-			<div class="space-y-1">
-				{#each errors as error}
+		<div class="space-y-1">
+			{#each errors as error}
+				<div class="flex items-center space-x-2">
+					<XCircle class="h-4 w-4 flex-shrink-0 text-red-500" />
 					<p class="text-sm text-red-500">{error}</p>
-				{/each}
-			</div>
+				</div>
+			{/each}
 		</div>
 	{/if}
 </div>

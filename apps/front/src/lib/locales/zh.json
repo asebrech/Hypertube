@@ -106,6 +106,7 @@
 		"already_have_account": "已经有账户了？",
 		"register_with_google": "使用Google注册",
 		"register_with_github": "使用Github注册",
+		"register_with_42": "使用42注册",
 		"form_error": "密码太短或邮箱已被使用",
 		"login": {
 			"title": "登录",

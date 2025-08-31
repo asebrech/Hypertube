@@ -106,6 +106,7 @@
 		"already_have_account": "Vous avez déjà un compte ?",
 		"register_with_google": "S'inscrire avec Google",
 		"register_with_github": "S'inscrire avec Github",
+		"register_with_42": "S'inscrire avec 42",
 		"form_error": "Mot de passe trop court ou email déjà utilisé",
 		"login": {
 			"title": "Connexion",

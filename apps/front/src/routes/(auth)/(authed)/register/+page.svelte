@@ -4,6 +4,11 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { PasswordInput } from '$lib/components/ui/password-input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
+	import {
+		GoogleButton,
+		GithubButton,
+		FortyTwoButton
+	} from '$lib/components/ui/oauth-buttons/index.js';
 	import { _ } from 'svelte-i18n';
 	import {
 		validatePassword as sharedValidatePassword,
@@ -184,16 +189,21 @@
 					<Button type="submit" class="w-full">{$_('auth.create_account')}</Button>
 				</div>
 			</form>
-			<form method="POST" action="/login/google" use:enhance>
-				<Button variant="outline" class="w-full" type="submit"
-					>{$_('auth.register_with_google')}</Button
-				>
-			</form>
-			<form method="POST" action="/login/github" use:enhance>
-				<Button variant="outline" class="w-full" type="submit"
-					>{$_('auth.register_with_github')}</Button
-				>
-			</form>
+
+			<div class="relative">
+				<div class="absolute inset-0 flex items-center">
+					<span class="w-full border-t border-gray-600"></span>
+				</div>
+				<div class="relative flex justify-center text-xs uppercase">
+					<span class="bg-black px-2 text-gray-400">OR</span>
+				</div>
+			</div>
+
+			<div class="grid gap-3">
+				<GoogleButton action="/login/google" text={$_('auth.register_with_google')} />
+				<GithubButton action="/login/github" text={$_('auth.register_with_github')} />
+				<FortyTwoButton action="/login/fortyTwo" text={$_('auth.register_with_42')} />
+			</div>
 		</div>
 		<div class="mt-4 text-center text-sm">
 			{$_('auth.already_have_account')}

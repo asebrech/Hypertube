@@ -106,6 +106,7 @@
 		"already_have_account": "هل لديك حساب بالفعل؟",
 		"register_with_google": "التسجيل بواسطة Google",
 		"register_with_github": "التسجيل بواسطة Github",
+		"register_with_42": "التسجيل بواسطة 42",
 		"form_error": "كلمة المرور قصيرة جداً أو البريد الإلكتروني مستخدم بالفعل",
 		"login": {
 			"title": "تسجيل الدخول",

@@ -106,6 +106,7 @@
 		"already_have_account": "¿Ya tienes una cuenta?",
 		"register_with_google": "Registrarse con Google",
 		"register_with_github": "Registrarse con Github",
+		"register_with_42": "Registrarse con 42",
 		"form_error": "Contraseña muy corta o correo ya en uso",
 		"login": {
 			"title": "Iniciar Sesión",

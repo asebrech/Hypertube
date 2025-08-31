@@ -106,6 +106,7 @@
 		"already_have_account": "Already have an account?",
 		"register_with_google": "Register with Google",
 		"register_with_github": "Register with Github",
+		"register_with_42": "Register with 42",
 		"form_error": "Email already used",
 		"login": {
 			"title": "Login",
