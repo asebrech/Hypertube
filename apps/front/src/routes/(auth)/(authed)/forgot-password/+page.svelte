@@ -5,13 +5,13 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { enhance } from '$app/forms';
 	import { _ } from 'svelte-i18n';
+	import { ChevronRight } from 'lucide-svelte';
 	let { form } = $props();
 </script>
 
-<Card.Root class="mx-auto max-w-sm border-none bg-black/70">
+<Card.Root class="mx-auto max-w-md border-none bg-black/70">
 	<Card.Header>
 		<Card.Title class="text-2xl">{$_('auth.forgot_password.title')}</Card.Title>
-		<Card.Description>{$_('auth.forgot_password.description')}</Card.Description>
 	</Card.Header>
 	<Card.Content>
 		<div class="grid gap-4">
@@ -44,9 +44,14 @@
 						{/if}
 						<div class="grid gap-2">
 							<Label for="email">{$_('auth.forgot_password.email_label')}</Label>
-							<Input id="email" type="email" name="email" placeholder={$_('auth.forgot_password.email_placeholder')} required />
+							<div class="flex gap-2">
+								<Input id="email" type="email" name="email" placeholder={$_('auth.forgot_password.email_placeholder')} required class="flex-1" />
+								<Button type="submit" class="px-6 flex items-center gap-2">
+									{$_('auth.forgot_password.send_button')}
+									<ChevronRight class="h-4 w-4" />
+								</Button>
+							</div>
 						</div>
-						<Button type="submit" class="w-full">{$_('auth.forgot_password.send_button')}</Button>
 					</div>
 				</form>
 				<div class="mt-4 text-center text-sm">
