@@ -42,7 +42,7 @@
 		/>
 		{#if hasErrors}
 			<div class="flex items-start space-x-2">
-				<XCircle class="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
+				<XCircle class="mt-0.5 h-4 w-4 flex-shrink-0 text-red-500" />
 				<div class="space-y-1">
 					{#each errors as error}
 						<p class="text-sm text-red-500">{error}</p>
@@ -65,13 +65,13 @@
 			{...restProps}
 		/>
 		{#if hasErrors}
-			<div class="flex items-start space-x-2">
-				<XCircle class="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
-				<div class="space-y-1">
-					{#each errors as error}
+			<div class="space-y-1">
+				{#each errors as error}
+					<div class="flex items-center space-x-2">
+						<XCircle class="h-4 w-4 flex-shrink-0 text-red-500" />
 						<p class="text-sm text-red-500">{error}</p>
-					{/each}
-				</div>
+					</div>
+				{/each}
 			</div>
 		{/if}
 	</div>

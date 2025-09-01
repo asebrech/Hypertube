@@ -103,10 +103,9 @@
 	}
 </script>
 
-<Card.Root class="mx-auto max-w-sm  border-none bg-black/70">
+<Card.Root class="mx-auto max-w-sm my-16 border-none bg-black/70">
 	<Card.Header>
 		<Card.Title class="text-xl">{$_('auth.sign_up')}</Card.Title>
-		<Card.Description>{$_('auth.enter_info')}</Card.Description>
 	</Card.Header>
 	<Card.Content>
 		<div class="grid gap-4">
@@ -190,13 +189,10 @@
 				</div>
 			</form>
 
-			<div class="relative">
-				<div class="absolute inset-0 flex items-center">
-					<span class="w-full border-t border-gray-600"></span>
-				</div>
-				<div class="relative flex justify-center text-xs uppercase">
-					<span class="bg-black px-2 text-gray-400">OR</span>
-				</div>
+			<div class="flex items-center gap-2">
+				<span class="w-full border-t border-gray-600"></span>
+				<span class="px-2 text-gray-400">{$_('auth.or')}</span>
+				<span class="w-full border-t border-gray-600"></span>
 			</div>
 
 			<div class="grid gap-3">

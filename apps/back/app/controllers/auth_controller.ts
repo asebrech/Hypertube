@@ -1,4 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import hash from '@adonisjs/core/services/hash'
 import {
   registerValidator,
   loginValidator,
@@ -78,7 +79,20 @@ export default class AuthController {
   async login({ request, response }: HttpContext) {
     const { email, password } = await request.validateUsing(loginValidator)
 
-    const user = await User.verifyCredentials(email, password)
+    const user = await User.findBy('email', email)
+    if (!user) {
+      return response.badRequest({
+        error: 'EMAIL_NOT_FOUND',
+        message: 'No account found with this email address',
+      })
+    }
+    const isPasswordValid = await hash.verify(user.password!, password)
+    if (!isPasswordValid) {
+      return response.badRequest({
+        error: 'INVALID_PASSWORD',
+        message: 'Invalid password',
+      })
+    }
     const token = await User.accessTokens.create(user)
 
     return response.ok({

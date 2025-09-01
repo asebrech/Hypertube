@@ -98,6 +98,7 @@
 		"sign_in": "登录",
 		"create_account": "创建账户",
 		"enter_info": "输入您的信息以创建账户",
+		"or": "或",
 		"first_name": "名字",
 		"last_name": "姓氏",
 		"username": "用户名",
@@ -116,12 +117,18 @@
 			"password_label": "密码",
 			"forgot_password": "忘记密码？",
 			"login_button": "登录",
+			"remember_me": "记住我",
 			"login_with_google": "使用Google登录",
 			"login_with_github": "使用Github登录",
 			"login_with_42": "使用42登录",
 			"no_account": "没有账户？",
 			"sign_up_link": "注册",
-			"error_credentials": "您输入的凭据有误。"
+			"error_credentials": "您输入了错误的凭据。",
+			"error_account_not_found": "抱歉，我们找不到使用此电子邮件地址的帐户。请重试或{createAccountLink}。",
+			"error_invalid_password": "{email}的密码不正确。您可以{resetPasswordLink}或重试。",
+			"create_account_link": "创建新帐户",
+			"reset_password_link": "重置您的密码",
+			"or_try_again": "或重试"
 		},
 		"forgot_password": {
 			"title": "忘记密码",

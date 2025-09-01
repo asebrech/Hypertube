@@ -98,6 +98,7 @@
 		"sign_in": "تسجيل الدخول",
 		"create_account": "إنشاء حساب",
 		"enter_info": "أدخل معلوماتك لإنشاء حساب",
+		"or": "أو",
 		"first_name": "الاسم الأول",
 		"last_name": "اسم العائلة",
 		"username": "اسم المستخدم",
@@ -116,12 +117,18 @@
 			"password_label": "كلمة المرور",
 			"forgot_password": "نسيت كلمة المرور؟",
 			"login_button": "تسجيل الدخول",
+			"remember_me": "تذكرني",
 			"login_with_google": "تسجيل الدخول بواسطة Google",
 			"login_with_github": "تسجيل الدخول بواسطة Github",
 			"login_with_42": "تسجيل الدخول بواسطة 42",
 			"no_account": "ليس لديك حساب؟",
 			"sign_up_link": "إنشاء حساب",
-			"error_credentials": "لقد أدخلت بيانات اعتماد خاطئة."
+			"error_credentials": "لقد أدخلت بيانات اعتماد خاطئة.",
+			"error_account_not_found": "عذراً، لا يمكننا العثور على حساب بعنوان البريد الإلكتروني هذا. يرجى المحاولة مرة أخرى أو {createAccountLink}.",
+			"error_invalid_password": "كلمة مرور غير صحيحة لـ {email}. يمكنك {resetPasswordLink} أو المحاولة مرة أخرى.",
+			"create_account_link": "إنشاء حساب جديد",
+			"reset_password_link": "إعادة تعيين كلمة المرور",
+			"or_try_again": "أو المحاولة مرة أخرى"
 		},
 		"forgot_password": {
 			"title": "نسيت كلمة المرور",
