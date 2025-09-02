@@ -2,6 +2,7 @@
 	import type { HTMLInputAttributes, HTMLInputTypeAttribute } from 'svelte/elements';
 	import type { WithElementRef } from 'bits-ui';
 	import { cn } from '$lib/utils.js';
+	import { XCircle } from 'lucide-svelte';
 
 	type InputType = Exclude<HTMLInputTypeAttribute, 'file'>;
 
@@ -40,10 +41,13 @@
 			{...restProps}
 		/>
 		{#if hasErrors}
-			<div class="space-y-1">
-				{#each errors as error}
-					<p class="text-sm text-red-500">{error}</p>
-				{/each}
+			<div class="flex items-start space-x-2">
+				<XCircle class="mt-0.5 h-4 w-4 flex-shrink-0 text-red-500" />
+				<div class="space-y-1">
+					{#each errors as error}
+						<p class="text-sm text-red-500">{error}</p>
+					{/each}
+				</div>
 			</div>
 		{/if}
 	</div>
@@ -63,7 +67,10 @@
 		{#if hasErrors}
 			<div class="space-y-1">
 				{#each errors as error}
-					<p class="text-sm text-red-500">{error}</p>
+					<div class="flex items-center space-x-2">
+						<XCircle class="h-4 w-4 flex-shrink-0 text-red-500" />
+						<p class="text-sm text-red-500">{error}</p>
+					</div>
 				{/each}
 			</div>
 		{/if}

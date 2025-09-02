@@ -29,7 +29,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 		};
 	} catch (error) {
 		if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
-			return new Response('Unauthorized', { status: 401 });
+			event.cookies.set('session', '', {
+				path: '/',
+				expires: new Date(0)
+			});
+			event.locals.user = null;
 		} else {
 			throw error;
 		}

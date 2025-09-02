@@ -2,7 +2,13 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
+	import { PasswordInput } from '$lib/components/ui/password-input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
+	import {
+		GoogleButton,
+		GithubButton,
+		FortyTwoButton
+	} from '$lib/components/ui/oauth-buttons/index.js';
 	import { _ } from 'svelte-i18n';
 	import {
 		validatePassword,
@@ -97,10 +103,9 @@
 	}
 </script>
 
-<Card.Root class="mx-auto max-w-sm  border-none bg-black/70">
+<Card.Root class="mx-auto max-w-sm my-16 border-none bg-black/70">
 	<Card.Header>
 		<Card.Title class="text-xl">{$_('auth.sign_up')}</Card.Title>
-		<Card.Description>{$_('auth.enter_info')}</Card.Description>
 	</Card.Header>
 	<Card.Content>
 		<div class="grid gap-4">
@@ -170,10 +175,9 @@
 					</div>
 					<div class="grid gap-2">
 						<Label for="password">{$_('auth.password')}</Label>
-						<Input
+						<PasswordInput
 							id="password"
 							name="password"
-							type="password"
 							errors={passwordErrors}
 							onfocusout={(e) => {
 								const target = e.target as HTMLInputElement;
@@ -184,16 +188,18 @@
 					<Button type="submit" class="w-full">{$_('auth.create_account')}</Button>
 				</div>
 			</form>
-			<form method="POST" action="/login/google" use:enhance>
-				<Button variant="outline" class="w-full" type="submit"
-					>{$_('auth.register_with_google')}</Button
-				>
-			</form>
-			<form method="POST" action="/login/github" use:enhance>
-				<Button variant="outline" class="w-full" type="submit"
-					>{$_('auth.register_with_github')}</Button
-				>
-			</form>
+
+			<div class="flex items-center gap-2">
+				<span class="w-full border-t border-gray-600"></span>
+				<span class="px-2 text-gray-400">{$_('auth.or')}</span>
+				<span class="w-full border-t border-gray-600"></span>
+			</div>
+
+			<div class="grid gap-3">
+				<GoogleButton action="/login/google" text={$_('auth.register_with_google')} />
+				<GithubButton action="/login/github" text={$_('auth.register_with_github')} />
+				<FortyTwoButton action="/login/fortyTwo" text={$_('auth.register_with_42')} />
+			</div>
 		</div>
 		<div class="mt-4 text-center text-sm">
 			{$_('auth.already_have_account')}

@@ -98,6 +98,7 @@
 		"sign_in": "Iniciar sesión",
 		"create_account": "Crear una cuenta",
 		"enter_info": "Ingresa tu información para crear una cuenta",
+		"or": "O",
 		"first_name": "Nombre",
 		"last_name": "Apellido",
 		"username": "Nombre de usuario",
@@ -106,6 +107,7 @@
 		"already_have_account": "¿Ya tienes una cuenta?",
 		"register_with_google": "Registrarse con Google",
 		"register_with_github": "Registrarse con Github",
+		"register_with_42": "Registrarse con 42",
 		"form_error": "Contraseña muy corta o correo ya en uso",
 		"login": {
 			"title": "Iniciar Sesión",
@@ -115,12 +117,18 @@
 			"password_label": "Contraseña",
 			"forgot_password": "¿Olvidaste tu contraseña?",
 			"login_button": "Iniciar Sesión",
+			"remember_me": "Recordarme",
 			"login_with_google": "Iniciar sesión con Google",
 			"login_with_github": "Iniciar sesión con Github",
 			"login_with_42": "Iniciar sesión con 42",
 			"no_account": "¿No tienes una cuenta?",
 			"sign_up_link": "Registrarse",
-			"error_credentials": "Has ingresado credenciales incorrectas."
+			"error_credentials": "Has introducido credenciales incorrectas.",
+			"error_account_not_found": "Lo siento, no podemos encontrar una cuenta con esta dirección de correo electrónico. Por favor, inténtalo de nuevo o {createAccountLink}.",
+			"error_invalid_password": "Contraseña incorrecta para {email}. Puedes {resetPasswordLink} o intentar de nuevo.",
+			"create_account_link": "crea una nueva cuenta",
+			"reset_password_link": "restablecer tu contraseña",
+			"or_try_again": "o intentar de nuevo"
 		},
 		"forgot_password": {
 			"title": "Contraseña olvidada",

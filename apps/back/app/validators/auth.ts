@@ -12,7 +12,7 @@ const passwordRules = vine
 export const loginValidator = vine.compile(
   vine.object({
     email: vine.string().email(),
-    password: passwordRules,
+    password: vine.string(),
   })
 )
 
