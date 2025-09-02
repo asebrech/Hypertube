@@ -9,7 +9,8 @@
 		"news-popular": "新闻与热门",
 		"my-list": "我的列表",
 		"by-language": "按语言浏览",
-		"browse": "浏览"
+		"browse": "浏览",
+		"admin_dashboard": "管理面板"
 	},
 	"movie-banner": {
 		"play": "播放",

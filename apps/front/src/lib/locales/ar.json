@@ -9,7 +9,8 @@
 		"news-popular": "أخبار وشائع",
 		"my-list": "قائمتي",
 		"by-language": "استكشاف حسب اللغة",
-		"browse": "تصفح"
+		"browse": "تصفح",
+		"admin_dashboard": "لوحة تحكم الإدارة"
 	},
 	"movie-banner": {
 		"play": "تشغيل",

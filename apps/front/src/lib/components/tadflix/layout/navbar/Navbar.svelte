@@ -15,10 +15,10 @@
 
 	interface Props {
 		data: any;
-		showSkeleton?: boolean;
+		showSkeleton: boolean;
 	}
 
-	let { data, showSkeleton = false }: Props = $props();
+	let { data, showSkeleton }: Props = $props();
 	let searchOpen: boolean = $state(false);
 
 	function isLinkCurrentPage(link: Link): boolean {
@@ -30,13 +30,19 @@
 		href: string;
 	}
 
-	let links: Link[] = [
+	let baseLinks: Link[] = [
 		{ label: 'navbar.home', href: '/' },
 		{ label: 'navbar.shows', href: '/shows' },
 		{ label: 'navbar.movies', href: '/movies' },
 		{ label: 'navbar.my-list', href: '/my-list' },
 		{ label: 'navbar.browse', href: '/browse' }
 	];
+
+	let links = $derived(
+		data?.user?.role === 'admin'
+			? [...baseLinks, { label: 'navbar.admin_dashboard', href: '/admin' }]
+			: baseLinks
+	);
 
 	// Track scroll position and direction
 	let lastScrollY = $state(0);
@@ -165,18 +171,25 @@
 		{/if}
 
 		{#if !page.data.user}
-			<a href="/login">
-				<Button variant="outline" class="border-white bg-transparent text-white hover:bg-white/10">
-					{$_('auth.sign_in')}
-				</Button>
-			</a>
+			{#if showSkeleton}
+				<Skeleton class="h-8 w-20" />
+			{:else}
+				<a href="/login">
+					<Button
+						variant="outline"
+						class="border-white bg-transparent text-white hover:bg-white/10"
+					>
+						{$_('auth.sign_in')}
+					</Button>
+				</a>
+			{/if}
 		{:else}
 			{#if showSkeleton}
 				<Skeleton class="h-8 w-8 rounded" />
 			{:else}
 				<a href="/account">
 					<div
-						class="flex h-8 w-8 items-center justify-center rounded bg-red-500 font-bold uppercase text-white"
+						class="flex h-8 w-8 items-center justify-center rounded bg-red-500 font-bold text-white uppercase"
 					>
 						:)
 					</div>

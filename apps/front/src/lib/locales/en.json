@@ -9,7 +9,8 @@
 		"news-popular": "News & Popular",
 		"my-list": "My Lists",
 		"by-language": "Browse By Language",
-		"browse": "Browse"
+		"browse": "Browse",
+		"admin_dashboard": "Admin Dashboard"
 	},
 	"movie-banner": {
 		"play": "Play",

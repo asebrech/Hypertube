@@ -9,7 +9,8 @@
 		"news-popular": "Nouveau et populaire",
 		"my-list": "Mes listes",
 		"by-language": "Browse By Language",
-		"browse": "Parcourir"
+		"browse": "Parcourir",
+		"admin_dashboard": "Tableau de Bord Admin"
 	},
 	"movie-banner": {
 		"play": "Lecture",

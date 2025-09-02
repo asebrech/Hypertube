@@ -10,7 +10,7 @@ declare global {
 				firstName?: string;
 				lastName?: string;
 				username?: string;
-				// role: string;
+				role: string;
 			} | null;
 		}
 		// interface PageData {}
