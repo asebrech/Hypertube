@@ -45,16 +45,22 @@ router
     router.post(':id/bookmark', [MoviesController, 'toggleBookmark']).use(middleware.auth())
     router.post(':id/progress', [MoviesController, 'saveWatchProgress']).use(middleware.auth())
     router.get(':id/progress', [MoviesController, 'getWatchProgress']).use(middleware.auth())
-    router.get(':id/comments', [CommentsController, 'movieComments']).use(middleware.auth())
-    router.post(':id/comments', [CommentsController, 'storeMovieComment']).use(middleware.auth())
-    router
-      .delete('comments/:commentId', [CommentsController, 'deleteComment'])
-      .use([middleware.auth(), middleware.commentOwnership()])
-    router
-      .put('comments/:commentId', [CommentsController, 'updateComment'])
-      .use([middleware.auth(), middleware.commentOwnership()])
   })
   .prefix('movies')
+
+router
+  .group(() => {
+    router.get(':id/comments', [CommentsController, 'movieComments']).use(middleware.auth())
+    router.post(':id/comments', [CommentsController, 'storeMovieComment']).use(middleware.auth())
+  })
+  .prefix('movie')
+
+router
+  .group(() => {
+    router.delete(':commentId', [CommentsController, 'deleteComment']).use([middleware.auth(), middleware.commentOwnership()])
+    router.patch(':commentId', [CommentsController, 'updateComment']).use([middleware.auth(), middleware.commentOwnership()])
+  })
+  .prefix('comments')
 
 router
   .group(() => {
