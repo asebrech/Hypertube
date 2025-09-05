@@ -294,7 +294,7 @@ export async function getMovieComments(
 ): Promise<PaginatedComments> {
 	const config = {
 		method: 'get',
-		url: `${PUBLIC_BACK_URL}/movies/${movieId}/comments`,
+		url: `${PUBLIC_BACK_URL}/movie/${movieId}/comments`,
 		params: {
 			page,
 			limit
@@ -319,7 +319,7 @@ export async function createMovieComment(
 ): Promise<Comment> {
 	const config = {
 		method: 'post',
-		url: `${PUBLIC_BACK_URL}/movies/${movieId}/comments`,
+		url: `${PUBLIC_BACK_URL}/movie/${movieId}/comments`,
 		data: {
 			content
 		},
@@ -341,7 +341,7 @@ export async function deleteComment(commentId: number, token: string): Promise<v
 	try {
 		const config = {
 			method: 'delete',
-			url: `${PUBLIC_BACK_URL}/movies/comments/${commentId}`,
+			url: `${PUBLIC_BACK_URL}/comments/${commentId}`,
 			headers: {
 				Authorization: `Bearer ${token}`
 			}
@@ -361,8 +361,8 @@ export async function updateComment(
 ): Promise<Comment> {
 	try {
 		const config = {
-			method: 'put',
-			url: `${PUBLIC_BACK_URL}/movies/comments/${commentId}`,
+			method: 'patch',
+			url: `${PUBLIC_BACK_URL}/comments/${commentId}`,
 			data: {
 				content
 			},
