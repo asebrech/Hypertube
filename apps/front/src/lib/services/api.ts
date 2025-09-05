@@ -8,6 +8,8 @@ import type {
 	MovieCredits,
 	MovieDetails,
 	MovieType,
+	Comment,
+	PaginatedComments,
 	PersonDetails
 } from '@hypertube/shared';
 
@@ -279,6 +281,101 @@ export async function getPeopleDetails(castId: number): Promise<PersonDetails> {
 		return response.data;
 	} catch (error) {
 		console.error('Error fetching people details:', error);
+		throw error;
+	}
+}
+
+// Comment API functions
+export async function getMovieComments(
+	movieId: number,
+	page: number = 1,
+	limit: number = 20,
+	token: string
+): Promise<PaginatedComments> {
+	const config = {
+		method: 'get',
+		url: `${PUBLIC_BACK_URL}/movie/${movieId}/comments`,
+		params: {
+			page,
+			limit
+		},
+		headers: {
+			Authorization: `Bearer ${token}`
+		}
+	};
+	try {
+		const response = await axios(config);
+		return response.data;
+	} catch (error) {
+		console.error('Error fetching movie comments:', error);
+		throw error;
+	}
+}
+
+export async function createMovieComment(
+	movieId: number,
+	content: string,
+	token: string
+): Promise<Comment> {
+	const config = {
+		method: 'post',
+		url: `${PUBLIC_BACK_URL}/movie/${movieId}/comments`,
+		data: {
+			content
+		},
+		headers: {
+			Authorization: `Bearer ${token}`,
+			'Content-Type': 'application/json'
+		}
+	};
+	try {
+		const response = await axios(config);
+		return response.data;
+	} catch (error) {
+		console.error('Error creating comment:', error);
+		throw error;
+	}
+}
+
+export async function deleteComment(commentId: number, token: string): Promise<void> {
+	try {
+		const config = {
+			method: 'delete',
+			url: `${PUBLIC_BACK_URL}/comments/${commentId}`,
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
+		};
+
+		await axios(config);
+	} catch (error) {
+		console.error('Error deleting comment:', error);
+		throw error;
+	}
+}
+
+export async function updateComment(
+	commentId: number,
+	content: string,
+	token: string
+): Promise<Comment> {
+	try {
+		const config = {
+			method: 'patch',
+			url: `${PUBLIC_BACK_URL}/comments/${commentId}`,
+			data: {
+				content
+			},
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'Content-Type': 'application/json'
+			}
+		};
+
+		const response = await axios(config);
+		return response.data;
+	} catch (error) {
+		console.error('Error updating comment:', error);
 		throw error;
 	}
 }
