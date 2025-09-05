@@ -27,6 +27,7 @@
 	import { _ } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	import { goto } from '$app/navigation';
+	import { CommentContainer } from '../comments';
 
 	// Store subscription
 	let modalData = $state({
@@ -537,6 +538,15 @@
 								</div>
 							</div>
 
+							<!-- Comments Section -->
+							{#if movie}
+								<div class="mt-12">
+									<CommentContainer 
+										movieId={movie.id} 
+										movieTitle={movie.title || movie.name || 'Unknown Movie'}
+									/>
+								</div>
+							{/if}
 							<!-- Similar Movies Section -->
 							{#if similarMovies.length > 0}
 								{@const itemsPerRow = 3}

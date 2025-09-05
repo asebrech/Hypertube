@@ -158,5 +158,28 @@
 			"back_to_login": "Back to Login",
 			"error_message": "Please check your input and try again."
 		}
+	},
+	"comments": {
+		"title": "Commentary",
+		"loading": "Loading comments...",
+		"no-comments": "No comments found",
+		"load-more": "Load More Comments",
+		"login-required": "Please log in to view and post comments",
+		"auth-required": "Authentication required to delete comment",
+		"delete-title": "Delete Comment",
+		"delete-message": "Are you sure you want to delete this comment? This action cannot be undone.",
+		"cancel": "Cancel",
+		"delete": "Delete",
+		"deleting": "Deleting...",
+		"failed-to-load": "Failed to load comments",
+		"failed-to-delete": "Failed to delete comment",
+		"placeholder": "Your comment...",
+		"failed-to-post": "Failed to post comment",
+		"send": "Send comment",
+		"edit": "Edit comment",
+		"save": "Save",
+		"updating": "Updating...",
+		"failed-to-update": "Failed to update comment",
+		"edited": "edited"
 	}
 }
