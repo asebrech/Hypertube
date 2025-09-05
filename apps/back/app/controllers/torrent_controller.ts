@@ -5,7 +5,8 @@ import { inject } from '@adonisjs/core'
 import { join } from 'node:path'
 import app from '@adonisjs/core/services/app'
 import { HttpContext } from '@adonisjs/core/http'
-import { formatBytes, isValidTmdbId } from '../utils/format.js'
+import { formatBytes } from '../utils/format.js'
+import { tmdbIdValidator } from '../validators/torrent.js'
 
 interface DeleteMovieResult {
   success: boolean
@@ -62,14 +63,8 @@ export default class TorrentController {
 
   async delete({ request, response }: HttpContext) {
     try {
-      const tmdbId = Number.parseInt(request.param('id'))
-
-      if (Number.isNaN(tmdbId) || !isValidTmdbId(tmdbId)) {
-        return response.badRequest({
-          success: false,
-          message: 'Invalid movie ID provided',
-        })
-      }
+      const payload = await request.validateUsing(tmdbIdValidator)
+      const tmdbId = payload.id
 
       const movieExists = await this.movieService.exists(tmdbId)
       if (!movieExists) {
@@ -111,7 +106,7 @@ export default class TorrentController {
           error: result.error,
         })
       }
-      
+
       return response.internalServerError({
         success: false,
         message: result.message,
