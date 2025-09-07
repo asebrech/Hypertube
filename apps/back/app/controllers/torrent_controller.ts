@@ -63,7 +63,9 @@ export default class TorrentController {
 
   async delete({ request, response }: HttpContext) {
     try {
-      const payload = await request.validateUsing(tmdbIdValidator)
+      const idParam = request.param('id')
+      
+      const payload = await tmdbIdValidator.validate({ id: idParam })
       const tmdbId = payload.id
 
       const movieExists = await this.movieService.exists(tmdbId)
