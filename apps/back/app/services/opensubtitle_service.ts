@@ -194,7 +194,7 @@ export class OpenSubtitleService {
     const data: SubtitleApiResponse = (await this.getSomethingFromApi(
       endpoint
     )) as SubtitleApiResponse
-    const subtitle = await data.data.find(
+    const subtitle = data.data.find(
       (item: any) =>
         item.attributes.language === lang &&
         item.attributes.feature_details.tmdb_id === Number(tmdb_id)
@@ -230,7 +230,7 @@ export class OpenSubtitleService {
 
   public async getSubtitleLink(tmdb_id: string, lang: string = 'en'): Promise<string | null> {
     const subtitle = await this.searchSubtitles(tmdb_id, lang)
-    if (subtitle) {
+    if (subtitle && subtitle.attributes.files && subtitle.attributes.files.length > 0) {
       const downloadResponse = await this.downloadSubtitle(subtitle.attributes.files[0].file_id)
       return downloadResponse.link
     }
@@ -243,7 +243,7 @@ export class OpenSubtitleService {
     options?: Omit<SubtitleDownloadRequest, 'file_id'>
   ): Promise<SubtitleDownloadResponse | null> {
     const subtitle = await this.searchSubtitles(tmdb_id, lang)
-    if (subtitle) {
+    if (subtitle && subtitle.attributes.files && subtitle.attributes.files.length > 0) {
       return await this.downloadSubtitle(subtitle.attributes.files[0].file_id, options)
     }
     return null

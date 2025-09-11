@@ -202,21 +202,9 @@ export default class SubtitleService {
       const vttPath = this.getSubtitleFilePath(tmdbId, language, 'vtt')
       const fs = await import('node:fs/promises')
 
-      let deleted = false
+      await Promise.all([fs.rm(srtPath, { force: true }), fs.rm(vttPath, { force: true })])
 
-      // Delete SRT file if it exists
-      if (existsSync(srtPath)) {
-        await fs.unlink(srtPath)
-        deleted = true
-      }
-
-      // Delete VTT file if it exists
-      if (existsSync(vttPath)) {
-        await fs.unlink(vttPath)
-        deleted = true
-      }
-
-      return deleted
+      return true
     } catch (error) {
       console.error('Error deleting subtitle:', error)
       return false

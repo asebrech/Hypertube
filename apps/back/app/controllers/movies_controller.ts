@@ -572,7 +572,7 @@ export default class MoviesController {
       }
 
       if (language) {
-        if (!language || language.length !== 2) {
+        if (language.length !== 2) {
           return response.badRequest({
             success: false,
             error: 'Invalid language code provided. Must be 2 characters (e.g., "en", "fr")',

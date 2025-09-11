@@ -212,7 +212,6 @@
 		if (!selectedSource) return;
 
 		// Fetch available subtitles
-		const api = new VideoPlayerAPI(token, movieId);
 		availableSubtitles = await api.fetchAvailableSubtitles();
 
 		VideoPlayerHooks.setupAuthentication(token, videojs as any);
