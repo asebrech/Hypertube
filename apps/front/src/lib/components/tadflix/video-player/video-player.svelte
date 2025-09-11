@@ -235,7 +235,7 @@
 
 		const textTracks = availableSubtitles.map((language, index) => ({
 			kind: 'subtitles',
-			src: VideoPlayerUtils.getSubtitleUrl(Number(movieId), language, token),
+			src: VideoPlayerUtils.getSubtitleUrl(Number(movieId), language),
 			srclang: language,
 			label: getLanguageLabel(language),
 			default: index === 0
@@ -254,7 +254,7 @@
 			tracks: textTracks,
 			html5: {
 				vhs: {
-					withCredentials: false
+					withCredentials: true
 				}
 			},
 			breakpoints: {},

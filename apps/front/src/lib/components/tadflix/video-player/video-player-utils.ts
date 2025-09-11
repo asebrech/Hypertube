@@ -49,9 +49,8 @@ export class VideoPlayerUtils {
 		return Math.floor((currentTime / duration) * 100);
 	}
 
-	static getSubtitleUrl(movieId: number, language: string, token?: string): string {
-		const baseUrl = `${PUBLIC_BACK_URL}/movies/${movieId}/subtitles/${language}`;
-		return token ? `${baseUrl}?token=${encodeURIComponent(token)}` : baseUrl;
+	static getSubtitleUrl(movieId: number, language: string): string {
+		return `${PUBLIC_BACK_URL}/movies/${movieId}/subtitles/${language}`;
 	}
 
 	static shouldMarkAsWatched(percentage: number): boolean {
