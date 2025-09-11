@@ -13,6 +13,10 @@ export class OpenSubtitleService {
   private username: string | undefined
   private password: string | undefined
   private userToken: string | undefined
+  private tokenExpiry: number = 0
+  private lastRequestTime: number = 0
+  private readonly MIN_REQUEST_INTERVAL = 50
+  private requestQueue: Promise<any> = Promise.resolve()
 
   constructor() {
     this.apiKey = env.get('OPENSUBTITLES_API_KEY')
@@ -21,128 +25,151 @@ export class OpenSubtitleService {
     this.password = env.get('OPENSUBTITLES_PASSWORD')
   }
 
-  private async login(): Promise<void> {
-    if (this.userToken) {
-      return
+  private async rateLimitDelay(): Promise<void> {
+    const now = Date.now()
+    const timeSinceLastRequest = now - this.lastRequestTime
+    if (timeSinceLastRequest < this.MIN_REQUEST_INTERVAL) {
+      await new Promise(resolve => setTimeout(resolve, this.MIN_REQUEST_INTERVAL - timeSinceLastRequest))
     }
+    this.lastRequestTime = Date.now()
+  }
 
-    const url = `${this.apiUrl}/login`
-    const options = {
-      method: 'POST',
-      url: url,
-      headers: {
-        'Api-Key': this.apiKey,
-        'Content-Type': 'application/json',
-        'Accept': '*/*',
-        'User-Agent': 'HypertubeApp v1.0',
-      },
-      data: {
-        username: this.username,
-        password: this.password,
-      },
-    }
+  private async executeWithQueue<T>(operation: () => Promise<T>): Promise<T> {
+    this.requestQueue = this.requestQueue.then(async () => {
+      await this.rateLimitDelay()
+      return operation()
+    })
+    return this.requestQueue
+  }
 
-    try {
-      const response = await axios(options)
-      this.userToken = response.data.token
-    } catch (error: any) {
-      if (error.response) {
-        console.error('Login error response:', {
-          status: error.response.status,
-          data: error.response.data,
-        })
-        throw new Error(
-          `Failed to login to OpenSubtitles API: ${error.response.status} - ${JSON.stringify(
-            error.response.data
-          )}`
-        )
-      } else if (error.request) {
-        console.error('Login error request:', error.request)
-        throw new Error('Failed to login to OpenSubtitles API: No response received')
-      } else {
-        console.error('Login error:', error.message)
-        throw new Error(`Failed to login to OpenSubtitles API: ${error.message}`)
-      }
+  private async exponentialBackoff(attempt: number, error: any): Promise<void> {
+    if (error.response?.status === 429) {
+      const retryAfter = error.response.headers['retry-after']
+      const delay = retryAfter ? parseInt(retryAfter) * 1000 : Math.pow(2, attempt) * 2000
+      await new Promise(resolve => setTimeout(resolve, delay))
+    } else if (error.response?.status >= 500) {
+      const delay = Math.min(Math.pow(2, attempt) * 1000, 30000)
+      await new Promise(resolve => setTimeout(resolve, delay))
+    } else {
+      const delay = Math.min(Math.pow(2, attempt) * 500, 5000)
+      await new Promise(resolve => setTimeout(resolve, delay))
     }
   }
 
-  private async getSomethingFromApi(endpoint: string) {
-    const url = `${this.apiUrl}${endpoint}`
-    const options = {
-      method: 'GET',
-      url: url,
-      headers: {
-        'Api-Key': this.apiKey,
-        'Accept': '*/*',
-        'User-Agent': 'HypertubeApp v1.0',
-      },
-    }
-    try {
-      const response = await axios(options)
-      return response.data
-    } catch (error: any) {
-      if (error.response) {
-        throw new Error(
-          `Failed to fetch data from OpenSubtitleApi. Endpoint: ${endpoint}, Status: ${error.response.status}, Response: ${JSON.stringify(error.response.data)}`
-        )
-      } else if (error.request) {
-        throw new Error(
-          `Failed to fetch data from OpenSubtitleApi. Endpoint: ${endpoint}, No response received`
-        )
-      } else {
-        throw new Error(
-          `Failed to fetch data from OpenSubtitleApi. Endpoint: ${endpoint}, Error: ${error.message}`
-        )
-      }
-    }
-  }
-  private async postSomethingToApi(endpoint: string, data: any) {
-    await this.login()
-
-    const url = `${this.apiUrl}${endpoint}`
-    const options = {
-      method: 'POST',
-      url: url,
-      headers: {
-        'Api-Key': this.apiKey,
-        'Authorization': `Bearer ${this.userToken}`,
-        'Content-Type': 'application/json',
-        'Accept': '*/*',
-        'User-Agent': 'HypertubeApp v1.0',
-      },
-      data: data,
-    }
-
-    const maxRetries = 3
-    let retryCount = 0
-
-    while (retryCount < maxRetries) {
+  private async executeWithRetry<T>(operation: () => Promise<T>, maxRetries: number = 3): Promise<T> {
+    let lastError: any
+    
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-        const response = await axios(options)
-        return response.data
+        if (attempt > 0) {
+          await this.exponentialBackoff(attempt - 1, lastError)
+        }
+        
+        return await operation()
       } catch (error: any) {
-        if (error.response) {
-          if (error.response.status === 503 && retryCount < maxRetries - 1) {
-            retryCount++
-            const waitTime = retryCount * 2000 // 2s, 4s, 6s
-            await new Promise((resolve) => setTimeout(resolve, waitTime))
-            continue
+        lastError = error
+        
+        // Don't retry on authentication errors
+        if (error.response?.status === 401 || error.response?.status === 403) {
+          if (error.response?.status === 401) {
+            this.userToken = undefined
+            this.tokenExpiry = 0
           }
-
-          throw new Error(
-            `Failed to post data to OpenSubtitleApi. Endpoint: ${endpoint}, Status: ${error.response.status}, Response: ${JSON.stringify(error.response.data)}`
-          )
-        } else if (error.request) {
-          throw new Error(
-            `Failed to post data to OpenSubtitleApi. Endpoint: ${endpoint}, No response received`
-          )
-        } else {
-          throw new Error(
-            `Failed to post data to OpenSubtitleApi. Endpoint: ${endpoint}, Error: ${error.message}`
-          )
+          throw error
+        }
+        
+        // Don't retry on bad requests
+        if (error.response?.status === 400 || error.response?.status === 404) {
+          throw error
+        }
+        
+        if (attempt === maxRetries) {
+          throw error
         }
       }
     }
+    
+    throw lastError
+  }
+
+  private isTokenValid(): boolean {
+    return this.userToken !== undefined && Date.now() < this.tokenExpiry
+  }
+
+  private async login(): Promise<void> {
+    if (this.isTokenValid()) {
+      return
+    }
+
+    const operation = async () => {
+      const url = `${this.apiUrl}/login`
+      const options = {
+        method: 'POST',
+        url: url,
+        headers: {
+          'Api-Key': this.apiKey,
+          'Content-Type': 'application/json',
+          'Accept': '*/*',
+          'User-Agent': 'HypertubeApp v1.0',
+        },
+        data: {
+          username: this.username,
+          password: this.password,
+        },
+      }
+
+      const response = await axios(options)
+      this.userToken = response.data.token
+      this.tokenExpiry = Date.now() + 23 * 60 * 60 * 1000
+      return response.data
+    }
+
+    return this.executeWithQueue(() => this.executeWithRetry(operation))
+  }
+
+  private async getSomethingFromApi(endpoint: string) {
+    const operation = async () => {
+      const url = `${this.apiUrl}${endpoint}`
+      const options = {
+        method: 'GET',
+        url: url,
+        headers: {
+          'Api-Key': this.apiKey,
+          'Accept': '*/*',
+          'User-Agent': 'HypertubeApp v1.0',
+        },
+      }
+      
+      const response = await axios(options)
+      return response.data
+    }
+
+    return this.executeWithQueue(() => this.executeWithRetry(operation))
+  }
+
+  private async postSomethingToApi(endpoint: string, data: any) {
+    await this.login()
+
+    const operation = async () => {
+      const url = `${this.apiUrl}${endpoint}`
+      const options = {
+        method: 'POST',
+        url: url,
+        headers: {
+          'Api-Key': this.apiKey,
+          'Authorization': `Bearer ${this.userToken}`,
+          'Content-Type': 'application/json',
+          'Accept': '*/*',
+          'User-Agent': 'HypertubeApp v1.0',
+        },
+        data: data,
+      }
+
+      const response = await axios(options)
+      return response.data
+    }
+
+    return this.executeWithQueue(() => this.executeWithRetry(operation, 5))
   }
 
   public async getAllSubtitles(tmdb_id: string): Promise<SubtitleResult[]> {
@@ -189,7 +216,10 @@ export class OpenSubtitleService {
       const response: SubtitleDownloadResponse = await this.postSomethingToApi(endpoint, data)
       return response
     } catch (error: any) {
-      if (error.message.includes('Status: 503')) {
+      if (error.response?.status === 429) {
+        throw new Error('OpenSubtitles API rate limit exceeded. Please wait before trying again.')
+      }
+      if (error.response?.status === 503 || error.message.includes('Status: 503')) {
         throw new Error(
           'OpenSubtitles API is temporarily unavailable due to high traffic or maintenance. Please try again later.'
         )
