@@ -28,7 +28,6 @@ router
 router
   .group(() => {
     router.get('', [MoviesController, 'index'])
-    router.get('subtitle', [MoviesController, 'subtitle'])
     router.get('backdropImage', [MoviesController, 'backdropImage'])
     router.get('posterImage', [MoviesController, 'posterImage'])
     router.get('logoImage', [MoviesController, 'logoImage'])

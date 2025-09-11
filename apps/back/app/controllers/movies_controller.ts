@@ -99,35 +99,6 @@ export default class MoviesController {
     return { movies: moviesFinalResult, hasMorePages }
   }
 
-  async subtitle({ request, response }: HttpContext) {
-    try {
-      const res = await this.openSubtitleService.searchSubtitles('157336', 'en')
-      const down = await this.openSubtitleService.downloadSubtitle(res.attributes.files[0].file_id)
-
-      return response.json({
-        success: true,
-        subtitle: res,
-        download: down,
-      })
-    } catch (error: any) {
-      console.error('Subtitle download error:', error.message)
-
-      if (error.message.includes('temporarily unavailable')) {
-        return response.status(503).json({
-          success: false,
-          error: 'Subtitle service is temporarily unavailable. Please try again later.',
-          details: 'OpenSubtitles API is experiencing high traffic or maintenance.',
-        })
-      }
-
-      return response.status(500).json({
-        success: false,
-        error: 'Failed to download subtitle',
-        details: error.message,
-      })
-    }
-  }
-
   async backdropImage({ request, response }: HttpContext): Promise<BackDropImage | void> {
     const tmdb_movie_id = request.input('tmdb_movie_id')
     const lang = request.input('lang', 'en')
