@@ -41,5 +41,6 @@ router.use([
  */
 export const middleware = router.named({
   auth: () => import('#middleware/auth_middleware'),
-  commentOwnership: () => import('#middleware/comment_ownership_middleware'),
+  admin: () => import('#middleware/admin_middleware'),
+  commentOwnership: () => import('#middleware/comment_ownership_middleware')
 })

@@ -32,6 +32,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column({ serializeAs: null })
   declare password: string | null
 
+  @column()
+  declare isAdmin: boolean
+
   @manyToMany(() => Movies, {
     pivotTable: 'movie_user',
     pivotColumns: ['is_watched', 'is_bookmarked', 'watch_progress_seconds', 'last_watched_at'],
