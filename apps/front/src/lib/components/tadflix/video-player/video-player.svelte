@@ -222,7 +222,7 @@
 			src: VideoPlayerUtils.getSubtitleUrl(Number(movieId), language),
 			srclang: language,
 			label: getLanguageLabel(language),
-			default: index === 0
+			default: false
 		}));
 
 		const options = {
