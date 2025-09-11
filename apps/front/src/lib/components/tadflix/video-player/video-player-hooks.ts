@@ -65,6 +65,25 @@ export class VideoPlayerAPI {
 			return 0;
 		}
 	}
+
+	async fetchAvailableSubtitles(): Promise<string[]> {
+		try {
+			const response = await fetch(`${PUBLIC_BACK_URL}/movies/${this.movieId}/subtitles`, {
+				headers: this.headers
+			});
+
+			if (response.ok) {
+				const data = await response.json();
+				return data.availableLanguages || [];
+			} else {
+				console.warn('Failed to fetch subtitles:', response.statusText);
+				return [];
+			}
+		} catch (error) {
+			console.error('Error fetching subtitles:', error);
+			return [];
+		}
+	}
 }
 
 interface XHROptions {

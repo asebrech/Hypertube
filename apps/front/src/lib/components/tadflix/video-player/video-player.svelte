@@ -6,6 +6,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { VideoPlayerAPI, VideoPlayerHooks } from './video-player-hooks.js';
 	import { VideoPlayerUtils, VIDEO_CONFIG, type Resolution } from './video-player-utils.js';
+	import { PUBLIC_BACK_URL } from '$env/static/public';
 
 	interface Props {
 		movieId: string;
@@ -33,6 +34,7 @@
 	let lastWatchTimeCheck = 0;
 	let progressSaveInterval: ReturnType<typeof setInterval>;
 	let api: VideoPlayerAPI;
+	let availableSubtitles: string[] = [];
 
 	const readyResolutions = $derived(new Set(availableResolutions));
 	const resolutionSources = $derived(VideoPlayerUtils.getResolutionSources(baseUrl, movieId));
@@ -120,7 +122,7 @@
 
 		const currentTime = player.currentTime();
 		const duration = player.duration();
-		const percentage = VideoPlayerUtils.calculateWatchPercentage(currentTime, duration);
+		const percentage = VideoPlayerUtils.calculateProgress(currentTime, duration);
 
 		if (VideoPlayerUtils.shouldSaveProgress(percentage, duration)) {
 			await api.saveProgress(currentTime);
@@ -144,7 +146,7 @@
 
 				const currentTime = player.currentTime();
 				const duration = player.duration();
-				const percentage = VideoPlayerUtils.calculateWatchPercentage(currentTime, duration);
+				const percentage = VideoPlayerUtils.calculateProgress(currentTime, duration);
 
 				if (VideoPlayerUtils.shouldMarkAsWatched(percentage)) {
 					handleMarkAsWatched();
@@ -156,7 +158,7 @@
 			const savedProgress = await api.getProgress();
 			if (savedProgress > 0 && player.duration() > 0) {
 				const duration = player.duration();
-				const percentage = VideoPlayerUtils.calculateWatchPercentage(savedProgress, duration);
+				const percentage = VideoPlayerUtils.calculateProgress(savedProgress, duration);
 
 				if (percentage >= 1 && percentage <= 95) {
 					player.currentTime(savedProgress);
@@ -192,6 +194,28 @@
 		player.ready(() => player.currentTime(currentTime));
 	}
 
+	function getLanguageLabel(languageCode: string): string {
+		const languageLabels: Record<string, string> = {
+			en: 'English',
+			es: 'Español',
+			fr: 'Français',
+			zh: '中文',
+			ar: 'العربية',
+			de: 'Deutsch',
+			it: 'Italiano',
+			pt: 'Português',
+			ru: 'Русский',
+			ja: '日本語',
+			ko: '한국어',
+			hi: 'हिन्दी',
+			nl: 'Nederlands',
+			sv: 'Svenska',
+			no: 'Norsk',
+			da: 'Dansk'
+		};
+		return languageLabels[languageCode] || languageCode.toUpperCase();
+	}
+
 	async function initializePlayer() {
 		if (!container || player || readyResolutions.size === 0) return;
 
@@ -203,7 +227,20 @@
 
 		if (!selectedSource) return;
 
+		// Fetch available subtitles
+		const api = new VideoPlayerAPI(token, movieId);
+		availableSubtitles = await api.fetchAvailableSubtitles();
+
 		VideoPlayerHooks.setupAuthentication(token, videojs as any);
+
+		// Create subtitle tracks
+		const textTracks = availableSubtitles.map((language, index) => ({
+			kind: 'subtitles',
+			src: VideoPlayerUtils.getSubtitleUrl(Number(movieId), language, token),
+			srclang: language,
+			label: getLanguageLabel(language),
+			default: index === 0 // Make first subtitle default
+		}));
 
 		const options = {
 			autoplay: true,
@@ -215,6 +252,7 @@
 			fill: true,
 			normalizeAutoplay: false,
 			sources: [{ src: selectedSource.src, type: 'application/x-mpegURL' }],
+			tracks: textTracks,
 			html5: {
 				vhs: {
 					withCredentials: false
@@ -239,6 +277,17 @@
 
 			setupPlayerEvents();
 			addResolutionButtons();
+
+			// Add subtitle event listeners
+			player.on('loadedmetadata', () => {
+				const textTracks = player.textTracks();
+				for (let i = 0; i < textTracks.length; i++) {
+					const track = textTracks[i];
+					track.addEventListener('error', (e: Event) => {
+						console.error(`Subtitle track error: ${track.language}`, e);
+					});
+				}
+			});
 
 			// Setup progress saving interval
 			progressSaveInterval = setInterval(() => {

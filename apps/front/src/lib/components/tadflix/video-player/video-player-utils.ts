@@ -43,9 +43,16 @@ export class VideoPlayerUtils {
 		return VIDEO_CONFIG.RESOLUTIONS[0];
 	}
 
-	static calculateWatchPercentage(currentTime: number, duration: number): number {
+	static calculateProgress(currentTime: number, duration: number): number {
 		if (!duration || duration === 0) return 0;
-		return (currentTime / duration) * 100;
+		return Math.floor((currentTime / duration) * 100);
+	}
+
+	static getSubtitleUrl(movieId: number, language: string, token?: string): string {
+		// Use our authenticated proxy endpoint instead of direct backend URL
+		// This ensures subtitles work with VideoJS authentication
+		const baseUrl = `/api/subtitles/${movieId}/${language}`;
+		return token ? `${baseUrl}?token=${encodeURIComponent(token)}` : baseUrl;
 	}
 
 	static shouldMarkAsWatched(percentage: number): boolean {
