@@ -7,6 +7,7 @@
 	import { VideoPlayerAPI, VideoPlayerHooks } from './video-player-hooks.js';
 	import { VideoPlayerUtils, VIDEO_CONFIG, type Resolution } from './video-player-utils.js';
 	import { PUBLIC_BACK_URL } from '$env/static/public';
+	import languages from '@hypertube/shared/src/lang.json';
 
 	interface Props {
 		movieId: string;
@@ -195,25 +196,8 @@
 	}
 
 	function getLanguageLabel(languageCode: string): string {
-		const languageLabels: Record<string, string> = {
-			en: 'English',
-			es: 'Español',
-			fr: 'Français',
-			zh: '中文',
-			ar: 'العربية',
-			de: 'Deutsch',
-			it: 'Italiano',
-			pt: 'Português',
-			ru: 'Русский',
-			ja: '日本語',
-			ko: '한국어',
-			hi: 'हिन्दी',
-			nl: 'Nederlands',
-			sv: 'Svenska',
-			no: 'Norsk',
-			da: 'Dansk'
-		};
-		return languageLabels[languageCode] || languageCode.toUpperCase();
+		const language = languages[languageCode as keyof typeof languages];
+		return language?.name || languageCode.toUpperCase();
 	}
 
 	async function initializePlayer() {
