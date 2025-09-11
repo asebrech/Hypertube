@@ -267,3 +267,25 @@ export type SubtitleDownloadResponse = {
   reset_time: string;
   reset_time_utc: string;
 };
+// Comment types
+export type Comment = {
+  id: number;
+  content: string;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+  username: string;
+  userId: number;
+  movieId?: number;
+  movieTitle?: string;
+};
+
+export type PaginatedComments = {
+  data: Comment[];
+  meta: {
+    currentPage: number;
+    firstPage: number;
+    lastPage: number;
+    perPage: number;
+    total: number;
+  };
+};

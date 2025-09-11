@@ -2,6 +2,7 @@ import Movie from '#models/movies'
 import fs from 'node:fs'
 import path from 'node:path'
 import { DateTime } from 'luxon'
+import { formatBytes, isValidTmdbId } from '../utils/format.js'
 
 export interface CleanupResult {
   moviesProcessed: number
@@ -48,6 +49,10 @@ export default class MovieCleanupService {
           const movieId = movie.tmdbId
           const movieTitle = movie.title || 'Unknown title'
 
+          if (!isValidTmdbId(movieId)) {
+            throw new Error(`Invalid tmdbId: ${movieId}`)
+          }
+
           const hlsPath = path.join(process.cwd(), 'hls-output', movieId.toString())
           const cachePath = path.join(process.cwd(), 'torrent-cache', movieId.toString())
 
@@ -79,9 +84,7 @@ export default class MovieCleanupService {
             await this.resetMovieStatus(movie)
             result.moviesCleaned.push(`${movieId} (${movieTitle})`)
           } else {
-            result.moviesCleaned.push(
-              `${movieId} (${movieTitle}) - ${this.formatBytes(spaceFreed)}`
-            )
+            result.moviesCleaned.push(`${movieId} (${movieTitle}) - ${formatBytes(spaceFreed)}`)
           }
 
           result.spaceFreed += spaceFreed
@@ -95,9 +98,7 @@ export default class MovieCleanupService {
       }
 
       logProgress(`Cleanup completed: ${result.moviesProcessed} processed, ${result.errors} errors`)
-      logProgress(
-        `Space ${dryRun ? 'would be freed' : 'freed'}: ${this.formatBytes(result.spaceFreed)}`
-      )
+      logProgress(`Space ${dryRun ? 'would be freed' : 'freed'}: ${formatBytes(result.spaceFreed)}`)
     } catch (error) {
       const errorMessage = `Cleanup failed: ${error}`
       result.errorMessages.push(errorMessage)
@@ -159,13 +160,204 @@ export default class MovieCleanupService {
     return totalSize
   }
 
-  private formatBytes(bytes: number): string {
-    if (bytes === 0) return '0 B'
+  async deleteMovie(tmdbId: number): Promise<{
+    success: boolean
+    message: string
+    spaceFreed: number
+    error?: string
+  }> {
+    try {
+      if (!isValidTmdbId(tmdbId)) {
+        return {
+          success: false,
+          message: 'Invalid movie ID',
+          spaceFreed: 0,
+          error: `Invalid tmdbId: ${tmdbId}`,
+        }
+      }
 
-    const k = 1024
-    const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
+      const movie = await Movie.query().where('tmdbId', tmdbId).first()
 
-    return `${Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
+      if (!movie) {
+        return {
+          success: false,
+          message: 'Movie not found',
+          spaceFreed: 0,
+          error: 'Movie with this TMDB ID does not exist',
+        }
+      }
+
+      if (movie.conversionStatus === 'converting') {
+        return {
+          success: false,
+          message: 'Cannot delete movie during conversion',
+          spaceFreed: 0,
+          error: `Movie is currently being converted. Please wait for the conversion to complete before deleting.`,
+        }
+      }
+
+      const result = await this.deleteSingleMovie(movie)
+      const movieTitle = movie.title || 'Unknown title'
+
+      if (result.success) {
+        return {
+          success: true,
+          message: `Movie "${movieTitle}" (ID: ${tmdbId}) has been successfully deleted`,
+          spaceFreed: result.spaceFreed,
+        }
+      } else {
+        return {
+          success: false,
+          message: 'Failed to delete movie',
+          spaceFreed: 0,
+          error: result.error,
+        }
+      }
+    } catch (error) {
+      const errorMessage = `Failed to delete movie ${tmdbId}: ${error}`
+      console.error(errorMessage)
+      return {
+        success: false,
+        message: 'Failed to delete movie',
+        spaceFreed: 0,
+        error: errorMessage,
+      }
+    }
+  }
+
+  async deleteAllMovies(): Promise<{
+    success: boolean
+    message: string
+    moviesDeleted: number
+    spaceFreed: number
+    errors: number
+    errorMessages: string[]
+  }> {
+    try {
+      const allMovies = await Movie.all()
+
+      if (allMovies.length === 0) {
+        return {
+          success: true,
+          message: 'No movies found to delete',
+          moviesDeleted: 0,
+          spaceFreed: 0,
+          errors: 0,
+          errorMessages: [],
+        }
+      }
+
+      const result = {
+        success: true,
+        message: '',
+        moviesDeleted: 0,
+        spaceFreed: 0,
+        errors: 0,
+        errorMessages: [] as string[],
+      }
+
+      console.log(`Starting deletion of ${allMovies.length} movies`)
+
+      for (const movie of allMovies) {
+        if (movie.conversionStatus === 'converting') {
+          console.log(
+            `Skipping movie ${movie.tmdbId} (${movie.title || 'Unknown title'}) - currently converting`
+          )
+          result.errors++
+          result.errorMessages.push(`Movie ${movie.tmdbId} skipped - currently being converted`)
+          continue
+        }
+
+        const deleteResult = await this.deleteSingleMovie(movie)
+
+        if (deleteResult.success) {
+          result.moviesDeleted++
+          result.spaceFreed += deleteResult.spaceFreed
+          console.log(`Deleted movie ${movie.tmdbId} (${movie.title || 'Unknown title'})`)
+        } else {
+          result.errors++
+          result.errorMessages.push(deleteResult.error || `Unknown error for movie ${movie.tmdbId}`)
+        }
+      }
+
+      if (result.errors > 0) {
+        result.message = `Deleted ${result.moviesDeleted} movies with ${result.errors} errors`
+      } else {
+        result.message = `Successfully deleted all ${result.moviesDeleted} movies`
+      }
+
+      console.log(`Deletion completed: ${result.moviesDeleted} deleted, ${result.errors} errors`)
+      return result
+    } catch (error) {
+      console.error('Failed to delete all movies:', error)
+      return {
+        success: false,
+        message: 'Failed to delete all movies',
+        moviesDeleted: 0,
+        spaceFreed: 0,
+        errors: 1,
+        errorMessages: [error instanceof Error ? error.message : 'Unknown error'],
+      }
+    }
+  }
+
+  private async deleteSingleMovie(movie: Movie): Promise<{
+    success: boolean
+    spaceFreed: number
+    error?: string
+  }> {
+    try {
+      const tmdbId = movie.tmdbId
+      
+      if (!isValidTmdbId(tmdbId)) {
+        throw new Error(`Invalid tmdbId: ${tmdbId}`)
+      }
+
+      if (movie.conversionStatus === 'converting') {
+        throw new Error(`Cannot delete movie ${tmdbId} - currently being converted`)
+      }
+
+      const hlsPath = path.join(process.cwd(), 'hls-output', tmdbId.toString())
+      const cachePath = path.join(process.cwd(), 'torrent-cache', tmdbId.toString())
+
+      const spaceFreed =
+        (await this.calculateDirectorySize(hlsPath)) +
+        (await this.calculateDirectorySize(cachePath))
+
+      if (!this.isValidCleanupPath(hlsPath) || !this.isValidCleanupPath(cachePath)) {
+        throw new Error(`Invalid cleanup path detected for movie ${tmdbId}`)
+      }
+
+      if (fs.existsSync(hlsPath)) {
+        try {
+          fs.rmSync(hlsPath, { recursive: true })
+        } catch (error) {
+          throw new Error(`Failed to remove HLS directory ${hlsPath}: ${error}`)
+        }
+      }
+
+      if (fs.existsSync(cachePath)) {
+        try {
+          fs.rmSync(cachePath, { recursive: true })
+        } catch (error) {
+          throw new Error(`Failed to remove cache directory ${cachePath}: ${error}`)
+        }
+      }
+
+      await movie.delete()
+
+      return {
+        success: true,
+        spaceFreed,
+      }
+    } catch (error) {
+      const errorMessage = `Error deleting movie ${movie.tmdbId}: ${error}`
+      console.error(errorMessage)
+      return {
+        success: false,
+        spaceFreed: 0,
+        error: errorMessage,
+      }
+    }
   }
 }

@@ -34,6 +34,9 @@ export class TMDBService {
   public async getMovieExternalIMDBId(movieId: number) {
     const endpoint = `/movie/${movieId}/external_ids`
     const data = await this.getSomething(endpoint)
+    if (!data.imdb_id) {
+      throw new Error(`No IMDB ID found for movie with TMDB ID: ${movieId}`)
+    }
     return data.imdb_id
   }
 
