@@ -1,16 +1,22 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/core'
+import { join } from 'node:path'
+import app from '@adonisjs/core/services/app'
 import { TMDBService } from '#services/tmdb_service'
 import { BackDropImage } from '@hypertube/shared'
 import MovieService from '#services/movie_service'
 import { OpenSubtitleService } from '#services/opensubtitle_service'
+import SubtitleService from '#services/subtitle_service'
+import { multipleLanguagesValidator } from '../validators/subtitle.js'
+import { isValidTmdbId } from '../utils/format.js'
 
 @inject()
 export default class MoviesController {
   constructor(
     private tmdbService: TMDBService,
     private movieService: MovieService,
-    private openSubtitleService: OpenSubtitleService
+    private openSubtitleService: OpenSubtitleService,
+    private subtitleService: SubtitleService
   ) {}
 
   async index({ request, response, auth }: HttpContext) {
@@ -519,6 +525,98 @@ export default class MoviesController {
       console.error('Error toggling bookmark:', error)
       return response.internalServerError({
         error: 'Failed to toggle bookmark',
+      })
+    }
+  }
+
+  async downloadMultipleSubtitles({ request, response }: HttpContext) {
+    try {
+      const tmdbId = Number.parseInt(request.param('id'))
+
+      if (Number.isNaN(tmdbId) || !isValidTmdbId(tmdbId)) {
+        return response.badRequest({
+          success: false,
+          error: 'Invalid movie ID provided',
+        })
+      }
+
+      const { languages, language } = await request.validateUsing(multipleLanguagesValidator)
+
+      let finalLanguages: string[]
+      if (languages && languages.length > 0) {
+        finalLanguages = languages
+      } else if (language) {
+        finalLanguages = [language]
+      } else {
+        finalLanguages = ['en']
+      }
+
+      const result = await this.subtitleService.downloadMultipleSubtitles(tmdbId, finalLanguages)
+
+      return response.ok({
+        success: result.success,
+        message: `Downloaded subtitles for ${result.results.filter((r) => r.success).length} language(s)`,
+        results: result.results,
+      })
+    } catch (error) {
+      console.error('Error downloading multiple subtitles:', error)
+      return response.internalServerError({
+        error: 'Failed to download subtitles',
+      })
+    }
+  }
+
+  async getSubtitles({ request, response }: HttpContext) {
+    try {
+      const tmdbId = Number.parseInt(request.param('id'))
+      const language = request.param('language')
+
+      if (Number.isNaN(tmdbId) || !isValidTmdbId(tmdbId)) {
+        return response.badRequest({
+          success: false,
+          error: 'Invalid movie ID provided',
+        })
+      }
+
+      if (language) {
+        if (!language || language.length !== 2) {
+          return response.badRequest({
+            success: false,
+            error: 'Invalid language code provided. Must be 2 characters (e.g., "en", "fr")',
+          })
+        }
+
+        const subtitleExists = await this.subtitleService.subtitleExists(tmdbId, language)
+
+        if (!subtitleExists) {
+          return response.notFound({
+            error: `Subtitle not found for language: ${language}`,
+          })
+        }
+
+        const filePath = join(
+          app.makePath(),
+          'hls-output',
+          tmdbId.toString(),
+          'subtitles',
+          `${language}.srt`
+        )
+
+        return response.download(filePath)
+      }
+
+      const availableLanguages = await this.subtitleService.getAvailableSubtitles(tmdbId)
+
+      return response.ok({
+        success: true,
+        tmdbId: tmdbId,
+        availableLanguages,
+        count: availableLanguages.length,
+      })
+    } catch (error) {
+      console.error('Error getting subtitles:', error)
+      return response.internalServerError({
+        error: 'Failed to get subtitles',
       })
     }
   }

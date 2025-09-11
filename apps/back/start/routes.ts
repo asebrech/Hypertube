@@ -44,6 +44,12 @@ router
     router.post(':id/bookmark', [MoviesController, 'toggleBookmark']).use(middleware.auth())
     router.post(':id/progress', [MoviesController, 'saveWatchProgress']).use(middleware.auth())
     router.get(':id/progress', [MoviesController, 'getWatchProgress']).use(middleware.auth())
+    router
+      .post(':id/subtitles/download', [MoviesController, 'downloadMultipleSubtitles'])
+      .use(middleware.auth())
+    router
+      .get(':id/subtitles/:language?', [MoviesController, 'getSubtitles'])
+      .use(middleware.auth())
   })
   .prefix('movies')
 
@@ -56,8 +62,12 @@ router
 
 router
   .group(() => {
-    router.delete(':commentId', [CommentsController, 'deleteComment']).use([middleware.auth(), middleware.commentOwnership()])
-    router.patch(':commentId', [CommentsController, 'updateComment']).use([middleware.auth(), middleware.commentOwnership()])
+    router
+      .delete(':commentId', [CommentsController, 'deleteComment'])
+      .use([middleware.auth(), middleware.commentOwnership()])
+    router
+      .patch(':commentId', [CommentsController, 'updateComment'])
+      .use([middleware.auth(), middleware.commentOwnership()])
   })
   .prefix('comments')
 

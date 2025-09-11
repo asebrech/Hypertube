@@ -3,6 +3,8 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { DateTime } from 'luxon'
 import { formatBytes, isValidTmdbId } from '../utils/format.js'
+import SubtitleService from '#services/subtitle_service'
+import { inject } from '@adonisjs/core'
 
 export interface CleanupResult {
   moviesProcessed: number
@@ -18,7 +20,9 @@ export interface CleanupOptions {
   logProgress?: (message: string) => void
 }
 
+@inject()
 export default class MovieCleanupService {
+  constructor(private subtitleService: SubtitleService) {}
   async cleanupOldMovies(options: CleanupOptions = {}): Promise<CleanupResult> {
     const { dryRun = false, daysThreshold = 30, logProgress = console.log } = options
     const cutoffDate = DateTime.now().minus({ days: daysThreshold })
@@ -308,7 +312,7 @@ export default class MovieCleanupService {
   }> {
     try {
       const tmdbId = movie.tmdbId
-      
+
       if (!isValidTmdbId(tmdbId)) {
         throw new Error(`Invalid tmdbId: ${tmdbId}`)
       }
@@ -327,6 +331,8 @@ export default class MovieCleanupService {
       if (!this.isValidCleanupPath(hlsPath) || !this.isValidCleanupPath(cachePath)) {
         throw new Error(`Invalid cleanup path detected for movie ${tmdbId}`)
       }
+
+      await this.subtitleService.deleteAllSubtitles(tmdbId)
 
       if (fs.existsSync(hlsPath)) {
         try {
