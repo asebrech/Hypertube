@@ -7,7 +7,7 @@ import { BackDropImage } from '@hypertube/shared'
 import MovieService from '#services/movie_service'
 import { OpenSubtitleService } from '#services/opensubtitle_service'
 import SubtitleService from '#services/subtitle_service'
-import { multipleLanguagesValidator } from '../validators/subtitle.js'
+import { SUPPORTED_LANGUAGES } from '../validators/subtitle.js'
 import { isValidTmdbId } from '../utils/format.js'
 
 @inject()
@@ -511,13 +511,35 @@ export default class MoviesController {
         })
       }
 
-      const { languages, language } = await request.validateUsing(multipleLanguagesValidator)
+      // Manual validation with better error messages
+      const rawLanguages = request.input('languages')
+      const rawLanguage = request.input('language')
 
       let finalLanguages: string[]
-      if (languages && languages.length > 0) {
-        finalLanguages = languages
-      } else if (language) {
-        finalLanguages = [language]
+
+      if (rawLanguages && Array.isArray(rawLanguages)) {
+        const unsupportedLanguages = rawLanguages.filter(
+          (lang) => !SUPPORTED_LANGUAGES.includes(lang)
+        )
+        if (unsupportedLanguages.length > 0) {
+          return response.badRequest({
+            success: false,
+            error: `Unsupported language(s): ${unsupportedLanguages.join(', ')}`,
+            supportedLanguages: SUPPORTED_LANGUAGES,
+            message: `Please use one of the supported languages: ${SUPPORTED_LANGUAGES.join(', ')}`,
+          })
+        }
+        finalLanguages = rawLanguages
+      } else if (rawLanguage) {
+        if (!SUPPORTED_LANGUAGES.includes(rawLanguage)) {
+          return response.badRequest({
+            success: false,
+            error: `Unsupported language: ${rawLanguage}`,
+            supportedLanguages: SUPPORTED_LANGUAGES,
+            message: `Please use one of the supported languages: ${SUPPORTED_LANGUAGES.join(', ')}`,
+          })
+        }
+        finalLanguages = [rawLanguage]
       } else {
         finalLanguages = ['en']
       }

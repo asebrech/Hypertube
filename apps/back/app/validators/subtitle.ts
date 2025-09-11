@@ -1,7 +1,7 @@
 import vine from '@vinejs/vine'
 import langData from '@hypertube/shared/src/lang.json' with { type: 'json' }
 
-const SUPPORTED_LANGUAGES = Object.keys(langData)
+export const SUPPORTED_LANGUAGES = Object.keys(langData)
 
 export const multipleLanguagesValidator = vine.compile(
   vine.object({
