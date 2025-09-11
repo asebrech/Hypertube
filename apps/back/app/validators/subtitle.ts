@@ -1,23 +1,7 @@
 import vine from '@vinejs/vine'
+import langData from '@hypertube/shared/src/lang.json' with { type: 'json' }
 
-const SUPPORTED_LANGUAGES = [
-  'en',
-  'fr',
-  'es',
-  'de',
-  'it',
-  'pt',
-  'ru',
-  'ja',
-  'ko',
-  'zh',
-  'ar',
-  'hi',
-  'nl',
-  'sv',
-  'no',
-  'da',
-]
+const SUPPORTED_LANGUAGES = Object.keys(langData)
 
 export const multipleLanguagesValidator = vine.compile(
   vine.object({
