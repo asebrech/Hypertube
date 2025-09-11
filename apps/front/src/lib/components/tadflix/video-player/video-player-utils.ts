@@ -1,4 +1,5 @@
-// Video player configuration constants
+import { PUBLIC_BACK_URL } from '$env/static/public';
+
 export const VIDEO_CONFIG = {
 	POLL_INTERVAL: 5000,
 	TIMEOUT_DURATION: 300000,
@@ -49,9 +50,7 @@ export class VideoPlayerUtils {
 	}
 
 	static getSubtitleUrl(movieId: number, language: string, token?: string): string {
-		// Use our authenticated proxy endpoint instead of direct backend URL
-		// This ensures subtitles work with VideoJS authentication
-		const baseUrl = `/api/subtitles/${movieId}/${language}`;
+		const baseUrl = `${PUBLIC_BACK_URL}/movies/${movieId}/subtitles/${language}`;
 		return token ? `${baseUrl}?token=${encodeURIComponent(token)}` : baseUrl;
 	}
 

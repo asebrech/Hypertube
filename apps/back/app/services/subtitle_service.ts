@@ -1,10 +1,11 @@
 import { join } from 'node:path'
-import { createWriteStream, existsSync } from 'node:fs'
+import { createWriteStream, existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { mkdir } from 'node:fs/promises'
 import app from '@adonisjs/core/services/app'
 import axios from 'axios'
 import { OpenSubtitleService } from '#services/opensubtitle_service'
 import { inject } from '@adonisjs/core'
+import { convertSrtToWebVtt } from '#utils/subtitle'
 
 @inject()
 export default class SubtitleService {
@@ -14,13 +15,41 @@ export default class SubtitleService {
     return join(app.makePath(), 'hls-output', tmdbId.toString(), 'subtitles')
   }
 
-  private getSubtitleFilePath(tmdbId: number, language: string): string {
-    return join(this.getSubtitlesPath(tmdbId), `${language}.srt`)
+  private getSubtitleFilePath(
+    tmdbId: number,
+    language: string,
+    format: 'srt' | 'vtt' = 'srt'
+  ): string {
+    return join(this.getSubtitlesPath(tmdbId), `${language}.${format}`)
   }
 
-  async subtitleExists(tmdbId: number, language: string): Promise<boolean> {
-    const filePath = this.getSubtitleFilePath(tmdbId, language)
+  async subtitleExists(
+    tmdbId: number,
+    language: string,
+    format: 'srt' | 'vtt' = 'srt'
+  ): Promise<boolean> {
+    const filePath = this.getSubtitleFilePath(tmdbId, language, format)
     return existsSync(filePath)
+  }
+
+  async getSubtitleAsWebVtt(tmdbId: number, language: string): Promise<string | null> {
+    const vttPath = this.getSubtitleFilePath(tmdbId, language, 'vtt')
+    const srtPath = this.getSubtitleFilePath(tmdbId, language, 'srt')
+
+    if (existsSync(vttPath)) {
+      return readFileSync(vttPath, 'utf-8')
+    }
+
+    if (existsSync(srtPath)) {
+      const srtContent = readFileSync(srtPath, 'utf-8')
+      const vttContent = convertSrtToWebVtt(srtContent)
+      
+      writeFileSync(vttPath, vttContent, 'utf-8')
+      
+      return vttContent
+    }
+
+    return null
   }
 
   private async ensureSubtitlesDirectory(tmdbId: number): Promise<void> {
@@ -69,11 +98,25 @@ export default class SubtitleService {
       response.data.pipe(writer)
 
       return new Promise((resolve, reject) => {
-        writer.on('finish', () => {
-          resolve({
-            success: true,
-            filePath: filePath,
-          })
+        writer.on('finish', async () => {
+          try {
+            const srtContent = readFileSync(filePath, 'utf-8')
+            const webVttContent = convertSrtToWebVtt(srtContent)
+            const vttPath = this.getSubtitleFilePath(tmdbId, language, 'vtt')
+            
+            writeFileSync(vttPath, webVttContent, 'utf-8')
+            
+            resolve({
+              success: true,
+              filePath: filePath,
+            })
+          } catch (conversionError) {
+            console.error('Error converting subtitle to WebVTT:', conversionError)
+            resolve({
+              success: true,
+              filePath: filePath,
+            })
+          }
         })
 
         writer.on('error', (error) => {
@@ -137,7 +180,16 @@ export default class SubtitleService {
       const fs = await import('node:fs/promises')
       const files = await fs.readdir(subtitlesPath)
 
-      return files.filter((file) => file.endsWith('.srt')).map((file) => file.replace('.srt', ''))
+      const languages = new Set<string>()
+      
+      files.forEach((file) => {
+        if (file.endsWith('.srt') || file.endsWith('.vtt')) {
+          const language = file.replace(/\.(srt|vtt)$/, '')
+          languages.add(language)
+        }
+      })
+
+      return Array.from(languages)
     } catch (error) {
       console.error('Error getting available subtitles:', error)
       return []
@@ -146,15 +198,25 @@ export default class SubtitleService {
 
   async deleteSubtitle(tmdbId: number, language: string): Promise<boolean> {
     try {
-      const filePath = this.getSubtitleFilePath(tmdbId, language)
+      const srtPath = this.getSubtitleFilePath(tmdbId, language, 'srt')
+      const vttPath = this.getSubtitleFilePath(tmdbId, language, 'vtt')
+      const fs = await import('node:fs/promises')
 
-      if (!existsSync(filePath)) {
-        return true
+      let deleted = false
+
+      // Delete SRT file if it exists
+      if (existsSync(srtPath)) {
+        await fs.unlink(srtPath)
+        deleted = true
       }
 
-      const fs = await import('node:fs/promises')
-      await fs.unlink(filePath)
-      return true
+      // Delete VTT file if it exists
+      if (existsSync(vttPath)) {
+        await fs.unlink(vttPath)
+        deleted = true
+      }
+
+      return deleted
     } catch (error) {
       console.error('Error deleting subtitle:', error)
       return false

@@ -1,6 +1,5 @@
 import { PUBLIC_BACK_URL } from '$env/static/public';
 
-// API service for video player operations
 export class VideoPlayerAPI {
 	private token: string | undefined;
 	private movieId: string;
@@ -102,9 +101,9 @@ interface VideoJSWithVhs {
 // Video.js hooks and authentication
 export class VideoPlayerHooks {
 	static setupAuthentication(token: string | undefined, videojs: VideoJSWithVhs): void {
-		if (!token || !videojs.Vhs) return;
+		if (!token) return;
 
-		if (videojs.Vhs.xhr) {
+		if (videojs.Vhs?.xhr) {
 			videojs.Vhs.xhr.beforeRequest = (options: XHROptions) => {
 				if (options.headers) {
 					options.headers.Authorization = `Bearer ${token}`;

@@ -48,7 +48,7 @@ router
       .use(middleware.auth())
     router
       .get(':id/subtitles/:language?', [MoviesController, 'getSubtitles'])
-      .use(middleware.auth())
+      .use(middleware.subtitleAuth())
   })
   .prefix('movies')
 

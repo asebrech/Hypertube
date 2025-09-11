@@ -579,23 +579,21 @@ export default class MoviesController {
           })
         }
 
-        const subtitleExists = await this.subtitleService.subtitleExists(tmdbId, language)
+        const webVttContent = await this.subtitleService.getSubtitleAsWebVtt(tmdbId, language)
 
-        if (!subtitleExists) {
+        if (!webVttContent) {
           return response.notFound({
             error: `Subtitle not found for language: ${language}`,
           })
         }
 
-        const filePath = join(
-          app.makePath(),
-          'hls-output',
-          tmdbId.toString(),
-          'subtitles',
-          `${language}.srt`
-        )
-
-        return response.download(filePath)
+        return response
+          .header('Content-Type', 'text/vtt; charset=utf-8')
+          .header('Cache-Control', 'public, max-age=3600')
+          .header('Access-Control-Allow-Origin', '*')
+          .header('Access-Control-Allow-Methods', 'GET')
+          .header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+          .send(webVttContent)
       }
 
       const availableLanguages = await this.subtitleService.getAvailableSubtitles(tmdbId)

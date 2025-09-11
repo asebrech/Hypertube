@@ -233,13 +233,12 @@
 
 		VideoPlayerHooks.setupAuthentication(token, videojs as any);
 
-		// Create subtitle tracks
 		const textTracks = availableSubtitles.map((language, index) => ({
 			kind: 'subtitles',
 			src: VideoPlayerUtils.getSubtitleUrl(Number(movieId), language, token),
 			srclang: language,
 			label: getLanguageLabel(language),
-			default: index === 0 // Make first subtitle default
+			default: index === 0
 		}));
 
 		const options = {
@@ -277,19 +276,16 @@
 
 			setupPlayerEvents();
 			addResolutionButtons();
-
-			// Add subtitle event listeners
 			player.on('loadedmetadata', () => {
 				const textTracks = player.textTracks();
 				for (let i = 0; i < textTracks.length; i++) {
 					const track = textTracks[i];
 					track.addEventListener('error', (e: Event) => {
-						console.error(`Subtitle track error: ${track.language}`, e);
+						console.error(`Subtitle error (${track.language}):`, e);
 					});
 				}
 			});
 
-			// Setup progress saving interval
 			progressSaveInterval = setInterval(() => {
 				if (player && !player.paused() && player.duration() > 0) {
 					handleProgressSave();
