@@ -6,6 +6,7 @@ import axios from 'axios'
 import { OpenSubtitleService } from '#services/opensubtitle_service'
 import { inject } from '@adonisjs/core'
 import { convertSrtToWebVtt } from '#utils/subtitle'
+import { LanguageMapper } from '#utils/language_mapper'
 
 @inject()
 export default class SubtitleService {
@@ -71,15 +72,23 @@ export default class SubtitleService {
         }
       }
 
+      if (!LanguageMapper.isLanguageSupported(language)) {
+        return {
+          success: false,
+          error: `Unsupported language: ${language}. Supported languages: ${LanguageMapper.getSupportedLanguages().join(', ')}`,
+        }
+      }
+
       const downloadInfo = await this.openSubtitleService.getSubtitleDownloadInfo(
         tmdbId.toString(),
         language
       )
 
       if (!downloadInfo) {
+        const languageCodes = LanguageMapper.getLanguageCodesToTry(language)
         return {
           success: false,
-          error: `No subtitle found for tmdbId: ${tmdbId}, language: ${language}`,
+          error: `No subtitle found for tmdbId: ${tmdbId}, language: ${language} (tried codes: ${languageCodes.join(', ')})`,
         }
       }
 

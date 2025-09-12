@@ -6,6 +6,7 @@ import {
   SubtitleDownloadRequest,
   SubtitleDownloadResponse,
 } from '@hypertube/shared'
+import { LanguageMapper } from '#utils/language_mapper'
 
 export class OpenSubtitleService {
   private apiKey: string | undefined
@@ -187,19 +188,29 @@ export class OpenSubtitleService {
     return Array.from(uniqueSubtitlesPerLanguage.values())
   }
 
-  public async searchSubtitles(tmdb_id: string, lang: string = 'en'): Promise<SubtitleResult> {
-    const endpoint = `/subtitles?tmdb_id=${encodeURIComponent(
-      tmdb_id
-    )}&languages=${encodeURIComponent(lang)}`
-    const data: SubtitleApiResponse = (await this.getSomethingFromApi(
-      endpoint
-    )) as SubtitleApiResponse
-    const subtitle = data.data.find(
-      (item: any) =>
-        item.attributes.language === lang &&
-        item.attributes.feature_details.tmdb_id === Number(tmdb_id)
-    )
-    return subtitle
+  public async searchSubtitles(tmdb_id: string, lang: string = 'en'): Promise<SubtitleResult | undefined> {
+    const languageCodesToTry = LanguageMapper.getLanguageCodesToTry(lang)
+    for (const languageCode of languageCodesToTry) {
+      try {
+        const endpoint = `/subtitles?tmdb_id=${encodeURIComponent(
+          tmdb_id
+        )}&languages=${encodeURIComponent(languageCode)}`
+        const data: SubtitleApiResponse = (await this.getSomethingFromApi(
+          endpoint
+        )) as SubtitleApiResponse
+        const subtitle = data.data.find(
+          (item: any) =>
+            item.attributes.language === languageCode &&
+            item.attributes.feature_details.tmdb_id === Number(tmdb_id)
+        )
+        if (subtitle) {
+          return subtitle
+        }
+      } catch (error) {
+        continue
+      }
+    }
+    return undefined
   }
 
   public async downloadSubtitle(
