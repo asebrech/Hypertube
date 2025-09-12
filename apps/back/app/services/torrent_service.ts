@@ -7,6 +7,8 @@ import { inject } from '@adonisjs/core'
 import SearchTorrentService from './search_torrent_service.js'
 import MovieService from './movie_service.js'
 import ProgressLoggingService from './progress_logging_service.js'
+import SubtitleService from './subtitle_service.js'
+import { SUPPORTED_LANGUAGES } from '../validators/subtitle.js'
 
 ffmpeg.setFfmpegPath(ffmpegInstaller.path)
 
@@ -15,7 +17,8 @@ export default class TorrentService {
   constructor(
     private searchTorrentService: SearchTorrentService,
     private movieService: MovieService,
-    private progressLoggingService: ProgressLoggingService
+    private progressLoggingService: ProgressLoggingService,
+    private subtitleService: SubtitleService
   ) {}
   private readyResolutions: Set<string> = new Set()
   private lastSegmentCounts: Map<string, number> = new Map()
@@ -68,6 +71,8 @@ export default class TorrentService {
 
     await this.movieService.updateLastAccessed(tmdbId)
 
+    await this.downloadSubtitlesForMovie(tmdbId)
+
     const torrent = await this.searchTorrentService.search(tmdbId, 'All', 100)
     await this.movieService.updateMagnetLink(tmdbId, torrent.magnetLink)
 
@@ -117,6 +122,45 @@ export default class TorrentService {
     })
 
     return { message: 'Sequential torrent download started', tmdbId }
+  }
+
+  /**
+   * Download subtitles for all supported languages before starting movie download
+   */
+  private async downloadSubtitlesForMovie(tmdbId: number): Promise<void> {
+    try {
+      console.log(`Downloading subtitles for movie ${tmdbId} before starting torrent download`)
+
+      const result = await this.subtitleService.downloadMultipleSubtitles(
+        tmdbId,
+        SUPPORTED_LANGUAGES
+      )
+
+      const successCount = result.results.filter((r) => r.success).length
+      const totalCount = result.results.length
+
+      console.log(
+        `Subtitle download completed for movie ${tmdbId}: ${successCount}/${totalCount} languages downloaded`
+      )
+
+      if (successCount > 0) {
+        console.log(
+          `Successfully downloaded subtitles for: ${result.results
+            .filter((r) => r.success)
+            .map((r) => r.language)
+            .join(', ')}`
+        )
+      }
+
+      if (successCount < totalCount) {
+        const failedLanguages = result.results.filter((r) => !r.success).map((r) => r.language)
+        console.log(`Failed to download subtitles for: ${failedLanguages.join(', ')}`)
+      }
+    } catch (error) {
+      console.error(`Error during subtitle download for movie ${tmdbId}:`, error)
+      // Don't throw the error - subtitle failure shouldn't prevent movie download
+      console.log(`Continuing with movie download despite subtitle download issues`)
+    }
   }
 
   private isVideoFile(filename: string): boolean {

@@ -14,6 +14,7 @@ const AuthController = () => import('#controllers/auth_controller')
 const MoviesController = () => import('#controllers/movies_controller')
 const TorrentController = () => import('#controllers/torrent_controller')
 const UsersController = () => import('#controllers/users_controller')
+const CommentsController = () => import('#controllers/comments_controller')
 
 router.get('/', async () => ({ hello: 'world' }))
 
@@ -56,13 +57,39 @@ router
     router.post(':id/bookmark', [MoviesController, 'toggleBookmark']).use(middleware.auth())
     router.post(':id/progress', [MoviesController, 'saveWatchProgress']).use(middleware.auth())
     router.get(':id/progress', [MoviesController, 'getWatchProgress']).use(middleware.auth())
+    router
+      .post(':id/subtitles/download', [MoviesController, 'downloadMultipleSubtitles'])
+      .use(middleware.auth())
+    router
+      .get(':id/subtitles/:language?', [MoviesController, 'getSubtitles'])
+      .use(middleware.auth())
   })
   .prefix('movies')
 
 router
   .group(() => {
+    router.get(':id/comments', [CommentsController, 'movieComments']).use(middleware.auth())
+    router.post(':id/comments', [CommentsController, 'storeMovieComment']).use(middleware.auth())
+  })
+  .prefix('movie')
+
+router
+  .group(() => {
+    router
+      .delete(':commentId', [CommentsController, 'deleteComment'])
+      .use([middleware.auth(), middleware.commentOwnership()])
+    router
+      .patch(':commentId', [CommentsController, 'updateComment'])
+      .use([middleware.auth(), middleware.commentOwnership()])
+  })
+  .prefix('comments')
+
+router
+  .group(() => {
     router.get('/:id', [TorrentController, 'torrent'])
     router.get('/:resolution/:id', [TorrentController, 'ready'])
+    router.delete('/', [TorrentController, 'deleteAll']).use(middleware.admin())
+    router.delete('/:id', [TorrentController, 'delete']).use(middleware.admin())
   })
   .prefix('torrent')
   .use(middleware.auth())

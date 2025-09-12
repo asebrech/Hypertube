@@ -1,4 +1,5 @@
-// Video player configuration constants
+import { PUBLIC_BACK_URL } from '$env/static/public';
+
 export const VIDEO_CONFIG = {
 	POLL_INTERVAL: 5000,
 	TIMEOUT_DURATION: 300000,
@@ -43,9 +44,13 @@ export class VideoPlayerUtils {
 		return VIDEO_CONFIG.RESOLUTIONS[0];
 	}
 
-	static calculateWatchPercentage(currentTime: number, duration: number): number {
+	static calculateProgress(currentTime: number, duration: number): number {
 		if (!duration || duration === 0) return 0;
-		return (currentTime / duration) * 100;
+		return Math.floor((currentTime / duration) * 100);
+	}
+
+	static getSubtitleUrl(movieId: number, language: string): string {
+		return `${PUBLIC_BACK_URL}/movies/${movieId}/subtitles/${language}`;
 	}
 
 	static shouldMarkAsWatched(percentage: number): boolean {

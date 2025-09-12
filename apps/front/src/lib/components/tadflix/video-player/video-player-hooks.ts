@@ -1,6 +1,5 @@
 import { PUBLIC_BACK_URL } from '$env/static/public';
 
-// API service for video player operations
 export class VideoPlayerAPI {
 	private token: string | undefined;
 	private movieId: string;
@@ -65,6 +64,25 @@ export class VideoPlayerAPI {
 			return 0;
 		}
 	}
+
+	async fetchAvailableSubtitles(): Promise<string[]> {
+		try {
+			const response = await fetch(`${PUBLIC_BACK_URL}/movies/${this.movieId}/subtitles`, {
+				headers: this.headers
+			});
+
+			if (response.ok) {
+				const data = await response.json();
+				return data.availableLanguages || [];
+			} else {
+				console.warn('Failed to fetch subtitles:', response.statusText);
+				return [];
+			}
+		} catch (error) {
+			console.error('Error fetching subtitles:', error);
+			return [];
+		}
+	}
 }
 
 interface XHROptions {
@@ -80,12 +98,21 @@ interface VideoJSWithVhs {
 	};
 }
 
+interface ExtendedXMLHttpRequest extends XMLHttpRequest {
+	_requestUrl?: string;
+}
+
 // Video.js hooks and authentication
 export class VideoPlayerHooks {
-	static setupAuthentication(token: string | undefined, videojs: VideoJSWithVhs): void {
-		if (!token || !videojs.Vhs) return;
+	private static originalXHR: {
+		open?: typeof XMLHttpRequest.prototype.open;
+		send?: typeof XMLHttpRequest.prototype.send;
+	} = {};
 
-		if (videojs.Vhs.xhr) {
+	static setupAuthentication(token: string | undefined, videojs: VideoJSWithVhs): void {
+		if (!token) return;
+
+		if (videojs.Vhs?.xhr) {
 			videojs.Vhs.xhr.beforeRequest = (options: XHROptions) => {
 				if (options.headers) {
 					options.headers.Authorization = `Bearer ${token}`;
@@ -93,6 +120,24 @@ export class VideoPlayerHooks {
 					options.headers = { Authorization: `Bearer ${token}` };
 				}
 				return options;
+			};
+		}
+
+		if (!this.originalXHR.open) {
+			this.originalXHR.open = XMLHttpRequest.prototype.open;
+			this.originalXHR.send = XMLHttpRequest.prototype.send;
+
+			XMLHttpRequest.prototype.open = function(method: string, url: string | URL, async?: boolean, user?: string | null, password?: string | null) {
+				(this as ExtendedXMLHttpRequest)._requestUrl = url.toString();
+				return VideoPlayerHooks.originalXHR.open!.call(this, method, url, async, user, password);
+			};
+
+			XMLHttpRequest.prototype.send = function(body?: Document | XMLHttpRequestBodyInit | null) {
+				const requestUrl = (this as ExtendedXMLHttpRequest)._requestUrl;
+				if (requestUrl && requestUrl.includes('/subtitles/')) {
+					this.setRequestHeader('Authorization', `Bearer ${token}`);
+				}
+				return VideoPlayerHooks.originalXHR.send!.call(this, body);
 			};
 		}
 	}
