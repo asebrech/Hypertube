@@ -48,4 +48,15 @@ export default await Env.create(new URL('../', import.meta.url), {
   OPENSUBTITLES_API_URL: Env.schema.string(),
   OPENSUBTITLES_USERNAME: Env.schema.string(),
   OPENSUBTITLES_PASSWORD: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring mail
+  |----------------------------------------------------------
+  */
+  SMTP_HOST: Env.schema.string.optional(),
+  SMTP_PORT: Env.schema.string.optional(),
+  SMTP_USERNAME: Env.schema.string.optional(),
+  SMTP_PASSWORD: Env.schema.string.optional(),
+  FRONT_URL: Env.schema.string.optional(),
 })

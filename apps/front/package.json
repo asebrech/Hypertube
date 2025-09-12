@@ -51,6 +51,7 @@
 		"lucide-svelte": "^0.475.0",
 		"mode-watcher": "^0.5.1",
 		"shadcn-ui": "^0.9.5",
+		"simple-icons": "^15.12.0",
 		"svelte-i18n": "^4.0.1",
 		"video.js": "^8.23.3"
 	}

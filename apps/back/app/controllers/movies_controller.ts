@@ -19,7 +19,7 @@ export default class MoviesController {
     private subtitleService: SubtitleService
   ) {}
 
-  async index({ request, response, auth }: HttpContext) {
+  async index({ request, auth }: HttpContext) {
     const page = request.input('page', 1)
     const movieType = request.input('type', 'movie')
     const limit = 4

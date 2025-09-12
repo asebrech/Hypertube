@@ -7,7 +7,7 @@ export interface ScheduledTask {
   schedule: string
   command: string
   description?: string
-  options?: cron.ScheduleOptions
+  options?: any
 }
 
 export default class SchedulerService {
@@ -88,7 +88,7 @@ export default class SchedulerService {
   }
 
   private async executeCommand(command: string): Promise<void> {
-    const allowedCommands = [this.getMovieCleanupCommand()]
+    const allowedCommands = [this.getMovieCleanupCommand(), this.getPasswordResetCleanupCommand()]
     if (!allowedCommands.includes(command)) {
       throw new Error(`Command not allowed: ${command}`)
     }
@@ -123,6 +123,12 @@ export default class SchedulerService {
     return `${nodeExe} ${aceScript} movie:cleanup`
   }
 
+  private getPasswordResetCleanupCommand(): string {
+    const nodeExe = process.execPath
+    const aceScript = path.resolve(process.cwd(), 'ace')
+    return `${nodeExe} ${aceScript} password-reset:cleanup`
+  }
+
   setupDefaultTasks(): void {
     this.schedule({
       name: 'movie-cleanup',
@@ -130,6 +136,14 @@ export default class SchedulerService {
       //schedule: '*/2 * * * *', // Every 2 minutes for testing
       command: this.getMovieCleanupCommand(),
       description: 'Daily at 2:00 AM UTC',
+      options: { timezone: 'UTC' },
+    })
+
+    this.schedule({
+      name: 'password-reset-cleanup',
+      schedule: '0 */6 * * *', // Every 6 hours
+      command: this.getPasswordResetCleanupCommand(),
+      description: 'Every 6 hours',
       options: { timezone: 'UTC' },
     })
   }
