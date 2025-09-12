@@ -1,14 +1,22 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/core'
+import { join } from 'node:path'
+import app from '@adonisjs/core/services/app'
 import { TMDBService } from '#services/tmdb_service'
 import { BackDropImage } from '@hypertube/shared'
 import MovieService from '#services/movie_service'
+import { OpenSubtitleService } from '#services/opensubtitle_service'
+import SubtitleService from '#services/subtitle_service'
+import { SUPPORTED_LANGUAGES } from '../validators/subtitle.js'
+import { isValidTmdbId } from '../utils/format.js'
 
 @inject()
 export default class MoviesController {
   constructor(
     private tmdbService: TMDBService,
-    private movieService: MovieService
+    private movieService: MovieService,
+    private openSubtitleService: OpenSubtitleService,
+    private subtitleService: SubtitleService
   ) {}
 
   async index({ request, auth }: HttpContext) {
@@ -162,14 +170,17 @@ export default class MoviesController {
     const lang = request.input('lang', 'en')
     const movieType = request.input('type', 'movie')
     const movieVideos = await this.tmdbService.getMovieVideos(tmdb_movie_id, lang, movieType)
-    if (!movieVideos) return response.notFound({ error: 'Movie videos not found' })
+    if (!movieVideos) {
+      return response.notFound({ error: 'Movie videos not found' })
+    }
     let movieVideo = movieVideos.results.find(
       (video: any) => video.site === 'YouTube' && video.type === 'Clip'
     )
-    if (!movieVideo)
+    if (!movieVideo) {
       movieVideo = movieVideos.results.find(
         (video: any) => video.site === 'YouTube' && video.type === 'Trailer'
       )
+    }
     return movieVideo
   }
 
@@ -343,7 +354,9 @@ export default class MoviesController {
       return response.ok({ message: 'Movie marked as watched successfully' })
     } catch (error) {
       console.error('Error marking movie as watched:', error)
-      return response.internalServerError({ error: 'Failed to mark movie as watched' })
+      return response.internalServerError({
+        error: 'Failed to mark movie as watched',
+      })
     }
   }
 
@@ -393,7 +406,9 @@ export default class MoviesController {
       })
     } catch (error) {
       console.error('Error saving watch progress:', error)
-      return response.internalServerError({ error: 'Failed to save watch progress' })
+      return response.internalServerError({
+        error: 'Failed to save watch progress',
+      })
     }
   }
 
@@ -425,7 +440,9 @@ export default class MoviesController {
       })
     } catch (error) {
       console.error('Error getting watch progress:', error)
-      return response.internalServerError({ error: 'Failed to get watch progress' })
+      return response.internalServerError({
+        error: 'Failed to get watch progress',
+      })
     }
   }
 
@@ -477,7 +494,121 @@ export default class MoviesController {
       })
     } catch (error) {
       console.error('Error toggling bookmark:', error)
-      return response.internalServerError({ error: 'Failed to toggle bookmark' })
+      return response.internalServerError({
+        error: 'Failed to toggle bookmark',
+      })
+    }
+  }
+
+  async downloadMultipleSubtitles({ request, response }: HttpContext) {
+    try {
+      const tmdbId = Number.parseInt(request.param('id'))
+
+      if (Number.isNaN(tmdbId) || !isValidTmdbId(tmdbId)) {
+        return response.badRequest({
+          success: false,
+          error: 'Invalid movie ID provided',
+        })
+      }
+
+      // Manual validation with better error messages
+      const rawLanguages = request.input('languages')
+      const rawLanguage = request.input('language')
+
+      let finalLanguages: string[]
+
+      if (rawLanguages && Array.isArray(rawLanguages)) {
+        const unsupportedLanguages = rawLanguages.filter(
+          (lang) => !SUPPORTED_LANGUAGES.includes(lang)
+        )
+        if (unsupportedLanguages.length > 0) {
+          return response.badRequest({
+            success: false,
+            error: `Unsupported language(s): ${unsupportedLanguages.join(', ')}`,
+            supportedLanguages: SUPPORTED_LANGUAGES,
+            message: `Please use one of the supported languages: ${SUPPORTED_LANGUAGES.join(', ')}`,
+          })
+        }
+        finalLanguages = rawLanguages
+      } else if (rawLanguage) {
+        if (!SUPPORTED_LANGUAGES.includes(rawLanguage)) {
+          return response.badRequest({
+            success: false,
+            error: `Unsupported language: ${rawLanguage}`,
+            supportedLanguages: SUPPORTED_LANGUAGES,
+            message: `Please use one of the supported languages: ${SUPPORTED_LANGUAGES.join(', ')}`,
+          })
+        }
+        finalLanguages = [rawLanguage]
+      } else {
+        finalLanguages = ['en']
+      }
+
+      const result = await this.subtitleService.downloadMultipleSubtitles(tmdbId, finalLanguages)
+
+      return response.ok({
+        success: result.success,
+        message: `Downloaded subtitles for ${result.results.filter((r) => r.success).length} language(s)`,
+        results: result.results,
+      })
+    } catch (error) {
+      console.error('Error downloading multiple subtitles:', error)
+      return response.internalServerError({
+        error: 'Failed to download subtitles',
+      })
+    }
+  }
+
+  async getSubtitles({ request, response }: HttpContext) {
+    try {
+      const tmdbId = Number.parseInt(request.param('id'))
+      const language = request.param('language')
+
+      if (Number.isNaN(tmdbId) || !isValidTmdbId(tmdbId)) {
+        return response.badRequest({
+          success: false,
+          error: 'Invalid movie ID provided',
+        })
+      }
+
+      if (language) {
+        if (language.length !== 2) {
+          return response.badRequest({
+            success: false,
+            error: 'Invalid language code provided. Must be 2 characters (e.g., "en", "fr")',
+          })
+        }
+
+        const webVttContent = await this.subtitleService.getSubtitleAsWebVtt(tmdbId, language)
+
+        if (!webVttContent) {
+          return response.notFound({
+            error: `Subtitle not found for language: ${language}`,
+          })
+        }
+
+        return response
+          .header('Content-Type', 'text/vtt; charset=utf-8')
+          .header('Cache-Control', 'public, max-age=3600')
+          .header('Access-Control-Allow-Origin', '*')
+          .header('Access-Control-Allow-Methods', 'GET')
+          .header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+          .send(webVttContent)
+      }
+
+      const availableLanguages = await this.subtitleService.getAvailableSubtitles(tmdbId)
+
+      return response.ok({
+        success: true,
+        tmdbId: tmdbId,
+        availableLanguages,
+        count: availableLanguages.length,
+      })
+    } catch (error) {
+      console.error('Error getting subtitles:', error)
+      return response.internalServerError({
+        error: 'Failed to get subtitles',
+      })
     }
   }
 }

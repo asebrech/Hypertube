@@ -41,6 +41,16 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   /*
   |----------------------------------------------------------
+  | Variables for configuring OpenSubtitles API
+  |----------------------------------------------------------
+  */
+  OPENSUBTITLES_API_KEY: Env.schema.string(),
+  OPENSUBTITLES_API_URL: Env.schema.string(),
+  OPENSUBTITLES_USERNAME: Env.schema.string(),
+  OPENSUBTITLES_PASSWORD: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
   | Variables for configuring mail
   |----------------------------------------------------------
   */

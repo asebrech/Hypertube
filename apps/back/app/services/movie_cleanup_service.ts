@@ -308,7 +308,7 @@ export default class MovieCleanupService {
   }> {
     try {
       const tmdbId = movie.tmdbId
-      
+
       if (!isValidTmdbId(tmdbId)) {
         throw new Error(`Invalid tmdbId: ${tmdbId}`)
       }
