@@ -20,10 +20,10 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare username: string | null
 
-  @column()
+  @column({ columnName: 'last_name' })
   declare lastName: string | null
 
-  @column()
+  @column({ columnName: 'first_name' })
   declare firstName: string | null
 
   @column()

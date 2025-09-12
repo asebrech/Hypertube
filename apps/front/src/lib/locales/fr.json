@@ -81,5 +81,104 @@
 		"timeout-error": "Le traitement vidéo a expiré. Veuillez réessayer plus tard.",
 		"show-details": "Afficher les détails",
 		"hide-details": "Masquer les détails"
+	},
+	"validation": {
+		"password": {
+			"min_length": "Doit contenir au moins 12 caractères",
+			"special_char": "Doit contenir au moins 1 caractère spécial",
+			"uppercase": "Doit contenir au moins 1 lettre majuscule",
+			"lowercase": "Doit contenir au moins 1 lettre minuscule",
+			"number": "Doit contenir au moins 1 chiffre"
+		},
+		"email": {
+			"invalid": "Doit être une adresse email valide"
+		},
+		"username": {
+			"min_length": "Doit contenir au moins 3 caractères",
+			"invalid_chars": "Ne peut contenir que des lettres, des chiffres et des traits de soulignement"
+		},
+		"firstName": {
+			"min_length": "Doit contenir au moins 2 caractères",
+			"max_length": "Ne doit pas dépasser 64 caractères"
+		},
+		"lastName": {
+			"min_length": "Doit contenir au moins 2 caractères",
+			"max_length": "Ne doit pas dépasser 64 caractères"
+		},
+		"server_errors": {
+			"email_already_used": "Cette adresse email est déjà utilisée",
+			"username_already_used": "Ce nom d'utilisateur est déjà pris",
+			"already_used": "Cette valeur est déjà utilisée",
+			"email_invalid": "Veuillez entrer une adresse email valide",
+			"password_invalid": "Le mot de passe ne respecte pas les exigences",
+			"length_invalid": "La longueur ne respecte pas les exigences",
+			"invalid": "Ce champ contient des données invalides"
+		}
+	},
+	"auth": {
+		"sign_up": "S'inscrire",
+		"sign_in": "Se connecter",
+		"create_account": "Créer un compte",
+		"enter_info": "Entrez vos informations pour créer un compte",
+		"or": "OU",
+		"first_name": "Prénom",
+		"last_name": "Nom",
+		"username": "Nom d'utilisateur",
+		"email": "Email",
+		"password": "Mot de passe",
+		"already_have_account": "Vous avez déjà un compte ?",
+		"register_with_google": "S'inscrire avec Google",
+		"register_with_github": "S'inscrire avec Github",
+		"register_with_42": "S'inscrire avec 42",
+		"form_error": "Mot de passe trop court ou email déjà utilisé",
+		"login": {
+			"title": "Se Connecter",
+			"description": "Entrez votre email ci-dessous pour vous connecter à votre compte",
+			"email_label": "Email",
+			"email_placeholder": "m@exemple.com",
+			"password_label": "Mot de passe",
+			"forgot_password": "Mot de passe oublié ?",
+			"login_button": "Se connecter",
+			"remember_me": "Se souvenir de moi",
+			"login_with_google": "Se connecter avec Google",
+			"login_with_github": "Se connecter avec Github",
+			"login_with_42": "Se connecter avec 42",
+			"no_account": "Vous n'avez pas de compte ?",
+			"sign_up_link": "S'inscrire",
+			"error_credentials": "Vous avez saisi de mauvais identifiants.",
+			"error_account_not_found": "Désolé, nous ne trouvons pas de compte avec cette adresse e-mail. Veuillez réessayer ou {createAccountLink}.",
+			"error_invalid_password": "Mot de passe incorrect pour {email}. Vous pouvez {resetPasswordLink} ou réessayer.",
+			"create_account_link": "créer un nouveau compte",
+			"reset_password_link": "réinitialiser votre mot de passe",
+			"or_try_again": "ou réessayer"
+		},
+		"forgot_password": {
+			"title": "Mot de passe oublié",
+			"description": "Entrez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot de passe",
+			"email_label": "Email",
+			"email_placeholder": "m@example.com",
+			"send_button": "Envoyer le lien",
+			"remember_password": "Vous vous souvenez de votre mot de passe ?",
+			"back_to_login": "Retour à la connexion",
+			"email_sent": "Email envoyé",
+			"email_sent_message": "Si cet email existe dans notre système, un lien de réinitialisation a été envoyé.",
+			"link_expires": "Le lien expire dans 1 heure.",
+			"error_general": "Une erreur s'est produite. Veuillez réessayer.",
+			"error_invalid_email": "Veuillez entrer une adresse email valide."
+		},
+		"reset_password": {
+			"title": "Réinitialiser le mot de passe",
+			"description": "Entrez votre nouveau mot de passe",
+			"new_password_label": "Nouveau mot de passe",
+			"confirm_password_label": "Confirmer le nouveau mot de passe",
+			"password_requirements": "Le mot de passe doit contenir 12 à 32 caractères et inclure au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.",
+			"reset_button": "Réinitialiser le mot de passe",
+			"success_message": "Mot de passe réinitialisé avec succès",
+			"redirect_message": "Vous serez redirigé vers la page de connexion dans quelques secondes.",
+			"go_to_login": "Aller à la connexion maintenant",
+			"remember_password": "Vous vous souvenez de votre mot de passe ?",
+			"back_to_login": "Retour à la connexion",
+			"error_message": "Veuillez vérifier vos informations et réessayer."
+		}
 	}
 }

@@ -167,7 +167,7 @@
 		{#if !page.data.user}
 			<a href="/login">
 				<Button variant="outline" class="border-white bg-transparent text-white hover:bg-white/10">
-					Sign In
+					{$_('auth.sign_in')}
 				</Button>
 			</a>
 		{:else}
