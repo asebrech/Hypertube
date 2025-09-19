@@ -19,18 +19,6 @@ const CommentsController = () => import('#controllers/comments_controller')
 
 router.get('/', async () => ({ hello: 'world' }))
 
-// Serve uploaded profile pictures
-router.get('/uploads/profiles/:filename', async ({ params, response }) => {
-  const { filename } = params
-  const filePath = app.makePath('public/uploads/profiles', filename)
-
-  try {
-    return response.download(filePath)
-  } catch (error) {
-    return response.notFound('File not found')
-  }
-})
-
 router
   .group(() => {
     router.post('register', [AuthController, 'register'])
@@ -51,6 +39,7 @@ router
     router.get('me', [UsersController, 'me'])
     router.patch(':id', [UsersController, 'update']) // Update user profile
     router.post('upload-profile-picture', [UsersController, 'uploadProfilePicture']) // Upload profile picture
+    router.get('uploads/profiles/:filename', [UsersController, 'serveProfilePicture']) // Serve uploaded profile pictures
     router.get(':id', [UsersController, 'show'])
     router.get('', [UsersController, 'index']) // GET /users?ids=1,2,3
     router.get(':user_id/comments', [CommentsController, 'userComments']) // GET /users/:user_id/comments

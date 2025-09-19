@@ -59,7 +59,6 @@ export const updateUserValidator = vine.compile(
       .string()
       .email()
       .unique(async (query, field, { meta }) => {
-        // Skip uniqueness check if email hasn't changed
         const currentUser = await query.from('users').where('id', meta.userId).first()
         if (currentUser && currentUser.email === field) {
           return true
@@ -73,7 +72,6 @@ export const updateUserValidator = vine.compile(
       .minLength(3)
       .maxLength(32)
       .unique(async (query, field, { meta }) => {
-        // Skip uniqueness check if username hasn't changed
         const currentUser = await query.from('users').where('id', meta.userId).first()
         if (currentUser && currentUser.username === field) {
           return true
@@ -86,5 +84,6 @@ export const updateUserValidator = vine.compile(
     lastName: vine.string().minLength(2).maxLength(32).optional(),
     currentPassword: vine.string().optional(),
     newPassword: passwordRules.optional(),
+    profilePicture: vine.string().url().optional(),
   })
 )

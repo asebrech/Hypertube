@@ -27,7 +27,6 @@
 		showHeader = true
 	}: UserCommentsProps = $props();
 
-	// Access user and token from page data
 	const user = $derived($page.data.user);
 	const token = $derived($page.data.token);
 	const currentUser = $derived(user?.username || user?.name || 'User');

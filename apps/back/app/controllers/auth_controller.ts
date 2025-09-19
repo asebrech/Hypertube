@@ -17,9 +17,6 @@ import env from '#start/env'
 import ProfilePictureService from '#services/profile_picture_service'
 
 export default class AuthController {
-  /**
-   * Handle Vine.js validation errors and format them for consistent API responses
-   */
   private formatValidationErrors(error: any): any[] {
     const formattedErrors: any[] = []
 
@@ -27,9 +24,7 @@ export default class AuthController {
       return formattedErrors
     }
 
-    // Vine.js errors can be structured differently
     if (Array.isArray(error.messages)) {
-      // If messages is an array of error objects
       for (const errorObj of error.messages) {
         let rule = 'validation'
         if (errorObj.rule === 'database.unique') {
@@ -47,7 +42,6 @@ export default class AuthController {
         })
       }
     } else if (typeof error.messages === 'object') {
-      // If messages is an object with field keys
       for (const [field, fieldErrors] of Object.entries(error.messages)) {
         if (Array.isArray(fieldErrors)) {
           for (const fieldError of fieldErrors) {
@@ -110,7 +104,6 @@ export default class AuthController {
 
       return response.created(user)
     } catch (error) {
-      // Handle Vine.js validation errors (including unique constraint violations)
       if (error.messages) {
         const formattedErrors = this.formatValidationErrors(error)
 
@@ -120,7 +113,6 @@ export default class AuthController {
         })
       }
 
-      // Generic error fallback
       return response.status(500).json({
         message: 'Internal server error',
         errors: [
@@ -147,59 +139,39 @@ export default class AuthController {
   async callback({ ally, params, response }: HttpContext) {
     const driverInstance = ally.use(params.provider)
 
-    /**
-     * User has denied access by canceling
-     * the login flow
-     */
     if (driverInstance.accessDenied()) {
       return 'You have cancelled the login process'
     }
 
-    /**
-     * OAuth state verification failed. This happens when the
-     * CSRF cookie gets expired.
-     */
     if (driverInstance.stateMisMatch()) {
       return 'We are unable to verify the request. Please try again'
     }
 
-    /**
-     * GitHub responded with some error
-     */
     if (driverInstance.hasError()) {
       return driverInstance.getError()
     }
 
-    /**
-     * Access user info
-     */
     const user = await driverInstance.user()
 
-    // Extract names from different OAuth providers
     let firstName = ''
     let lastName = ''
 
     if (params.provider === 'github') {
-      // GitHub provides 'name' field which might be "First Last" format
       const fullName = user.name || user.nickName || ''
       const nameParts = fullName.trim().split(' ')
       firstName = nameParts[0] || ''
       lastName = nameParts.slice(1).join(' ') || ''
     } else if (params.provider === 'google') {
-      // Google provides firstName and lastName in original object
       firstName = user.original?.given_name || ''
       lastName = user.original?.family_name || ''
-      // Fallback to parsing name if specific fields not available
       if (!firstName && !lastName && user.name) {
         const nameParts = user.name.trim().split(' ')
         firstName = nameParts[0] || ''
         lastName = nameParts.slice(1).join(' ') || ''
       }
     } else if (params.provider === 'fortyTwo') {
-      // 42 provides first_name and last_name in original object
       firstName = user.original?.first_name || ''
       lastName = user.original?.last_name || ''
-      // Fallback to parsing name if specific fields not available
       if (!firstName && !lastName && user.name) {
         const nameParts = user.name.trim().split(' ')
         firstName = nameParts[0] || ''
@@ -207,14 +179,11 @@ export default class AuthController {
       }
     }
 
-    // Determine the best username based on provider
     let username = user.name
     if (params.provider === 'fortyTwo') {
-      // For 42, use the intra login name from original.login
       username = user.original?.login || user.nickName || user.name
     }
 
-    // Process avatar URL to download external images
     let processedAvatarUrl = user.avatarUrl
     if (user.avatarUrl) {
       try {
@@ -222,7 +191,6 @@ export default class AuthController {
         processedAvatarUrl = await profilePictureService.processProfilePictureUrl(user.avatarUrl)
       } catch (error) {
         console.error('Failed to process OAuth avatar URL:', error)
-        // Keep original URL as fallback
         processedAvatarUrl = user.avatarUrl
       }
     }
@@ -237,7 +205,6 @@ export default class AuthController {
         profilePicture: processedAvatarUrl,
       })
     } else {
-      // Update existing user with OAuth data if they don't have it
       let shouldSave = false
 
       if (!dbUser.profilePicture && processedAvatarUrl) {
@@ -280,25 +247,20 @@ export default class AuthController {
 
     const user = await User.findBy('email', email)
     if (!user) {
-      // Don't reveal if email exists or not for security
       return response.ok({ message: 'If this email exists, a password reset link has been sent.' })
     }
 
-    // Clean up old tokens for this email
     await PasswordResetToken.query().where('email', email).delete()
 
-    // Generate secure token
     const token = randomBytes(32).toString('hex')
     const expiresAt = DateTime.now().plus({ hours: 1 })
 
-    // Save token to database
     await PasswordResetToken.create({
       email,
       token,
       expiresAt,
     })
 
-    // Send email or log in development
     const frontUrl = env.get('FRONT_URL') || 'http://localhost:5173'
     const resetUrl = `${frontUrl}/reset-password?token=${token}`
     const userName = user.username || user.firstName || 'User'
@@ -310,7 +272,6 @@ export default class AuthController {
         message: 'If this email exists, a password reset link has been sent.',
       })
     } catch (error) {
-      // In development, provide the reset URL directly
       if (env.get('NODE_ENV') === 'development') {
         return response.ok({
           message: 'Password reset token created (email failed in development).',
@@ -355,22 +316,17 @@ export default class AuthController {
       const userId = params.id
       const authenticatedUser = auth.getUserOrFail()
 
-      // Check if user is trying to update their own profile
       if (authenticatedUser.id !== parseInt(userId)) {
         return response.forbidden({ message: 'You can only update your own profile.' })
       }
 
       const user = await User.findOrFail(userId)
 
-      // Add userId to validation data for uniqueness checks
       const payload = await request.validateUsing(updateUserValidator, {
         meta: { userId: parseInt(userId) },
       })
 
-      // Check if this is an OAuth user (no password set)
       const isOAuthUser = !user.password
-
-      // Handle password changes only for non-OAuth users
       if (payload.newPassword) {
         if (isOAuthUser) {
           return response.badRequest({
@@ -417,7 +373,6 @@ export default class AuthController {
         user.password = payload.newPassword
       }
 
-      // Update other fields if provided
       if (payload.email !== undefined) user.email = payload.email
       if (payload.username !== undefined) user.username = payload.username
       if (payload.firstName !== undefined) user.firstName = payload.firstName
@@ -430,7 +385,6 @@ export default class AuthController {
         user: user.serialize(),
       })
     } catch (error) {
-      // Handle Vine.js validation errors
       if (error.messages) {
         const formattedErrors = this.formatValidationErrors(error)
 

@@ -19,7 +19,6 @@
 		translateValidationErrors
 	} from '@hypertube/shared';
 
-	// Define the form data type
 	type FormData = {
 		invalid?: boolean;
 		errors?: {

@@ -5,7 +5,6 @@ import { SECRET_BACK_URL } from '$env/static/private';
 export async function load({ locals, cookies }: RequestEvent) {
 	let fullUserData = locals.user;
 
-	// If we have a user, fetch their full profile data using the authenticated /me endpoint
 	if (locals.user) {
 		try {
 			const token = cookies.get('session');
@@ -17,7 +16,6 @@ export async function load({ locals, cookies }: RequestEvent) {
 			fullUserData = meResponse.data;
 		} catch (error) {
 			console.error('Failed to fetch full user profile:', error);
-			// Fallback to locals.user if profile fetch fails
 		}
 	}
 
@@ -39,7 +37,6 @@ const updateAccount = async ({ request, locals, cookies }: RequestEvent) => {
 		return fail(401, { invalid: true, errors: { general: 'unauthorized' } });
 	}
 
-	// Build payload with only non-empty fields
 	const payload: any = {};
 
 	if (firstName && firstName.toString().trim()) payload.firstName = firstName.toString().trim();
@@ -47,7 +44,6 @@ const updateAccount = async ({ request, locals, cookies }: RequestEvent) => {
 	if (username && username.toString().trim()) payload.username = username.toString().trim();
 	if (email && email.toString().trim()) payload.email = email.toString().trim();
 
-	// Handle password change
 	if (newPassword && newPassword.toString().trim()) {
 		if (!currentPassword || !currentPassword.toString().trim()) {
 			return fail(400, {
@@ -116,7 +112,6 @@ const updateAccount = async ({ request, locals, cookies }: RequestEvent) => {
 					errors: errors
 				});
 			} else if (error.response.status === 400) {
-				// Handle current password error
 				const message = error.response.data?.message || '';
 				if (message.includes('Current password')) {
 					return fail(400, {

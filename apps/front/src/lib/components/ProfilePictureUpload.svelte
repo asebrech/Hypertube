@@ -19,10 +19,8 @@
 	let isImageLoading = $state(false);
 	let error = $state('');
 
-	// Simple reactive image URL - no cache busting needed
 	let imageUrl = $derived(currentProfilePicture);
 
-	// Update loading state when profile picture changes
 	$effect(() => {
 		if (currentProfilePicture) {
 			isImageLoading = true;
@@ -39,7 +37,6 @@
 		const file = input.files?.[0];
 		if (!file) return;
 
-		// Basic validation
 		if (!file.type.startsWith('image/')) {
 			error = 'Please select an image file';
 			return;
@@ -89,11 +86,9 @@
 				class="w-full h-full object-cover"
 				onload={() => {
 					isImageLoading = false;
-					console.log('✅ Image loaded:', imageUrl);
 				}}
 				onerror={() => {
 					isImageLoading = false;
-					console.error('❌ Image failed to load:', imageUrl);
 				}}
 			/>
 			

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Settings, Film, MessageCircle, Calendar, Edit3, Mail } from 'lucide-svelte';
+	import { Film, MessageCircle, Calendar, Edit3, Mail } from 'lucide-svelte';
 	import { MovieCard } from '$lib/components/tadflix/movie-card';
 	import { HoverCard, HoverCardTrigger, HoverCardContent } from '$lib/components/ui/hover-card';
 	import { MoviePreview } from '$lib/components/tadflix/movie-preview';
@@ -28,7 +28,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.profileUser.username || $_('profile.unknown-user')} - Tadflix</title>
+	<title>{data.profileUser.username || $_('profile.unknown-user')} - Datflix</title>
 </svelte:head>
 
 <!-- Hero Section with Netflix Background -->

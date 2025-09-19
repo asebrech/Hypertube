@@ -124,32 +124,27 @@ export default class UsersController {
    */
   async update({ request, response, auth, params }: HttpContext) {
     try {
-      // Ensure user is authenticated (but can update any profile)
       auth.getUserOrFail()
       const userId = parseInt(params.id)
 
       const user = await User.findOrFail(userId)
 
-      // Validate the request data
       const payload = await updateUserValidator.validate(request.all(), {
         meta: { userId: userId },
       })
 
-      // Update fields if provided
       if (payload.username !== undefined) user.username = payload.username
       if (payload.email !== undefined) user.email = payload.email
       if (payload.firstName !== undefined) user.firstName = payload.firstName
       if (payload.lastName !== undefined) user.lastName = payload.lastName
       if (payload.password !== undefined) user.password = payload.password
       
-      // Handle profile picture - download external images to avoid TTL issues
       if (payload.profilePicture !== undefined) {
         try {
           const profilePictureService = new ProfilePictureService()
           user.profilePicture = await profilePictureService.processProfilePictureUrl(payload.profilePicture)
         } catch (error) {
           console.error('Profile picture processing error:', error)
-          // If download fails, still save the original URL as fallback
           user.profilePicture = payload.profilePicture
         }
       }
@@ -169,7 +164,6 @@ export default class UsersController {
         },
       })
     } catch (error) {
-      // Handle validation errors
       if (error.messages) {
         const formattedErrors: any[] = []
         
@@ -241,7 +235,6 @@ export default class UsersController {
       const userIds = Array.isArray(ids) ? ids : [ids]
       const users = await User.query().whereIn('id', userIds)
 
-      // Return only public information for all users
       const publicUsers = users.map((user) => ({
         id: user.id,
         username: user.username,
@@ -270,7 +263,6 @@ export default class UsersController {
         return response.badRequest({ message: 'Profile picture file is required' })
       }
 
-      // Custom case-insensitive file extension validation
       const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp']
       const fileExtension = profilePicture.extname?.toLowerCase()
 
@@ -287,19 +279,15 @@ export default class UsersController {
         })
       }
 
-      // Create uploads directory if it doesn't exist
       const profilePictureService = new ProfilePictureService()
       const uploadsPath = profilePictureService.getUploadsPath()
 
-      // Generate unique filename
       const fileName = `${cuid()}.${profilePicture.extname?.toLowerCase()}`
 
-      // Move file to uploads directory
       await profilePicture.move(uploadsPath, {
         name: fileName,
       })
 
-      // Update user with full profile picture URL
       const user = await User.findOrFail(authenticatedUser.id)
       const backUrl = env.get('BACK_URL') || 'http://localhost:3333'
       const profilePictureUrl = `${backUrl}/uploads/profiles/${fileName}`
@@ -313,6 +301,19 @@ export default class UsersController {
     } catch (error) {
       console.error('Profile picture upload error:', error)
       return response.badRequest({ message: 'Failed to upload profile picture' })
+    }
+  }
+
+  /**
+   * Serve uploaded profile pictures
+   */
+  async serveProfilePicture({ params, response }: HttpContext) {
+    try {
+      const { filename } = params
+      const filePath = app.makePath('public/uploads/profiles', filename)
+      return response.download(filePath)
+    } catch (error) {
+      return response.notFound({ message: 'File not found' })
     }
   }
 }

@@ -17,7 +17,6 @@
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
 
-	// Define the form data type
 	type FormData = {
 		invalid?: boolean;
 		success?: boolean;
@@ -105,7 +104,6 @@
 		}
 	});
 
-	// Effect to populate form fields when user data loads or updates
 	$effect(() => {
 		if (data.user) {
 			firstName = data.user.firstName || '';
@@ -114,19 +112,16 @@
 			email = data.user.email || '';
 		}
 
-		// Update user data if form was successfully submitted
 		if (form?.success && form.user) {
 			firstName = form.user.firstName || '';
 			lastName = form.user.lastName || '';
 			username = form.user.username || '';
 			email = form.user.email || '';
-			// Clear password fields after successful update
 			currentPassword = '';
 			newPassword = '';
 		}
 	});
 
-	// Handle current password validation
 	function validateCurrentPassword() {
 		if (newPassword.length > 0 && !currentPassword) {
 			clientCurrentPasswordErrors = [$_('account.required_for_password')];
@@ -135,7 +130,6 @@
 		}
 	}
 
-	// Handle confirm password validation
 	function validateConfirmPassword() {
 		if (newPassword.length > 0) {
 			if (!confirmPassword) {
@@ -150,20 +144,17 @@
 		}
 	}
 
-	// Update validateNewPassword to also check confirm password
 	function validateNewPassword() {
 		if (newPassword.length > 0) {
 			const rawErrors = validatePassword(newPassword);
 			clientPasswordErrors = translateValidationErrors(rawErrors, $_);
 
-			// If there's a new password, current password is required
 			if (!currentPassword) {
 				clientCurrentPasswordErrors = [$_('account.required_for_password')];
 			} else {
 				clientCurrentPasswordErrors = [];
 			}
 
-			// Also validate confirm password when new password changes
 			validateConfirmPassword();
 		} else {
 			clientPasswordErrors = [];
@@ -172,16 +163,13 @@
 		}
 	}
 
-	// Profile picture event handlers
 	async function handleUploadSuccess(data: { profilePicture: string; message: string }) {
 		
 		profilePictureSuccess = data.message;
 		currentProfilePicture = data.profilePicture;
 		
-		// Refresh all page data to update navbar and other components
 		await invalidateAll();
 		
-		// Clear success message after 5 seconds
 		setTimeout(() => {
 			profilePictureSuccess = '';
 		}, 5000);
@@ -192,9 +180,7 @@
 		profilePictureSuccess = '';
 	}
 
-	// Initialize current profile picture from user data (only once)
 	$effect(() => {
-		// Only set if currentProfilePicture is empty (initial load)
 		if (data?.user?.profilePicture && !currentProfilePicture) {
 			currentProfilePicture = data.user.profilePicture;
 		}
@@ -239,7 +225,6 @@
 						<div class="flex justify-center">
 							<ProfilePictureUpload
 								currentProfilePicture={currentProfilePicture}
-								size="md"
 								onUploadSuccess={handleUploadSuccess}
 								onImageRemoved={handleImageRemoved}
 							/>

@@ -10,18 +10,15 @@ export const load: PageServerLoad = async ({ params, locals, cookies }) => {
 	}
 
 	try {
-		// Load user profile data
 		const profileUser = await getUserByUsername(username);
 
 		if (!profileUser) {
 			throw error(404, 'User not found');
 		}
 
-		// Get current user from locals (set by hooks.server.ts)
 		const currentUser = locals.user;
 		const token = cookies.get('session');
 
-		// Check if this is the current user's own profile
 		const isOwnProfile = currentUser?.username === username;
 
 		return {
