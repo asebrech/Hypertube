@@ -32,8 +32,7 @@
 		"news-popular": "أخبار وشائع",
 		"my-list": "قائمتي",
 		"by-language": "استكشاف حسب اللغة",
-		"browse": "تصفح",
-		"admin_dashboard": "لوحة تحكم الإدارة"
+		"browse": "تصفح"
 	},
 	"movie-banner": {
 		"play": "تشغيل",
@@ -186,6 +185,7 @@
 	"account": {
 		"title": "إعدادات الحساب",
 		"description": "إدارة معلومات حسابك وإعدادات الأمان",
+		"profile-picture": "صورة الملف الشخصي",
 		"personal_info": "المعلومات الشخصية",
 		"security": "الأمان",
 		"current_password": "كلمة المرور الحالية",
@@ -206,6 +206,25 @@
 			"current_password": "أدخل كلمة المرور الحالية",
 			"new_password": "أدخل كلمة المرور الجديدة (اختياري)",
 			"confirm_password": "أكد كلمة المرور الجديدة"
+		}
+	},
+	"profile": {
+		"unknown-user": "مستخدم غير معروف",
+		"no-display-name": "لم يتم تعيين اسم العرض",
+		"member-since": "عضو منذ",
+		"modify-profile": "تعديل الملف الشخصي",
+		"movies-watched": "الأفلام المشاهدة",
+		"comments-posted": "التعليقات المنشورة",
+		"recently-watched-movies": "الأفلام المشاهدة مؤخراً",
+		"your-comments": "تعليقاتك",
+		"user-comments": "تعليقات {username}",
+		"upload": {
+			"change-picture": "تغيير الصورة",
+			"drop-here": "إسقاط الصورة هنا",
+			"click-or-drag": "انقر أو اسحب للتحميل",
+			"choose-file": "اختر ملف",
+			"remove": "إزالة",
+			"requirements": "JPG، JPEG، PNG، GIF أو WebP. الحد الأقصى 2 ميجابايت."
 		}
 	}
 }

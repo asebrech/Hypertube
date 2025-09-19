@@ -10,7 +10,8 @@ declare global {
 				firstName?: string;
 				lastName?: string;
 				username?: string;
-				role: string;
+				isAdmin: boolean;
+				profilePicture?: string;
 			} | null;
 		}
 		// interface PageData {}

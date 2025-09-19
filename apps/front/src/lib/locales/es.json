@@ -31,8 +31,7 @@
 		"news-popular": "Noticias y populares",
 		"my-list": "Mis listas",
 		"by-language": "Explorar por idioma",
-		"browse": "Explorar",
-		"admin_dashboard": "Panel de Administración"
+		"browse": "Explorar"
 	},
 	"movie-banner": {
 		"play": "Reproducir",
@@ -185,6 +184,7 @@
 	"account": {
 		"title": "Configuración de cuenta",
 		"description": "Gestiona tu información de cuenta y configuración de seguridad",
+		"profile-picture": "Foto de Perfil",
 		"personal_info": "Información personal",
 		"security": "Seguridad",
 		"current_password": "Contraseña actual",
@@ -205,6 +205,25 @@
 			"current_password": "Ingresa contraseña actual",
 			"new_password": "Ingresa nueva contraseña (opcional)",
 			"confirm_password": "Confirma nueva contraseña"
+		}
+	},
+	"profile": {
+		"unknown-user": "Usuario Desconocido",
+		"no-display-name": "No hay nombre de visualización establecido",
+		"member-since": "Miembro desde",
+		"modify-profile": "Modificar el perfil",
+		"movies-watched": "Películas Vistas",
+		"comments-posted": "Comentarios Publicados",
+		"recently-watched-movies": "Películas Vistas Recientemente",
+		"your-comments": "Tus Comentarios",
+		"user-comments": "Comentarios de {username}",
+		"upload": {
+			"change-picture": "Cambiar Imagen",
+			"drop-here": "Soltar imagen aquí",
+			"click-or-drag": "Hacer clic o arrastrar para subir",
+			"choose-file": "Elegir Archivo",
+			"remove": "Eliminar",
+			"requirements": "JPG, JPEG, PNG, GIF o WebP. Máx. 2MB."
 		}
 	}
 }

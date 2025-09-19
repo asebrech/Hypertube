@@ -8,6 +8,7 @@
 */
 
 import router from '@adonisjs/core/services/router'
+import app from '@adonisjs/core/services/app'
 import { middleware } from './kernel.js'
 
 const AuthController = () => import('#controllers/auth_controller')
@@ -17,6 +18,18 @@ const UsersController = () => import('#controllers/users_controller')
 const CommentsController = () => import('#controllers/comments_controller')
 
 router.get('/', async () => ({ hello: 'world' }))
+
+// Serve uploaded profile pictures
+router.get('/uploads/profiles/:filename', async ({ params, response }) => {
+  const { filename } = params
+  const filePath = app.makePath('public/uploads/profiles', filename)
+  
+  try {
+    return response.download(filePath)
+  } catch (error) {
+    return response.notFound('File not found')
+  }
+})
 
 router
   .group(() => {
@@ -29,12 +42,18 @@ router
   })
   .prefix('user')
 
-// Users routes (for profiles)
+// Public user profile route (no authentication required)
+router.get('/users/profile/:username', [UsersController, 'profileByUsername'])
+
+// Protected Users routes (require authentication)
 router
   .group(() => {
     router.get('me', [UsersController, 'me'])
+    router.patch(':id', [UsersController, 'update']) // Update user profile
+    router.post('upload-profile-picture', [UsersController, 'uploadProfilePicture']) // Upload profile picture
     router.get(':id', [UsersController, 'show'])
     router.get('', [UsersController, 'index']) // GET /users?ids=1,2,3
+    router.get(':user_id/comments', [CommentsController, 'userComments']) // GET /users/:user_id/comments
   })
   .prefix('users')
   .use(middleware.auth())

@@ -32,8 +32,7 @@
 		"news-popular": "新闻与热门",
 		"my-list": "我的列表",
 		"by-language": "按语言浏览",
-		"browse": "浏览",
-		"admin_dashboard": "管理面板"
+		"browse": "浏览"
 	},
 	"movie-banner": {
 		"play": "播放",
@@ -186,6 +185,7 @@
 	"account": {
 		"title": "账户设置",
 		"description": "管理您的账户信息和安全设置",
+		"profile-picture": "个人头像",
 		"personal_info": "个人信息",
 		"security": "安全",
 		"current_password": "当前密码",
@@ -206,6 +206,25 @@
 			"current_password": "输入当前密码",
 			"new_password": "输入新密码（可选）",
 			"confirm_password": "确认新密码"
+		}
+	},
+	"profile": {
+		"unknown-user": "未知用户",
+		"no-display-name": "未设置显示名称",
+		"member-since": "会员自",
+		"modify-profile": "修改个人资料",
+		"movies-watched": "已观看电影",
+		"comments-posted": "已发表评论",
+		"recently-watched-movies": "最近观看的电影",
+		"your-comments": "您的评论",
+		"user-comments": "{username}的评论",
+		"upload": {
+			"change-picture": "更换图片",
+			"drop-here": "在此放置图片",
+			"click-or-drag": "点击或拖拽上传",
+			"choose-file": "选择文件",
+			"remove": "移除",
+			"requirements": "JPG、JPEG、PNG、GIF 或 WebP 格式。最大 2MB。"
 		}
 	}
 }

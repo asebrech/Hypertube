@@ -19,14 +19,15 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	try {
 		const response = await axios.request(config);
-		const { email, id, firstName, lastName, username, role } = response.data;
+		const { email, id, firstName, lastName, username, isAdmin, profilePicture } = response.data;
 		event.locals.user = {
 			email,
 			id,
 			firstName,
 			lastName,
 			username,
-			role
+			isAdmin,
+			profilePicture
 		};
 	} catch (error) {
 		if (axios.isAxiosError(error) && error.response && error.response.status === 401) {

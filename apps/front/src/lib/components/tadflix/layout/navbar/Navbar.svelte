@@ -30,19 +30,13 @@
 		href: string;
 	}
 
-	let baseLinks: Link[] = [
+	let links: Link[] = [
 		{ label: 'navbar.home', href: '/' },
 		{ label: 'navbar.shows', href: '/shows' },
 		{ label: 'navbar.movies', href: '/movies' },
 		{ label: 'navbar.my-list', href: '/my-list' },
 		{ label: 'navbar.browse', href: '/browse' }
 	];
-
-	let links = $derived(
-		data?.user?.role === 'admin'
-			? [...baseLinks, { label: 'navbar.admin_dashboard', href: '/admin' }]
-			: baseLinks
-	);
 
 	// Track scroll position and direction
 	let lastScrollY = $state(0);
@@ -187,11 +181,20 @@
 			{#if showSkeleton}
 				<Skeleton class="h-8 w-8 rounded" />
 			{:else}
-				<a href="/account">
+				<a href="/{data?.user?.username ? encodeURIComponent(data.user.username) : 'profile'}">
 					<div
-						class="flex h-8 w-8 items-center justify-center rounded bg-red-500 font-bold text-white uppercase"
+						class="flex h-8 w-8 items-center justify-center rounded overflow-hidden bg-red-500 font-bold text-white uppercase hover:bg-red-600 transition-colors cursor-pointer"
+						title="View Profile"
 					>
-						:)
+						{#if data?.user?.profilePicture}
+							<img 
+								src={data.user.profilePicture}
+								alt="{data.user.username}'s profile"
+								class="w-full h-full object-cover"
+							/>
+						{:else}
+							:)
+						{/if}
 					</div>
 				</a>
 			{/if}

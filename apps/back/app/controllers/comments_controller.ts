@@ -201,6 +201,52 @@ class CommentsController {
       return response.badRequest({ error: 'Failed to update comment' })
     }
   }
+
+  /**
+   * GET /users/:user_id/comments
+   * Returns all comments for a specific user with pagination
+   */
+  async userComments({ params, request, response }: HttpContext) {
+    try {
+      const page = request.input('page', 1)
+      const limit = request.input('limit', 20)
+
+      if (!params.user_id) {
+        return response.badRequest({ error: 'User ID is required' })
+      }
+
+      const comments = await Comment.query()
+        .where('user_id', params.user_id)
+        .preload('user', (userQuery) => {
+          userQuery.select('id', 'username', 'email')
+        })
+        .preload('movie', (movieQuery) => {
+          movieQuery.select('id', 'title', 'tmdbId')
+        })
+        .orderBy('createdAt', 'desc')
+        .paginate(page, limit)
+
+      const formattedComments = comments.toJSON()
+      formattedComments.data = formattedComments.data.map((comment: any) => ({
+        id: comment.id,
+        content: comment.content,
+        createdAt: comment.createdAt,
+        updatedAt: comment.updatedAt,
+        username: comment.user.username || comment.user.email || 'Anonymous',
+        userId: comment.user.id,
+        movieId: comment.movie.tmdbId,
+        movieTitle: comment.movie.title,
+      }))
+
+      return response.ok(formattedComments)
+    } catch (error) {
+      console.log('User comments error:', error.message, error.code)
+      return response.badRequest({
+        error: 'Failed to fetch user comments',
+        details: error.message,
+      })
+    }
+  }
 }
 
 export default CommentsController

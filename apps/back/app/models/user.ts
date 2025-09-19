@@ -29,14 +29,14 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare email: string
 
-  @column()
-  declare role: 'user' | 'admin'
-
   @column({ serializeAs: null })
   declare password: string | null
 
   @column()
   declare isAdmin: boolean
+
+  @column({ columnName: 'profile_picture' })
+  declare profilePicture: string | null
 
   @manyToMany(() => Movies, {
     pivotTable: 'movie_user',

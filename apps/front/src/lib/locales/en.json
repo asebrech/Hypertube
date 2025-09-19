@@ -9,8 +9,7 @@
 		"news-popular": "News & Popular",
 		"my-list": "My Lists",
 		"by-language": "Browse By Language",
-		"browse": "Browse",
-		"admin_dashboard": "Admin Dashboard"
+		"browse": "Browse"
 	},
 	"movie-banner": {
 		"play": "Play",
@@ -163,6 +162,7 @@
 	"account": {
 		"title": "Account Settings",
 		"description": "Manage your account information and security settings",
+		"profile-picture": "Profile Picture",
 		"personal_info": "Personal Information",
 		"security": "Security",
 		"current_password": "Current Password",
@@ -175,6 +175,7 @@
 		"required_for_password": "Required when changing password",
 		"confirm_password_required": "Please confirm your new password",
 		"passwords_do_not_match": "Passwords do not match",
+		"oauth_user_info": "You signed in with an OAuth provider (Google, GitHub, or 42). Continue using your OAuth provider to access your account. Password changes are not available for OAuth accounts.",
 		"placeholders": {
 			"first_name": "John",
 			"last_name": "Doe",
@@ -206,6 +207,42 @@
 		"save": "Save",
 		"updating": "Updating...",
 		"failed-to-update": "Failed to update comment",
-		"edited": "edited"
+		"edited": "edited",
+		"your-comments": "Your Comments",
+		"user-comments": "{user}'s Comments",
+		"comment": "comment",
+		"comments": "comments",
+		"no-comments-own": "You haven't made any comments yet. Start watching movies and share your thoughts!",
+		"no-comments-user": "{user} hasn't made any comments yet."
+	},
+	"profile": {
+		"no_name_set": "No name set",
+		"basic_info": "Basic Information",
+		"username": "Username",
+		"email": "Email",
+		"first_name": "First Name",
+		"last_name": "Last Name",
+		"member_since": "Member Since",
+		"activity": "Activity",
+		"movies-watched": "Movies Watched",
+		"comments_made": "Comments Made",
+		"bookmarked_movies": "Bookmarked Movies",
+		"own_profile_notice": "This is your profile. You can edit your information by clicking the edit icon.",
+		"unknown-user": "Unknown User",
+		"no-display-name": "No display name set",
+		"member-since": "Member since",
+		"modify-profile": "Modify the profile",
+		"comments-posted": "Comments Posted",
+		"recently-watched-movies": "Recently Watched Movies",
+		"your-comments": "Your Comments",
+		"user-comments": "{username}'s Comments",
+		"upload": {
+			"change-picture": "Change Picture",
+			"drop-here": "Drop image here",
+			"click-or-drag": "Click or drag to upload",
+			"choose-file": "Choose File",
+			"remove": "Remove",
+			"requirements": "JPG, JPEG, PNG, GIF or WebP. Max 2MB."
+		}
 	}
 }

@@ -3,7 +3,9 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
+	import ProfilePictureUpload from '$lib/components/ProfilePictureUpload.svelte';
 	import { _ } from 'svelte-i18n';
+	import { goto, invalidateAll } from '$app/navigation';
 	import {
 		validatePassword,
 		validateEmail,
@@ -65,6 +67,10 @@
 	let currentPassword = $state('');
 	let newPassword = $state('');
 	let confirmPassword = $state('');
+
+	// Profile picture state
+	let profilePictureSuccess = $state('');
+	let currentProfilePicture = $state('');
 
 	// Effect to merge client and server errors
 	$effect(() => {
@@ -165,6 +171,34 @@
 			clientConfirmPasswordErrors = [];
 		}
 	}
+
+	// Profile picture event handlers
+	async function handleUploadSuccess(data: { profilePicture: string; message: string }) {
+		
+		profilePictureSuccess = data.message;
+		currentProfilePicture = data.profilePicture;
+		
+		// Refresh all page data to update navbar and other components
+		await invalidateAll();
+		
+		// Clear success message after 5 seconds
+		setTimeout(() => {
+			profilePictureSuccess = '';
+		}, 5000);
+	}
+
+	function handleImageRemoved() {
+		currentProfilePicture = '';
+		profilePictureSuccess = '';
+	}
+
+	// Initialize current profile picture from user data (only once)
+	$effect(() => {
+		// Only set if currentProfilePicture is empty (initial load)
+		if (data?.user?.profilePicture && !currentProfilePicture) {
+			currentProfilePicture = data.user.profilePicture;
+		}
+	});
 </script>
 
 <div
@@ -191,6 +225,26 @@
 							<p class="text-sm text-red-100">{$_('account.error_general')}</p>
 						</div>
 					{/if}
+
+					<!-- Profile Picture Section -->
+					<div class="grid gap-4">
+						<h3 class="text-lg font-medium text-white">{$_('account.profile-picture')}</h3>
+						
+						{#if profilePictureSuccess}
+							<div class="rounded-md border border-green-700 bg-green-900/50 p-4">
+								<p class="text-sm text-green-100">{profilePictureSuccess}</p>
+							</div>
+						{/if}
+
+						<div class="flex justify-center">
+							<ProfilePictureUpload
+								currentProfilePicture={currentProfilePicture}
+								size="md"
+								onUploadSuccess={handleUploadSuccess}
+								onImageRemoved={handleImageRemoved}
+							/>
+						</div>
+					</div>
 
 					<form action="?/updateAccount" method="POST" use:enhance>
 						<div class="grid gap-6">
@@ -265,49 +319,61 @@
 								</div>
 							</div>
 
-							<!-- Security Section -->
-							<div class="grid gap-4">
-								<h3 class="text-lg font-medium text-white">{$_('account.security')}</h3>
+							<!-- Security Section - Only for non-OAuth users -->
+							{#if !data.user.isOAuthUser}
+								<div class="grid gap-4">
+									<h3 class="text-lg font-medium text-white">{$_('account.security')}</h3>
 
-								<div class="grid gap-2">
-									<Label for="currentPassword">{$_('account.current_password')}</Label>
-									<Input
-										id="currentPassword"
-										name="currentPassword"
-										type="password"
-										placeholder={$_('account.placeholders.current_password')}
-										errors={currentPasswordErrors}
-										bind:value={currentPassword}
-										onfocusout={validateCurrentPassword}
-									/>
-								</div>
+									<div class="grid gap-2">
+										<Label for="currentPassword">{$_('account.current_password')}</Label>
+										<Input
+											id="currentPassword"
+											name="currentPassword"
+											type="password"
+											placeholder={$_('account.placeholders.current_password')}
+											errors={currentPasswordErrors}
+											bind:value={currentPassword}
+											onfocusout={validateCurrentPassword}
+										/>
+									</div>
 
-								<div class="grid gap-2">
-									<Label for="newPassword">{$_('account.new_password')}</Label>
-									<Input
-										id="newPassword"
-										name="newPassword"
-										type="password"
-										placeholder={$_('account.placeholders.new_password')}
-										errors={passwordErrors}
-										bind:value={newPassword}
-										onfocusout={validateNewPassword}
-									/>
-								</div>
+									<div class="grid gap-2">
+										<Label for="newPassword">{$_('account.new_password')}</Label>
+										<Input
+											id="newPassword"
+											name="newPassword"
+											type="password"
+											placeholder={$_('account.placeholders.new_password')}
+											errors={passwordErrors}
+											bind:value={newPassword}
+											onfocusout={validateNewPassword}
+										/>
+									</div>
 
-								<div class="grid gap-2">
-									<Label for="confirmPassword">{$_('account.confirm_password')}</Label>
-									<Input
-										id="confirmPassword"
-										name="confirmPassword"
-										type="password"
-										placeholder={$_('account.placeholders.confirm_password')}
-										errors={confirmPasswordErrors}
-										bind:value={confirmPassword}
-										onfocusout={validateConfirmPassword}
-									/>
+									<div class="grid gap-2">
+										<Label for="confirmPassword">{$_('account.confirm_password')}</Label>
+										<Input
+											id="confirmPassword"
+											name="confirmPassword"
+											type="password"
+											placeholder={$_('account.placeholders.confirm_password')}
+											errors={confirmPasswordErrors}
+											bind:value={confirmPassword}
+											onfocusout={validateConfirmPassword}
+										/>
+									</div>
 								</div>
-							</div>
+							{:else}
+								<!-- OAuth User Info -->
+								<div class="grid gap-4">
+									<h3 class="text-lg font-medium text-white">{$_('account.security')}</h3>
+									<div class="p-4 bg-gray-800 rounded-md border border-gray-700">
+										<p class="text-gray-300 text-sm">
+											{$_('account.oauth_user_info')}
+										</p>
+									</div>
+								</div>
+							{/if}
 
 							<Button type="submit" class="w-full">{$_('account.save_changes')}</Button>
 						</div>

@@ -13,6 +13,11 @@ export type BackDropImage = {
 export type ImageSizeType = 'small' | 'medium' | 'large' | 'original';
 export type MovieType = 'movie' | 'tv';
 
+export enum UserMovieAction {
+  WATCHED = 'watched',
+  BOOKMARKED = 'bookmarked'
+}
+
 export type Movie = {
   id: number;
   title: string;

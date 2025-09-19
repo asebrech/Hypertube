@@ -173,13 +173,77 @@ export default class AuthController {
      * Access user info
      */
     const user = await driverInstance.user()
+    
+    // Extract names from different OAuth providers
+    let firstName = ''
+    let lastName = ''
+    
+    if (params.provider === 'github') {
+      // GitHub provides 'name' field which might be "First Last" format
+      const fullName = user.name || user.nickName || ''
+      const nameParts = fullName.trim().split(' ')
+      firstName = nameParts[0] || ''
+      lastName = nameParts.slice(1).join(' ') || ''
+    } else if (params.provider === 'google') {
+      // Google provides firstName and lastName in original object
+      firstName = user.original?.given_name || ''
+      lastName = user.original?.family_name || ''
+      // Fallback to parsing name if specific fields not available
+      if (!firstName && !lastName && user.name) {
+        const nameParts = user.name.trim().split(' ')
+        firstName = nameParts[0] || ''
+        lastName = nameParts.slice(1).join(' ') || ''
+      }
+    } else if (params.provider === 'fortyTwo') {
+      // 42 provides first_name and last_name in original object
+      firstName = user.original?.first_name || ''
+      lastName = user.original?.last_name || ''
+      // Fallback to parsing name if specific fields not available
+      if (!firstName && !lastName && user.name) {
+        const nameParts = user.name.trim().split(' ')
+        firstName = nameParts[0] || ''
+        lastName = nameParts.slice(1).join(' ') || ''
+      }
+    }
+
+    // Determine the best username based on provider
+    let username = user.name
+    if (params.provider === 'fortyTwo') {
+      // For 42, use the intra login name from original.login
+      username = user.original?.login || user.nickName || user.name
+    }
 
     let dbUser = await User.findBy('email', user.email)
     if (!dbUser) {
       dbUser = await User.create({
         email: user.email,
-        username: user.name,
+        username: username,
+        firstName: firstName,
+        lastName: lastName,
+        profilePicture: user.avatarUrl,
       })
+    } else {
+      // Update existing user with OAuth data if they don't have it
+      let shouldSave = false
+      
+      if (!dbUser.profilePicture && user.avatarUrl) {
+        dbUser.profilePicture = user.avatarUrl
+        shouldSave = true
+      }
+      
+      if (!dbUser.firstName && firstName) {
+        dbUser.firstName = firstName
+        shouldSave = true
+      }
+      
+      if (!dbUser.lastName && lastName) {
+        dbUser.lastName = lastName
+        shouldSave = true
+      }
+      
+      if (shouldSave) {
+        await dbUser.save()
+      }
     }
 
     const accessToken = await User.accessTokens.create(dbUser)
@@ -289,8 +353,24 @@ export default class AuthController {
         meta: { userId: parseInt(userId) },
       })
 
-      // If trying to change password, verify current password
+      // Check if this is an OAuth user (no password set)
+      const isOAuthUser = !user.password
+
+      // Handle password changes only for non-OAuth users
       if (payload.newPassword) {
+        if (isOAuthUser) {
+          return response.badRequest({
+            message: 'OAuth users cannot set passwords. Please continue using your OAuth provider to sign in.',
+            errors: [
+              {
+                field: 'newPassword',
+                message: 'Password changes not allowed for OAuth accounts',
+                rule: 'oauth_restriction',
+              },
+            ],
+          })
+        }
+
         if (!payload.currentPassword) {
           return response.badRequest({
             message: 'Current password is required to set a new password.',

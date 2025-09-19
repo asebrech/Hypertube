@@ -2,10 +2,27 @@ import { fail, type RequestEvent } from '@sveltejs/kit';
 import axios from 'axios';
 import { SECRET_BACK_URL } from '$env/static/private';
 
-export async function load({ locals }: RequestEvent) {
-	// Return the current user data from the session
+export async function load({ locals, cookies }: RequestEvent) {
+	let fullUserData = locals.user;
+	
+	// If we have a user, fetch their full profile data using the authenticated /me endpoint
+	if (locals.user) {
+		try {
+			const token = cookies.get('session');
+			const meResponse = await axios.get(`${SECRET_BACK_URL}/users/me`, {
+				headers: {
+					Authorization: `Bearer ${token}`
+				}
+			});
+			fullUserData = meResponse.data;
+		} catch (error) {
+			console.error('Failed to fetch full user profile:', error);
+			// Fallback to locals.user if profile fetch fails
+		}
+	}
+	
 	return {
-		user: locals.user
+		user: fullUserData
 	};
 }
 
