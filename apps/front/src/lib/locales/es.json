@@ -1,6 +1,7 @@
 {
 	"sign_up": "Registrarse",
 	"sign_in": "Iniciar sesión",
+	"log_out": "Cerrar sesión",
 	"comments": {
 		"title": "Comentarios",
 		"loading": "Cargando comentarios...",
@@ -22,7 +23,13 @@
 		"save": "Guardar",
 		"updating": "Actualizando...",
 		"failed-to-update": "Error al actualizar el comentario",
-		"edited": "editado"
+		"edited": "editado",
+		"your-comments": "Tus Comentarios",
+		"user-comments": "Comentarios de {user}",
+		"comment": "comentario",
+		"comments": "comentarios",
+		"no-comments-own": "Aún no has hecho comentarios. ¡Comienza a ver películas y comparte tus pensamientos!",
+		"no-comments-user": "{user} aún no ha hecho comentarios."
 	},
 	"navbar": {
 		"home": "Inicio",
@@ -197,6 +204,7 @@
 		"required_for_password": "Requerido al cambiar contraseña",
 		"confirm_password_required": "Por favor confirma tu nueva contraseña",
 		"passwords_do_not_match": "Las contraseñas no coinciden",
+		"oauth_user_info": "Iniciaste sesión con un proveedor OAuth (Google, GitHub, o 42). Continúa usando tu proveedor OAuth para acceder a tu cuenta. Los cambios de contraseña no están disponibles para cuentas OAuth.",
 		"placeholders": {
 			"first_name": "Juan",
 			"last_name": "Pérez",
@@ -208,11 +216,22 @@
 		}
 	},
 	"profile": {
+		"no_name_set": "No hay nombre establecido",
+		"basic_info": "Información Básica",
+		"username": "Nombre de usuario",
+		"email": "Correo electrónico",
+		"first_name": "Nombre",
+		"last_name": "Apellido",
+		"member_since": "Miembro desde",
+		"activity": "Actividad",
+		"movies-watched": "Películas Vistas",
+		"comments_made": "Comentarios Hechos",
+		"bookmarked_movies": "Películas Guardadas",
+		"own_profile_notice": "Este es tu perfil. Puedes editar tu información haciendo clic en el ícono de edición.",
 		"unknown-user": "Usuario Desconocido",
 		"no-display-name": "No hay nombre de visualización establecido",
 		"member-since": "Miembro desde",
 		"modify-profile": "Modificar el perfil",
-		"movies-watched": "Películas Vistas",
 		"comments-posted": "Comentarios Publicados",
 		"recently-watched-movies": "Películas Vistas Recientemente",
 		"your-comments": "Tus Comentarios",

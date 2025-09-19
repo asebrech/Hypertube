@@ -23,7 +23,13 @@
 		"save": "保存",
 		"updating": "更新中...",
 		"failed-to-update": "更新评论失败",
-		"edited": "已编辑"
+		"edited": "已编辑",
+		"your-comments": "您的评论",
+		"user-comments": "{user}的评论",
+		"comment": "评论",
+		"comments": "评论",
+		"no-comments-own": "您还没有发表任何评论。开始观看电影并分享您的想法吧！",
+		"no-comments-user": "{user}还没有发表任何评论。"
 	},
 	"navbar": {
 		"home": "首页",
@@ -198,6 +204,7 @@
 		"required_for_password": "更改密码时需要",
 		"confirm_password_required": "请确认您的新密码",
 		"passwords_do_not_match": "密码不匹配",
+		"oauth_user_info": "您使用 OAuth 提供商（Google、GitHub 或 42）登录。请继续使用您的 OAuth 提供商来访问您的帐户。OAuth 帐户不支持密码更改。",
 		"placeholders": {
 			"first_name": "小明",
 			"last_name": "王",
@@ -209,11 +216,22 @@
 		}
 	},
 	"profile": {
+		"no_name_set": "未设置姓名",
+		"basic_info": "基本信息",
+		"username": "用户名",
+		"email": "邮箱",
+		"first_name": "名字",
+		"last_name": "姓氏",
+		"member_since": "会员自",
+		"activity": "活动",
+		"movies-watched": "已观看电影",
+		"comments_made": "发表的评论",
+		"bookmarked_movies": "收藏的电影",
+		"own_profile_notice": "这是您的个人资料。您可以通过单击编辑图标来编辑您的信息。",
 		"unknown-user": "未知用户",
 		"no-display-name": "未设置显示名称",
 		"member-since": "会员自",
 		"modify-profile": "修改个人资料",
-		"movies-watched": "已观看电影",
 		"comments-posted": "已发表评论",
 		"recently-watched-movies": "最近观看的电影",
 		"your-comments": "您的评论",

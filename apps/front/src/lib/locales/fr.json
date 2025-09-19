@@ -1,6 +1,7 @@
 {
 	"sign_in": "S'enregistrer",
 	"sign_up": "Se connecter",
+	"log_out": "Se déconnecter",
 	"comments": {
 		"title": "Commentaires",
 		"loading": "Chargement des commentaires...",
@@ -22,7 +23,13 @@
 		"save": "Sauvegarder",
 		"updating": "Mise à jour...",
 		"failed-to-update": "Échec de la mise à jour du commentaire",
-		"edited": "modifié"
+		"edited": "modifié",
+		"your-comments": "Vos Commentaires",
+		"user-comments": "Commentaires de {user}",
+		"comment": "commentaire",
+		"comments": "commentaires",
+		"no-comments-own": "Vous n'avez pas encore fait de commentaires. Commencez à regarder des films et partagez vos impressions !",
+		"no-comments-user": "{user} n'a pas encore fait de commentaires."
 	},
 	"navbar": {
 		"home": "Acceuil",
@@ -197,6 +204,7 @@
 		"required_for_password": "Requis lors du changement de mot de passe",
 		"confirm_password_required": "Veuillez confirmer votre nouveau mot de passe",
 		"passwords_do_not_match": "Les mots de passe ne correspondent pas",
+		"oauth_user_info": "Vous vous êtes connecté avec un fournisseur OAuth (Google, GitHub ou 42). Continuez à utiliser votre fournisseur OAuth pour accéder à votre compte. Les changements de mot de passe ne sont pas disponibles pour les comptes OAuth.",
 		"placeholders": {
 			"first_name": "Jean",
 			"last_name": "Dupont",
@@ -208,11 +216,22 @@
 		}
 	},
 	"profile": {
+		"no_name_set": "Aucun nom défini",
+		"basic_info": "Informations de base",
+		"username": "Nom d'utilisateur",
+		"email": "E-mail",
+		"first_name": "Prénom",
+		"last_name": "Nom",
+		"member_since": "Membre depuis",
+		"activity": "Activité",
+		"movies-watched": "Films Regardés",
+		"comments_made": "Commentaires faits",
+		"bookmarked_movies": "Films mis en favoris",
+		"own_profile_notice": "Ceci est votre profil. Vous pouvez modifier vos informations en cliquant sur l'icône de modification.",
 		"unknown-user": "Utilisateur Inconnu",
 		"no-display-name": "Aucun nom d'affichage défini",
 		"member-since": "Membre depuis",
 		"modify-profile": "Modifier le profil",
-		"movies-watched": "Films Regardés",
 		"comments-posted": "Commentaires Postés",
 		"recently-watched-movies": "Films Récemment Regardés",
 		"your-comments": "Vos Commentaires",
