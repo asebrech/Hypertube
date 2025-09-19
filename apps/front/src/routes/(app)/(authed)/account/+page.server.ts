@@ -4,7 +4,7 @@ import { SECRET_BACK_URL } from '$env/static/private';
 
 export async function load({ locals, cookies }: RequestEvent) {
 	let fullUserData = locals.user;
-	
+
 	// If we have a user, fetch their full profile data using the authenticated /me endpoint
 	if (locals.user) {
 		try {
@@ -20,7 +20,7 @@ export async function load({ locals, cookies }: RequestEvent) {
 			// Fallback to locals.user if profile fetch fails
 		}
 	}
-	
+
 	return {
 		user: fullUserData
 	};

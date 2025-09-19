@@ -11,7 +11,7 @@ export default class extends BaseSchema {
         .from(this.tableName)
         .where('profile_picture', 'like', '/uploads/%')
         .update({ profile_picture: null })
-      
+
       console.log('✅ Cleaned up old profile picture paths - users will need to re-upload')
     })
   }

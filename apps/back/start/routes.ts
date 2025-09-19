@@ -23,7 +23,7 @@ router.get('/', async () => ({ hello: 'world' }))
 router.get('/uploads/profiles/:filename', async ({ params, response }) => {
   const { filename } = params
   const filePath = app.makePath('public/uploads/profiles', filename)
-  
+
   try {
     return response.download(filePath)
   } catch (error) {

@@ -173,11 +173,11 @@ export default class AuthController {
      * Access user info
      */
     const user = await driverInstance.user()
-    
+
     // Extract names from different OAuth providers
     let firstName = ''
     let lastName = ''
-    
+
     if (params.provider === 'github') {
       // GitHub provides 'name' field which might be "First Last" format
       const fullName = user.name || user.nickName || ''
@@ -225,22 +225,22 @@ export default class AuthController {
     } else {
       // Update existing user with OAuth data if they don't have it
       let shouldSave = false
-      
+
       if (!dbUser.profilePicture && user.avatarUrl) {
         dbUser.profilePicture = user.avatarUrl
         shouldSave = true
       }
-      
+
       if (!dbUser.firstName && firstName) {
         dbUser.firstName = firstName
         shouldSave = true
       }
-      
+
       if (!dbUser.lastName && lastName) {
         dbUser.lastName = lastName
         shouldSave = true
       }
-      
+
       if (shouldSave) {
         await dbUser.save()
       }
@@ -360,7 +360,8 @@ export default class AuthController {
       if (payload.newPassword) {
         if (isOAuthUser) {
           return response.badRequest({
-            message: 'OAuth users cannot set passwords. Please continue using your OAuth provider to sign in.',
+            message:
+              'OAuth users cannot set passwords. Please continue using your OAuth provider to sign in.',
             errors: [
               {
                 field: 'newPassword',

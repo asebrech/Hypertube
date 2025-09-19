@@ -4,7 +4,7 @@ import { getUserByUsername } from '$lib/services/api';
 
 export const load: PageServerLoad = async ({ params, locals, cookies }) => {
 	const username = params.username ? decodeURIComponent(params.username) : null;
-	
+
 	if (!username) {
 		throw error(404, 'Username not found');
 	}

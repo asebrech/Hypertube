@@ -197,7 +197,7 @@ export default class UsersController {
   async uploadProfilePicture({ request, response, auth }: HttpContext) {
     try {
       const authenticatedUser = auth.getUserOrFail()
-      
+
       const profilePicture = request.file('profilePicture', {
         size: '5mb',
       })
@@ -209,29 +209,29 @@ export default class UsersController {
       // Custom case-insensitive file extension validation
       const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp']
       const fileExtension = profilePicture.extname?.toLowerCase()
-      
+
       if (!fileExtension || !allowedExtensions.includes(fileExtension)) {
-        return response.badRequest({ 
+        return response.badRequest({
           message: `Invalid file type. Only JPG, JPEG, PNG, GIF, and WebP files are allowed.`,
         })
       }
 
       if (!profilePicture.isValid) {
-        return response.badRequest({ 
-          message: 'Invalid file', 
-          errors: profilePicture.errors 
+        return response.badRequest({
+          message: 'Invalid file',
+          errors: profilePicture.errors,
         })
       }
 
       // Create uploads directory if it doesn't exist
       const uploadsPath = app.makePath('public/uploads/profiles')
-      
+
       // Generate unique filename
       const fileName = `${cuid()}.${profilePicture.extname?.toLowerCase()}`
-      
+
       // Move file to uploads directory
       await profilePicture.move(uploadsPath, {
-        name: fileName
+        name: fileName,
       })
 
       // Update user with full profile picture URL

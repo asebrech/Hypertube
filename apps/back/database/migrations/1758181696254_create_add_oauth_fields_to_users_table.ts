@@ -14,7 +14,7 @@ export default class extends BaseSchema {
   async down() {
     this.schema.alterTable(this.tableName, (table) => {
       table.dropColumn('oauth_provider')
-      table.dropColumn('oauth_id')  
+      table.dropColumn('oauth_id')
       table.dropColumn('oauth_avatar_url')
     })
   }
