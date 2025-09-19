@@ -14,6 +14,7 @@ import mail from '@adonisjs/mail/services/main'
 import { DateTime } from 'luxon'
 import { randomBytes } from 'node:crypto'
 import env from '#start/env'
+import ProfilePictureService from '#services/profile_picture_service'
 
 export default class AuthController {
   /**
@@ -213,6 +214,19 @@ export default class AuthController {
       username = user.original?.login || user.nickName || user.name
     }
 
+    // Process avatar URL to download external images
+    let processedAvatarUrl = user.avatarUrl
+    if (user.avatarUrl) {
+      try {
+        const profilePictureService = new ProfilePictureService()
+        processedAvatarUrl = await profilePictureService.processProfilePictureUrl(user.avatarUrl)
+      } catch (error) {
+        console.error('Failed to process OAuth avatar URL:', error)
+        // Keep original URL as fallback
+        processedAvatarUrl = user.avatarUrl
+      }
+    }
+
     let dbUser = await User.findBy('email', user.email)
     if (!dbUser) {
       dbUser = await User.create({
@@ -220,14 +234,14 @@ export default class AuthController {
         username: username,
         firstName: firstName,
         lastName: lastName,
-        profilePicture: user.avatarUrl,
+        profilePicture: processedAvatarUrl,
       })
     } else {
       // Update existing user with OAuth data if they don't have it
       let shouldSave = false
 
-      if (!dbUser.profilePicture && user.avatarUrl) {
-        dbUser.profilePicture = user.avatarUrl
+      if (!dbUser.profilePicture && processedAvatarUrl) {
+        dbUser.profilePicture = processedAvatarUrl
         shouldSave = true
       }
 

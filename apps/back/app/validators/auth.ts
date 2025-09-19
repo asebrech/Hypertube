@@ -1,7 +1,7 @@
 import vine from '@vinejs/vine'
 
 // Password security rules
-const passwordRules = vine
+export const passwordRules = vine
   .string()
   .minLength(12)
   .maxLength(32)

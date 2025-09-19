@@ -18,18 +18,16 @@
 	let isUploading = $state(false);
 	let isImageLoading = $state(false);
 	let error = $state('');
-	let cacheBuster = $state(Date.now());
 
-	// Update cache buster when profile picture changes
+	// Simple reactive image URL - no cache busting needed
+	let imageUrl = $derived(currentProfilePicture);
+
+	// Update loading state when profile picture changes
 	$effect(() => {
 		if (currentProfilePicture) {
-			isImageLoading = true; // Start loading when image changes
-			cacheBuster = Date.now();
+			isImageLoading = true;
 		}
 	});
-
-	// Simple reactive image URL with cache busting - now all URLs are full URLs
-	let imageUrl = $derived(currentProfilePicture ? `${currentProfilePicture}?t=${cacheBuster}` : null);
 
 
 	function triggerFileInput() {
