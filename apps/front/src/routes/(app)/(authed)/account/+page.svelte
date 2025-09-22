@@ -70,6 +70,7 @@
 	// Profile picture state
 	let profilePictureSuccess = $state('');
 	let currentProfilePicture = $state('');
+	let imageKey = $state(0); // Key to force image re-render
 
 	// Effect to merge client and server errors
 	$effect(() => {
@@ -164,12 +165,12 @@
 	}
 
 	async function handleUploadSuccess(data: { profilePicture: string; message: string }) {
-		
 		profilePictureSuccess = data.message;
 		currentProfilePicture = data.profilePicture;
-		
+		imageKey++;
+
 		await invalidateAll();
-		
+
 		setTimeout(() => {
 			profilePictureSuccess = '';
 		}, 5000);
@@ -181,7 +182,7 @@
 	}
 
 	$effect(() => {
-		if (data?.user?.profilePicture && !currentProfilePicture) {
+		if (data?.user?.profilePicture) {
 			currentProfilePicture = data.user.profilePicture;
 		}
 	});
@@ -215,7 +216,7 @@
 					<!-- Profile Picture Section -->
 					<div class="grid gap-4">
 						<h3 class="text-lg font-medium text-white">{$_('account.profile-picture')}</h3>
-						
+
 						{#if profilePictureSuccess}
 							<div class="rounded-md border border-green-700 bg-green-900/50 p-4">
 								<p class="text-sm text-green-100">{profilePictureSuccess}</p>
@@ -224,7 +225,8 @@
 
 						<div class="flex justify-center">
 							<ProfilePictureUpload
-								currentProfilePicture={currentProfilePicture}
+								{currentProfilePicture}
+								{imageKey}
 								onUploadSuccess={handleUploadSuccess}
 								onImageRemoved={handleImageRemoved}
 							/>
@@ -352,8 +354,8 @@
 								<!-- OAuth User Info -->
 								<div class="grid gap-4">
 									<h3 class="text-lg font-medium text-white">{$_('account.security')}</h3>
-									<div class="p-4 bg-gray-800 rounded-md border border-gray-700">
-										<p class="text-gray-300 text-sm">
+									<div class="rounded-md border border-gray-700 bg-gray-800 p-4">
+										<p class="text-sm text-gray-300">
 											{$_('account.oauth_user_info')}
 										</p>
 									</div>

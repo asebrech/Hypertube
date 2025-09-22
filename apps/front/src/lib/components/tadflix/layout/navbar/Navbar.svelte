@@ -12,6 +12,7 @@
 	import { searchQuery } from '@/services/store';
 	import { goto } from '$app/navigation';
 	import { Search } from 'lucide-svelte';
+	import UserProfilePicture from '@/components/UserProfilePicture.svelte';
 
 	interface Props {
 		data: any;
@@ -181,21 +182,17 @@
 			{#if showSkeleton}
 				<Skeleton class="h-8 w-8 rounded" />
 			{:else}
-				<a href="/{data?.user?.username ? encodeURIComponent(data.user.username) : 'profile'}">
-					<div
-						class="flex h-8 w-8 items-center justify-center rounded overflow-hidden bg-red-500 font-bold text-white uppercase hover:bg-red-600 transition-colors cursor-pointer"
-						title="View Profile"
-					>
-						{#if data?.user?.profilePicture}
-							<img 
-								src={data.user.profilePicture}
-								alt="{data.user.username}'s profile"
-								class="w-full h-full object-cover"
-							/>
-						{:else}
-							:)
-						{/if}
-					</div>
+				<a
+					href="/{data?.user?.username ? encodeURIComponent(data.user.username) : 'profile'}"
+					title="View Profile"
+				>
+					<UserProfilePicture
+						profilePicture={data?.user?.profilePicture}
+						username={data?.user?.username}
+						size="small"
+						class="cursor-pointer transition-all hover:ring-2 hover:ring-white/20"
+						alt="{data?.user?.username || 'Your'} profile"
+					/>
 				</a>
 			{/if}
 

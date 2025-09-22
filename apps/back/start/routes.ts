@@ -33,13 +33,15 @@ router
 // Public user profile route (no authentication required)
 router.get('/users/profile/:username', [UsersController, 'profileByUsername'])
 
+// Serve uploaded profile pictures (public route)
+router.get('/uploads/profiles/:filename', [UsersController, 'serveProfilePicture'])
+
 // Protected Users routes (require authentication)
 router
   .group(() => {
     router.get('me', [UsersController, 'me'])
     router.patch(':id', [UsersController, 'update']) // Update user profile
     router.post('upload-profile-picture', [UsersController, 'uploadProfilePicture']) // Upload profile picture
-    router.get('uploads/profiles/:filename', [UsersController, 'serveProfilePicture']) // Serve uploaded profile pictures
     router.get(':id', [UsersController, 'show'])
     router.get('', [UsersController, 'index']) // GET /users?ids=1,2,3
     router.get(':user_id/comments', [CommentsController, 'userComments']) // GET /users/:user_id/comments

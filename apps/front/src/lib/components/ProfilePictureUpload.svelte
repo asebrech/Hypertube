@@ -4,14 +4,16 @@
 	import { page } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
 
-	let { 
-		currentProfilePicture = null, 
+	let {
+		currentProfilePicture = null,
 		onUploadSuccess,
-		onImageRemoved
-	}: { 
-		currentProfilePicture?: string | null; 
+		onImageRemoved,
+		imageKey = 0
+	}: {
+		currentProfilePicture?: string | null;
 		onUploadSuccess?: (data: { profilePicture: string; message: string }) => void;
 		onImageRemoved?: () => void;
+		imageKey?: number;
 	} = $props();
 
 	let fileInput: HTMLInputElement;
@@ -26,7 +28,6 @@
 			isImageLoading = true;
 		}
 	});
-
 
 	function triggerFileInput() {
 		fileInput?.click();
@@ -52,21 +53,20 @@
 
 		try {
 			const token = $page.data.user?.token || $page.data.token;
-			
+
 			if (!token) {
 				error = 'You must be logged in to upload a profile picture';
 				return;
 			}
 
 			const response = await uploadProfilePicture(file, token);
-			
+
 			console.log('Upload successful:', response);
-			
+
 			onUploadSuccess?.({
 				profilePicture: response.profilePicture,
 				message: response.message
 			});
-			
 		} catch (err: any) {
 			console.error('Upload error:', err);
 			error = err.response?.data?.message || 'Failed to upload profile picture';
@@ -78,49 +78,53 @@
 
 <div class="flex flex-col items-center space-y-4">
 	<!-- Profile Picture Display -->
-	<div class="w-32 h-32 rounded-lg overflow-hidden border-2 border-gray-300 bg-gray-100 relative">
+	<div class="relative h-32 w-32 overflow-hidden rounded-lg border-2 border-gray-300 bg-gray-100">
 		{#if imageUrl}
-			<img 
-				src={imageUrl}
-				alt="Profile" 
-				class="w-full h-full object-cover"
-				onload={() => {
-					isImageLoading = false;
-				}}
-				onerror={() => {
-					isImageLoading = false;
-				}}
-			/>
-			
+			{#key `${imageUrl}-${imageKey}`}
+				<img
+					src={imageUrl}
+					alt="Profile"
+					class="h-full w-full object-cover"
+					onload={() => {
+						isImageLoading = false;
+					}}
+					onerror={() => {
+						isImageLoading = false;
+					}}
+				/>
+			{/key}
+
 			<!-- Image Loading Overlay -->
 			{#if isImageLoading}
-				<div class="absolute inset-0 bg-gray-200 flex items-center justify-center">
-					<div class="w-6 h-6 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+				<div class="absolute inset-0 flex items-center justify-center bg-gray-200">
+					<div
+						class="h-6 w-6 animate-spin rounded-full border-2 border-gray-400 border-t-transparent"
+					></div>
 				</div>
 			{/if}
 		{:else}
-			<div class="w-full h-full flex flex-col items-center justify-center text-gray-400">
-				<svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+			<div class="flex h-full w-full flex-col items-center justify-center text-gray-400">
+				<svg class="mb-2 h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+					/>
 				</svg>
-				<span class="text-xs text-center">No Image</span>
+				<span class="text-center text-xs">No Image</span>
 			</div>
 		{/if}
 	</div>
 
 	<!-- Upload Button -->
-	<Button 
-		variant="outline" 
-		size="sm" 
-		onclick={triggerFileInput} 
-		disabled={isUploading}
-	>
+	<Button variant="outline" size="sm" onclick={triggerFileInput} disabled={isUploading}>
 		{isUploading ? 'Uploading...' : $_('profile.upload.choose-file')}
 	</Button>
 
 	<!-- Error Message -->
 	{#if error}
-		<div class="text-red-500 text-sm text-center max-w-xs">
+		<div class="max-w-xs text-center text-sm text-red-500">
 			{error}
 		</div>
 	{/if}
