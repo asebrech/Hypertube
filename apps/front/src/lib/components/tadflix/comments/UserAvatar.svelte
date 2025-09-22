@@ -3,9 +3,11 @@
 		username: string;
 		size?: 'small' | 'medium' | 'large';
 		class?: string;
+		clickable?: boolean;
+		onclick?: () => void;
 	}
 
-	const { username, size = 'medium', class: className = '' }: UserAvatarProps = $props();
+	const { username, size = 'medium', class: className = '', clickable = false, onclick }: UserAvatarProps = $props();
 
 	// Generate avatar based on username initials
 	const getInitials = (name: string): string => {
@@ -44,9 +46,20 @@
 	const initials = $derived(getInitials(username));
 </script>
 
-<div 
-	class="rounded-md flex items-center justify-center text-white font-medium {sizeClasses[size]} {className}"
-	style={avatarStyle}
->
-	{initials}
-</div>
+{#if clickable}
+	<button
+		{onclick}
+		class="rounded-md flex items-center justify-center text-white font-medium hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 {sizeClasses[size]} {className}"
+		style={avatarStyle}
+		aria-label={`View ${username}'s profile`}
+	>
+		{initials}
+	</button>
+{:else}
+	<div 
+		class="rounded-md flex items-center justify-center text-white font-medium {sizeClasses[size]} {className}"
+		style={avatarStyle}
+	>
+		{initials}
+	</div>
+{/if}

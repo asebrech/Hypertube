@@ -229,6 +229,7 @@
 								{imageKey}
 								onUploadSuccess={handleUploadSuccess}
 								onImageRemoved={handleImageRemoved}
+								{username}
 							/>
 						</div>
 					</div>

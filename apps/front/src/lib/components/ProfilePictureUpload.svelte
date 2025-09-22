@@ -8,12 +8,14 @@
 		currentProfilePicture = null,
 		onUploadSuccess,
 		onImageRemoved,
-		imageKey = 0
+		imageKey = 0,
+		username = ''
 	}: {
 		currentProfilePicture?: string | null;
 		onUploadSuccess?: (data: { profilePicture: string; message: string }) => void;
 		onImageRemoved?: () => void;
 		imageKey?: number;
+		username?: string;
 	} = $props();
 
 	let fileInput: HTMLInputElement;
@@ -78,7 +80,7 @@
 
 <div class="flex flex-col items-center space-y-4">
 	<!-- Profile Picture Display -->
-	<div class="relative h-32 w-32 overflow-hidden rounded-lg border-2 border-gray-300 bg-gray-100">
+	<div class="relative h-32 w-32 overflow-hidden rounded-lg">
 		{#if imageUrl}
 			{#key `${imageUrl}-${imageKey}`}
 				<img
@@ -103,16 +105,12 @@
 				</div>
 			{/if}
 		{:else}
-			<div class="flex h-full w-full flex-col items-center justify-center text-gray-400">
-				<svg class="mb-2 h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-					/>
-				</svg>
-				<span class="text-center text-xs">No Image</span>
+			<div
+				class="flex h-full w-full items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-red-800"
+			>
+				<span class="text-5xl font-bold text-white">
+					{username?.charAt(0)?.toUpperCase() || '?'}
+				</span>
 			</div>
 		{/if}
 	</div>
