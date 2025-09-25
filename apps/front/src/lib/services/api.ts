@@ -216,8 +216,8 @@ export async function getMovieSearch(
 	query: string,
 	page: number,
 	type: MovieType = 'movie',
-	options?: { signal?: AbortSignal },
 	token: string | null = null,
+	options?: { signal?: AbortSignal },
 ) {
 	const config = {
 		method: 'get',

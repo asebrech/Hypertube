@@ -27,9 +27,9 @@
 		abortController = new AbortController();
 
 		try {
-			const response = await getMovieSearch($searchQuery, currentPage, 'movie', {
+			const response = await getMovieSearch($searchQuery, currentPage, 'movie', data.token, {
 				signal: abortController.signal
-			}, data.token);
+			});
 			if (response.movies.length === 0) {
 				hasMorePages = false;
 			} else {
