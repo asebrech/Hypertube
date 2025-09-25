@@ -46,7 +46,8 @@ export async function getMovieDiscover(
 	type: MovieType = 'movie',
 	releaseYear: string | undefined,
 	originalLanguage: string | undefined = undefined,
-	sortBy: string
+	sortBy: string,
+	token: string | null = null
 ) {
 	const params: Record<string, any> = {
 		page,
@@ -63,7 +64,10 @@ export async function getMovieDiscover(
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies/discover`,
-		params
+		params,
+		headers: {
+			...(token && { Authorization: `Bearer ${token}` })
+		}
 	};
 
 	try {

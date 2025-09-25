@@ -34,7 +34,7 @@ router
     router.get('posterImage', [MoviesController, 'posterImage'])
     router.get('logoImage', [MoviesController, 'logoImage'])
     router.get('search', [MoviesController, 'movieSearch'])
-    router.get('discover', [MoviesController, 'MovieDiscover'])
+    router.get('discover', [MoviesController, 'MovieDiscover']).use(middleware.auth())
     router.get('genres', [MoviesController, 'movieGenres'])
     router.get('similar', [MoviesController, 'MovieSimilar'])
     router.get('credits', [MoviesController, 'MovieCredits'])

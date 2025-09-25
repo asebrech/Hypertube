@@ -8,6 +8,9 @@
 	import { Select, SelectTrigger, SelectItem, SelectContent } from '@/components/ui/select';
 	import { X } from 'lucide-svelte';
 
+
+	const { data } = $props();
+
 	let isLoading: boolean = $state(false);
 	let movies: Movie[] = $state([]);
 	let selectedGenres: Genre[] = $state([]);
@@ -30,7 +33,8 @@
 				'movie',
 				releaseYear,
 				originalLanguage,
-				sortBy
+				sortBy,
+				data.token
 			);
 			movies = movies.concat(response.movies);
 			hasMorePages = response.hasMorePages;
