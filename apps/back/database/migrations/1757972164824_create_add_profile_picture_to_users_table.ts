@@ -4,14 +4,22 @@ export default class extends BaseSchema {
   protected tableName = 'users'
 
   async up() {
-    this.schema.alterTable(this.tableName, (table) => {
-      table.string('profile_picture').nullable()
-    })
+    const hasColumn = await this.schema.hasColumn(this.tableName, 'profile_picture')
+
+    if (!hasColumn) {
+      this.schema.alterTable(this.tableName, (table) => {
+        table.string('profile_picture').nullable()
+      })
+    }
   }
 
   async down() {
-    this.schema.alterTable(this.tableName, (table) => {
-      table.dropColumn('profile_picture')
-    })
+    const hasColumn = await this.schema.hasColumn(this.tableName, 'profile_picture')
+
+    if (hasColumn) {
+      this.schema.alterTable(this.tableName, (table) => {
+        table.dropColumn('profile_picture')
+      })
+    }
   }
 }
