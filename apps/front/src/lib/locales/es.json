@@ -38,7 +38,8 @@
 		"news-popular": "Noticias y populares",
 		"my-list": "Mis listas",
 		"by-language": "Explorar por idioma",
-		"browse": "Explorar"
+		"browse": "Explorar",
+		"admin": "Panel de Administración"
 	},
 	"movie-banner": {
 		"play": "Reproducir",
@@ -243,6 +244,56 @@
 			"choose-file": "Elegir Archivo",
 			"remove": "Eliminar",
 			"requirements": "JPG, JPEG, PNG, GIF o WebP. Máx. 2MB."
+		}
+	},
+	"admin": {
+		"title": "Panel de Administración",
+		"subtitle": "Gestionar vídeos descargados y almacenamiento del servidor",
+		"refresh": "Actualizar",
+		"total_movies": "{count} películas en total",
+		"select_all": "Seleccionar Todo",
+		"deselect_all": "Deseleccionar Todo",
+		"delete_selected": "Eliminar Seleccionadas ({count})",
+		"delete_all": "Eliminar Todas las Películas",
+		"downloaded_movies": "Películas Descargadas",
+		"no_movies": "No hay películas descargadas",
+		"no_movies_description": "Aún no se han descargado películas en el servidor.",
+		"no_search_results": "No se encontraron resultados",
+		"try_different_search": "Intenta ajustar tus términos de búsqueda",
+		"clear_search": "Limpiar búsqueda",
+		"search_placeholder": "Buscar películas por título o ID TMDB...",
+		"showing_results": "Mostrando {count} de {total} películas",
+		"total_storage": "Almacenamiento total",
+		"confirm_delete_single": "¿Estás seguro de que quieres eliminar esta película? Esta acción no se puede deshacer.",
+		"confirm_delete_all": "¿Estás seguro de que quieres eliminar TODAS las películas? Esta acción no se puede deshacer y liberará todo el espacio de almacenamiento.",
+		"confirm_delete_selected": "¿Estás seguro de que quieres eliminar las {count} películas seleccionadas? Esta acción no se puede deshacer.",
+		"stats": {
+			"total_movies": "Películas Totales",
+			"storage_used": "Almacenamiento Usado",
+			"selected": "Seleccionadas"
+		},
+		"status": {
+			"download": {
+				"completed": "Completo",
+				"failed": "Fallido",
+				"pending": "Pendiente",
+				"downloading": "Descargando"
+			},
+			"conversion": {
+				"completed": "Completo",
+				"failed": "Fallido",
+				"pending": "Pendiente",
+				"converting": "Convirtiendo"
+			}
+		},
+		"table": {
+			"title": "Título",
+			"status": "Estado",
+			"resolutions": "Resoluciones",
+			"size": "Tamaño",
+			"last_accessed": "Último Acceso",
+			"created": "Creado",
+			"actions": "Acciones"
 		}
 	}
 }

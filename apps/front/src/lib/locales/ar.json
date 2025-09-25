@@ -38,7 +38,8 @@
 		"news-popular": "أخبار وشائع",
 		"my-list": "قائمتي",
 		"by-language": "استكشاف حسب اللغة",
-		"browse": "تصفح"
+		"browse": "تصفح",
+		"admin": "لوحة الإدارة"
 	},
 	"movie-banner": {
 		"play": "تشغيل",
@@ -243,6 +244,56 @@
 			"choose-file": "اختر ملف",
 			"remove": "إزالة",
 			"requirements": "JPG، JPEG، PNG، GIF أو WebP. الحد الأقصى 2 ميجابايت."
+		}
+	},
+	"admin": {
+		"title": "لوحة الإدارة",
+		"subtitle": "إدارة الفيديوهات المحملة وتخزين الخادم",
+		"refresh": "تحديث",
+		"total_movies": "{count} أفلام إجمالاً",
+		"select_all": "تحديد الكل",
+		"deselect_all": "إلغاء تحديد الكل",
+		"delete_selected": "حذف المحدد ({count})",
+		"delete_all": "حذف جميع الأفلام",
+		"downloaded_movies": "الأفلام المحملة",
+		"no_movies": "لا توجد أفلام محملة",
+		"no_movies_description": "لم يتم تحميل أي أفلام على الخادم بعد.",
+		"no_search_results": "لم يتم العثور على نتائج",
+		"try_different_search": "حاول تعديل مصطلحات البحث",
+		"clear_search": "مسح البحث",
+		"search_placeholder": "البحث عن الأفلام بالعنوان أو معرف TMDB...",
+		"showing_results": "عرض {count} من {total} فيلم",
+		"total_storage": "إجمالي التخزين",
+		"confirm_delete_single": "هل أنت متأكد من أنك تريد حذف هذا الفيلم؟ لا يمكن التراجع عن هذا الإجراء.",
+		"confirm_delete_all": "هل أنت متأكد من أنك تريد حذف جميع الأفلام؟ لا يمكن التراجع عن هذا الإجراء وسيتم تحرير جميع مساحة التخزين.",
+		"confirm_delete_selected": "هل أنت متأكد من أنك تريد حذف {count} أفلام محددة؟ لا يمكن التراجع عن هذا الإجراء.",
+		"stats": {
+			"total_movies": "إجمالي الأفلام",
+			"storage_used": "التخزين المستخدم",
+			"selected": "محدد"
+		},
+		"status": {
+			"download": {
+				"completed": "مكتمل",
+				"failed": "فشل",
+				"pending": "في الانتظار",
+				"downloading": "جاري التحميل"
+			},
+			"conversion": {
+				"completed": "مكتمل",
+				"failed": "فشل",
+				"pending": "في الانتظار",
+				"converting": "جاري التحويل"
+			}
+		},
+		"table": {
+			"title": "العنوان",
+			"status": "الحالة",
+			"resolutions": "الدقة",
+			"size": "الحجم",
+			"last_accessed": "آخر وصول",
+			"created": "تاريخ الإنشاء",
+			"actions": "الإجراءات"
 		}
 	}
 }

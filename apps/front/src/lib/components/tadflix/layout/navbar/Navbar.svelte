@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import Datflix from '@/assets/datflix.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { cn } from '@/utils';
@@ -31,20 +30,32 @@
 		href: string;
 	}
 
-	let links: Link[] = [
-		{ label: 'navbar.home', href: '/' },
-		{ label: 'navbar.shows', href: '/shows' },
-		{ label: 'navbar.movies', href: '/movies' },
-		{ label: 'navbar.my-list', href: '/my-list' },
-		{ label: 'navbar.browse', href: '/browse' }
-	];
+	// Add admin link if user is admin
+	let links = $derived.by(() => {
+		const baseLinks = [
+			{ label: 'navbar.home', href: '/' },
+			{ label: 'navbar.shows', href: '/shows' },
+			{ label: 'navbar.movies', href: '/movies' },
+			{ label: 'navbar.my-list', href: '/my-list' },
+			{ label: 'navbar.browse', href: '/browse' }
+		];
+		
+		if (data?.user?.isAdmin) {
+			return [
+				...baseLinks,
+				{ label: 'navbar.admin', href: '/admin' }
+			];
+		}
+		
+		return baseLinks;
+	});
 
 	// Track scroll position and direction
 	let lastScrollY = $state(0);
 	let isScrollingDown = $state(false);
 	let scrolled = $state(false);
 
-	onMount(() => {
+	$effect(() => {
 		// Set up scroll listener
 		const handleScroll = () => {
 			const currentScrollY = window.scrollY;
@@ -210,13 +221,6 @@
 </nav>
 
 <style>
-	/* Smooth transitions */
-	#navbar {
-		transition:
-			background-color 0.4s ease,
-			box-shadow 0.4s ease;
-	}
-
 	/* Scroll indicator */
 	.scroll-indicator {
 		position: fixed;

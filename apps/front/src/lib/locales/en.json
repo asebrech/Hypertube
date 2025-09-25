@@ -9,7 +9,8 @@
 		"news-popular": "News & Popular",
 		"my-list": "My Lists",
 		"by-language": "Browse By Language",
-		"browse": "Browse"
+		"browse": "Browse",
+		"admin": "Admin Dashboard"
 	},
 	"movie-banner": {
 		"play": "Play",
@@ -243,6 +244,56 @@
 			"choose-file": "Choose File",
 			"remove": "Remove",
 			"requirements": "JPG, JPEG, PNG, GIF or WebP. Max 2MB."
+		}
+	},
+	"admin": {
+		"title": "Admin Dashboard",
+		"subtitle": "Manage downloaded videos and server storage",
+		"refresh": "Refresh",
+		"total_movies": "{count} total movies",
+		"select_all": "Select All",
+		"deselect_all": "Deselect All",
+		"delete_selected": "Delete Selected ({count})",
+		"delete_all": "Delete All Movies",
+		"downloaded_movies": "Downloaded Movies",
+		"no_movies": "No movies downloaded",
+		"no_movies_description": "No movies have been downloaded to the server yet.",
+		"no_search_results": "No results found",
+		"try_different_search": "Try adjusting your search terms",
+		"clear_search": "Clear Search",
+		"search_placeholder": "Search movies by title or TMDB ID...",
+		"showing_results": "Showing {count} of {total} movies",
+		"total_storage": "Total storage",
+		"confirm_delete_single": "Are you sure you want to delete this movie? This action cannot be undone.",
+		"confirm_delete_all": "Are you sure you want to delete ALL movies? This action cannot be undone and will free up all storage space.",
+		"confirm_delete_selected": "Are you sure you want to delete {count} selected movies? This action cannot be undone.",
+		"stats": {
+			"total_movies": "Total Movies",
+			"storage_used": "Storage Used",
+			"selected": "Selected"
+		},
+		"status": {
+			"download": {
+				"completed": "Complete",
+				"failed": "Failed",
+				"pending": "Pending",
+				"downloading": "Downloading"
+			},
+			"conversion": {
+				"completed": "Complete",
+				"failed": "Failed",
+				"pending": "Pending",
+				"converting": "Converting"
+			}
+		},
+		"table": {
+			"title": "Title",
+			"status": "Status",
+			"resolutions": "Resolutions",
+			"size": "Size",
+			"last_accessed": "Last Accessed",
+			"created": "Created",
+			"actions": "Actions"
 		}
 	}
 }

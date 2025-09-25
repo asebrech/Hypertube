@@ -38,7 +38,8 @@
 		"news-popular": "Nouveau et populaire",
 		"my-list": "Mes listes",
 		"by-language": "Browse By Language",
-		"browse": "Parcourir"
+		"browse": "Parcourir",
+		"admin": "Tableau de Bord Admin"
 	},
 	"movie-banner": {
 		"play": "Lecture",
@@ -243,6 +244,56 @@
 			"choose-file": "Choisir un Fichier",
 			"remove": "Supprimer",
 			"requirements": "JPG, JPEG, PNG, GIF ou WebP. Max 2 Mo."
+		}
+	},
+	"admin": {
+		"title": "Tableau de Bord Administrateur",
+		"subtitle": "Gérer les vidéos téléchargées et le stockage du serveur",
+		"refresh": "Actualiser",
+		"total_movies": "{count} films au total",
+		"select_all": "Tout sélectionner",
+		"deselect_all": "Tout désélectionner",
+		"delete_selected": "Supprimer la sélection ({count})",
+		"delete_all": "Supprimer tous les films",
+		"downloaded_movies": "Films téléchargés",
+		"no_movies": "Aucun film téléchargé",
+		"no_movies_description": "Aucun film n'a encore été téléchargé sur le serveur.",
+		"no_search_results": "Aucun résultat trouvé",
+		"try_different_search": "Essayez d'ajuster vos termes de recherche",
+		"clear_search": "Effacer la recherche",
+		"search_placeholder": "Rechercher des films par titre ou ID TMDB...",
+		"showing_results": "Affichage de {count} sur {total} films",
+		"total_storage": "Stockage total",
+		"confirm_delete_single": "Êtes-vous sûr de vouloir supprimer ce film ? Cette action ne peut pas être annulée.",
+		"confirm_delete_all": "Êtes-vous sûr de vouloir supprimer TOUS les films ? Cette action ne peut pas être annulée et libérera tout l'espace de stockage.",
+		"confirm_delete_selected": "Êtes-vous sûr de vouloir supprimer les {count} films sélectionnés ? Cette action ne peut pas être annulée.",
+		"stats": {
+			"total_movies": "Films totaux",
+			"storage_used": "Stockage utilisé",
+			"selected": "Sélectionnés"
+		},
+		"status": {
+			"download": {
+				"completed": "Terminé",
+				"failed": "Échoué",
+				"pending": "En attente",
+				"downloading": "Téléchargement"
+			},
+			"conversion": {
+				"completed": "Terminé",
+				"failed": "Échoué",
+				"pending": "En attente",
+				"converting": "Conversion"
+			}
+		},
+		"table": {
+			"title": "Titre",
+			"status": "Statut",
+			"resolutions": "Résolutions",
+			"size": "Taille",
+			"last_accessed": "Dernier accès",
+			"created": "Créé",
+			"actions": "Actions"
 		}
 	}
 }

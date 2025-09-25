@@ -64,7 +64,7 @@ export default class TorrentController {
   async delete({ request, response }: HttpContext) {
     try {
       const idParam = request.param('id')
-      
+
       const payload = await tmdbIdValidator.validate({ id: idParam })
       const tmdbId = payload.id
 
@@ -80,6 +80,18 @@ export default class TorrentController {
       return this.handleDeleteResponse(response, result)
     } catch (error) {
       return this.handleDeleteError(response, error, 'deleting the movie')
+    }
+  }
+
+  async list({ response }: HttpContext) {
+    try {
+      const movies = await this.movieService.getDownloadedMovies()
+      return response.ok({
+        success: true,
+        movies: movies,
+      })
+    } catch (error) {
+      return this.handleDeleteError(response, error, 'fetching movies list')
     }
   }
 

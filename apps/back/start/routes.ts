@@ -98,10 +98,17 @@ router
   .group(() => {
     router.get('/:id', [TorrentController, 'torrent'])
     router.get('/:resolution/:id', [TorrentController, 'ready'])
+  })
+  .prefix('torrent')
+  .use(middleware.auth())
+
+router
+  .group(() => {
+    router.get('/', [TorrentController, 'list']).use(middleware.admin())
     router.delete('/', [TorrentController, 'deleteAll']).use(middleware.admin())
     router.delete('/:id', [TorrentController, 'delete']).use(middleware.admin())
   })
-  .prefix('torrent')
+  .prefix('admin/movies')
   .use(middleware.auth())
 
 router.get('/stream/*', [TorrentController, 'stream']).use(middleware.auth())
