@@ -28,6 +28,8 @@
 	import { get } from 'svelte/store';
 	import { goto } from '$app/navigation';
 	import { CommentContainer } from '../comments';
+	
+	const { data } = $props();
 
 	// Store subscription
 	let modalData = $state({
@@ -35,7 +37,7 @@
 		movieId: undefined as number | undefined,
 		type: undefined as MovieType | undefined,
 		history: [] as Array<{ movieId: number; type: MovieType }>,
-		isLoading: false
+		isLoading: false,
 	});
 
 	// Movie data
@@ -127,7 +129,7 @@
 				}
 			};
 
-			getMovieDetails(modalData.movieId, modalData.type)
+			getMovieDetails(modalData.movieId, modalData.type, data.token)
 				.then((data) => {
 					// Only update if we're still on the same movie and not aborted
 					if (
@@ -152,7 +154,7 @@
 					}
 				});
 
-			getMovieVideos(modalData.movieId, modalData.type)
+			getMovieVideos(modalData.movieId, modalData.type, data.token)
 				.then((data) => {
 					// Only update if we're still on the same movie and not aborted
 					if (
@@ -191,7 +193,7 @@
 					}
 				});
 
-			getLogoImage(modalData.movieId, 'original', modalData.type)
+			getLogoImage(modalData.movieId, 'original', modalData.type, data.token)
 				.then((data) => {
 					// Only update if we're still on the same movie and not aborted
 					if (
@@ -216,7 +218,7 @@
 					}
 				});
 
-			getMovieCredits(modalData.movieId, modalData.type)
+			getMovieCredits(modalData.movieId, modalData.type, data.token)
 				.then((data) => {
 					// Only update if we're still on the same movie and not aborted
 					if (
@@ -241,7 +243,7 @@
 					}
 				});
 
-			getSimilarMovies(modalData.movieId, 1, modalData.type)
+			getSimilarMovies(modalData.movieId, 1, modalData.type, data.token)
 				.then((data) => {
 					// Only update if we're still on the same movie and not aborted
 					if (
@@ -573,7 +575,7 @@
 												{#if index < maxItemsToShow}
 													<!-- Always visible items -->
 													<div>
-														<SimilarMovieCard movie={similarMovie} />
+														<SimilarMovieCard movie={similarMovie} data={data} />
 													</div>
 												{:else if isExpanding}
 													<!-- New items that slide down -->
@@ -581,7 +583,7 @@
 														class="animate-slide-down opacity-0"
 														style="animation-delay: {(index - maxItemsToShow) * 100}ms;"
 													>
-														<SimilarMovieCard movie={similarMovie} />
+														<SimilarMovieCard movie={similarMovie} data={data} />
 													</div>
 												{/if}
 											{/each}

@@ -8,6 +8,8 @@
 	import { _ } from 'svelte-i18n';
 	import { goto } from '$app/navigation';
 
+	const { data } = $props();
+
 	let searchResults: Movie[] = $state([]);
 	let isLoading: boolean = $state(false);
 	let hasMorePages: boolean = $state(true);
@@ -27,7 +29,7 @@
 		try {
 			const response = await getMovieSearch($searchQuery, currentPage, 'movie', {
 				signal: abortController.signal
-			});
+			}, data.token);
 			if (response.movies.length === 0) {
 				hasMorePages = false;
 			} else {
@@ -96,11 +98,11 @@
 
 {#if searchResults.length > 0}
 	<div class="flex flex-col gap-8 py-[150px]">
-		<MovieList movies={searchResults} />
+		<MovieList movies={searchResults} data={data} />
 	</div>
 {/if}
 
 <div bind:this={sentinel}></div>
 
 <!-- Movie Modal -->
-<MovieModal />
+<MovieModal data={data} />

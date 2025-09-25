@@ -13,9 +13,10 @@
 	import { locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 
-	const { movieId, type = 'movie' } = $props<{
+	const { movieId, type = 'movie', data } = $props<{
 		movieId: number;
 		type?: MovieType;
+		data: any;
 	}>();
 	let isLoading: boolean = $state(true);
 	let movie: MovieDetails | undefined = $state<MovieDetails | undefined>();
@@ -31,13 +32,13 @@
 	let showSkeleton: boolean = $state(true);
 
 	const loadMovieDetails = async (movieId: number): Promise<MovieDetails> => {
-		const movieDetailsResponse = await getMovieDetails(movieId, type);
+		const movieDetailsResponse = await getMovieDetails(movieId, type, data.token);
 		movie = movieDetailsResponse;
 		return movieDetailsResponse;
 	};
 
 	const loadMovieVideo = async (movieId: number): Promise<string> => {
-		const movieVideoResponse = await getMovieVideos(movieId, type);
+		const movieVideoResponse = await getMovieVideos(movieId, type, data.token);
 		movieVideo = movieVideoResponse;
 		return movieVideoResponse;
 	};

@@ -54,9 +54,9 @@
 			window.history.replaceState({}, '', window.location.pathname);
 		}
 		castId = castParam ? Number(castParam) : undefined;
-		genres = await getGenresList();
+		genres = await getGenresList(data.token);
 		selectedGenres = genres.filter((genre) => genreParam === genre.id.toString());
-		if (castId) cast = await getPeopleDetails(castId);
+		if (castId) cast = await getPeopleDetails(castId, data.token);
 		await loadDiscoverMovies();
 		observeSentinel();
 	});
@@ -262,11 +262,11 @@
 
 {#if movies.length > 0}
 	<div class="flex flex-col gap-8 pb-[150px]">
-		<MovieList {movies} />
+		<MovieList {movies} data={data} />
 	</div>
 {/if}
 
 <div bind:this={sentinel}></div>
 
 <!-- Movie Modal -->
-<MovieModal />
+<MovieModal data={data} />
