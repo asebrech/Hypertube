@@ -280,6 +280,7 @@ export type Comment = {
   updatedAt: string; // ISO date string
   username: string;
   userId: number;
+  profilePicture?: string | null;
   movieId?: number;
   movieTitle?: string;
 };

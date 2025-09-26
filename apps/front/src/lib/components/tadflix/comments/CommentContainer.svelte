@@ -136,6 +136,7 @@
 				{movieId}
 				username={currentUser}
 				{token}
+				data={$page.data}
 				onCommentAdded={(newComment) => (comments = [newComment, ...comments])}
 			/>
 
@@ -155,6 +156,7 @@
 							{currentUser}
 							{currentUserId}
 							{token}
+							data={$page.data}
 							onDelete={handleDeleteComment}
 							onUpdate={handleUpdateComment}
 						/>

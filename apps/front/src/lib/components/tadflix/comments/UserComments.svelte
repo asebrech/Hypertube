@@ -194,6 +194,7 @@
 							{comment}
 							{currentUserId}
 							{token}
+							data={$page.data}
 							onDelete={handleDeleteComment}
 							onUpdate={handleUpdateComment}
 						/>

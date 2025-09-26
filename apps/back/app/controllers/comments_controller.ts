@@ -20,7 +20,7 @@ class CommentsController {
       const comment = await Comment.query()
         .where('id', params.id)
         .preload('user', (userQuery) => {
-          userQuery.select('id', 'username', 'email')
+          userQuery.select('id', 'username', 'email', 'profilePicture')
         })
         .preload('movie', (movieQuery) => {
           movieQuery.select('id', 'title')
@@ -36,6 +36,7 @@ class CommentsController {
         userId: comment.user.id,
         movieId: comment.movieId,
         movieTitle: comment.movie.title,
+        profilePicture: comment.user.profilePicture || null,
       }
 
       return response.ok(formattedComment)
@@ -75,7 +76,7 @@ class CommentsController {
       const comments = await Comment.query()
         .where('movie_id', movie.id)
         .preload('user', (userQuery) => {
-          userQuery.select('id', 'username', 'email')
+          userQuery.select('id', 'username', 'email', 'profilePicture')
         })
         .orderBy('createdAt', 'desc')
         .paginate(page, limit)
@@ -88,6 +89,7 @@ class CommentsController {
         updatedAt: comment.updatedAt,
         username: comment.user.username || comment.user.email || 'Anonymous',
         userId: comment.user.id,
+        profilePicture: comment.user.profilePicture || null,
       }))
 
       return response.ok(formattedComments)
@@ -123,7 +125,7 @@ class CommentsController {
       })
 
       await comment.load('user', (userQuery) => {
-        userQuery.select('id', 'username', 'email')
+        userQuery.select('id', 'username', 'email', 'profilePicture')
       })
 
       const formattedComment = {
@@ -134,6 +136,7 @@ class CommentsController {
         username: comment.user.username || comment.user.email || 'Anonymous',
         userId: comment.user.id,
         movieId: comment.movieId,
+        profilePicture: comment.user.profilePicture || null,
       }
 
       return response.created(formattedComment)
@@ -179,7 +182,7 @@ class CommentsController {
       await comment.save()
 
       await comment.load('user', (userQuery: any) => {
-        userQuery.select('id', 'username', 'email')
+        userQuery.select('id', 'username', 'email', 'profilePicture')
       })
 
       const formattedComment = {
@@ -190,6 +193,7 @@ class CommentsController {
         username: comment.user.username || comment!.user.email || 'Anonymous',
         userId: comment.user.id,
         movieId: comment.movieId,
+        profilePicture: comment.user.profilePicture || null,
       }
 
       return response.ok(formattedComment)
@@ -218,7 +222,7 @@ class CommentsController {
       const comments = await Comment.query()
         .where('user_id', params.user_id)
         .preload('user', (userQuery) => {
-          userQuery.select('id', 'username', 'email')
+          userQuery.select('id', 'username', 'email', 'profilePicture')
         })
         .preload('movie', (movieQuery) => {
           movieQuery.select('id', 'title', 'tmdbId')
@@ -236,6 +240,7 @@ class CommentsController {
         userId: comment.user.id,
         movieId: comment.movie.tmdbId,
         movieTitle: comment.movie.title,
+        profilePicture: comment.user.profilePicture || null,
       }))
 
       return response.ok(formattedComments)
