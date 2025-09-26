@@ -72,7 +72,7 @@
 </script>
 
 <Card
-	class="flex aspect-[5/3] cursor-pointer flex-row rounded-[2px] border-none p-0 transition-transform duration-200 hover:scale-105"
+	class="relative flex aspect-[5/3] cursor-pointer flex-row rounded-[2px] border-none p-0 transition-transform duration-200 hover:scale-105"
 	style="background-size: cover; background-position: center; background-image: url({backdropImage?.url});"
 	onclick={openModal}
 >
@@ -86,19 +86,19 @@
 		</CardHeader>
 	{/if}
 	{#if isWatched}
-		<div class="absolute bottom-0 flex w-full justify-center p-[3px]">
+		<div class="absolute bottom-0 flex w-full justify-center">
 			<Badge variant={'red'}>
 				{$_('movie-action.watched')}
 			</Badge>
 		</div>
 	{:else if watchProgressSeconds > 0}
-		<div class="absolute bottom-0 flex w-full justify-center p-[3px]">
+		<div class="absolute bottom-0 flex w-full justify-center">
 			<Badge variant={'red'}>
 				{$_('movie-action.resume')}
 			</Badge>
 		</div>
 	{:else if isBookmarked}
-		<div class="absolute bottom-0 flex w-full justify-center p-[3px]">
+		<div class="absolute bottom-0 flex w-full justify-center">
 			<Badge variant={'red'}>
 				{$_('movie-action.bookmarked')}
 			</Badge>
