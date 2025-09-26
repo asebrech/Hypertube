@@ -75,12 +75,10 @@ export default class AuthController {
     const { identifier, password } = await request.validateUsing(loginValidator)
 
     // Try to find user by email first
-    let user = await User.findBy('email', identifier)
-    
-    // If not found by email, try to find by username
-    if (!user) {
-      user = await User.findBy('username', identifier)
-    }
+    const user = await User.query()
+      .where('email', identifier)
+      .orWhere('username', identifier)
+      .first()
 
     if (!user) {
       return response.badRequest({
