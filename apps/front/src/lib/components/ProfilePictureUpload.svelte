@@ -1,41 +1,49 @@
 <script lang="ts">
 	import { _ } from 'svelte-i18n';
-	import { uploadProfilePicture } from '$lib/services/api';
-	import { page } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
 
 	let {
 		currentProfilePicture = null,
-		onUploadSuccess,
+		onFileSelected,
 		onImageRemoved,
 		imageKey = 0,
-		username = ''
+		username = '',
+		selectedFile = null
 	}: {
 		currentProfilePicture?: string | null;
-		onUploadSuccess?: (data: { profilePicture: string; message: string }) => void;
+		onFileSelected?: (file: File) => void;
 		onImageRemoved?: () => void;
 		imageKey?: number;
 		username?: string;
+		selectedFile?: File | null;
 	} = $props();
 
 	let fileInput: HTMLInputElement;
-	let isUploading = $state(false);
-	let isImageLoading = $state(false);
 	let error = $state('');
+	let previewUrl = $state<string | null>(null);
 
-	let imageUrl = $derived(currentProfilePicture);
-
+	// Create preview URL when file is selected
 	$effect(() => {
-		if (currentProfilePicture) {
-			isImageLoading = true;
+		if (selectedFile) {
+			const url = URL.createObjectURL(selectedFile);
+			previewUrl = url;
+			
+			// Cleanup URL when component is destroyed or file changes
+			return () => {
+				URL.revokeObjectURL(url);
+			};
+		} else {
+			previewUrl = null;
 		}
 	});
+
+	let imageUrl = $derived(previewUrl || currentProfilePicture);
 
 	function triggerFileInput() {
 		fileInput?.click();
 	}
 
-	async function handleFileChange(event: Event) {
+	function handleFileChange(event: Event) {
 		const input = event.target as HTMLInputElement;
 		const file = input.files?.[0];
 		if (!file) return;
@@ -51,30 +59,14 @@
 		}
 
 		error = '';
-		isUploading = true;
+		onFileSelected?.(file);
+	}
 
-		try {
-			const token = $page.data.user?.token || $page.data.token;
-
-			if (!token) {
-				error = $_('profile.upload.error-login-required');
-				return;
-			}
-
-			const response = await uploadProfilePicture(file, token);
-
-			console.log('Upload successful:', response);
-
-			onUploadSuccess?.({
-				profilePicture: response.profilePicture,
-				message: response.message
-			});
-		} catch (err: any) {
-			console.error('Upload error:', err);
-			error = err.response?.data?.message || $_('profile.upload.error-upload-failed');
-		} finally {
-			isUploading = false;
+	function handleRemoveImage() {
+		if (fileInput) {
+			fileInput.value = '';
 		}
+		onImageRemoved?.();
 	}
 </script>
 
@@ -87,21 +79,15 @@
 					src={imageUrl}
 					alt="Profile"
 					class="h-full w-full object-cover"
-					onload={() => {
-						isImageLoading = false;
-					}}
-					onerror={() => {
-						isImageLoading = false;
-					}}
 				/>
 			{/key}
-
-			<!-- Image Loading Overlay -->
-			{#if isImageLoading}
-				<div class="absolute inset-0 flex items-center justify-center bg-gray-200">
-					<div
-						class="h-6 w-6 animate-spin rounded-full border-2 border-gray-400 border-t-transparent"
-					></div>
+			
+			<!-- Preview indicator for selected file -->
+			{#if selectedFile}
+				<div class="absolute top-1 right-1">
+					<div class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+						{$_('profile.upload.preview')}
+					</div>
 				</div>
 			{/if}
 		{:else}
@@ -115,10 +101,26 @@
 		{/if}
 	</div>
 
-	<!-- Upload Button -->
-	<Button variant="outline" size="sm" onclick={triggerFileInput} disabled={isUploading}>
-		{isUploading ? $_('profile.upload.uploading') : $_('profile.upload.choose-file')}
-	</Button>
+	<!-- Upload/Change Button -->
+	<div class="flex gap-2">
+		<Button variant="outline" size="sm" onclick={triggerFileInput}>
+			{selectedFile ? $_('profile.upload.change-file') : $_('profile.upload.choose-file')}
+		</Button>
+		
+		{#if selectedFile || (currentProfilePicture && !selectedFile)}
+			<Button variant="outline" size="sm" onclick={handleRemoveImage}>
+				{$_('profile.upload.remove')}
+			</Button>
+		{/if}
+	</div>
+
+	<!-- File info for selected file -->
+	{#if selectedFile}
+		<div class="text-center text-sm text-gray-400">
+			<p>{selectedFile.name}</p>
+			<p>{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
+		</div>
+	{/if}
 
 	<!-- Error Message -->
 	{#if error}
