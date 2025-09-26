@@ -7,6 +7,8 @@
 	import { openHoverCardId } from '$lib/services/store';
 	import { get } from 'svelte/store';
 	import { _ } from 'svelte-i18n';
+	import { MovieList } from '@/components/tadflix/movie-list';
+	import MovieModal from '@/components/tadflix/movie-modal/movie-modal.svelte';
 
 	const { data } = $props();
 
@@ -161,46 +163,7 @@
 					<h2 class="mb-8 text-2xl font-bold text-white">
 						{$_('profile.recently-watched-movies')}
 					</h2>
-					<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-						{#each data.profileUser.watchedMoviesData as movie}
-							<HoverCard open={$openHoverCardId === 'profile-' + String(movie.tmdbId)}>
-								<HoverCardTrigger>
-									<div
-										role="button"
-										tabindex="0"
-										onmouseenter={async () => await handleMouseEnter(String(movie.tmdbId))}
-									>
-										<MovieCard
-											movieId={movie.tmdbId}
-											isVisible={true}
-											title={movie.title}
-											type={movie.type}
-										/>
-									</div>
-								</HoverCardTrigger>
-								<HoverCardContent
-									hideWhenDetached={true}
-									collisionPadding={10}
-									align="center"
-									side="bottom"
-									sideOffset={10}
-									class="m-0 w-full max-w-[400px] overflow-hidden rounded-[8px] border-none p-0"
-								>
-									<div
-										role="button"
-										tabindex="0"
-										onmouseleave={() => handleMouseLeave(String(movie.tmdbId))}
-										class={get(openHoverCardId) === null ||
-										get(openHoverCardId) === 'profile-' + String(movie.tmdbId)
-											? ''
-											: 'hidden'}
-									>
-										<MoviePreview movieId={movie.tmdbId} type={movie.type} />
-									</div>
-								</HoverCardContent>
-							</HoverCard>
-						{/each}
-					</div>
+					<MovieList movies={data.profileUser.watchedMoviesData.map((movie: any) => ({ id: movie.tmdbId, title: movie.title, type: movie.type }))} />
 				</div>
 			</div>
 		{/if}
@@ -230,3 +193,5 @@
 		</div>
 	</div>
 </div>
+
+<MovieModal />
