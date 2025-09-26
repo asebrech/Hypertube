@@ -1,8 +1,5 @@
 <script lang="ts">
 	import { Film, MessageCircle, Calendar, Edit3, Mail } from 'lucide-svelte';
-	import { MovieCard } from '$lib/components/tadflix/movie-card';
-	import { HoverCard, HoverCardTrigger, HoverCardContent } from '$lib/components/ui/hover-card';
-	import { MoviePreview } from '$lib/components/tadflix/movie-preview';
 	import { UserComments } from '$lib/components/tadflix/comments';
 	import { openHoverCardId } from '$lib/services/store';
 	import { get } from 'svelte/store';
@@ -163,7 +160,7 @@
 					<h2 class="mb-8 text-2xl font-bold text-white">
 						{$_('profile.recently-watched-movies')}
 					</h2>
-					<MovieList movies={data.profileUser.watchedMoviesData.map((movie: any) => ({ id: movie.tmdbId, title: movie.title, type: movie.type }))} />
+					<MovieList movies={data.profileUser.watchedMoviesData.map((movie: any) => ({ id: movie.tmdbId, title: movie.title, type: movie.type }))} data={data} />
 				</div>
 			</div>
 		{/if}
@@ -194,4 +191,4 @@
 	</div>
 </div>
 
-<MovieModal />
+<MovieModal data={data} />
