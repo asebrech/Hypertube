@@ -124,10 +124,7 @@
 		const currentTime = player.currentTime();
 		const duration = player.duration();
 		const percentage = VideoPlayerUtils.calculateProgress(currentTime, duration);
-
-		if (VideoPlayerUtils.shouldSaveProgress(percentage, duration)) {
-			await api.saveProgress(currentTime);
-		}
+		await api.saveProgress(currentTime);
 	}
 
 	function setupPlayerEvents() {
@@ -157,6 +154,7 @@
 
 		player.on('loadedmetadata', async () => {
 			const savedProgress = await api.getProgress();
+			console.log('player duration : ', player.duration());
 			if (savedProgress > 0 && player.duration() > 0) {
 				const duration = player.duration();
 				const percentage = VideoPlayerUtils.calculateProgress(savedProgress, duration);

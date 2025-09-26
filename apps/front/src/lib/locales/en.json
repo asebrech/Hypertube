@@ -35,7 +35,8 @@
 	},
 	"movie-action": {
 		"bookmarked": "watchlist",
-		"watched": "already watched"
+		"watched": "already watched",
+		"resume": "resume"
 	},
 	"browse": {
 		"explore": "Explore All"

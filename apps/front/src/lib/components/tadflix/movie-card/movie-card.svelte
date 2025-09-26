@@ -17,6 +17,7 @@
 		type: MovieType | undefined;
 		isWatched?: boolean;
 		isBookmarked?: boolean;
+		watchProgressSeconds?: number;
 		data: { token: string };
 	}
 
@@ -27,6 +28,7 @@
 		type,
 		isWatched = false,
 		isBookmarked = false,
+		watchProgressSeconds = 0,
 		data,
 	}: Props = $props();
 
@@ -83,16 +85,16 @@
 			<CardTitle class="text-white">{title}</CardTitle>
 		</CardHeader>
 	{/if}
-	{#if isWatched && isBookmarked}
-		<div class="absolute bottom-0 flex w-full justify-center p-[3px]">
-			<Badge variant={'red'}>
-				{$_('movie-action.watched')} & {$_('movie-action.bookmarked')}
-			</Badge>
-		</div>
-	{:else if isWatched}
+	{#if isWatched}
 		<div class="absolute bottom-0 flex w-full justify-center p-[3px]">
 			<Badge variant={'red'}>
 				{$_('movie-action.watched')}
+			</Badge>
+		</div>
+	{:else if watchProgressSeconds > 0}
+		<div class="absolute bottom-0 flex w-full justify-center p-[3px]">
+			<Badge variant={'red'}>
+				{$_('movie-action.resume')}
 			</Badge>
 		</div>
 	{:else if isBookmarked}

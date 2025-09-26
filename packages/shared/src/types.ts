@@ -30,6 +30,7 @@ export type Movie = {
   backdrop_image: BackDropImage | null | undefined;
   is_watched?: boolean;
   is_bookmarked?: boolean;
+  watch_progress_seconds?: number;
 };
 
 export type Genre = {

@@ -77,6 +77,7 @@ export default class MoviesController {
             genre.movies.map(async (movie: any) => {
               movie.is_watched = false
               movie.is_bookmarked = false
+              movie.watch_progress_seconds = 0
 
               if (user) {
                 const movieTable = await user
@@ -87,6 +88,8 @@ export default class MoviesController {
                 if (movieTable) {
                   movie.is_watched = movieTable.$extras.pivot_is_watched || false
                   movie.is_bookmarked = movieTable.$extras.pivot_is_bookmarked || false
+                  movie.watch_progress_seconds =
+                    movieTable.$extras.pivot_watch_progress_seconds || 0
                 }
               }
               return movie

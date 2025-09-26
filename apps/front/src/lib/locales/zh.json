@@ -59,7 +59,8 @@
 	},
 	"movie-action": {
 		"bookmarked": "收藏夹",
-		"watched": "已观看"
+		"watched": "已观看",
+		"resume": "继续观看"
 	},
 	"browse": {
 		"explore": "探索全部"

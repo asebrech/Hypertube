@@ -68,7 +68,8 @@
 	},
 	"movie-action": {
 		"bookmarked": "Lista de seguimiento",
-		"watched": "Ya visto"
+		"watched": "Ya visto",
+		"resume": "Reanudar"
 	},
 	"browse": {
 		"explore": "Explorar todo"
