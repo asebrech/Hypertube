@@ -6,6 +6,7 @@
 	import ProfilePictureUpload from '$lib/components/ProfilePictureUpload.svelte';
 	import { _ } from 'svelte-i18n';
 	import { goto, invalidateAll } from '$app/navigation';
+	import { ChevronLeft } from 'lucide-svelte';
 	import {
 		validatePassword,
 		validateEmail,
@@ -186,18 +187,39 @@
 			currentProfilePicture = data.user.profilePicture;
 		}
 	});
+
+	// Navigate back to user's profile
+	const goBackToProfile = () => {
+		const username = data?.user?.username;
+		if (username) {
+			goto(`/${encodeURIComponent(username)}`);
+		} else {
+			goto('/profile'); // Fallback
+		}
+	};
 </script>
 
 <div
-	class="relative min-h-screen bg-cover bg-center bg-no-repeat"
+	class="relative min-h-screen bg-cover bg-center bg-no-repeat py-16"
 	style="background-image: url('/img/netflix-background.jpg');"
 >
 	<div class="absolute inset-0 bg-black/50"></div>
 	<div class="relative z-10 flex min-h-screen flex-1 items-center justify-center p-4">
 		<Card.Root class="mx-auto max-w-lg border-none bg-black/70">
 			<Card.Header>
-				<Card.Title class="text-xl text-white">{$_('account.title')}</Card.Title>
-				<Card.Description class="text-gray-300">{$_('account.description')}</Card.Description>
+				<div class="flex items-center gap-3">
+					<button
+						onclick={goBackToProfile}
+						class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-800/50 hover:bg-gray-700/50 transition-colors group"
+						aria-label="Back to profile"
+					>
+						<ChevronLeft class="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
+					</button>
+					<div class="flex-1">
+						<Card.Title class="text-xl text-white">{$_('account.title')}</Card.Title>
+						<Card.Description class="text-gray-300">{$_('account.description')}</Card.Description>
+					</div>
+				</div>
 			</Card.Header>
 			<Card.Content>
 				<div class="grid gap-6">
