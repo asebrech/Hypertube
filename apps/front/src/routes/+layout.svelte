@@ -22,11 +22,12 @@
 	});
 
 	let isMoviePlayerRoute = $derived(page.route?.id?.includes('/movie/[id]') ?? false);
+	let isAuthRoute = $derived(page.route?.id?.includes('/(auth)/') ?? false);
 </script>
 
 <ModeWatcher defaultMode={'dark'} />
 
-{#if !isMoviePlayerRoute}
+{#if !isMoviePlayerRoute && !isAuthRoute}
 	<Navbar data={page.data} showSkeleton={$isLoading || !ready} />
 {/if}
 
