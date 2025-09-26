@@ -4,16 +4,16 @@ import { SECRET_BACK_URL } from '$env/static/private';
 
 const login = async ({ cookies, request }: RequestEvent) => {
 	const data = await request.formData();
-	const email = data.get('email');
+	const identifier = data.get('identifier');
 	const password = data.get('password');
 	const remember = data.get('remember'); // Get the remember me value
 
-	if (typeof email !== 'string' || typeof password !== 'string' || !email || !password) {
+	if (typeof identifier !== 'string' || typeof password !== 'string' || !identifier || !password) {
 		return fail(400, { invalid: true });
 	}
 
 	const payload = JSON.stringify({
-		email,
+		identifier,
 		password,
 		remember: remember === 'on'
 	});
@@ -47,13 +47,13 @@ const login = async ({ cookies, request }: RequestEvent) => {
 	} catch (error) {
 		if (axios.isAxiosError(error) && error.response) {
 			const errorData = error.response.data;
-			if (errorData?.error === 'EMAIL_NOT_FOUND') {
-				return fail(400, { emailNotFound: true, email });
+			if (errorData?.error === 'IDENTIFIER_NOT_FOUND') {
+				return fail(400, { identifierNotFound: true, identifier });
 			} else if (errorData?.error === 'INVALID_PASSWORD') {
-				return fail(400, { invalidPassword: true, email });
+				return fail(400, { invalidPassword: true, identifier });
 			}
 
-			return fail(400, { credentials: true, email });
+			return fail(400, { credentials: true, identifier });
 		} else {
 			throw error;
 		}
