@@ -13,12 +13,13 @@
 	export let isWatched: boolean = false;
 	export let isBookmarked: boolean = false;
 	export let type: MovieType = 'movie';
+	export let data: any;
 
 	let poster_image: BackDropImage | null = null;
 	let isLoading = true;
 
 	const loadPosterImage = async (movieId: any, size: ImageSizeType): Promise<BackDropImage> => {
-		const poster_image_data = await getPosterImage(movieId, size, type);
+		const poster_image_data = await getPosterImage(movieId, size, type, data.token);
 		poster_image = poster_image_data;
 		return poster_image_data;
 	};

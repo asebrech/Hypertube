@@ -14,9 +14,10 @@
 
 	interface Props {
 		movie: MovieDetails | Movie;
+		data: { token: string };
 	}
 
-	let { movie }: Props = $props();
+	let { movie, data }: Props = $props();
 
 	let backdropImage: BackDropImage | null = $state(null);
 	let isLoading = $state(true);
@@ -38,7 +39,7 @@
 
 		abortController = new AbortController();
 
-		const backdrop_image_data = await getBackdropImage(movieId, size, movieType);
+		const backdrop_image_data = await getBackdropImage(movieId, size, movieType, data.token);
 		backdropImage = backdrop_image_data;
 		return backdrop_image_data;
 	};

@@ -46,7 +46,8 @@ export async function getMovieDiscover(
 	type: MovieType = 'movie',
 	releaseYear: string | undefined,
 	originalLanguage: string | undefined = undefined,
-	sortBy: string
+	sortBy: string,
+	token: string | null = null
 ) {
 	const params: Record<string, any> = {
 		page,
@@ -63,7 +64,10 @@ export async function getMovieDiscover(
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies/discover`,
-		params
+		params,
+		headers: {
+			...(token && { Authorization: `Bearer ${token}` })
+		}
 	};
 
 	try {
@@ -77,7 +81,8 @@ export async function getMovieDiscover(
 
 export async function getMovieDetails(
 	movieId: number,
-	type: MovieType = 'movie'
+	type: MovieType = 'movie',
+	token: string | null = null
 ): Promise<MovieDetails> {
 	const config = {
 		method: 'get',
@@ -85,6 +90,9 @@ export async function getMovieDetails(
 		params: {
 			lang: get(locale),
 			type: type
+		},
+		headers: {
+			...(token && { Authorization: `Bearer ${token}` })
 		}
 	};
 	try {
@@ -99,7 +107,8 @@ export async function getMovieDetails(
 export async function getBackdropImage(
 	movieId: any,
 	size: ImageSizeType,
-	type: MovieType = 'movie'
+	type: MovieType = 'movie',
+	token: string | null = null
 ) {
 	const config = {
 		method: 'get',
@@ -109,6 +118,9 @@ export async function getBackdropImage(
 			size: size,
 			lang: get(locale),
 			type: type
+		},
+		headers: {
+			...(token && { Authorization: `Bearer ${token}` })
 		}
 	};
 	try {
@@ -119,8 +131,12 @@ export async function getBackdropImage(
 		throw error;
 	}
 }
-
-export async function getPosterImage(movieId: any, size: ImageSizeType, type: MovieType = 'movie') {
+export async function getPosterImage(
+	movieId: any,
+	size: ImageSizeType,
+	type: MovieType = 'movie',
+	token: string | null = null
+) {
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies/posterImage`,
@@ -129,6 +145,9 @@ export async function getPosterImage(movieId: any, size: ImageSizeType, type: Mo
 			size: size,
 			lang: get(locale),
 			type: type
+		},
+		headers: {
+			...(token && { Authorization: `Bearer ${token}` })
 		}
 	};
 	try {
@@ -140,7 +159,12 @@ export async function getPosterImage(movieId: any, size: ImageSizeType, type: Mo
 	}
 }
 
-export async function getLogoImage(movieId: any, size: ImageSizeType, type: MovieType = 'movie') {
+export async function getLogoImage(
+	movieId: any,
+	size: ImageSizeType,
+	type: MovieType = 'movie',
+	token: string | null = null
+) {
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies/logoImage`,
@@ -149,6 +173,9 @@ export async function getLogoImage(movieId: any, size: ImageSizeType, type: Movi
 			size: size,
 			lang: get(locale),
 			type: type
+		},
+		headers: {
+			...(token && { Authorization: `Bearer ${token}` })
 		}
 	};
 	try {
@@ -160,13 +187,20 @@ export async function getLogoImage(movieId: any, size: ImageSizeType, type: Movi
 	}
 }
 
-export async function getMovieVideos(movieId: number, type: MovieType = 'movie') {
+export async function getMovieVideos(
+	movieId: number,
+	type: MovieType = 'movie',
+	token: string | null = null
+) {
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies/${movieId}/videos`,
 		params: {
 			lang: get(locale),
 			type: type
+		},
+		headers: {
+			...(token && { Authorization: `Bearer ${token}` })
 		}
 	};
 	try {
@@ -182,7 +216,8 @@ export async function getMovieSearch(
 	query: string,
 	page: number,
 	type: MovieType = 'movie',
-	options?: { signal?: AbortSignal }
+	token: string | null = null,
+	options?: { signal?: AbortSignal },
 ) {
 	const config = {
 		method: 'get',
@@ -192,6 +227,9 @@ export async function getMovieSearch(
 			lang: get(locale),
 			page: page,
 			type: type
+		},
+		headers: {
+			...(token && { Authorization: `Bearer ${token}` })
 		},
 		...(options?.signal ? { signal: options.signal } : {})
 	};
@@ -204,12 +242,15 @@ export async function getMovieSearch(
 	}
 }
 
-export async function getGenresList() {
+export async function getGenresList(token: string | null = null) {
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies/genres`,
 		params: {
 			lang: get(locale)
+		},
+		headers: {
+			...(token && { Authorization: `Bearer ${token}` })
 		}
 	};
 	try {
@@ -224,7 +265,8 @@ export async function getGenresList() {
 export async function getSimilarMovies(
 	movieId: number,
 	page: number,
-	type: MovieType = 'movie'
+	type: MovieType = 'movie',
+	token: string | null = null
 ): Promise<{ movies: Movie[]; hasMorePages: boolean }> {
 	const config = {
 		method: 'get',
@@ -234,6 +276,9 @@ export async function getSimilarMovies(
 			page: page,
 			lang: get(locale),
 			type: type
+		},
+		headers: {
+			...(token && { Authorization: `Bearer ${token}` })
 		}
 	};
 	try {
@@ -247,7 +292,8 @@ export async function getSimilarMovies(
 
 export async function getMovieCredits(
 	movieId: number,
-	type: MovieType = 'movie'
+	type: MovieType = 'movie',
+	token: string | null = null
 ): Promise<MovieCredits> {
 	const config = {
 		method: 'get',
@@ -256,6 +302,9 @@ export async function getMovieCredits(
 			tmdb_movie_id: String(movieId),
 			lang: get(locale),
 			type: type
+		},
+		headers: {
+			...(token && { Authorization: `Bearer ${token}` })
 		}
 	};
 	try {
@@ -267,13 +316,19 @@ export async function getMovieCredits(
 	}
 }
 
-export async function getPeopleDetails(castId: number): Promise<PersonDetails> {
+export async function getPeopleDetails(
+	castId: number,
+	token: string | null = null
+): Promise<PersonDetails> {
 	const config = {
 		method: 'get',
 		url: `${PUBLIC_BACK_URL}/movies/people`,
 		params: {
 			tmdb_people_id: castId,
 			lang: get(locale)
+		},
+		headers: {
+			...(token && { Authorization: `Bearer ${token}` })
 		}
 	};
 	try {
