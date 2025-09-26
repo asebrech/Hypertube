@@ -17,6 +17,7 @@
 		type: MovieType | undefined;
 		isWatched?: boolean;
 		isBookmarked?: boolean;
+		data: { token: string };
 	}
 
 	let {
@@ -25,11 +26,12 @@
 		title,
 		type,
 		isWatched = false,
-		isBookmarked = false
+		isBookmarked = false,
+		data,
 	}: Props = $props();
 
 	const loadBackdropImage = async (movieId: any, size: ImageSizeType): Promise<BackDropImage> => {
-		const backdrop_image_data = await getBackdropImage(movieId, size, type);
+		const backdrop_image_data = await getBackdropImage(movieId, size, type, data.token);
 		backdropImage = backdrop_image_data;
 		return backdrop_image_data;
 	};

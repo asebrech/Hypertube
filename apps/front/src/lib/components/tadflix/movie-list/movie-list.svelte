@@ -8,9 +8,11 @@
 	import { get } from 'svelte/store';
 
 	let {
-		movies
+		movies,
+		data,
 	}: {
 		movies: Movie[];
+		data: any
 	} = $props();
 
 	let itemsPerRow: number = $state(2);
@@ -86,6 +88,7 @@
 									isVisible={true}
 									title={movie.title}
 									type={movie?.media_type}
+									data={data}
 								/>
 							</div>
 						</HoverCardTrigger>
@@ -107,7 +110,7 @@
 									: 'hidden'}
 							>
 								<div style="width: {triggerWidth * 1.5}px;">
-									<MoviePreview movieId={movie.id} type={movie.media_type} />
+									<MoviePreview movieId={movie.id} type={movie.media_type} data={data} />
 								</div>
 							</div>
 						</HoverCardContent>

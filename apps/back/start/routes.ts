@@ -63,18 +63,15 @@ router
     router.get('people', [MoviesController, 'PeopleDetails'])
     router.get(':id', [MoviesController, 'movieDetails'])
     router.get(':id/videos', [MoviesController, 'movieVideos'])
-    router.post(':id/watched', [MoviesController, 'markAsWatched']).use(middleware.auth())
-    router.post(':id/bookmark', [MoviesController, 'toggleBookmark']).use(middleware.auth())
-    router.post(':id/progress', [MoviesController, 'saveWatchProgress']).use(middleware.auth())
-    router.get(':id/progress', [MoviesController, 'getWatchProgress']).use(middleware.auth())
-    router
-      .post(':id/subtitles/download', [MoviesController, 'downloadMultipleSubtitles'])
-      .use(middleware.auth())
-    router
-      .get(':id/subtitles/:language?', [MoviesController, 'getSubtitles'])
-      .use(middleware.auth())
+    router.post(':id/watched', [MoviesController, 'markAsWatched'])
+    router.post(':id/bookmark', [MoviesController, 'toggleBookmark'])
+    router.post(':id/progress', [MoviesController, 'saveWatchProgress'])
+    router.get(':id/progress', [MoviesController, 'getWatchProgress'])
+    router.post(':id/subtitles/download', [MoviesController, 'downloadMultipleSubtitles'])
+    router.get(':id/subtitles/:language?', [MoviesController, 'getSubtitles'])
   })
   .prefix('movies')
+  .use(middleware.auth())
 
 router
   .group(() => {
