@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import Datflix from '@/assets/datflix.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { cn } from '@/utils';
@@ -12,13 +11,14 @@
 	import { searchQuery } from '@/services/store';
 	import { goto } from '$app/navigation';
 	import { Search } from 'lucide-svelte';
+	import UserProfilePicture from '@/components/UserProfilePicture.svelte';
 
 	interface Props {
 		data: any;
-		showSkeleton?: boolean;
+		showSkeleton: boolean;
 	}
 
-	let { data, showSkeleton = false }: Props = $props();
+	let { data, showSkeleton }: Props = $props();
 	let searchOpen: boolean = $state(false);
 
 	function isLinkCurrentPage(link: Link): boolean {
@@ -30,20 +30,32 @@
 		href: string;
 	}
 
-	let links: Link[] = [
-		{ label: 'navbar.home', href: '/' },
-		{ label: 'navbar.shows', href: '/shows' },
-		{ label: 'navbar.movies', href: '/movies' },
-		{ label: 'navbar.my-list', href: '/my-list' },
-		{ label: 'navbar.browse', href: '/browse' }
-	];
+	// Add admin link if user is admin
+	let links = $derived.by(() => {
+		const baseLinks = [
+			{ label: 'navbar.home', href: '/' },
+			{ label: 'navbar.shows', href: '/shows' },
+			{ label: 'navbar.movies', href: '/movies' },
+			{ label: 'navbar.my-list', href: '/my-list' },
+			{ label: 'navbar.browse', href: '/browse' }
+		];
+		
+		if (data?.user?.isAdmin) {
+			return [
+				...baseLinks,
+				{ label: 'navbar.admin', href: '/admin' }
+			];
+		}
+		
+		return baseLinks;
+	});
 
 	// Track scroll position and direction
 	let lastScrollY = $state(0);
 	let isScrollingDown = $state(false);
 	let scrolled = $state(false);
 
-	onMount(() => {
+	$effect(() => {
 		// Set up scroll listener
 		const handleScroll = () => {
 			const currentScrollY = window.scrollY;
@@ -165,21 +177,33 @@
 		{/if}
 
 		{#if !page.data.user}
-			<a href="/login">
-				<Button variant="outline" class="border-white bg-transparent text-white hover:bg-white/10">
-					{$_('auth.sign_in')}
-				</Button>
-			</a>
+			{#if showSkeleton}
+				<Skeleton class="h-8 w-20" />
+			{:else}
+				<a href="/login">
+					<Button
+						variant="outline"
+						class="border-white bg-transparent text-white hover:bg-white/10"
+					>
+						{$_('auth.sign_in')}
+					</Button>
+				</a>
+			{/if}
 		{:else}
 			{#if showSkeleton}
 				<Skeleton class="h-8 w-8 rounded" />
 			{:else}
-				<a href="/account">
-					<div
-						class="flex h-8 w-8 items-center justify-center rounded bg-red-500 font-bold uppercase text-white"
-					>
-						:)
-					</div>
+				<a
+					href="/{data?.user?.username ? encodeURIComponent(data.user.username) : 'profile'}"
+					title="View Profile"
+				>
+					<UserProfilePicture
+						profilePicture={data?.user?.profilePicture}
+						username={data?.user?.username}
+						size="small"
+						class="cursor-pointer transition-all hover:ring-2 hover:ring-white/20"
+						alt="{data?.user?.username || 'Your'} profile"
+					/>
 				</a>
 			{/if}
 
@@ -197,13 +221,6 @@
 </nav>
 
 <style>
-	/* Smooth transitions */
-	#navbar {
-		transition:
-			background-color 0.4s ease,
-			box-shadow 0.4s ease;
-	}
-
 	/* Scroll indicator */
 	.scroll-indicator {
 		position: fixed;

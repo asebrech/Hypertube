@@ -367,6 +367,32 @@ export async function getMovieComments(
 	}
 }
 
+export async function getUserComments(
+	userId: number,
+	page: number = 1,
+	limit: number = 20,
+	token: string
+): Promise<PaginatedComments> {
+	const config = {
+		method: 'get',
+		url: `${PUBLIC_BACK_URL}/users/${userId}/comments`,
+		params: {
+			page,
+			limit
+		},
+		headers: {
+			Authorization: `Bearer ${token}`
+		}
+	};
+	try {
+		const response = await axios(config);
+		return response.data;
+	} catch (error) {
+		console.error('Error fetching user comments:', error);
+		throw error;
+	}
+}
+
 export async function createMovieComment(
 	movieId: number,
 	content: string,
@@ -431,6 +457,51 @@ export async function updateComment(
 		return response.data;
 	} catch (error) {
 		console.error('Error updating comment:', error);
+		throw error;
+	}
+}
+
+// User API functions
+export async function getUserByUsername(username: string) {
+	const config = {
+		method: 'get',
+		url: `${PUBLIC_BACK_URL}/users/profile/${encodeURIComponent(username)}`,
+		headers: {
+			'Content-Type': 'application/json'
+		}
+	};
+
+	try {
+		const response = await axios(config);
+		return response.data;
+	} catch (error: any) {
+		console.error('Error fetching user profile:', error);
+		if (error.response?.status === 404) {
+			return null; // User not found
+		}
+		throw error;
+	}
+}
+
+export async function uploadProfilePicture(file: File, token: string) {
+	const formData = new FormData();
+	formData.append('profilePicture', file);
+
+	const config = {
+		method: 'post',
+		url: `${PUBLIC_BACK_URL}/users/upload-profile-picture`,
+		data: formData,
+		headers: {
+			Authorization: `Bearer ${token}`,
+			'Content-Type': 'multipart/form-data'
+		}
+	};
+
+	try {
+		const response = await axios(config);
+		return response.data;
+	} catch (error) {
+		console.error('Error uploading profile picture:', error);
 		throw error;
 	}
 }

@@ -5,6 +5,7 @@ import {
   loginValidator,
   forgotPasswordValidator,
   resetPasswordValidator,
+  updateUserValidator,
 } from '#validators/auth'
 import User from '#models/user'
 import PasswordResetToken from '#models/password_reset_token'
@@ -13,12 +14,9 @@ import mail from '@adonisjs/mail/services/main'
 import { DateTime } from 'luxon'
 import { randomBytes } from 'node:crypto'
 import env from '#start/env'
+import ProfilePictureService from '#services/profile_picture_service'
 
 export default class AuthController {
-  /**
-   * AUTH CONTROLLER
-   * Handle Vine.js validation errors and format them for consistent API responses
-   */
   private formatValidationErrors(error: any): any[] {
     const formattedErrors: any[] = []
 
@@ -26,9 +24,7 @@ export default class AuthController {
       return formattedErrors
     }
 
-    // Vine.js errors can be structured differently
     if (Array.isArray(error.messages)) {
-      // If messages is an array of error objects
       for (const errorObj of error.messages) {
         let rule = 'validation'
         if (errorObj.rule === 'database.unique') {
@@ -46,7 +42,6 @@ export default class AuthController {
         })
       }
     } else if (typeof error.messages === 'object') {
-      // If messages is an object with field keys
       for (const [field, fieldErrors] of Object.entries(error.messages)) {
         if (Array.isArray(fieldErrors)) {
           for (const fieldError of fieldErrors) {
@@ -109,7 +104,6 @@ export default class AuthController {
 
       return response.created(user)
     } catch (error) {
-      // Handle Vine.js validation errors (including unique constraint violations)
       if (error.messages) {
         const formattedErrors = this.formatValidationErrors(error)
 
@@ -119,7 +113,6 @@ export default class AuthController {
         })
       }
 
-      // Generic error fallback
       return response.status(500).json({
         message: 'Internal server error',
         errors: [
@@ -146,40 +139,92 @@ export default class AuthController {
   async callback({ ally, params, response }: HttpContext) {
     const driverInstance = ally.use(params.provider)
 
-    /**
-     * User has denied access by canceling
-     * the login flow
-     */
     if (driverInstance.accessDenied()) {
       return 'You have cancelled the login process'
     }
 
-    /**
-     * OAuth state verification failed. This happens when the
-     * CSRF cookie gets expired.
-     */
     if (driverInstance.stateMisMatch()) {
       return 'We are unable to verify the request. Please try again'
     }
 
-    /**
-     * GitHub responded with some error
-     */
     if (driverInstance.hasError()) {
       return driverInstance.getError()
     }
 
-    /**
-     * Access user info
-     */
     const user = await driverInstance.user()
+
+    let firstName = ''
+    let lastName = ''
+
+    if (params.provider === 'github') {
+      const fullName = user.name || user.nickName || ''
+      const nameParts = fullName.trim().split(' ')
+      firstName = nameParts[0] || ''
+      lastName = nameParts.slice(1).join(' ') || ''
+    } else if (params.provider === 'google') {
+      firstName = user.original?.given_name || ''
+      lastName = user.original?.family_name || ''
+      if (!firstName && !lastName && user.name) {
+        const nameParts = user.name.trim().split(' ')
+        firstName = nameParts[0] || ''
+        lastName = nameParts.slice(1).join(' ') || ''
+      }
+    } else if (params.provider === 'fortyTwo') {
+      firstName = user.original?.first_name || ''
+      lastName = user.original?.last_name || ''
+      if (!firstName && !lastName && user.name) {
+        const nameParts = user.name.trim().split(' ')
+        firstName = nameParts[0] || ''
+        lastName = nameParts.slice(1).join(' ') || ''
+      }
+    }
+
+    let username = user.name
+    if (params.provider === 'fortyTwo') {
+      username = user.original?.login || user.nickName || user.name
+    }
+
+    let processedAvatarUrl = user.avatarUrl
+    if (user.avatarUrl) {
+      try {
+        const profilePictureService = new ProfilePictureService()
+        processedAvatarUrl = await profilePictureService.processProfilePictureUrl(user.avatarUrl)
+      } catch (error) {
+        console.error('Failed to process OAuth avatar URL:', error)
+        processedAvatarUrl = user.avatarUrl
+      }
+    }
 
     let dbUser = await User.findBy('email', user.email)
     if (!dbUser) {
       dbUser = await User.create({
         email: user.email,
-        username: user.name,
+        username: username,
+        firstName: firstName,
+        lastName: lastName,
+        profilePicture: processedAvatarUrl,
       })
+    } else {
+      let shouldSave = false
+
+      if (!dbUser.profilePicture && processedAvatarUrl) {
+        dbUser.profilePicture = processedAvatarUrl
+        shouldSave = true
+      }
+
+      if (!dbUser.firstName && firstName) {
+        dbUser.firstName = firstName
+        shouldSave = true
+      }
+
+      if (!dbUser.lastName && lastName) {
+        dbUser.lastName = lastName
+        shouldSave = true
+      }
+
+      if (shouldSave) {
+        await dbUser.save()
+      }
     }
 
     const accessToken = await User.accessTokens.create(dbUser)
@@ -202,25 +247,20 @@ export default class AuthController {
 
     const user = await User.findBy('email', email)
     if (!user) {
-      // Don't reveal if email exists or not for security
       return response.ok({ message: 'If this email exists, a password reset link has been sent.' })
     }
 
-    // Clean up old tokens for this email
     await PasswordResetToken.query().where('email', email).delete()
 
-    // Generate secure token
     const token = randomBytes(32).toString('hex')
     const expiresAt = DateTime.now().plus({ hours: 1 })
 
-    // Save token to database
     await PasswordResetToken.create({
       email,
       token,
       expiresAt,
     })
 
-    // Send email or log in development
     const frontUrl = env.get('FRONT_URL') || 'http://localhost:5173'
     const resetUrl = `${frontUrl}/reset-password?token=${token}`
     const userName = user.username || user.firstName || 'User'
@@ -232,7 +272,6 @@ export default class AuthController {
         message: 'If this email exists, a password reset link has been sent.',
       })
     } catch (error) {
-      // In development, provide the reset URL directly
       if (env.get('NODE_ENV') === 'development') {
         return response.ok({
           message: 'Password reset token created (email failed in development).',
@@ -270,5 +309,101 @@ export default class AuthController {
     await PasswordResetToken.query().where('id', resetToken.id).delete()
 
     return response.ok({ message: 'Password reset successfully.' })
+  }
+
+  async updateUser({ request, response, auth, params }: HttpContext) {
+    try {
+      const userId = params.id
+      const authenticatedUser = auth.getUserOrFail()
+
+      if (authenticatedUser.id !== parseInt(userId)) {
+        return response.forbidden({ message: 'You can only update your own profile.' })
+      }
+
+      const user = await User.findOrFail(userId)
+
+      const payload = await request.validateUsing(updateUserValidator, {
+        meta: { userId: parseInt(userId) },
+      })
+
+      const isOAuthUser = !user.password
+      if (payload.newPassword) {
+        if (isOAuthUser) {
+          return response.badRequest({
+            message:
+              'OAuth users cannot set passwords. Please continue using your OAuth provider to sign in.',
+            errors: [
+              {
+                field: 'newPassword',
+                message: 'Password changes not allowed for OAuth accounts',
+                rule: 'oauth_restriction',
+              },
+            ],
+          })
+        }
+
+        if (!payload.currentPassword) {
+          return response.badRequest({
+            message: 'Current password is required to set a new password.',
+            errors: [
+              {
+                field: 'currentPassword',
+                message: 'Current password is required',
+                rule: 'required',
+              },
+            ],
+          })
+        }
+
+        try {
+          await User.verifyCredentials(user.email, payload.currentPassword)
+        } catch {
+          return response.badRequest({
+            message: 'Current password is incorrect.',
+            errors: [
+              {
+                field: 'currentPassword',
+                message: 'Current password is incorrect',
+                rule: 'invalid',
+              },
+            ],
+          })
+        }
+
+        user.password = payload.newPassword
+      }
+
+      if (payload.email !== undefined) user.email = payload.email
+      if (payload.username !== undefined) user.username = payload.username
+      if (payload.firstName !== undefined) user.firstName = payload.firstName
+      if (payload.lastName !== undefined) user.lastName = payload.lastName
+
+      await user.save()
+
+      return response.ok({
+        message: 'Profile updated successfully.',
+        user: user.serialize(),
+      })
+    } catch (error) {
+      if (error.messages) {
+        const formattedErrors = this.formatValidationErrors(error)
+
+        return response.status(422).json({
+          message: 'Validation failed',
+          errors: formattedErrors,
+        })
+      }
+
+      return response.status(500).json({
+        message: 'Internal server error',
+        errors: [
+          {
+            field: 'general',
+            message: 'An unexpected error occurred',
+            rule: 'server_error',
+          },
+        ],
+      })
+    }
   }
 }

@@ -11,15 +11,14 @@
 	} from '$lib/components/ui/oauth-buttons/index.js';
 	import { _ } from 'svelte-i18n';
 	import {
-		validatePassword as sharedValidatePassword,
-		validateEmail as sharedValidateEmail,
-		validateUsername as sharedValidateUsername,
-		validateFirstName as sharedValidateFirstName,
-		validateLastName as sharedValidateLastName,
+		validatePassword,
+		validateEmail,
+		validateUsername,
+		validateFirstName,
+		validateLastName,
 		translateValidationErrors
 	} from '@hypertube/shared';
 
-	// Define the form data type
 	type FormData = {
 		invalid?: boolean;
 		errors?: {
@@ -77,28 +76,28 @@
 		}
 	});
 
-	function validatePassword(password: string) {
-		const errorKeys = sharedValidatePassword(password);
+	function validatePasswordWithTranslation(password: string) {
+		const errorKeys = validatePassword(password);
 		return translateValidationErrors(errorKeys, (key) => $_(key));
 	}
 
-	function validateEmail(email: string) {
-		const errorKeys = sharedValidateEmail(email);
+	function validateEmailWithTranslation(email: string) {
+		const errorKeys = validateEmail(email);
 		return translateValidationErrors(errorKeys, (key) => $_(key));
 	}
 
-	function validateUsername(username: string) {
-		const errorKeys = sharedValidateUsername(username);
+	function validateUsernameWithTranslation(username: string) {
+		const errorKeys = validateUsername(username);
 		return translateValidationErrors(errorKeys, (key) => $_(key));
 	}
 
-	function validateFirstName(firstName: string) {
-		const errorKeys = sharedValidateFirstName(firstName);
+	function validateFirstNameWithTranslation(firstName: string) {
+		const errorKeys = validateFirstName(firstName);
 		return translateValidationErrors(errorKeys, (key) => $_(key));
 	}
 
-	function validateLastName(lastName: string) {
-		const errorKeys = sharedValidateLastName(lastName);
+	function validateLastNameWithTranslation(lastName: string) {
+		const errorKeys = validateLastName(lastName);
 		return translateValidationErrors(errorKeys, (key) => $_(key));
 	}
 </script>
@@ -125,7 +124,7 @@
 								errors={firstNameErrors}
 								onfocusout={(e) => {
 									const target = e.target as HTMLInputElement;
-									clientFirstNameErrors = validateFirstName(target.value);
+									clientFirstNameErrors = validateFirstNameWithTranslation(target.value);
 								}}
 							/>
 						</div>
@@ -139,7 +138,7 @@
 								errors={lastNameErrors}
 								onfocusout={(e) => {
 									const target = e.target as HTMLInputElement;
-									clientLastNameErrors = validateLastName(target.value);
+									clientLastNameErrors = validateLastNameWithTranslation(target.value);
 								}}
 							/>
 						</div>
@@ -154,7 +153,7 @@
 							errors={usernameErrors}
 							onfocusout={(e) => {
 								const target = e.target as HTMLInputElement;
-								clientUsernameErrors = validateUsername(target.value);
+								clientUsernameErrors = validateUsernameWithTranslation(target.value);
 							}}
 						/>
 					</div>
@@ -169,7 +168,7 @@
 							errors={emailErrors}
 							onfocusout={(e) => {
 								const target = e.target as HTMLInputElement;
-								clientEmailErrors = validateEmail(target.value);
+								clientEmailErrors = validateEmailWithTranslation(target.value);
 							}}
 						/>
 					</div>
@@ -181,7 +180,7 @@
 							errors={passwordErrors}
 							onfocusout={(e) => {
 								const target = e.target as HTMLInputElement;
-								clientPasswordErrors = validatePassword(target.value);
+								clientPasswordErrors = validatePasswordWithTranslation(target.value);
 							}}
 						/>
 					</div>

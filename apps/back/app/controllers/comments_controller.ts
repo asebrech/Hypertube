@@ -20,7 +20,7 @@ class CommentsController {
       const comment = await Comment.query()
         .where('id', params.id)
         .preload('user', (userQuery) => {
-          userQuery.select('id', 'username', 'email')
+          userQuery.select('id', 'username', 'email', 'profilePicture')
         })
         .preload('movie', (movieQuery) => {
           movieQuery.select('id', 'title')
@@ -36,6 +36,7 @@ class CommentsController {
         userId: comment.user.id,
         movieId: comment.movieId,
         movieTitle: comment.movie.title,
+        profilePicture: comment.user.profilePicture || null,
       }
 
       return response.ok(formattedComment)
@@ -75,7 +76,7 @@ class CommentsController {
       const comments = await Comment.query()
         .where('movie_id', movie.id)
         .preload('user', (userQuery) => {
-          userQuery.select('id', 'username', 'email')
+          userQuery.select('id', 'username', 'email', 'profilePicture')
         })
         .orderBy('createdAt', 'desc')
         .paginate(page, limit)
@@ -88,6 +89,7 @@ class CommentsController {
         updatedAt: comment.updatedAt,
         username: comment.user.username || comment.user.email || 'Anonymous',
         userId: comment.user.id,
+        profilePicture: comment.user.profilePicture || null,
       }))
 
       return response.ok(formattedComments)
@@ -123,7 +125,7 @@ class CommentsController {
       })
 
       await comment.load('user', (userQuery) => {
-        userQuery.select('id', 'username', 'email')
+        userQuery.select('id', 'username', 'email', 'profilePicture')
       })
 
       const formattedComment = {
@@ -134,6 +136,7 @@ class CommentsController {
         username: comment.user.username || comment.user.email || 'Anonymous',
         userId: comment.user.id,
         movieId: comment.movieId,
+        profilePicture: comment.user.profilePicture || null,
       }
 
       return response.created(formattedComment)
@@ -179,7 +182,7 @@ class CommentsController {
       await comment.save()
 
       await comment.load('user', (userQuery: any) => {
-        userQuery.select('id', 'username', 'email')
+        userQuery.select('id', 'username', 'email', 'profilePicture')
       })
 
       const formattedComment = {
@@ -190,6 +193,7 @@ class CommentsController {
         username: comment.user.username || comment!.user.email || 'Anonymous',
         userId: comment.user.id,
         movieId: comment.movieId,
+        profilePicture: comment.user.profilePicture || null,
       }
 
       return response.ok(formattedComment)
@@ -199,6 +203,53 @@ class CommentsController {
         return response.badRequest({ error: 'Validation failed', messages: error.messages })
       }
       return response.badRequest({ error: 'Failed to update comment' })
+    }
+  }
+
+  /**
+   * GET /users/:user_id/comments
+   * Returns all comments for a specific user with pagination
+   */
+  async userComments({ params, request, response }: HttpContext) {
+    try {
+      const page = request.input('page', 1)
+      const limit = request.input('limit', 20)
+
+      if (!params.user_id) {
+        return response.badRequest({ error: 'User ID is required' })
+      }
+
+      const comments = await Comment.query()
+        .where('user_id', params.user_id)
+        .preload('user', (userQuery) => {
+          userQuery.select('id', 'username', 'email', 'profilePicture')
+        })
+        .preload('movie', (movieQuery) => {
+          movieQuery.select('id', 'title', 'tmdbId')
+        })
+        .orderBy('createdAt', 'desc')
+        .paginate(page, limit)
+
+      const formattedComments = comments.toJSON()
+      formattedComments.data = formattedComments.data.map((comment: any) => ({
+        id: comment.id,
+        content: comment.content,
+        createdAt: comment.createdAt,
+        updatedAt: comment.updatedAt,
+        username: comment.user.username || comment.user.email || 'Anonymous',
+        userId: comment.user.id,
+        movieId: comment.movie.tmdbId,
+        movieTitle: comment.movie.title,
+        profilePicture: comment.user.profilePicture || null,
+      }))
+
+      return response.ok(formattedComments)
+    } catch (error) {
+      console.log('User comments error:', error.message, error.code)
+      return response.badRequest({
+        error: 'Failed to fetch user comments',
+        details: error.message,
+      })
     }
   }
 }

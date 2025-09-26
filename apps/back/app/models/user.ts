@@ -35,6 +35,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare isAdmin: boolean
 
+  @column({ columnName: 'profile_picture' })
+  declare profilePicture: string | null
+
   @manyToMany(() => Movies, {
     pivotTable: 'movie_user',
     pivotColumns: ['is_watched', 'is_bookmarked', 'watch_progress_seconds', 'last_watched_at'],

@@ -8,11 +8,13 @@
 */
 
 import router from '@adonisjs/core/services/router'
+import app from '@adonisjs/core/services/app'
 import { middleware } from './kernel.js'
 
 const AuthController = () => import('#controllers/auth_controller')
 const MoviesController = () => import('#controllers/movies_controller')
 const TorrentController = () => import('#controllers/torrent_controller')
+const UsersController = () => import('#controllers/users_controller')
 const CommentsController = () => import('#controllers/comments_controller')
 
 router.get('/', async () => ({ hello: 'world' }))
@@ -24,8 +26,28 @@ router
     router.post('logout', [AuthController, 'logout']).use(middleware.auth())
     router.post('forgot-password', [AuthController, 'forgotPassword'])
     router.post('reset-password', [AuthController, 'resetPassword'])
+    router.patch(':id', [AuthController, 'updateUser']).use(middleware.auth())
   })
   .prefix('user')
+
+// Public user profile route (no authentication required)
+router.get('/users/profile/:username', [UsersController, 'profileByUsername'])
+
+// Serve uploaded profile pictures (public route)
+router.get('/uploads/profiles/:filename', [UsersController, 'serveProfilePicture'])
+
+// Protected Users routes (require authentication)
+router
+  .group(() => {
+    router.get('me', [UsersController, 'me'])
+    router.patch(':id', [UsersController, 'update']) // Update user profile
+    router.post('upload-profile-picture', [UsersController, 'uploadProfilePicture']) // Upload profile picture
+    router.get(':id', [UsersController, 'show'])
+    router.get('', [UsersController, 'index']) // GET /users?ids=1,2,3
+    router.get(':user_id/comments', [CommentsController, 'userComments']) // GET /users/:user_id/comments
+  })
+  .prefix('users')
+  .use(middleware.auth())
 
 router
   .group(() => {
@@ -73,24 +95,20 @@ router
   .group(() => {
     router.get('/:id', [TorrentController, 'torrent'])
     router.get('/:resolution/:id', [TorrentController, 'ready'])
-    router.delete('/', [TorrentController, 'deleteAll']).use(middleware.admin())
-    router.delete('/:id', [TorrentController, 'delete']).use(middleware.admin())
   })
   .prefix('torrent')
   .use(middleware.auth())
 
-router.get('/stream/*', [TorrentController, 'stream']).use(middleware.auth())
-
 router
-  .get('me', async ({ auth, response }) => {
-    try {
-      const user = auth.getUserOrFail()
-      return response.ok(user)
-    } catch {
-      return response.unauthorized({ error: 'User not found' })
-    }
+  .group(() => {
+    router.get('/', [TorrentController, 'list']).use(middleware.admin())
+    router.delete('/', [TorrentController, 'deleteAll']).use(middleware.admin())
+    router.delete('/:id', [TorrentController, 'delete']).use(middleware.admin())
   })
+  .prefix('admin/movies')
   .use(middleware.auth())
+
+router.get('/stream/*', [TorrentController, 'stream']).use(middleware.auth())
 
 router
   .get('/:provider/redirect', ({ ally, params }) => {

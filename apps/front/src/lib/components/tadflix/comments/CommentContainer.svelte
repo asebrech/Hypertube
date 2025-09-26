@@ -16,7 +16,6 @@
 
 	const { movieId, movieTitle, initialComments = [] }: CommentContainerProps = $props();
 
-	// Access user and token from page data
 	const user = $derived($page.data.user);
 	const token = $derived($page.data.token);
 	const currentUser = $derived(user?.username || user?.name || 'User');
@@ -65,7 +64,6 @@
 	};
 
 	const handleUpdateComment = (updatedComment: Comment) => {
-		// Update the comment in the local state
 		comments = comments.map((comment) =>
 			comment.id === updatedComment.id ? updatedComment : comment
 		);
@@ -77,7 +75,6 @@
 			return;
 		}
 
-		// Show confirmation modal
 		commentToDelete = commentId;
 		showDeleteModal = true;
 	};
@@ -88,7 +85,6 @@
 		isDeletingComment = true;
 		try {
 			await deleteComment(commentToDelete, token);
-			// Remove the deleted comment from the local state
 			comments = comments.filter((comment) => comment.id !== commentToDelete);
 			showDeleteModal = false;
 			commentToDelete = null;
@@ -105,7 +101,6 @@
 	};
 
 	const handleBackdropClick = (event: MouseEvent) => {
-		// Only close if clicking the backdrop itself, not the modal content
 		if (event.target === event.currentTarget) {
 			cancelDelete();
 		}
@@ -141,6 +136,7 @@
 				{movieId}
 				username={currentUser}
 				{token}
+				data={$page.data}
 				onCommentAdded={(newComment) => (comments = [newComment, ...comments])}
 			/>
 
@@ -160,6 +156,7 @@
 							{currentUser}
 							{currentUserId}
 							{token}
+							data={$page.data}
 							onDelete={handleDeleteComment}
 							onUpdate={handleUpdateComment}
 						/>

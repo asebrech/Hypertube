@@ -1,6 +1,7 @@
 {
 	"sign_in": "S'enregistrer",
 	"sign_up": "Se connecter",
+	"log_out": "Se déconnecter",
 	"comments": {
 		"title": "Commentaires",
 		"loading": "Chargement des commentaires...",
@@ -22,7 +23,17 @@
 		"save": "Sauvegarder",
 		"updating": "Mise à jour...",
 		"failed-to-update": "Échec de la mise à jour du commentaire",
-		"edited": "modifié"
+		"edited": "modifié",
+		"commented-on": "Commenté sur",
+		"previous": "Précédent",
+		"next": "Suivant",
+		"page": "Page",
+		"your-comments": "Vos Commentaires",
+		"user-comments": "Commentaires de {user}",
+		"comment": "commentaire",
+		"comments": "commentaires",
+		"no-comments-own": "Vous n'avez pas encore fait de commentaires. Commencez à regarder des films et partagez vos impressions !",
+		"no-comments-user": "{user} n'a pas encore fait de commentaires."
 	},
 	"navbar": {
 		"home": "Acceuil",
@@ -31,7 +42,8 @@
 		"news-popular": "Nouveau et populaire",
 		"my-list": "Mes listes",
 		"by-language": "Browse By Language",
-		"browse": "Parcourir"
+		"browse": "Parcourir",
+		"admin": "Tableau de Bord Admin"
 	},
 	"movie-banner": {
 		"play": "Lecture",
@@ -179,6 +191,118 @@
 			"remember_password": "Vous vous souvenez de votre mot de passe ?",
 			"back_to_login": "Retour à la connexion",
 			"error_message": "Veuillez vérifier vos informations et réessayer."
+		}
+	},
+	"account": {
+		"title": "Paramètres du compte",
+		"description": "Gérez vos informations de compte et paramètres de sécurité",
+		"profile-picture": "Photo de Profil",
+		"personal_info": "Informations personnelles",
+		"security": "Sécurité",
+		"current_password": "Mot de passe actuel",
+		"new_password": "Nouveau mot de passe",
+		"confirm_password": "Confirmer le mot de passe",
+		"save_changes": "Enregistrer les modifications",
+		"success_message": "Compte mis à jour avec succès",
+		"error_current_password": "Le mot de passe actuel est incorrect",
+		"error_general": "Échec de la mise à jour du compte. Veuillez réessayer.",
+		"required_for_password": "Requis lors du changement de mot de passe",
+		"confirm_password_required": "Veuillez confirmer votre nouveau mot de passe",
+		"passwords_do_not_match": "Les mots de passe ne correspondent pas",
+		"oauth_user_info": "Vous vous êtes connecté avec un fournisseur OAuth (Google, GitHub ou 42). Continuez à utiliser votre fournisseur OAuth pour accéder à votre compte. Les changements de mot de passe ne sont pas disponibles pour les comptes OAuth.",
+		"placeholders": {
+			"first_name": "Jean",
+			"last_name": "Dupont",
+			"username": "nom_utilisateur",
+			"email": "m@exemple.com",
+			"current_password": "Entrez le mot de passe actuel",
+			"new_password": "Entrez le nouveau mot de passe (optionnel)",
+			"confirm_password": "Confirmez le nouveau mot de passe"
+		}
+	},
+	"profile": {
+		"no_name_set": "Aucun nom défini",
+		"basic_info": "Informations de base",
+		"username": "Nom d'utilisateur",
+		"email": "E-mail",
+		"first_name": "Prénom",
+		"last_name": "Nom",
+		"member_since": "Membre depuis",
+		"activity": "Activité",
+		"movies-watched": "Films Regardés",
+		"comments_made": "Commentaires faits",
+		"bookmarked_movies": "Films mis en favoris",
+		"own_profile_notice": "Ceci est votre profil. Vous pouvez modifier vos informations en cliquant sur l'icône de modification.",
+		"unknown-user": "Utilisateur Inconnu",
+		"no-display-name": "Aucun nom d'affichage défini",
+		"member-since": "Membre depuis",
+		"modify-profile": "Modifier le profil",
+		"comments-posted": "Commentaires Postés",
+		"recently-watched-movies": "Films Récemment Regardés",
+		"your-comments": "Vos Commentaires",
+		"user-comments": "Commentaires de {username}",
+		"upload": {
+			"change-picture": "Changer la Photo",
+			"drop-here": "Déposer l'image ici",
+			"click-or-drag": "Cliquer ou glisser pour télécharger",
+			"choose-file": "Choisir un Fichier",
+			"remove": "Supprimer",
+			"requirements": "JPG, JPEG, PNG, GIF ou WebP. Max 2 Mo.",
+			"uploading": "Téléchargement...",
+			"error-image-type": "Veuillez sélectionner un fichier image",
+			"error-file-size": "Le fichier doit faire moins de 5 Mo",
+			"error-login-required": "Vous devez être connecté pour télécharger une photo de profil",
+			"error-upload-failed": "Échec du téléchargement de la photo de profil"
+		}
+	},
+	"admin": {
+		"title": "Tableau de Bord Administrateur",
+		"subtitle": "Gérer les vidéos téléchargées et le stockage du serveur",
+		"refresh": "Actualiser",
+		"total_movies": "{count} films au total",
+		"select_all": "Tout sélectionner",
+		"deselect_all": "Tout désélectionner",
+		"delete_selected": "Supprimer la sélection ({count})",
+		"delete_all": "Supprimer tous les films",
+		"downloaded_movies": "Films téléchargés",
+		"no_movies": "Aucun film téléchargé",
+		"no_movies_description": "Aucun film n'a encore été téléchargé sur le serveur.",
+		"no_search_results": "Aucun résultat trouvé",
+		"try_different_search": "Essayez d'ajuster vos termes de recherche",
+		"clear_search": "Effacer la recherche",
+		"search_placeholder": "Rechercher des films par titre ou ID TMDB...",
+		"showing_results": "Affichage de {count} sur {total} films",
+		"total_storage": "Stockage total",
+		"confirm_delete_single": "Êtes-vous sûr de vouloir supprimer ce film ? Cette action ne peut pas être annulée.",
+		"confirm_delete_all": "Êtes-vous sûr de vouloir supprimer TOUS les films ? Cette action ne peut pas être annulée et libérera tout l'espace de stockage.",
+		"confirm_delete_selected": "Êtes-vous sûr de vouloir supprimer les {count} films sélectionnés ? Cette action ne peut pas être annulée.",
+		"stats": {
+			"total_movies": "Films totaux",
+			"storage_used": "Stockage utilisé",
+			"selected": "Sélectionnés"
+		},
+		"status": {
+			"download": {
+				"completed": "Terminé",
+				"failed": "Échoué",
+				"pending": "En attente",
+				"downloading": "Téléchargement"
+			},
+			"conversion": {
+				"completed": "Terminé",
+				"failed": "Échoué",
+				"pending": "En attente",
+				"converting": "Conversion"
+			}
+		},
+		"table": {
+			"title": "Titre",
+			"status": "Statut",
+			"resolutions": "Résolutions",
+			"size": "Taille",
+			"last_accessed": "Dernier accès",
+			"created": "Créé",
+			"actions": "Actions"
 		}
 	}
 }

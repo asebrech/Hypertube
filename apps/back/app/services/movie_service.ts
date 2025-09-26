@@ -128,18 +128,105 @@ export default class MovieService {
     }
   }
 
+  async getDownloadedMovies(): Promise<
+    Array<{
+      id: number
+      tmdbId: number
+      title: string | null
+      downloadStatus: string
+      conversionStatus: string
+      resolution480pReady: boolean
+      resolution720pReady: boolean
+      resolution1080pReady: boolean
+      lastAccessedAt: DateTime | null
+      createdAt: DateTime
+      updatedAt: DateTime
+      sizeInBytes?: number
+    }>
+  > {
+    const movies = await Movie.query().whereNotNull('download_status').orderBy('created_at', 'desc')
 
+    const fs = await import('node:fs')
+    const path = await import('node:path')
+
+    const moviesWithSize = await Promise.all(
+      movies.map(async (movie) => {
+        let sizeInBytes = 0
+
+        // Calculate total size of movie files
+        const hlsPath = path.join(process.cwd(), 'hls-output', movie.tmdbId.toString())
+        const cachePath = path.join(process.cwd(), 'torrent-cache', movie.tmdbId.toString())
+
+        try {
+          if (fs.existsSync(hlsPath)) {
+            sizeInBytes += await this.calculateDirectorySize(hlsPath)
+          }
+          if (fs.existsSync(cachePath)) {
+            sizeInBytes += await this.calculateDirectorySize(cachePath)
+          }
+        } catch (error) {
+          console.warn(`Could not calculate size for movie ${movie.tmdbId}:`, error)
+        }
+
+        return {
+          id: movie.id,
+          tmdbId: movie.tmdbId,
+          title: movie.title,
+          downloadStatus: movie.downloadStatus,
+          conversionStatus: movie.conversionStatus,
+          resolution480pReady: movie.resolution480pReady,
+          resolution720pReady: movie.resolution720pReady,
+          resolution1080pReady: movie.resolution1080pReady,
+          lastAccessedAt: movie.lastAccessedAt,
+          createdAt: movie.createdAt,
+          updatedAt: movie.updatedAt,
+          sizeInBytes,
+        }
+      })
+    )
+
+    return moviesWithSize
+  }
+
+  private async calculateDirectorySize(dirPath: string): Promise<number> {
+    const fs = await import('node:fs')
+    const path = await import('node:path')
+
+    let totalSize = 0
+
+    try {
+      const files = fs.readdirSync(dirPath)
+
+      for (const file of files) {
+        const filePath = path.join(dirPath, file)
+        const stats = fs.statSync(filePath)
+
+        if (stats.isDirectory()) {
+          totalSize += await this.calculateDirectorySize(filePath)
+        } else {
+          totalSize += stats.size
+        }
+      }
+    } catch (error) {
+      // Directory doesn't exist or can't be read
+      return 0
+    }
+
+    return totalSize
+  }
 
   async resetInterruptedConversions(): Promise<void> {
     try {
       const convertingMovies = await Movie.query().where('conversion_status', 'converting')
-      
+
       for (const movie of convertingMovies) {
         movie.conversionStatus = 'pending'
         await movie.save()
-        console.log(`Reset conversion status for movie ${movie.tmdbId} from 'converting' to 'pending'`)
+        console.log(
+          `Reset conversion status for movie ${movie.tmdbId} from 'converting' to 'pending'`
+        )
       }
-      
+
       if (convertingMovies.length > 0) {
         console.log(`Reset ${convertingMovies.length} interrupted movie conversions to pending`)
       }

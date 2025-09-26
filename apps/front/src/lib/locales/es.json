@@ -1,6 +1,7 @@
 {
 	"sign_up": "Registrarse",
 	"sign_in": "Iniciar sesión",
+	"log_out": "Cerrar sesión",
 	"comments": {
 		"title": "Comentarios",
 		"loading": "Cargando comentarios...",
@@ -22,7 +23,17 @@
 		"save": "Guardar",
 		"updating": "Actualizando...",
 		"failed-to-update": "Error al actualizar el comentario",
-		"edited": "editado"
+		"edited": "editado",
+		"commented-on": "Comentado en",
+		"previous": "Anterior",
+		"next": "Siguiente",
+		"page": "Página",
+		"your-comments": "Tus Comentarios",
+		"user-comments": "Comentarios de {user}",
+		"comment": "comentario",
+		"comments": "comentarios",
+		"no-comments-own": "Aún no has hecho comentarios. ¡Comienza a ver películas y comparte tus pensamientos!",
+		"no-comments-user": "{user} aún no ha hecho comentarios."
 	},
 	"navbar": {
 		"home": "Inicio",
@@ -31,7 +42,8 @@
 		"news-popular": "Noticias y populares",
 		"my-list": "Mis listas",
 		"by-language": "Explorar por idioma",
-		"browse": "Explorar"
+		"browse": "Explorar",
+		"admin": "Panel de Administración"
 	},
 	"movie-banner": {
 		"play": "Reproducir",
@@ -179,6 +191,118 @@
 			"remember_password": "¿Recuerdas tu contraseña?",
 			"back_to_login": "Volver al inicio de sesión",
 			"error_message": "Por favor verifica tu información e intenta de nuevo."
+		}
+	},
+	"account": {
+		"title": "Configuración de cuenta",
+		"description": "Gestiona tu información de cuenta y configuración de seguridad",
+		"profile-picture": "Foto de Perfil",
+		"personal_info": "Información personal",
+		"security": "Seguridad",
+		"current_password": "Contraseña actual",
+		"new_password": "Nueva contraseña",
+		"confirm_password": "Confirmar contraseña",
+		"save_changes": "Guardar cambios",
+		"success_message": "Cuenta actualizada exitosamente",
+		"error_current_password": "La contraseña actual es incorrecta",
+		"error_general": "Error al actualizar la cuenta. Por favor intenta de nuevo.",
+		"required_for_password": "Requerido al cambiar contraseña",
+		"confirm_password_required": "Por favor confirma tu nueva contraseña",
+		"passwords_do_not_match": "Las contraseñas no coinciden",
+		"oauth_user_info": "Iniciaste sesión con un proveedor OAuth (Google, GitHub, o 42). Continúa usando tu proveedor OAuth para acceder a tu cuenta. Los cambios de contraseña no están disponibles para cuentas OAuth.",
+		"placeholders": {
+			"first_name": "Juan",
+			"last_name": "Pérez",
+			"username": "nombre_usuario",
+			"email": "m@ejemplo.com",
+			"current_password": "Ingresa contraseña actual",
+			"new_password": "Ingresa nueva contraseña (opcional)",
+			"confirm_password": "Confirma nueva contraseña"
+		}
+	},
+	"profile": {
+		"no_name_set": "No hay nombre establecido",
+		"basic_info": "Información Básica",
+		"username": "Nombre de usuario",
+		"email": "Correo electrónico",
+		"first_name": "Nombre",
+		"last_name": "Apellido",
+		"member_since": "Miembro desde",
+		"activity": "Actividad",
+		"movies-watched": "Películas Vistas",
+		"comments_made": "Comentarios Hechos",
+		"bookmarked_movies": "Películas Guardadas",
+		"own_profile_notice": "Este es tu perfil. Puedes editar tu información haciendo clic en el ícono de edición.",
+		"unknown-user": "Usuario Desconocido",
+		"no-display-name": "No hay nombre de visualización establecido",
+		"member-since": "Miembro desde",
+		"modify-profile": "Modificar el perfil",
+		"comments-posted": "Comentarios Publicados",
+		"recently-watched-movies": "Películas Vistas Recientemente",
+		"your-comments": "Tus Comentarios",
+		"user-comments": "Comentarios de {username}",
+		"upload": {
+			"change-picture": "Cambiar Imagen",
+			"drop-here": "Soltar imagen aquí",
+			"click-or-drag": "Hacer clic o arrastrar para subir",
+			"choose-file": "Elegir Archivo",
+			"remove": "Eliminar",
+			"requirements": "JPG, JPEG, PNG, GIF o WebP. Máx. 2MB.",
+			"uploading": "Subiendo...",
+			"error-image-type": "Por favor selecciona un archivo de imagen",
+			"error-file-size": "El archivo debe ser menor de 5MB",
+			"error-login-required": "Debes iniciar sesión para subir una foto de perfil",
+			"error-upload-failed": "Error al subir la foto de perfil"
+		}
+	},
+	"admin": {
+		"title": "Panel de Administración",
+		"subtitle": "Gestionar vídeos descargados y almacenamiento del servidor",
+		"refresh": "Actualizar",
+		"total_movies": "{count} películas en total",
+		"select_all": "Seleccionar Todo",
+		"deselect_all": "Deseleccionar Todo",
+		"delete_selected": "Eliminar Seleccionadas ({count})",
+		"delete_all": "Eliminar Todas las Películas",
+		"downloaded_movies": "Películas Descargadas",
+		"no_movies": "No hay películas descargadas",
+		"no_movies_description": "Aún no se han descargado películas en el servidor.",
+		"no_search_results": "No se encontraron resultados",
+		"try_different_search": "Intenta ajustar tus términos de búsqueda",
+		"clear_search": "Limpiar búsqueda",
+		"search_placeholder": "Buscar películas por título o ID TMDB...",
+		"showing_results": "Mostrando {count} de {total} películas",
+		"total_storage": "Almacenamiento total",
+		"confirm_delete_single": "¿Estás seguro de que quieres eliminar esta película? Esta acción no se puede deshacer.",
+		"confirm_delete_all": "¿Estás seguro de que quieres eliminar TODAS las películas? Esta acción no se puede deshacer y liberará todo el espacio de almacenamiento.",
+		"confirm_delete_selected": "¿Estás seguro de que quieres eliminar las {count} películas seleccionadas? Esta acción no se puede deshacer.",
+		"stats": {
+			"total_movies": "Películas Totales",
+			"storage_used": "Almacenamiento Usado",
+			"selected": "Seleccionadas"
+		},
+		"status": {
+			"download": {
+				"completed": "Completo",
+				"failed": "Fallido",
+				"pending": "Pendiente",
+				"downloading": "Descargando"
+			},
+			"conversion": {
+				"completed": "Completo",
+				"failed": "Fallido",
+				"pending": "Pendiente",
+				"converting": "Convirtiendo"
+			}
+		},
+		"table": {
+			"title": "Título",
+			"status": "Estado",
+			"resolutions": "Resoluciones",
+			"size": "Tamaño",
+			"last_accessed": "Último Acceso",
+			"created": "Creado",
+			"actions": "Acciones"
 		}
 	}
 }

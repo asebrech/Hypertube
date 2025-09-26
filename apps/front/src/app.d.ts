@@ -7,7 +7,11 @@ declare global {
 			user: {
 				id: string;
 				email: string;
-				// role: string;
+				firstName?: string;
+				lastName?: string;
+				username?: string;
+				isAdmin: boolean;
+				profilePicture?: string;
 			} | null;
 		}
 		// interface PageData {}

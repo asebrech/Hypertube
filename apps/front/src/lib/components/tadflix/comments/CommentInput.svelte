@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createMovieComment, updateComment } from '$lib/services/api';
 	import { SendIcon, CheckIcon, XIcon, Loader2 } from 'lucide-svelte';
-	import UserAvatar from './UserAvatar.svelte';
+	import UserProfilePicture from '$lib/components/UserProfilePicture.svelte';
 	import type { Comment } from '@hypertube/shared';
 	import { _ } from 'svelte-i18n';
 
@@ -9,6 +9,7 @@
 		movieId?: number;
 		token: string;
 		username: string;
+		data?: any;
 		onCommentAdded?: (comment: Comment) => void;
 		// Edit mode props
 		isEditMode?: boolean;
@@ -24,6 +25,7 @@
 		movieId, 
 		token, 
 		username, 
+		data,
 		onCommentAdded, 
 		isEditMode = false, 
 		existingComment, 
@@ -96,7 +98,12 @@
 	></textarea>
 	{#if showAvatar}
 		<div class="flex flex-col justify-between">
-			<UserAvatar {username} size="medium" />
+			<UserProfilePicture
+				profilePicture={data?.user?.profilePicture}
+				username={data?.user?.username || username}
+				size="medium"
+				alt="{data?.user?.username || username}'s profile"
+			/>
 			<div class="flex gap-2">
 				{#if isEditMode}
 					<!-- Save button -->

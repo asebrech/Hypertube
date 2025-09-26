@@ -1,5 +1,4 @@
 import { BaseModel, column } from '@adonisjs/lucid/orm'
-import { UserMovieAction } from '@hypertube/shared'
 import { DateTime } from 'luxon'
 
 export default class MovieUser extends BaseModel {
@@ -12,7 +11,10 @@ export default class MovieUser extends BaseModel {
   declare movie_id: number
 
   @column()
-  declare usersAction: UserMovieAction
+  declare is_watched: boolean
+
+  @column()
+  declare is_bookmarked: boolean
 
   @column()
   declare watch_progress_seconds: number | null

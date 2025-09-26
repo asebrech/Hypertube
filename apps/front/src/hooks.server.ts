@@ -11,7 +11,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	const config = {
 		method: 'get',
-		url: `${SECRET_BACK_URL}/me`,
+		url: `${SECRET_BACK_URL}/users/me`,
 		headers: {
 			Authorization: `Bearer ${session}`
 		}
@@ -19,10 +19,15 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	try {
 		const response = await axios.request(config);
-		const { email, id } = response.data;
+		const { email, id, firstName, lastName, username, isAdmin, profilePicture } = response.data;
 		event.locals.user = {
 			email,
-			id
+			id,
+			firstName,
+			lastName,
+			username,
+			isAdmin,
+			profilePicture
 		};
 	} catch (error) {
 		if (axios.isAxiosError(error) && error.response && error.response.status === 401) {

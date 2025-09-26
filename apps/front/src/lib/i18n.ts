@@ -1,4 +1,4 @@
-import { register, init, getLocaleFromNavigator } from 'svelte-i18n';
+import { register, init, getLocaleFromNavigator, waitLocale } from 'svelte-i18n';
 import { lang } from '@hypertube/shared';
 
 for (const locale of Object.values(lang)) {
@@ -10,8 +10,13 @@ if (typeof window !== 'undefined') {
 	savedLocale = localStorage.getItem('lang');
 }
 
-// Export the initialization promise
-export const i18nReady = init({
+const targetLocale = savedLocale || getLocaleFromNavigator() || 'en-GB';
+
+// Initialize and wait for the locale to be loaded
+init({
 	fallbackLocale: 'en-GB',
-	initialLocale: savedLocale || getLocaleFromNavigator()
+	initialLocale: targetLocale
 });
+
+// Export the initialization promise that waits for the locale to be fully loaded
+export const i18nReady = waitLocale(targetLocale);

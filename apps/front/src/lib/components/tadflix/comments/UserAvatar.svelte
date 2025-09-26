@@ -3,36 +3,30 @@
 		username: string;
 		size?: 'small' | 'medium' | 'large';
 		class?: string;
+		clickable?: boolean;
+		onclick?: () => void;
 	}
 
-	const { username, size = 'medium', class: className = '' }: UserAvatarProps = $props();
+	const {
+		username,
+		size = 'medium',
+		class: className = '',
+		clickable = false,
+		onclick
+	}: UserAvatarProps = $props();
 
 	// Generate avatar based on username initials
 	const getInitials = (name: string): string => {
 		return name
 			.split(' ')
-			.map(word => word.charAt(0))
+			.map((word) => word.charAt(0))
 			.join('')
 			.toUpperCase()
 			.slice(0, 2);
 	};
 
-	// Generate a consistent color based on username
-	const getBackgroundColor = (name: string): string => {
-		const colors = [
-			'#E53935', '#D81B60', '#8E24AA', '#5E35B1', '#3949AB',
-			'#1E88E5', '#039BE5', '#00ACC1', '#00897B', '#43A047',
-			'#7CB342', '#C0CA33', '#FDD835', '#FFB300', '#FB8C00',
-			'#F4511E', '#6D4C41', '#757575', '#546E7A'
-		];
-		
-		let hash = 0;
-		for (let i = 0; i < name.length; i++) {
-			hash = name.charCodeAt(i) + ((hash << 5) - hash);
-		}
-		const index = Math.abs(hash) % colors.length;
-		return colors[index];
-	};
+	// Use consistent red background like other components
+	const backgroundColor = '#DC2626'; // red-600
 
 	const sizeClasses = {
 		small: 'w-8 h-8 text-xs',
@@ -40,13 +34,28 @@
 		large: 'w-16 h-16 text-base'
 	};
 
-	const avatarStyle = $derived(`background-color: ${getBackgroundColor(username)}`);
+	const avatarStyle = $derived(`background-color: ${backgroundColor}`);
 	const initials = $derived(getInitials(username));
 </script>
 
-<div 
-	class="rounded-md flex items-center justify-center text-white font-medium {sizeClasses[size]} {className}"
-	style={avatarStyle}
->
-	{initials}
-</div>
+{#if clickable}
+	<button
+		{onclick}
+		class="flex items-center justify-center rounded-md font-medium text-white transition-opacity hover:opacity-80 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none {sizeClasses[
+			size
+		]} {className}"
+		style={avatarStyle}
+		aria-label={`View ${username}'s profile`}
+	>
+		{initials}
+	</button>
+{:else}
+	<div
+		class="flex items-center justify-center rounded-md font-medium text-white {sizeClasses[
+			size
+		]} {className}"
+		style={avatarStyle}
+	>
+		{initials}
+	</div>
+{/if}

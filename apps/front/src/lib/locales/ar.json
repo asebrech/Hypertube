@@ -23,7 +23,17 @@
 		"save": "حفظ",
 		"updating": "جاري التحديث...",
 		"failed-to-update": "فشل في تحديث التعليق",
-		"edited": "معدل"
+		"edited": "معدل",
+		"commented-on": "علق على",
+		"previous": "السابق",
+		"next": "التالي",
+		"page": "صفحة",
+		"your-comments": "تعليقاتك",
+		"user-comments": "تعليقات {user}",
+		"comment": "تعليق",
+		"comments": "تعليقات",
+		"no-comments-own": "لم تقم بأي تعليقات بعد. ابدأ بمشاهدة الأفلام وشارك أفكارك!",
+		"no-comments-user": "{user} لم يقم بأي تعليقات بعد."
 	},
 	"navbar": {
 		"home": "الرئيسية",
@@ -32,7 +42,8 @@
 		"news-popular": "أخبار وشائع",
 		"my-list": "قائمتي",
 		"by-language": "استكشاف حسب اللغة",
-		"browse": "تصفح"
+		"browse": "تصفح",
+		"admin": "لوحة الإدارة"
 	},
 	"movie-banner": {
 		"play": "تشغيل",
@@ -180,6 +191,118 @@
 			"remember_password": "تذكرت كلمة المرور؟",
 			"back_to_login": "العودة لتسجيل الدخول",
 			"error_message": "يرجى التحقق من معلوماتك والمحاولة مرة أخرى."
+		}
+	},
+	"account": {
+		"title": "إعدادات الحساب",
+		"description": "إدارة معلومات حسابك وإعدادات الأمان",
+		"profile-picture": "صورة الملف الشخصي",
+		"personal_info": "المعلومات الشخصية",
+		"security": "الأمان",
+		"current_password": "كلمة المرور الحالية",
+		"new_password": "كلمة المرور الجديدة",
+		"confirm_password": "تأكيد كلمة المرور",
+		"save_changes": "حفظ التغييرات",
+		"success_message": "تم تحديث الحساب بنجاح",
+		"error_current_password": "كلمة المرور الحالية غير صحيحة",
+		"error_general": "فشل في تحديث الحساب. يرجى المحاولة مرة أخرى.",
+		"required_for_password": "مطلوب عند تغيير كلمة المرور",
+		"confirm_password_required": "يرجى تأكيد كلمة المرور الجديدة",
+		"passwords_do_not_match": "كلمات المرور غير متطابقة",
+		"oauth_user_info": "لقد قمت بتسجيل الدخول باستخدام مزود OAuth (Google أو GitHub أو 42). تابع استخدام مزود OAuth الخاص بك للوصول إلى حسابك. تغيير كلمة المرور غير متاح لحسابات OAuth.",
+		"placeholders": {
+			"first_name": "أحمد",
+			"last_name": "علي",
+			"username": "اسم_المستخدم",
+			"email": "m@مثال.com",
+			"current_password": "أدخل كلمة المرور الحالية",
+			"new_password": "أدخل كلمة المرور الجديدة (اختياري)",
+			"confirm_password": "أكد كلمة المرور الجديدة"
+		}
+	},
+	"profile": {
+		"no_name_set": "لم يتم تحديد اسم",
+		"basic_info": "المعلومات الأساسية",
+		"username": "اسم المستخدم",
+		"email": "البريد الإلكتروني",
+		"first_name": "الاسم الأول",
+		"last_name": "اسم العائلة",
+		"member_since": "عضو منذ",
+		"activity": "النشاط",
+		"movies-watched": "الأفلام المشاهدة",
+		"comments_made": "التعليقات المكتوبة",
+		"bookmarked_movies": "الأفلام المحفوظة",
+		"own_profile_notice": "هذا ملفك الشخصي. يمكنك تعديل معلوماتك بالنقر على أيقونة التعديل.",
+		"unknown-user": "مستخدم غير معروف",
+		"no-display-name": "لم يتم تعيين اسم العرض",
+		"member-since": "عضو منذ",
+		"modify-profile": "تعديل الملف الشخصي",
+		"comments-posted": "التعليقات المنشورة",
+		"recently-watched-movies": "الأفلام المشاهدة مؤخراً",
+		"your-comments": "تعليقاتك",
+		"user-comments": "تعليقات {username}",
+		"upload": {
+			"change-picture": "تغيير الصورة",
+			"drop-here": "إسقاط الصورة هنا",
+			"click-or-drag": "انقر أو اسحب للتحميل",
+			"choose-file": "اختر ملف",
+			"remove": "إزالة",
+			"requirements": "JPG، JPEG، PNG، GIF أو WebP. الحد الأقصى 2 ميجابايت.",
+			"uploading": "جاري الرفع...",
+			"error-image-type": "يرجى اختيار ملف صورة",
+			"error-file-size": "يجب أن يكون حجم الملف أقل من 5 ميجابايت",
+			"error-login-required": "يجب أن تسجل الدخول لرفع صورة الملف الشخصي",
+			"error-upload-failed": "فشل في رفع صورة الملف الشخصي"
+		}
+	},
+	"admin": {
+		"title": "لوحة الإدارة",
+		"subtitle": "إدارة الفيديوهات المحملة وتخزين الخادم",
+		"refresh": "تحديث",
+		"total_movies": "{count} أفلام إجمالاً",
+		"select_all": "تحديد الكل",
+		"deselect_all": "إلغاء تحديد الكل",
+		"delete_selected": "حذف المحدد ({count})",
+		"delete_all": "حذف جميع الأفلام",
+		"downloaded_movies": "الأفلام المحملة",
+		"no_movies": "لا توجد أفلام محملة",
+		"no_movies_description": "لم يتم تحميل أي أفلام على الخادم بعد.",
+		"no_search_results": "لم يتم العثور على نتائج",
+		"try_different_search": "حاول تعديل مصطلحات البحث",
+		"clear_search": "مسح البحث",
+		"search_placeholder": "البحث عن الأفلام بالعنوان أو معرف TMDB...",
+		"showing_results": "عرض {count} من {total} فيلم",
+		"total_storage": "إجمالي التخزين",
+		"confirm_delete_single": "هل أنت متأكد من أنك تريد حذف هذا الفيلم؟ لا يمكن التراجع عن هذا الإجراء.",
+		"confirm_delete_all": "هل أنت متأكد من أنك تريد حذف جميع الأفلام؟ لا يمكن التراجع عن هذا الإجراء وسيتم تحرير جميع مساحة التخزين.",
+		"confirm_delete_selected": "هل أنت متأكد من أنك تريد حذف {count} أفلام محددة؟ لا يمكن التراجع عن هذا الإجراء.",
+		"stats": {
+			"total_movies": "إجمالي الأفلام",
+			"storage_used": "التخزين المستخدم",
+			"selected": "محدد"
+		},
+		"status": {
+			"download": {
+				"completed": "مكتمل",
+				"failed": "فشل",
+				"pending": "في الانتظار",
+				"downloading": "جاري التحميل"
+			},
+			"conversion": {
+				"completed": "مكتمل",
+				"failed": "فشل",
+				"pending": "في الانتظار",
+				"converting": "جاري التحويل"
+			}
+		},
+		"table": {
+			"title": "العنوان",
+			"status": "الحالة",
+			"resolutions": "الدقة",
+			"size": "الحجم",
+			"last_accessed": "آخر وصول",
+			"created": "تاريخ الإنشاء",
+			"actions": "الإجراءات"
 		}
 	}
 }
