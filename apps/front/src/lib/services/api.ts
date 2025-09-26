@@ -428,26 +428,6 @@ export async function getUserByUsername(username: string) {
 	}
 }
 
-export async function updateUserProfile(userId: number, userData: any, token: string) {
-	const config = {
-		method: 'patch',
-		url: `${PUBLIC_BACK_URL}/users/${userId}`,
-		data: userData,
-		headers: {
-			Authorization: `Bearer ${token}`,
-			'Content-Type': 'application/json'
-		}
-	};
-
-	try {
-		const response = await axios(config);
-		return response.data;
-	} catch (error) {
-		console.error('Error updating user profile:', error);
-		throw error;
-	}
-}
-
 export async function uploadProfilePicture(file: File, token: string) {
 	const formData = new FormData();
 	formData.append('profilePicture', file);
