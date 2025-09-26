@@ -19,11 +19,13 @@
 	let {
 		movies,
 		genreId,
-		variant = 'default'
+		variant = 'default',
+		data
 	}: {
 		movies: Movie[];
 		genreId: number;
 		variant?: 'default' | 'top-ten';
+		data: any;
 	} = $props();
 
 	let visibleSlides = $state<number[]>([]);
@@ -130,8 +132,9 @@
 											isVisible={visibleSlides.includes(index)}
 											orderNumber={index ? index : 10}
 											type={movie.media_type}
-																		isWatched={movie.is_watched || false}
-																		isBookmarked={movie.is_bookmarked || false}
+											isWatched={movie.is_watched || false}
+											isBookmarked={movie.is_bookmarked || false}
+											data={data}
 										/>
 									{:else}
 										<MovieCard
@@ -139,8 +142,9 @@
 											isVisible={visibleSlides.includes(index)}
 											title={movie.media_type === 'movie' ? movie.title : movie.name}
 											type={movie.media_type}
-																		isWatched={movie.is_watched || false}
-																		isBookmarked={movie.is_bookmarked || false}
+											isWatched={movie.is_watched || false}
+											isBookmarked={movie.is_bookmarked || false}
+											data={data}
 										/>
 									{/if}
 								</div>
@@ -164,7 +168,7 @@
 										: 'hidden'}
 								>
 									<div style="width: {triggerWidth * 1.5}px;">
-										<MoviePreview movieId={movie.id} type={movie.media_type} />
+										<MoviePreview movieId={movie.id} type={movie.media_type} data={data} />
 									</div>
 								</div>
 							</HoverCardContent>

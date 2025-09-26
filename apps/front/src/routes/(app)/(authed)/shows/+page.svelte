@@ -42,9 +42,9 @@
 		isLoading = true;
 		await loadMoviePage();
 		let idx = Math.floor(Math.random() * movieGenres[0].movies.length);
-		movieBanner = await getMovieDetails(movieGenres[0].movies[idx].id, 'tv');
-		movieLogo = await getLogoImage(movieGenres[0].movies[idx].id, 'small', 'tv');
-		movieVideoResponse = await getMovieVideos(movieGenres[0].movies[idx].id, 'tv');
+		movieBanner = await getMovieDetails(movieGenres[0].movies[idx].id, 'tv', data.token);
+		movieLogo = await getLogoImage(movieGenres[0].movies[idx].id, 'small', 'tv', data.token);
+		movieVideoResponse = await getMovieVideos(movieGenres[0].movies[idx].id, 'tv', data.token);
 		isLoading = false;
 		observeSentinel();
 	});
@@ -76,9 +76,9 @@
 		<div class="flex w-full flex-col gap-[15px] overflow-hidden">
 			<h2 class="text-l ml-[58px] font-medium">{genre.name}</h2>
 			{#if genre.id == 0}
-				<MovieCarousel movies={genre.movies} genreId={genre.id} variant={'top-ten'} />
+				<MovieCarousel movies={genre.movies} genreId={genre.id} variant={'top-ten'} data={data} />
 			{:else}
-				<MovieCarousel movies={genre.movies} genreId={genre.id} />
+				<MovieCarousel movies={genre.movies} genreId={genre.id} data={data}/>
 			{/if}
 		</div>
 	{/each}
@@ -87,4 +87,4 @@
 <div bind:this={sentinel}></div>
 
 <!-- Movie Modal -->
-<MovieModal />
+<MovieModal data={data} />
