@@ -184,7 +184,7 @@
 						profileUsername={data.profileUser.username}
 						isOwnProfile={data.isOwnProfile}
 						compact={true}
-						maxHeight="500px"
+						maxHeight="none"
 						showMovieContext={true}
 						showHeader={false}
 					/>
