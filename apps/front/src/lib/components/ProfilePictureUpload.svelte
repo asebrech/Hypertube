@@ -41,12 +41,12 @@
 		if (!file) return;
 
 		if (!file.type.startsWith('image/')) {
-			error = 'Please select an image file';
+			error = $_('profile.upload.error-image-type');
 			return;
 		}
 
 		if (file.size > 5 * 1024 * 1024) {
-			error = 'File must be less than 5MB';
+			error = $_('profile.upload.error-file-size');
 			return;
 		}
 
@@ -57,7 +57,7 @@
 			const token = $page.data.user?.token || $page.data.token;
 
 			if (!token) {
-				error = 'You must be logged in to upload a profile picture';
+				error = $_('profile.upload.error-login-required');
 				return;
 			}
 
@@ -71,7 +71,7 @@
 			});
 		} catch (err: any) {
 			console.error('Upload error:', err);
-			error = err.response?.data?.message || 'Failed to upload profile picture';
+			error = err.response?.data?.message || $_('profile.upload.error-upload-failed');
 		} finally {
 			isUploading = false;
 		}
@@ -117,7 +117,7 @@
 
 	<!-- Upload Button -->
 	<Button variant="outline" size="sm" onclick={triggerFileInput} disabled={isUploading}>
-		{isUploading ? 'Uploading...' : $_('profile.upload.choose-file')}
+		{isUploading ? $_('profile.upload.uploading') : $_('profile.upload.choose-file')}
 	</Button>
 
 	<!-- Error Message -->

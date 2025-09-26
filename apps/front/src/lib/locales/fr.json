@@ -24,6 +24,10 @@
 		"updating": "Mise à jour...",
 		"failed-to-update": "Échec de la mise à jour du commentaire",
 		"edited": "modifié",
+		"commented-on": "Commenté sur",
+		"previous": "Précédent",
+		"next": "Suivant",
+		"page": "Page",
 		"your-comments": "Vos Commentaires",
 		"user-comments": "Commentaires de {user}",
 		"comment": "commentaire",
@@ -243,7 +247,12 @@
 			"click-or-drag": "Cliquer ou glisser pour télécharger",
 			"choose-file": "Choisir un Fichier",
 			"remove": "Supprimer",
-			"requirements": "JPG, JPEG, PNG, GIF ou WebP. Max 2 Mo."
+			"requirements": "JPG, JPEG, PNG, GIF ou WebP. Max 2 Mo.",
+			"uploading": "Téléchargement...",
+			"error-image-type": "Veuillez sélectionner un fichier image",
+			"error-file-size": "Le fichier doit faire moins de 5 Mo",
+			"error-login-required": "Vous devez être connecté pour télécharger une photo de profil",
+			"error-upload-failed": "Échec du téléchargement de la photo de profil"
 		}
 	},
 	"admin": {

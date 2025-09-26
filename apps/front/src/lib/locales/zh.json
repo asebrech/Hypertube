@@ -24,6 +24,10 @@
 		"updating": "更新中...",
 		"failed-to-update": "更新评论失败",
 		"edited": "已编辑",
+		"commented-on": "评论于",
+		"previous": "上一页",
+		"next": "下一页",
+		"page": "页",
 		"your-comments": "您的评论",
 		"user-comments": "{user}的评论",
 		"comment": "评论",
@@ -234,7 +238,12 @@
 			"click-or-drag": "点击或拖拽上传",
 			"choose-file": "选择文件",
 			"remove": "移除",
-			"requirements": "JPG、JPEG、PNG、GIF 或 WebP 格式。最大 2MB。"
+			"requirements": "JPG、JPEG、PNG、GIF 或 WebP 格式。最大 2MB。",
+			"uploading": "上传中...",
+			"error-image-type": "请选择图片文件",
+			"error-file-size": "文件大小必须小于5MB",
+			"error-login-required": "您必须登录才能上传头像",
+			"error-upload-failed": "头像上传失败"
 		}
 	},
 	"admin": {

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { EditIcon, XIcon } from 'lucide-svelte';
-	import UserAvatar from './UserAvatar.svelte';
+	import UserProfilePicture from '$lib/components/UserProfilePicture.svelte';
 	import CommentInput from './CommentInput.svelte';
 	import type { Comment } from '@hypertube/shared';
 	import { _, locale } from 'svelte-i18n';
@@ -11,11 +11,12 @@
 		currentUser?: string;
 		currentUserId?: number;
 		token?: string;
+		data?: any;
 		onDelete?: (commentId: number) => void;
 		onUpdate?: (updatedComment: Comment) => void;
 	}
 
-	const { comment, currentUserId, token, onDelete, onUpdate }: CommentItemProps = $props();
+	const { comment, currentUserId, token, data, onDelete, onUpdate }: CommentItemProps = $props();
 
 	let isEditing = $state(false);
 
@@ -59,12 +60,19 @@
 		class={`flex w-full gap-6 bg-[#141414] p-4 md:max-w-[80%] md:p-6 ${isOwner ? 'ml-auto' : ''}`}
 	>
 		<!-- User Avatar -->
-		<UserAvatar
-			username={comment.username}
-			size="medium"
-			clickable={true}
+		<button
 			onclick={navigateToProfile}
-		/>
+			class="cursor-pointer transition-all hover:ring-2 hover:ring-white/20 rounded-lg"
+			aria-label={`View ${comment.username}'s profile`}
+		>
+			<UserProfilePicture
+				profilePicture={comment.profilePicture}
+				username={comment.username}
+				size="medium"
+				class="cursor-pointer transition-all hover:ring-2 hover:ring-white/20"
+				alt="{comment.username}'s profile"
+			/>
+		</button>
 
 		<!-- Comment Content -->
 		<div class="flex flex-1 flex-col gap-2">
@@ -73,6 +81,7 @@
 				<CommentInput
 					token={token || ''}
 					username={comment.username}
+					data={data}
 					isEditMode={true}
 					existingComment={comment}
 					onCommentUpdated={handleCommentUpdated}

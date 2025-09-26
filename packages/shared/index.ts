@@ -5,8 +5,6 @@ export * from './src/models/user.js';
 
 //Validators
 export * from './src/validators/user.js';
-//Validators
-export * from './src/validators/user.js';
 //export lang.json
 import lang from './src/lang.json';
 export { lang };

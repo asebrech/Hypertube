@@ -24,6 +24,10 @@
 		"updating": "جاري التحديث...",
 		"failed-to-update": "فشل في تحديث التعليق",
 		"edited": "معدل",
+		"commented-on": "علق على",
+		"previous": "السابق",
+		"next": "التالي",
+		"page": "صفحة",
 		"your-comments": "تعليقاتك",
 		"user-comments": "تعليقات {user}",
 		"comment": "تعليق",
@@ -243,7 +247,12 @@
 			"click-or-drag": "انقر أو اسحب للتحميل",
 			"choose-file": "اختر ملف",
 			"remove": "إزالة",
-			"requirements": "JPG، JPEG، PNG، GIF أو WebP. الحد الأقصى 2 ميجابايت."
+			"requirements": "JPG، JPEG، PNG، GIF أو WebP. الحد الأقصى 2 ميجابايت.",
+			"uploading": "جاري الرفع...",
+			"error-image-type": "يرجى اختيار ملف صورة",
+			"error-file-size": "يجب أن يكون حجم الملف أقل من 5 ميجابايت",
+			"error-login-required": "يجب أن تسجل الدخول لرفع صورة الملف الشخصي",
+			"error-upload-failed": "فشل في رفع صورة الملف الشخصي"
 		}
 	},
 	"admin": {

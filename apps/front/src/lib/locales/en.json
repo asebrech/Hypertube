@@ -209,6 +209,10 @@
 		"updating": "Updating...",
 		"failed-to-update": "Failed to update comment",
 		"edited": "edited",
+		"commented-on": "Commented on",
+		"previous": "Previous",
+		"next": "Next",
+		"page": "Page",
 		"your-comments": "Your Comments",
 		"user-comments": "{user}'s Comments",
 		"comment": "comment",
@@ -243,7 +247,12 @@
 			"click-or-drag": "Click or drag to upload",
 			"choose-file": "Choose File",
 			"remove": "Remove",
-			"requirements": "JPG, JPEG, PNG, GIF or WebP. Max 2MB."
+			"requirements": "JPG, JPEG, PNG, GIF or WebP. Max 2MB.",
+			"uploading": "Uploading...",
+			"error-image-type": "Please select an image file",
+			"error-file-size": "File must be less than 5MB",
+			"error-login-required": "You must be logged in to upload a profile picture",
+			"error-upload-failed": "Failed to upload profile picture"
 		}
 	},
 	"admin": {

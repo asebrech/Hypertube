@@ -24,6 +24,10 @@
 		"updating": "Actualizando...",
 		"failed-to-update": "Error al actualizar el comentario",
 		"edited": "editado",
+		"commented-on": "Comentado en",
+		"previous": "Anterior",
+		"next": "Siguiente",
+		"page": "Página",
 		"your-comments": "Tus Comentarios",
 		"user-comments": "Comentarios de {user}",
 		"comment": "comentario",
@@ -243,7 +247,12 @@
 			"click-or-drag": "Hacer clic o arrastrar para subir",
 			"choose-file": "Elegir Archivo",
 			"remove": "Eliminar",
-			"requirements": "JPG, JPEG, PNG, GIF o WebP. Máx. 2MB."
+			"requirements": "JPG, JPEG, PNG, GIF o WebP. Máx. 2MB.",
+			"uploading": "Subiendo...",
+			"error-image-type": "Por favor selecciona un archivo de imagen",
+			"error-file-size": "El archivo debe ser menor de 5MB",
+			"error-login-required": "Debes iniciar sesión para subir una foto de perfil",
+			"error-upload-failed": "Error al subir la foto de perfil"
 		}
 	},
 	"admin": {
