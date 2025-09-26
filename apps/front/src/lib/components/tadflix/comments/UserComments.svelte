@@ -175,7 +175,7 @@
 					<!-- Movie Context -->
 					{#if showMovieContext && comment.movieTitle && comment.movieId}
 						<div class="mb-3 flex items-center gap-2 text-xs">
-							<span class="text-gray-500">Commented on</span>
+							<span class="text-gray-500">{$_('comments.commented-on')}</span>
 							<button 
 								class="text-white hover:text-red-400 transition-colors underline underline-offset-2 font-medium"
 								onclick={() => {
@@ -215,12 +215,12 @@
 						disabled={currentPage <= 1 || isLoading}
 						class="flex items-center gap-2 rounded-md bg-gray-800/60 hover:bg-gray-700/60 {compact ? 'px-3 py-1.5 text-xs' : 'px-4 py-2 text-sm'} text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-gray-800/60"
 					>
-						← Previous
+						← {$_('comments.previous')}
 					</button>
 
 					<!-- Page Info -->
 					<div class="flex items-center gap-2 px-2">
-						<span class="text-gray-400 {compact ? 'text-xs' : 'text-sm'}">Page</span>
+						<span class="text-gray-400 {compact ? 'text-xs' : 'text-sm'}">{$_('comments.page')}</span>
 						<span class="text-white font-semibold {compact ? 'text-xs' : 'text-sm'}">{currentPage}</span>
 					</div>
 
@@ -233,7 +233,7 @@
 						{#if isLoading}
 							<Loader2 class="size-4 animate-spin" />
 						{:else}
-							Next →
+							{$_('comments.next')} →
 						{/if}
 					</button>
 				</div>
