@@ -68,7 +68,8 @@
 	},
 	"movie-action": {
 		"bookmarked": "Watchlist",
-		"watched": "d\u00e9j\u00e0 vu"
+		"watched": "d\u00e9j\u00e0 vu",
+		"resume": "reprendre"
 	},
 	"browse": {
 		"explore": "Tout explorer"

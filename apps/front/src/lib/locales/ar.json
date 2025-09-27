@@ -68,7 +68,8 @@
 	},
 	"movie-action": {
 		"bookmarked": "قائمة المشاهدة",
-		"watched": "تم المشاهدة"
+		"watched": "تم المشاهدة",
+		"resume": "استئناف"
 	},
 	"browse": {
 		"explore": "استكشاف الكل"

@@ -17,6 +17,7 @@
 		type: MovieType | undefined;
 		isWatched?: boolean;
 		isBookmarked?: boolean;
+		watchProgressSeconds?: number;
 		data: { token: string };
 	}
 
@@ -27,6 +28,7 @@
 		type,
 		isWatched = false,
 		isBookmarked = false,
+		watchProgressSeconds = 0,
 		data,
 	}: Props = $props();
 
@@ -70,7 +72,7 @@
 </script>
 
 <Card
-	class="flex aspect-[5/3] cursor-pointer flex-row rounded-[2px] border-none p-0 transition-transform duration-200 hover:scale-105"
+	class="relative flex aspect-[5/3] cursor-pointer flex-row rounded-[2px] border-none p-0 transition-transform duration-200 hover:scale-105"
 	style="background-size: cover; background-position: center; background-image: url({backdropImage?.url});"
 	onclick={openModal}
 >
@@ -83,20 +85,20 @@
 			<CardTitle class="text-white">{title}</CardTitle>
 		</CardHeader>
 	{/if}
-	{#if isWatched && isBookmarked}
-		<div class="absolute bottom-0 flex w-full justify-center p-[3px]">
-			<Badge variant={'red'}>
-				{$_('movie-action.watched')} & {$_('movie-action.bookmarked')}
-			</Badge>
-		</div>
-	{:else if isWatched}
-		<div class="absolute bottom-0 flex w-full justify-center p-[3px]">
+	{#if isWatched}
+		<div class="absolute bottom-0 flex w-full justify-center">
 			<Badge variant={'red'}>
 				{$_('movie-action.watched')}
 			</Badge>
 		</div>
+	{:else if watchProgressSeconds > 0}
+		<div class="absolute bottom-0 flex w-full justify-center">
+			<Badge variant={'red'}>
+				{$_('movie-action.resume')}
+			</Badge>
+		</div>
 	{:else if isBookmarked}
-		<div class="absolute bottom-0 flex w-full justify-center p-[3px]">
+		<div class="absolute bottom-0 flex w-full justify-center">
 			<Badge variant={'red'}>
 				{$_('movie-action.bookmarked')}
 			</Badge>
