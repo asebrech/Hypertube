@@ -72,13 +72,18 @@ export default class AuthController {
   }
 
   async login({ request, response }: HttpContext) {
-    const { email, password } = await request.validateUsing(loginValidator)
+    const { identifier, password } = await request.validateUsing(loginValidator)
 
-    const user = await User.findBy('email', email)
+    // Try to find user by email first
+    const user = await User.query()
+      .where('email', identifier)
+      .orWhere('username', identifier)
+      .first()
+
     if (!user) {
       return response.badRequest({
-        error: 'EMAIL_NOT_FOUND',
-        message: 'No account found with this email address',
+        error: 'IDENTIFIER_NOT_FOUND',
+        message: 'No account found with this email or username',
       })
     }
     const isPasswordValid = await hash.verify(user.password!, password)
