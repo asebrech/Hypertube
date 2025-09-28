@@ -128,8 +128,14 @@ export default class MovieService {
     }
   }
 
-  async getDownloadedMovies(): Promise<
-    Array<{
+  async getDownloadedMoviesPaginated(
+    page: number = 1,
+    limit: number = 10,
+    search: string = '',
+    sortBy: string = '',
+    sortDirection: string = 'desc'
+  ): Promise<{
+    movies: Array<{
       id: number
       tmdbId: number
       title: string | null
@@ -143,12 +149,55 @@ export default class MovieService {
       updatedAt: DateTime
       sizeInBytes?: number
     }>
-  > {
-    const movies = await Movie.query().whereNotNull('download_status').orderBy('created_at', 'desc')
+    totalMovies: number
+    totalPages: number
+    totalSize: number
+    globalStats: {
+      totalMovies: number
+      totalSize: number
+    }
+  }> {
+    let query = Movie.query().whereNotNull('download_status')
+
+    // Add search filter if provided
+    if (search.trim()) {
+      query = query.where((builder) => {
+        builder.whereILike('title', `%${search}%`)
+
+        // If search term is a number, also search by tmdbId
+        const searchAsNumber = parseInt(search.trim(), 10)
+        if (!isNaN(searchAsNumber)) {
+          builder.orWhere('tmdbId', searchAsNumber)
+        }
+      })
+    }
+
+    // Get total count for pagination
+    const totalMovies = await query.clone().count('* as total')
+    const totalCount = Array.isArray(totalMovies) ? totalMovies[0].$extras.total : totalMovies
+
+    // Apply sorting
+    let orderByField = 'created_at'
+    let orderByDirection: 'asc' | 'desc' = 'desc'
+
+    if (sortBy === 'lastAccessedAt') {
+      orderByField = 'last_accessed_at'
+      orderByDirection = sortDirection === 'asc' ? 'asc' : 'desc'
+    } else if (sortBy === 'createdAt') {
+      orderByField = 'created_at'
+      orderByDirection = sortDirection === 'asc' ? 'asc' : 'desc'
+    }
+
+    // Apply pagination and ordering
+    const movies = await query
+      .orderBy(orderByField, orderByDirection)
+      .offset((page - 1) * limit)
+      .limit(limit)
 
     const fs = await import('node:fs')
     const path = await import('node:path')
 
+    let totalSize = 0
     const moviesWithSize = await Promise.all(
       movies.map(async (movie) => {
         let sizeInBytes = 0
@@ -168,6 +217,8 @@ export default class MovieService {
           console.warn(`Could not calculate size for movie ${movie.tmdbId}:`, error)
         }
 
+        totalSize += sizeInBytes
+
         return {
           id: movie.id,
           tmdbId: movie.tmdbId,
@@ -185,7 +236,51 @@ export default class MovieService {
       })
     )
 
-    return moviesWithSize
+    // Get global statistics
+    const globalStats = await this.getGlobalMovieStats()
+
+    return {
+      movies: moviesWithSize,
+      totalMovies: totalCount, // Filtered count for pagination
+      totalPages: Math.ceil(totalCount / limit),
+      totalSize, // Size of current page movies
+      globalStats: {
+        totalMovies: globalStats.totalMovies,
+        totalSize: globalStats.totalSize,
+      },
+    }
+  }
+
+  async getGlobalMovieStats(): Promise<{ totalMovies: number; totalSize: number }> {
+    // Get all downloaded movies (no search filter)
+    const allMovies = await Movie.query().whereNotNull('download_status').select('tmdbId')
+
+    const fs = await import('node:fs')
+    const path = await import('node:path')
+
+    let totalSize = 0
+
+    // Calculate total size of all movies
+    for (const movie of allMovies) {
+      const hlsPath = path.join(process.cwd(), 'hls-output', movie.tmdbId.toString())
+      const cachePath = path.join(process.cwd(), 'torrent-cache', movie.tmdbId.toString())
+
+      try {
+        if (fs.existsSync(hlsPath)) {
+          totalSize += await this.calculateDirectorySize(hlsPath)
+        }
+        if (fs.existsSync(cachePath)) {
+          totalSize += await this.calculateDirectorySize(cachePath)
+        }
+      } catch (error) {
+        console.warn(`Could not calculate size for movie ${movie.tmdbId}:`, error)
+      }
+    }
+
+    return {
+      totalMovies: allMovies.length,
+      totalSize,
+    }
   }
 
   private async calculateDirectorySize(dirPath: string): Promise<number> {
