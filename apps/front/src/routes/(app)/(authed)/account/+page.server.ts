@@ -169,7 +169,7 @@ const updateAccount = async ({ request, locals, cookies }: RequestEvent) => {
 
 	// Return success response with updated user data
 	const updatedUser = userUpdateResponse?.data?.user || locals.user;
-	
+
 	// If we successfully uploaded a profile picture, we need to refresh the user data
 	// to get the updated profile picture URL
 	if (profilePictureResponse && !userUpdateResponse) {
@@ -189,7 +189,7 @@ const updateAccount = async ({ request, locals, cookies }: RequestEvent) => {
 			// Continue with the profile picture response even if user data fetch fails
 		}
 	}
-	
+
 	return {
 		success: true,
 		user: updatedUser,

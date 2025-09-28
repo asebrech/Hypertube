@@ -137,11 +137,13 @@ export default class UsersController {
       if (payload.firstName !== undefined) user.firstName = payload.firstName
       if (payload.lastName !== undefined) user.lastName = payload.lastName
       if (payload.newPassword !== undefined) user.password = payload.newPassword
-      
+
       if (payload.profilePicture !== undefined) {
         try {
           const profilePictureService = new ProfilePictureService()
-          user.profilePicture = await profilePictureService.processProfilePictureUrl(payload.profilePicture)
+          user.profilePicture = await profilePictureService.processProfilePictureUrl(
+            payload.profilePicture
+          )
         } catch (error) {
           console.error('Profile picture processing error:', error)
           user.profilePicture = payload.profilePicture
@@ -165,7 +167,7 @@ export default class UsersController {
     } catch (error) {
       if (error.messages) {
         const formattedErrors: any[] = []
-        
+
         if (Array.isArray(error.messages)) {
           for (const errorObj of error.messages) {
             let rule = 'validation'
