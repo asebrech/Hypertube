@@ -15,66 +15,27 @@ const register = async ({ request }: RequestEvent) => {
 		return fail(400, { invalid: true });
 	}
 
-	const payload = JSON.stringify({
-		firstName,
-		lastName,
-		username,
-		email,
-		password
-	});
+	// Create FormData for multipart form submission
+	const formData = new FormData();
+	formData.append('firstName', firstName?.toString() || '');
+	formData.append('lastName', lastName?.toString() || '');
+	formData.append('username', username?.toString() || '');
+	formData.append('email', email);
+	formData.append('password', password);
+
+	// Add profile picture if provided
+	if (profilePicture && profilePicture.size > 0) {
+		formData.append('profilePicture', profilePicture);
+	}
 
 	const config = {
 		method: 'post',
 		url: `${SECRET_BACK_URL}/user/register`,
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		data: payload
+		data: formData
 	};
 
 	try {
 		const registerResponse = await axios.request(config);
-		
-		// If registration was successful and there's a profile picture, try to upload it
-		if (profilePicture && profilePicture.size > 0) {
-			try {
-				// First, we need to login to get a token for the upload
-				const loginConfig = {
-					method: 'post',
-					url: `${SECRET_BACK_URL}/user/login`,
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					data: JSON.stringify({ email, password })
-				};
-
-				const loginResponse = await axios.request(loginConfig);
-				const token = loginResponse.data.token?.token;
-
-				if (token) {
-					// Now upload the profile picture
-					const formData = new FormData();
-					formData.append('profilePicture', profilePicture);
-
-					const uploadConfig = {
-						method: 'post',
-						url: `${SECRET_BACK_URL}/users/upload-profile-picture`,
-						headers: {
-							'Content-Type': 'multipart/form-data',
-							'Authorization': `Bearer ${token}`
-						},
-						data: formData
-					};
-
-					await axios.request(uploadConfig);
-				}
-			} catch (uploadError) {
-				// Profile picture upload failed, but registration succeeded
-				// This is not a critical error, so we continue to login page
-				console.error('Profile picture upload failed after registration:', uploadError);
-			}
-		}
-
 		redirect(303, '/login');
 	} catch (error) {
 		if (axios.isAxiosError(error) && error.response && error.response.status === 422) {
