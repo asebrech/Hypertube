@@ -21,7 +21,7 @@
 	type FormData = {
 		invalid?: boolean;
 		success?: boolean;
-		profilePictureMessage?: string;
+		profilePictureMessageKey?: string;
 		user?: {
 			id: number;
 			firstName?: string;
@@ -52,6 +52,7 @@
 	let clientLastNameErrors: string[] = $state([]);
 	let clientCurrentPasswordErrors: string[] = $state([]);
 	let clientConfirmPasswordErrors: string[] = $state([]);
+	let clientProfilePictureErrors: string[] = $state([]);
 
 	// Combined errors (client + server)
 	let passwordErrors: string[] = $state([]);
@@ -61,6 +62,7 @@
 	let lastNameErrors: string[] = $state([]);
 	let currentPasswordErrors: string[] = $state([]);
 	let confirmPasswordErrors: string[] = $state([]);
+	let profilePictureErrors: string[] = $state([]);
 
 	// Form values
 	let firstName = $state('');
@@ -84,6 +86,7 @@
 		lastNameErrors = [...clientLastNameErrors];
 		currentPasswordErrors = [...clientCurrentPasswordErrors];
 		confirmPasswordErrors = [...clientConfirmPasswordErrors];
+		profilePictureErrors = [...clientProfilePictureErrors];
 
 		// Add server errors if they exist
 		if (form?.errors) {
@@ -104,6 +107,9 @@
 			}
 			if (form.errors.currentPassword) {
 				currentPasswordErrors.push($_('account.error_current_password'));
+			}
+			if (form.errors.profilePicture) {
+				profilePictureErrors.push($_(form.errors.profilePicture));
 			}
 		}
 	});
@@ -226,8 +232,8 @@
 					{#if form?.success}
 						<div class="rounded-md border border-green-700 bg-green-900/50 p-4">
 							<p class="text-sm text-green-100">{$_('account.success_message')}</p>
-							{#if form?.profilePictureMessage}
-								<p class="text-sm text-green-100 mt-1">{form.profilePictureMessage}</p>
+							{#if form?.profilePictureMessageKey}
+								<p class="text-sm text-green-100 mt-1">{$_(form.profilePictureMessageKey)}</p>
 							{/if}
 						</div>
 					{/if}
@@ -267,6 +273,14 @@
 										{username}
 									/>
 								</div>
+								
+								{#if profilePictureErrors.length > 0}
+									<div class="flex flex-col gap-1">
+										{#each profilePictureErrors as error}
+											<p class="text-sm text-red-300">{error}</p>
+										{/each}
+									</div>
+								{/if}
 							</div>
 							<!-- Personal Information Section -->
 							<div class="grid gap-4">

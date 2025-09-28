@@ -257,7 +257,11 @@
 			"error-image-type": "يرجى اختيار ملف صورة",
 			"error-file-size": "يجب أن يكون حجم الملف أقل من 5 ميجابايت",
 			"error-login-required": "يجب أن تسجل الدخول لرفع صورة الملف الشخصي",
-			"error-upload-failed": "فشل في رفع صورة الملف الشخصي"
+			"error-upload-failed": "فشل في رفع صورة الملف الشخصي",
+			"error-file-required": "ملف صورة الملف الشخصي مطلوب",
+			"error-invalid-file-type": "نوع الملف غير صالح. مسموح فقط بملفات JPG و JPEG و PNG و GIF و WebP.",
+			"error-invalid-file": "ملف غير صالح",
+			"success-upload": "تم رفع صورة الملف الشخصي بنجاح"
 		}
 	},
 	"admin": {

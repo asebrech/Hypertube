@@ -4,7 +4,7 @@
 	"log_out": "Log out",
 	"navbar": {
 		"home": "Home",
-		"shows": "Shows",
+		"shows": "TV Shows",
 		"movies": "Movies",
 		"news-popular": "News & Popular",
 		"my-list": "My Lists",
@@ -257,7 +257,11 @@
 			"error-image-type": "Please select an image file",
 			"error-file-size": "File must be less than 5MB",
 			"error-login-required": "You must be logged in to upload a profile picture",
-			"error-upload-failed": "Failed to upload profile picture"
+			"error-upload-failed": "Failed to upload profile picture",
+			"error-file-required": "Profile picture file is required",
+			"error-invalid-file-type": "Invalid file type. Only JPG, JPEG, PNG, GIF, and WebP files are allowed.",
+			"error-invalid-file": "Invalid file",
+			"success-upload": "Profile picture uploaded successfully"
 		}
 	},
 	"admin": {

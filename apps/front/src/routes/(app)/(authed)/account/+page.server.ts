@@ -57,15 +57,15 @@ const updateAccount = async ({ request, locals, cookies }: RequestEvent) => {
 			profilePictureResponse = await axios.request(uploadConfig);
 		} catch (error) {
 			if (axios.isAxiosError(error) && error.response) {
-				const message = error.response.data?.message || 'upload_failed';
+				const messageKey = error.response.data?.messageKey || 'profile.upload.error-upload-failed';
 				return fail(400, {
 					invalid: true,
-					errors: { profilePicture: message }
+					errors: { profilePicture: messageKey }
 				});
 			}
 			return fail(500, {
 				invalid: true,
-				errors: { profilePicture: 'upload_failed' }
+				errors: { profilePicture: 'profile.upload.error-upload-failed' }
 			});
 		}
 	}
@@ -183,7 +183,7 @@ const updateAccount = async ({ request, locals, cookies }: RequestEvent) => {
 			return {
 				success: true,
 				user: meResponse.data,
-				profilePictureMessage: profilePictureResponse.data?.message
+				profilePictureMessageKey: profilePictureResponse.data?.messageKey
 			};
 		} catch (error) {
 			// Continue with the profile picture response even if user data fetch fails
@@ -193,7 +193,7 @@ const updateAccount = async ({ request, locals, cookies }: RequestEvent) => {
 	return {
 		success: true,
 		user: updatedUser,
-		profilePictureMessage: profilePictureResponse?.data?.message
+		profilePictureMessageKey: profilePictureResponse?.data?.messageKey
 	};
 };
 

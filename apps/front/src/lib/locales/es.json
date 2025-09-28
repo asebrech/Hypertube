@@ -257,7 +257,11 @@
 			"error-image-type": "Por favor selecciona un archivo de imagen",
 			"error-file-size": "El archivo debe ser menor de 5MB",
 			"error-login-required": "Debes iniciar sesión para subir una foto de perfil",
-			"error-upload-failed": "Error al subir la foto de perfil"
+			"error-upload-failed": "Error al subir la foto de perfil",
+			"error-file-required": "El archivo de foto de perfil es requerido",
+			"error-invalid-file-type": "Tipo de archivo inválido. Solo se permiten archivos JPG, JPEG, PNG, GIF y WebP.",
+			"error-invalid-file": "Archivo inválido",
+			"success-upload": "Foto de perfil subida exitosamente"
 		}
 	},
 	"admin": {

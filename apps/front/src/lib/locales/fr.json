@@ -68,7 +68,7 @@
 	},
 	"movie-action": {
 		"bookmarked": "Watchlist",
-		"watched": "d\u00e9j\u00e0 vu",
+		"watched": "déjà vu",
 		"resume": "reprendre"
 	},
 	"browse": {
@@ -257,7 +257,11 @@
 			"error-image-type": "Veuillez sélectionner un fichier image",
 			"error-file-size": "Le fichier doit faire moins de 5 Mo",
 			"error-login-required": "Vous devez être connecté pour télécharger une photo de profil",
-			"error-upload-failed": "Échec du téléchargement de la photo de profil"
+			"error-upload-failed": "Échec du téléchargement de la photo de profil",
+			"error-file-required": "Le fichier de photo de profil est requis",
+			"error-invalid-file-type": "Type de fichier invalide. Seuls les fichiers JPG, JPEG, PNG, GIF et WebP sont autorisés.",
+			"error-invalid-file": "Fichier invalide",
+			"success-upload": "Photo de profil téléchargée avec succès"
 		}
 	},
 	"admin": {

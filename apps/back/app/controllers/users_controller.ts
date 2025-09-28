@@ -5,7 +5,6 @@ import app from '@adonisjs/core/services/app'
 import { cuid } from '@adonisjs/core/helpers'
 import env from '#start/env'
 import { updateUserValidator } from '#validators/user'
-import { join } from 'node:path'
 import ProfilePictureService from '#services/profile_picture_service'
 
 export default class UsersController {
@@ -115,7 +114,7 @@ export default class UsersController {
       })
     } catch (error) {
       console.error('Profile lookup error:', error)
-      return response.notFound({ message: 'User not found' })
+      return response.notFound({ messageKey: 'users.not_found' })
     }
   }
 
@@ -137,7 +136,7 @@ export default class UsersController {
       if (payload.email !== undefined) user.email = payload.email
       if (payload.firstName !== undefined) user.firstName = payload.firstName
       if (payload.lastName !== undefined) user.lastName = payload.lastName
-      if (payload.password !== undefined) user.password = payload.password
+      if (payload.newPassword !== undefined) user.password = payload.newPassword
       
       if (payload.profilePicture !== undefined) {
         try {
@@ -152,7 +151,7 @@ export default class UsersController {
       await user.save()
 
       return response.ok({
-        message: 'Profile updated successfully',
+        messageKey: 'profile.update.success',
         user: {
           id: user.id,
           username: user.username,
@@ -212,12 +211,12 @@ export default class UsersController {
         }
 
         return response.status(422).json({
-          message: 'Validation failed',
+          messageKey: 'validation.failed',
           errors: formattedErrors,
         })
       }
 
-      return response.badRequest({ message: 'Failed to update profile' })
+      return response.badRequest({ messageKey: 'profile.update.failed' })
     }
   }
 
@@ -228,7 +227,7 @@ export default class UsersController {
     const { ids } = request.qs()
 
     if (!ids) {
-      return response.badRequest({ message: 'User IDs are required' })
+      return response.badRequest({ messageKey: 'users.ids.required' })
     }
 
     try {
@@ -244,7 +243,7 @@ export default class UsersController {
 
       return response.ok(publicUsers)
     } catch (error) {
-      return response.badRequest({ message: 'Invalid user IDs' })
+      return response.badRequest({ messageKey: 'users.ids.invalid' })
     }
   }
 
@@ -260,7 +259,7 @@ export default class UsersController {
       })
 
       if (!profilePicture) {
-        return response.badRequest({ message: 'Profile picture file is required' })
+        return response.badRequest({ messageKey: 'profile.upload.error-file-required' })
       }
 
       const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp']
@@ -268,13 +267,13 @@ export default class UsersController {
 
       if (!fileExtension || !allowedExtensions.includes(fileExtension)) {
         return response.badRequest({
-          message: `Invalid file type. Only JPG, JPEG, PNG, GIF, and WebP files are allowed.`,
+          messageKey: 'profile.upload.error-invalid-file-type',
         })
       }
 
       if (!profilePicture.isValid) {
         return response.badRequest({
-          message: 'Invalid file',
+          messageKey: 'profile.upload.error-invalid-file',
           errors: profilePicture.errors,
         })
       }
@@ -295,12 +294,12 @@ export default class UsersController {
       await user.save()
 
       return response.ok({
-        message: 'Profile picture uploaded successfully',
+        messageKey: 'profile.upload.success-upload',
         profilePicture: profilePictureUrl,
       })
     } catch (error) {
       console.error('Profile picture upload error:', error)
-      return response.badRequest({ message: 'Failed to upload profile picture' })
+      return response.badRequest({ messageKey: 'profile.upload.error-upload-failed' })
     }
   }
 
