@@ -16,10 +16,10 @@
 
 	interface LoginForm {
 		credentials?: boolean;
-		emailNotFound?: boolean;
+		identifierNotFound?: boolean;
 		invalidPassword?: boolean;
 		invalid?: boolean;
-		email?: string;
+		identifier?: string;
 	}
 
 	let { form }: { form: LoginForm | null } = $props();
@@ -31,7 +31,7 @@
 	</Card.Header>
 	<Card.Content>
 		<div class="grid gap-4">
-			{#if form?.emailNotFound}
+			{#if form?.identifierNotFound}
 				<ErrorAlert
 					type="warning"
 					messageKey="auth.login.error_account_not_found"
@@ -44,7 +44,7 @@
 					messageKey="auth.login.error_invalid_password"
 					showResetPassword={true}
 					resetPasswordLink="/forgot-password"
-					email={form.email}
+					email={form.identifier}
 				/>
 			{:else if form?.credentials}
 				<ErrorAlert type="error" messageKey="auth.login.error_credentials" />
@@ -53,12 +53,12 @@
 			<form action="?/login" method="POST" use:enhance>
 				<div class="grid gap-4">
 					<div class="grid gap-2">
-						<Label for="email">{$_('auth.login.email_label')}</Label>
+						<Label for="identifier">{$_('auth.login.identifier_label')}</Label>
 						<Input
-							id="email"
-							type="email"
-							name="email"
-							placeholder={$_('auth.login.email_placeholder')}
+							id="identifier"
+							type="text"
+							name="identifier"
+							placeholder={$_('auth.login.identifier_placeholder')}
 							required
 						/>
 					</div>

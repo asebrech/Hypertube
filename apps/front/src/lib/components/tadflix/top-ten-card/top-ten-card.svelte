@@ -12,6 +12,7 @@
 	export let orderNumber: number;
 	export let isWatched: boolean = false;
 	export let isBookmarked: boolean = false;
+	export let watchProgressSeconds: number = 0;
 	export let type: MovieType = 'movie';
 	export let data: any;
 
@@ -60,24 +61,24 @@
 				class="absolute right-0 top-0 h-full w-[50%]"
 				style="background-size: cover; background-position: center; background-image: url({poster_image?.url});"
 			>
-							{#if isWatched && isBookmarked}
+				{#if isWatched}
 					<div class="absolute bottom-0 flex w-full justify-center">
 						<Badge variant={'red'}>
-										{$_('movie-action.watched')} & {$_('movie-action.bookmarked')}
-									</Badge>
-								</div>
-							{:else if isWatched}
-								<div class="absolute bottom-0 flex w-full justify-center">
-									<Badge variant={'red'}>
-										{$_('movie-action.watched')}
-									</Badge>
-								</div>
-							{:else if isBookmarked}
-								<div class="absolute bottom-0 flex w-full justify-center">
-									<Badge variant={'red'}>
-										{$_('movie-action.bookmarked')}
+							{$_('movie-action.watched')}
 						</Badge>
 					</div>
+				{:else if watchProgressSeconds > 0}
+					<div class="absolute bottom-0 flex w-full justify-center">
+						<Badge variant={'red'}>
+							{$_('movie-action.resume')}
+						</Badge>
+					</div>
+				{:else if isBookmarked}
+					<div class="absolute bottom-0 flex w-full justify-center">
+						<Badge variant={'red'}>
+							{$_('movie-action.bookmarked')}
+					</Badge>
+				</div>
 				{/if}
 			</div>
 		{/if}

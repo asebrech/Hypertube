@@ -68,7 +68,8 @@
 	},
 	"movie-action": {
 		"bookmarked": "قائمة المشاهدة",
-		"watched": "تم المشاهدة"
+		"watched": "تم المشاهدة",
+		"resume": "استئناف"
 	},
 	"browse": {
 		"explore": "استكشاف الكل"
@@ -147,9 +148,9 @@
 		"form_error": "كلمة المرور قصيرة جداً أو البريد الإلكتروني مستخدم بالفعل",
 		"login": {
 			"title": "تسجيل الدخول",
-			"description": "أدخل بريدك الإلكتروني أدناه لتسجيل الدخول إلى حسابك",
-			"email_label": "البريد الإلكتروني",
-			"email_placeholder": "m@example.com",
+			"description": "أدخل بريدك الإلكتروني أو اسم المستخدم أدناه لتسجيل الدخول إلى حسابك",
+			"identifier_label": "البريد الإلكتروني أو اسم المستخدم",
+			"identifier_placeholder": "m@example.com أو اسم المستخدم",
 			"password_label": "كلمة المرور",
 			"forgot_password": "نسيت كلمة المرور؟",
 			"login_button": "تسجيل الدخول",
@@ -160,7 +161,7 @@
 			"no_account": "ليس لديك حساب؟",
 			"sign_up_link": "إنشاء حساب",
 			"error_credentials": "لقد أدخلت بيانات اعتماد خاطئة.",
-			"error_account_not_found": "عذراً، لا يمكننا العثور على حساب بعنوان البريد الإلكتروني هذا. يرجى المحاولة مرة أخرى أو {createAccountLink}.",
+			"error_account_not_found": "عذراً، لا يمكننا العثور على حساب بهذا البريد الإلكتروني أو اسم المستخدم. يرجى المحاولة مرة أخرى أو {createAccountLink}.",
 			"error_invalid_password": "كلمة مرور غير صحيحة لـ {email}. يمكنك {resetPasswordLink} أو المحاولة مرة أخرى.",
 			"create_account_link": "إنشاء حساب جديد",
 			"reset_password_link": "إعادة تعيين كلمة المرور",

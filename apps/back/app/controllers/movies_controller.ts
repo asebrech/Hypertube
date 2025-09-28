@@ -77,6 +77,7 @@ export default class MoviesController {
             genre.movies.map(async (movie: any) => {
               movie.is_watched = false
               movie.is_bookmarked = false
+              movie.watch_progress_seconds = 0
 
               if (user) {
                 const movieTable = await user
@@ -87,6 +88,8 @@ export default class MoviesController {
                 if (movieTable) {
                   movie.is_watched = movieTable.$extras.pivot_is_watched || false
                   movie.is_bookmarked = movieTable.$extras.pivot_is_bookmarked || false
+                  movie.watch_progress_seconds =
+                    movieTable.$extras.pivot_watch_progress_seconds || 0
                 }
               }
               return movie
@@ -184,7 +187,7 @@ export default class MoviesController {
     return movieVideo
   }
 
-  async movieSearch({ request, response }: HttpContext) {
+  async movieSearch({ request, response, auth }: HttpContext) {
     const query = request.input('query')
     const lang = request.input('lang', 'en')
     const page = request.input('page', 1)
@@ -194,6 +197,11 @@ export default class MoviesController {
     const searchResults = await this.tmdbService.getMultiSearch(query, lang, page)
     const hasMorePages = searchResults.total_pages > page
     const media: any[] = []
+
+    let user = null
+    if (await auth.check()) {
+      user = await auth.authenticate()
+    }
 
     for (const result of searchResults.results) {
       if (result.media_type === 'person' && result.known_for_department === 'Acting') {
@@ -206,14 +214,59 @@ export default class MoviesController {
           'en'
         )
 
-        const movies = movieActor.results.map((movie: any) => ({
-          media_type: 'movie',
-          ...movie,
-        }))
+        const movies = await Promise.all(
+          movieActor.results.map(async (movie: any) => {
+            const movieWithDefaults = {
+              media_type: 'movie',
+              ...movie,
+              is_watched: false,
+              is_bookmarked: false,
+              watch_progress_seconds: 0,
+            }
+
+            if (user) {
+              const movieTable = await user
+                .related('movies')
+                .query()
+                .where('movies.tmdbId', movie.id)
+                .first()
+              if (movieTable) {
+                movieWithDefaults.is_watched = movieTable.$extras.pivot_is_watched || false
+                movieWithDefaults.is_bookmarked = movieTable.$extras.pivot_is_bookmarked || false
+                movieWithDefaults.watch_progress_seconds =
+                  movieTable.$extras.pivot_watch_progress_seconds || 0
+              }
+            }
+
+            return movieWithDefaults
+          })
+        )
 
         media.push(...movies)
       } else {
-        media.push(result)
+        // Handle non-person results (movies, tv shows)
+        const movieWithDefaults = {
+          ...result,
+          is_watched: false,
+          is_bookmarked: false,
+          watch_progress_seconds: 0,
+        }
+
+        if (user && (result.media_type === 'movie' || result.media_type === 'tv')) {
+          const movieTable = await user
+            .related('movies')
+            .query()
+            .where('movies.tmdbId', result.id)
+            .first()
+          if (movieTable) {
+            movieWithDefaults.is_watched = movieTable.$extras.pivot_is_watched || false
+            movieWithDefaults.is_bookmarked = movieTable.$extras.pivot_is_bookmarked || false
+            movieWithDefaults.watch_progress_seconds =
+              movieTable.$extras.pivot_watch_progress_seconds || 0
+          }
+        }
+
+        media.push(movieWithDefaults)
       }
     }
     if (searchResults) {
@@ -223,7 +276,7 @@ export default class MoviesController {
     }
   }
 
-  async MovieDiscover({ request, response }: HttpContext) {
+  async MovieDiscover({ request, response, auth }: HttpContext) {
     let genreId = request.input('genreId')
     if (typeof genreId === 'string') {
       genreId = [genreId]
@@ -253,10 +306,38 @@ export default class MoviesController {
     )
     const hasMorePages = discoverResults.total_pages > page
     if (discoverResults) {
-      const moviesWithMediaType = discoverResults.results.map((movie: any) => ({
-        media_type: movieType,
-        ...movie,
-      }))
+      let user = null
+      if (await auth.check()) {
+        user = await auth.authenticate()
+      }
+
+      const moviesWithMediaType = await Promise.all(
+        discoverResults.results.map(async (movie: any) => {
+          const movieWithType = {
+            media_type: movieType,
+            ...movie,
+            is_watched: false,
+            is_bookmarked: false,
+            watch_progress_seconds: 0,
+          }
+
+          if (user) {
+            const movieTable = await user
+              .related('movies')
+              .query()
+              .where('movies.tmdbId', movie.id)
+              .first()
+            if (movieTable) {
+              movieWithType.is_watched = movieTable.$extras.pivot_is_watched || false
+              movieWithType.is_bookmarked = movieTable.$extras.pivot_is_bookmarked || false
+              movieWithType.watch_progress_seconds =
+                movieTable.$extras.pivot_watch_progress_seconds || 0
+            }
+          }
+
+          return movieWithType
+        })
+      )
       return { movies: moviesWithMediaType, hasMorePages }
     } else {
       return response.notFound({ error: 'Discover results not found' })

@@ -87,7 +87,10 @@
 									movieId={movie.id}
 									isVisible={true}
 									title={movie.title}
-									type={movie?.media_type}
+									type={movie?.media_type} 
+									isWatched={movie.is_watched || false}
+									isBookmarked={movie.is_bookmarked || false}
+									watchProgressSeconds={movie.watch_progress_seconds || 0}
 									data={data}
 								/>
 							</div>
