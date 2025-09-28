@@ -124,7 +124,8 @@
 			"email_invalid": "Veuillez entrer une adresse email valide",
 			"password_invalid": "Le mot de passe ne respecte pas les exigences",
 			"length_invalid": "La longueur ne respecte pas les exigences",
-			"invalid": "Ce champ contient des données invalides"
+			"invalid": "Ce champ contient des données invalides",
+			"upload_failed": "Échec du téléchargement de la photo de profil"
 		}
 	},
 	"auth": {
@@ -138,6 +139,7 @@
 		"username": "Nom d'utilisateur",
 		"email": "Email",
 		"password": "Mot de passe",
+		"profile_picture_optional": "Photo de Profil (Optionnel)",
 		"already_have_account": "Vous avez déjà un compte ?",
 		"register_with_google": "S'inscrire avec Google",
 		"register_with_github": "S'inscrire avec Github",

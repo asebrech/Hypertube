@@ -115,7 +115,8 @@
 			"email_invalid": "请输入有效的邮箱地址",
 			"password_invalid": "密码不符合要求",
 			"length_invalid": "长度不符合要求",
-			"invalid": "此字段包含无效数据"
+			"invalid": "此字段包含无效数据",
+			"upload_failed": "上传头像失败"
 		}
 	},
 	"auth": {
@@ -129,6 +130,7 @@
 		"username": "用户名",
 		"email": "邮箱",
 		"password": "密码",
+		"profile_picture_optional": "头像（可选）",
 		"already_have_account": "已经有账户了？",
 		"register_with_google": "使用Google注册",
 		"register_with_github": "使用Github注册",

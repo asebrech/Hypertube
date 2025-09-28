@@ -6,14 +6,12 @@
 		currentProfilePicture = null,
 		onFileSelected,
 		onImageRemoved,
-		imageKey = 0,
 		username = '',
 		selectedFile = null
 	}: {
 		currentProfilePicture?: string | null;
 		onFileSelected?: (file: File) => void;
 		onImageRemoved?: () => void;
-		imageKey?: number;
 		username?: string;
 		selectedFile?: File | null;
 	} = $props();
@@ -37,10 +35,17 @@
 		}
 	});
 
+
+
 	let imageUrl = $derived(previewUrl || currentProfilePicture);
 
 	function triggerFileInput() {
-		fileInput?.click();
+		if (fileInput) {
+			// Clear the input value before opening the dialog to ensure onchange fires
+			// even if the same file is selected again
+			fileInput.value = '';
+			fileInput.click();
+		}
 	}
 
 	function handleFileChange(event: Event) {
@@ -74,13 +79,11 @@
 	<!-- Profile Picture Display -->
 	<div class="relative h-32 w-32 overflow-hidden rounded-lg">
 		{#if imageUrl}
-			{#key `${imageUrl}-${imageKey}`}
-				<img
-					src={imageUrl}
-					alt="Profile"
-					class="h-full w-full object-cover"
-				/>
-			{/key}
+			<img
+				src={imageUrl}
+				alt="Profile"
+				class="h-full w-full object-cover"
+			/>
 			
 			<!-- Preview indicator for selected file -->
 			{#if selectedFile}

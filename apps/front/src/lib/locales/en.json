@@ -91,7 +91,8 @@
 			"email_invalid": "Please enter a valid email address",
 			"password_invalid": "Password does not meet requirements",
 			"length_invalid": "Length does not meet requirements",
-			"invalid": "This field contains invalid data"
+			"invalid": "This field contains invalid data",
+			"upload_failed": "Failed to upload profile picture"
 		}
 	},
 	"auth": {
@@ -105,6 +106,7 @@
 		"username": "Username",
 		"email": "Email",
 		"password": "Password",
+		"profile_picture_optional": "Profile Picture (Optional)",
 		"already_have_account": "Already have an account?",
 		"register_with_google": "Sign up with Google",
 		"register_with_github": "Sign up with Github",

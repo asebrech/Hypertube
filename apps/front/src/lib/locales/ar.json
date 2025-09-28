@@ -124,7 +124,8 @@
 			"email_invalid": "يرجى إدخال عنوان بريد إلكتروني صالح",
 			"password_invalid": "كلمة المرور لا تلبي المتطلبات",
 			"length_invalid": "الطول لا يلبي المتطلبات",
-			"invalid": "هذا الحقل يحتوي على بيانات غير صالحة"
+			"invalid": "هذا الحقل يحتوي على بيانات غير صالحة",
+			"upload_failed": "فشل في تحميل صورة الملف الشخصي"
 		}
 	},
 	"auth": {
@@ -138,6 +139,7 @@
 		"username": "اسم المستخدم",
 		"email": "البريد الإلكتروني",
 		"password": "كلمة المرور",
+		"profile_picture_optional": "صورة الملف الشخصي (اختياري)",
 		"already_have_account": "هل لديك حساب بالفعل؟",
 		"register_with_google": "التسجيل بواسطة Google",
 		"register_with_github": "التسجيل بواسطة Github",

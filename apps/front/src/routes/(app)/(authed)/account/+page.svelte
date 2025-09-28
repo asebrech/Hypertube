@@ -74,7 +74,6 @@
 	// Profile picture state
 	let currentProfilePicture = $state('');
 	let selectedProfilePicture = $state<File | null>(null);
-	let imageKey = $state(0); // Key to force image re-render
 
 	// Effect to merge client and server errors
 	$effect(() => {
@@ -131,8 +130,6 @@
 			if (form.user.profilePicture) {
 				currentProfilePicture = form.user.profilePicture;
 			}
-			
-			imageKey++; // Force image re-render
 		}
 	});
 
@@ -264,7 +261,6 @@
 								<div class="flex justify-center">
 									<ProfilePictureUpload
 										{currentProfilePicture}
-										{imageKey}
 										selectedFile={selectedProfilePicture}
 										onFileSelected={handleFileSelected}
 										onImageRemoved={handleImageRemoved}
