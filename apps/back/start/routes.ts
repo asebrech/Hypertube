@@ -8,7 +8,6 @@
 */
 
 import router from '@adonisjs/core/services/router'
-import app from '@adonisjs/core/services/app'
 import { middleware } from './kernel.js'
 
 const AuthController = () => import('#controllers/auth_controller')
@@ -114,8 +113,8 @@ router
   .get('/:provider/redirect', ({ ally, params }) => {
     return ally.use(params.provider).redirect()
   })
-  .where('provider', /github|google|fortyTwo/)
+  .where('provider', /github|google|discord|fortyTwo/)
 
 router
   .get('/:provider/callback', [AuthController, 'callback'])
-  .where('provider', /github|google|fortyTwo/)
+  .where('provider', /github|google|discord|fortyTwo/)

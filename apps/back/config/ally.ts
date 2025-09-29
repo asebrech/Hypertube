@@ -13,6 +13,11 @@ const allyConfig = defineConfig({
     clientSecret: env.get('GOOGLE_CLIENT_SECRET'),
     callbackUrl: `${env.get('BACK_URL')}/google/callback`,
   }),
+  discord: services.discord({
+    clientId: env.get('DISCORD_CLIENT_ID'),
+    clientSecret: env.get('DISCORD_CLIENT_SECRET'),
+    callbackUrl: `${env.get('BACK_URL')}/discord/callback`,
+  }),
   fortyTwo: FortyTwoDriverService({
     clientId: env.get('FORTYTWO_CLIENT_ID')!,
     clientSecret: env.get('FORTYTWO_CLIENT_SECRET')!,

@@ -142,6 +142,7 @@
 		"already_have_account": "هل لديك حساب بالفعل؟",
 		"register_with_google": "التسجيل بواسطة Google",
 		"register_with_github": "التسجيل بواسطة Github",
+		"register_with_discord": "التسجيل بواسطة Discord",
 		"register_with_42": "التسجيل بواسطة 42",
 		"form_error": "كلمة المرور قصيرة جداً أو البريد الإلكتروني مستخدم بالفعل",
 		"login": {
@@ -155,6 +156,7 @@
 			"remember_me": "تذكرني",
 			"login_with_google": "تسجيل الدخول بواسطة Google",
 			"login_with_github": "تسجيل الدخول بواسطة Github",
+			"login_with_discord": "تسجيل الدخول بواسطة Discord",
 			"login_with_42": "تسجيل الدخول بواسطة 42",
 			"no_account": "ليس لديك حساب؟",
 			"sign_up_link": "إنشاء حساب",

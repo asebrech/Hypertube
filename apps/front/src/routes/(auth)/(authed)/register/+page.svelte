@@ -7,6 +7,7 @@
 	import {
 		GoogleButton,
 		GithubButton,
+		DiscordButton,
 		FortyTwoButton
 	} from '$lib/components/ui/oauth-buttons/index.js';
 	import { _ } from 'svelte-i18n';
@@ -102,7 +103,7 @@
 	}
 </script>
 
-<Card.Root class="mx-auto max-w-sm my-16 border-none bg-black/70">
+<Card.Root class="mx-auto my-16 max-w-sm border-none bg-black/70">
 	<Card.Header>
 		<Card.Title class="text-xl">{$_('auth.sign_up')}</Card.Title>
 	</Card.Header>
@@ -197,6 +198,7 @@
 			<div class="grid gap-3">
 				<GoogleButton action="/login/google" text={$_('auth.register_with_google')} />
 				<GithubButton action="/login/github" text={$_('auth.register_with_github')} />
+				<DiscordButton action="/login/discord" text={$_('auth.register_with_discord')} />
 				<FortyTwoButton action="/login/fortyTwo" text={$_('auth.register_with_42')} />
 			</div>
 		</div>

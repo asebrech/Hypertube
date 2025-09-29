@@ -174,6 +174,12 @@ export default class AuthController {
         firstName = nameParts[0] || ''
         lastName = nameParts.slice(1).join(' ') || ''
       }
+    } else if (params.provider === 'discord') {
+      // Discord typically provides name as username, split if it contains spaces
+      const fullName = user.name || user.nickName || ''
+      const nameParts = fullName.trim().split(' ')
+      firstName = nameParts[0] || ''
+      lastName = nameParts.slice(1).join(' ') || ''
     } else if (params.provider === 'fortyTwo') {
       firstName = user.original?.first_name || ''
       lastName = user.original?.last_name || ''
@@ -187,6 +193,8 @@ export default class AuthController {
     let username = user.name
     if (params.provider === 'fortyTwo') {
       username = user.original?.login || user.nickName || user.name
+    } else if (params.provider === 'discord') {
+      username = user.nickName || user.name
     }
 
     let processedAvatarUrl = user.avatarUrl
