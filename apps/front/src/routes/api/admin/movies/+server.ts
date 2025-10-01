@@ -3,7 +3,7 @@ import { SECRET_BACK_URL } from '$env/static/private';
 import type { RequestHandler } from './$types';
 
 // GET /api/admin/movies - List all downloaded movies
-export const GET: RequestHandler = async ({ cookies, fetch }) => {
+export const GET: RequestHandler = async ({ cookies, fetch, url }) => {
 	const session = cookies.get('session');
 
 	if (!session) {
@@ -11,7 +11,11 @@ export const GET: RequestHandler = async ({ cookies, fetch }) => {
 	}
 
 	try {
-		const response = await fetch(`${SECRET_BACK_URL}/admin/movies`, {
+		// Forward query parameters to backend
+		const queryParams = url.searchParams.toString();
+		const backendUrl = `${SECRET_BACK_URL}/admin/movies${queryParams ? `?${queryParams}` : ''}`;
+
+		const response = await fetch(backendUrl, {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${session}`,

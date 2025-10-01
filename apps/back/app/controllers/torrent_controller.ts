@@ -83,12 +83,35 @@ export default class TorrentController {
     }
   }
 
-  async list({ response }: HttpContext) {
+  async list({ request, response }: HttpContext) {
     try {
-      const movies = await this.movieService.getDownloadedMovies()
+      const page = Math.max(1, parseInt(request.qs().page || '1', 10))
+      const limit = Math.min(100, Math.max(1, parseInt(request.qs().limit || '10', 10)))
+      const search = request.qs().search?.toString() || ''
+      const sortBy = request.qs().sortBy?.toString() || ''
+      const sortDirection = request.qs().sortDirection?.toString() || 'desc'
+
+      const result = await this.movieService.getDownloadedMoviesPaginated(
+        page,
+        limit,
+        search,
+        sortBy,
+        sortDirection
+      )
+
       return response.ok({
         success: true,
-        movies: movies,
+        movies: result.movies,
+        pagination: {
+          currentPage: page,
+          totalPages: result.totalPages,
+          totalMovies: result.totalMovies, // Filtered count for pagination
+          limit: limit,
+          hasNextPage: page < result.totalPages,
+          hasPrevPage: page > 1,
+        },
+        totalSize: result.totalSize, // Size of current page
+        globalStats: result.globalStats, // Global statistics for header
       })
     } catch (error) {
       return this.handleDeleteError(response, error, 'fetching movies list')
