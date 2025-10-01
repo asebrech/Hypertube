@@ -69,6 +69,7 @@
 			movie={movieBanner}
 			movieVideo={movieVideoResponse}
 			type="movie"
+			instance="home"
 		/>
 	{:else}
 		<Skeleton class="h-[80vh]" />

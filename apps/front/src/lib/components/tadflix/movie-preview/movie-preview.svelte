@@ -2,9 +2,9 @@
 	import { goto } from '$app/navigation';
 	import { Skeleton } from '@/components/ui/skeleton';
 	import { getMovieDetails, getMovieVideos } from '@/services/api';
-	import { movieModalActions } from '@/services/store';
+	import { movieModalActions, videoState } from '@/services/store';
 	import type { MovieDetails, MovieType, MovieVideo } from '@hypertube/shared';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import ButtonPreview from '$lib/components/tadflix/buttons/button-preview/button-preview.svelte';
 	import { MovieBadges } from '$lib/components/tadflix/movie-badges';
 	import { Play, Plus, ChevronDown, Languages, VolumeOff, Volume2, RotateCw } from 'lucide-svelte';
@@ -70,9 +70,26 @@
 					onStateChange: (event) => {
 						if (event.data === YT.PlayerState.ENDED) {
 							videoEnded = true;
+							// Update store when preview video ends
+							videoState.update(state => ({
+								...state,
+								previewVideoPlaying: false
+							}));
 						}
 						if (event.data === YT.PlayerState.PLAYING) {
 							playerReady = true;
+							// Update store when preview video starts playing
+							videoState.update(state => ({
+								...state,
+								previewVideoPlaying: true
+							}));
+						}
+						if (event.data === YT.PlayerState.PAUSED) {
+							// Update store when preview video is paused
+							videoState.update(state => ({
+								...state,
+								previewVideoPlaying: false
+							}));
 						}
 					}
 				},
@@ -115,6 +132,23 @@
 			// Already loaded
 			isApiLoaded = true;
 			if (movieVideo?.key) createPlayer(movieVideo?.key);
+		}
+	});
+
+	onDestroy(() => {
+		// Reset preview video state when component is destroyed
+		videoState.update(state => ({
+			...state,
+			previewVideoPlaying: false
+		}));
+		
+		// Clean up YouTube player if it exists
+		if (player && typeof player.destroy === 'function') {
+			try {
+				player.destroy();
+			} catch (error) {
+				console.warn('Error destroying YouTube player:', error);
+			}
 		}
 	});
 

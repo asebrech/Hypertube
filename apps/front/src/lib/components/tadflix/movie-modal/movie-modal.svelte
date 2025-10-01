@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Dialog, DialogContent } from '@/components/ui/dialog';
-	import { movieModal, movieModalActions, movieDataCache } from '@/services/store';
+	import { movieModal, movieModalActions, movieDataCache, videoState } from '@/services/store';
 	import {
 		getMovieDetails,
 		getMovieVideos,
@@ -65,6 +65,23 @@
 			};
 		});
 		return unsubscribe;
+	});
+
+	// Mute home banner when modal opens, unmute when modal closes
+	$effect(() => {
+		if (modalData.isOpen) {
+			// Modal opened - set modal state to active to mute home banner
+			videoState.update(state => ({
+				...state,
+				modalBannerVideoPlaying: true
+			}));
+		} else {
+			// Modal closed - reset modal state to unmute home banner
+			videoState.update(state => ({
+				...state,
+				modalBannerVideoPlaying: false
+			}));
+		}
 	});
 
 	// Load movie data when modal opens
@@ -455,6 +472,7 @@
 										showDescription={false}
 										showMoreInfoButton={false}
 										showVoteAverage={false}
+										instance="modal"
 										class="[&>div:first-child]:max-h-[40vh] [&>div:first-child]:rounded-t-lg sm:[&>div:first-child]:max-h-[45vh] md:[&>div:first-child]:max-h-[50vh]"
 									>
 										{#snippet customActions()}
