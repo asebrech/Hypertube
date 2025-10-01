@@ -52,7 +52,8 @@
 	},
 	"search": {
 		"placeholder": "电影、电视剧、人物...",
-		"noresults": "未找到结果"
+		"noresults": "未找到结果",
+		"loading": "加载中..."
 	},
 	"filters": {
 		"select_genre": "类别",

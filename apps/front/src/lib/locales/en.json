@@ -19,7 +19,8 @@
 	},
 	"search": {
 		"placeholder": "Movies, Shows, People...",
-		"noresults": "No results found"
+		"noresults": "No results found",
+		"loading": "Loading..."
 	},
 	"filters": {
 		"select_genre": "Genre",
