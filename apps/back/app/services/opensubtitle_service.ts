@@ -174,7 +174,7 @@ export class OpenSubtitleService {
   }
 
   public async getAllSubtitles(tmdb_id: string): Promise<SubtitleResult[]> {
-    const endpoint = `/subtitles?tmdb_id=${encodeURIComponent(tmdb_id)}`
+    const endpoint = `/subtitles?tmdb_id=${encodeURIComponent(tmdb_id)}&foreign_parts_only=exclude`
     const data: SubtitleApiResponse = (await this.getSomethingFromApi(
       endpoint
     )) as SubtitleApiResponse
@@ -194,7 +194,7 @@ export class OpenSubtitleService {
       try {
         const endpoint = `/subtitles?tmdb_id=${encodeURIComponent(
           tmdb_id
-        )}&languages=${encodeURIComponent(languageCode)}`
+        )}&languages=${encodeURIComponent(languageCode)}&foreign_parts_only=exclude`
         const data: SubtitleApiResponse = (await this.getSomethingFromApi(
           endpoint
         )) as SubtitleApiResponse
