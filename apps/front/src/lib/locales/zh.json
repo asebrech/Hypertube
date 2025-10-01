@@ -144,6 +144,7 @@
 		"already_have_account": "已经有账户了？",
 		"register_with_google": "使用Google注册",
 		"register_with_github": "使用Github注册",
+		"register_with_discord": "使用Discord注册",
 		"register_with_42": "使用42注册",
 		"form_error": "密码太短或邮箱已被使用",
 		"login": {
@@ -157,6 +158,7 @@
 			"remember_me": "记住我",
 			"login_with_google": "使用Google登录",
 			"login_with_github": "使用Github登录",
+			"login_with_discord": "使用Discord登录",
 			"login_with_42": "使用42登录",
 			"no_account": "没有账户？",
 			"sign_up_link": "注册",

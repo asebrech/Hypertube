@@ -111,6 +111,7 @@
 		"already_have_account": "Already have an account?",
 		"register_with_google": "Sign up with Google",
 		"register_with_github": "Sign up with Github",
+		"register_with_discord": "Sign up with Discord",
 		"register_with_42": "Sign up with 42",
 		"form_error": "Email already used",
 		"login": {
@@ -124,6 +125,7 @@
 			"remember_me": "Remember me",
 			"login_with_google": "Sign in with Google",
 			"login_with_github": "Sign in with Github",
+			"login_with_discord": "Sign in with Discord",
 			"login_with_42": "Sign in with 42",
 			"no_account": "Don't have an account?",
 			"sign_up_link": "Sign up",

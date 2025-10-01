@@ -9,6 +9,7 @@
 	import {
 		GoogleButton,
 		GithubButton,
+		DiscordButton,
 		FortyTwoButton
 	} from '$lib/components/ui/oauth-buttons/index.js';
 	import { enhance } from '$app/forms';
@@ -92,6 +93,7 @@
 			<div class="grid gap-3">
 				<GoogleButton action="/login/google" text={$_('auth.login.login_with_google')} />
 				<GithubButton action="/login/github" text={$_('auth.login.login_with_github')} />
+				<DiscordButton action="/login/discord" text={$_('auth.login.login_with_discord')} />
 				<FortyTwoButton action="/login/fortyTwo" text={$_('auth.login.login_with_42')} />
 			</div>
 		</div>
