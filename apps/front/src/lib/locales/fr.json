@@ -65,7 +65,8 @@
 		"toprated": "Les mieux notés",
 		"originaltitle": "A-Z",
 		"originaltitle_desc": "Z-A",
-		"selected_cast": "Acteurs sélectionnés"
+		"selected_cast": "Acteurs sélectionnés",
+		"selected_genres": "Genres sélectionnés"
 	},
 	"movie-action": {
 		"bookmarked": "Watchlist",

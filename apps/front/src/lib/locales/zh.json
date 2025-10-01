@@ -65,7 +65,8 @@
 		"toprated": "评分最高",
 		"originaltitle": "A-Z",
 		"originaltitle_desc": "Z-A",
-		"selected_cast": "选定演员"
+		"selected_cast": "选定演员",
+		"selected_genres": "选定类别"
 	},
 	"movie-action": {
 		"bookmarked": "收藏夹",

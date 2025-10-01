@@ -65,7 +65,8 @@
 		"toprated": "Mejor valorados",
 		"originaltitle": "De la A a la Z",
 		"originaltitle_desc": "De la Z a la A",
-		"selected_cast": "Reparto seleccionado"
+		"selected_cast": "Reparto seleccionado",
+		"selected_genres": "Géneros seleccionados"
 	},
 	"movie-action": {
 		"bookmarked": "Lista de seguimiento",

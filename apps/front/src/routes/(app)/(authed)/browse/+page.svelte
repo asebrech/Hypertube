@@ -160,6 +160,17 @@
 		});
 	}
 
+	function handleGenreRemove(genreId: number) {
+		selectedGenres = selectedGenres.filter(genre => genre.id !== genreId);
+		movies = [];
+		currentPage = 1;
+		hasMorePages = true;
+		loadDiscoverMovies().then(() => {
+			// Re-observe sentinel after loading new content
+			setTimeout(() => observeSentinel(), 100);
+		});
+	}
+
 	onDestroy(() => {
 		if (observer) {
 			observer.disconnect();
@@ -275,6 +286,23 @@
 			{cast.name}
 			<X class="ml-1 h-4 w-4 text-gray-400 underline" />
 		</span>
+	</div>
+{/if}
+
+{#if selectedGenres.length > 0}
+	<div class="mx-[10%] mb-4 flex items-center gap-2 text-sm text-gray-500">
+		{$_('filters.selected_genres')}:
+		<div class="flex flex-wrap gap-2">
+			{#each selectedGenres as genre}
+				<span 
+					class="flex cursor-pointer items-center gap-1 underline" 
+					onclick={() => handleGenreRemove(genre.id)}
+				>
+					{genre.name}
+					<X class="ml-1 h-4 w-4 text-gray-400 underline" />
+				</span>
+			{/each}
+		</div>
 	</div>
 {/if}
 
