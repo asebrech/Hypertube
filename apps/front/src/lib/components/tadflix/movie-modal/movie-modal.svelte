@@ -27,6 +27,8 @@
 	import { _ } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
+	import { browser } from '$app/environment';
 	import { CommentContainer } from '../comments';
 	
 	const { data } = $props();
@@ -305,12 +307,32 @@
 
 	function navigateToGenre(genreId: number) {
 		closeModal(); // Close modal first
-		goto(`/browse?genre=${genreId}`);
+		
+		if (browser) {
+			const currentPath = window.location.pathname;
+			if (currentPath === '/browse') {
+				// If already on browse page, force reload with new genre parameter
+				window.location.href = `/browse?genre=${genreId}`;
+			} else {
+				// If on different page, use normal navigation
+				goto(`/browse?genre=${genreId}`);
+			}
+		}
 	}
 
 	function navigateToCast(castId: number) {
 		closeModal(); // Close modal first
-		goto(`/browse?cast=${castId}`);
+		
+		if (browser) {
+			const currentPath = window.location.pathname;
+			if (currentPath === '/browse') {
+				// If already on browse page, force reload with new cast parameter
+				window.location.href = `/browse?cast=${castId}`;
+			} else {
+				// If on different page, use normal navigation
+				goto(`/browse?cast=${castId}`);
+			}
+		}
 	}
 
 	function goBack() {
