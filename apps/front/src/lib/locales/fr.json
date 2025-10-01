@@ -68,7 +68,7 @@
 	},
 	"movie-action": {
 		"bookmarked": "Watchlist",
-		"watched": "d\u00e9j\u00e0 vu",
+		"watched": "déjà vu",
 		"resume": "reprendre"
 	},
 	"browse": {
@@ -125,7 +125,8 @@
 			"email_invalid": "Veuillez entrer une adresse email valide",
 			"password_invalid": "Le mot de passe ne respecte pas les exigences",
 			"length_invalid": "La longueur ne respecte pas les exigences",
-			"invalid": "Ce champ contient des données invalides"
+			"invalid": "Ce champ contient des données invalides",
+			"upload_failed": "Échec du téléchargement de la photo de profil"
 		}
 	},
 	"auth": {
@@ -139,6 +140,7 @@
 		"username": "Nom d'utilisateur",
 		"email": "Email",
 		"password": "Mot de passe",
+		"profile_picture_optional": "Photo de Profil (Optionnel)",
 		"already_have_account": "Vous avez déjà un compte ?",
 		"register_with_google": "S'inscrire avec Google",
 		"register_with_github": "S'inscrire avec Github",
@@ -249,13 +251,19 @@
 			"drop-here": "Déposer l'image ici",
 			"click-or-drag": "Cliquer ou glisser pour télécharger",
 			"choose-file": "Choisir un Fichier",
+			"change-file": "Changer de Fichier",
 			"remove": "Supprimer",
+			"preview": "Aperçu",
 			"requirements": "JPG, JPEG, PNG, GIF ou WebP. Max 2 Mo.",
 			"uploading": "Téléchargement...",
 			"error-image-type": "Veuillez sélectionner un fichier image",
 			"error-file-size": "Le fichier doit faire moins de 5 Mo",
 			"error-login-required": "Vous devez être connecté pour télécharger une photo de profil",
-			"error-upload-failed": "Échec du téléchargement de la photo de profil"
+			"error-upload-failed": "Échec du téléchargement de la photo de profil",
+			"error-file-required": "Le fichier de photo de profil est requis",
+			"error-invalid-file-type": "Type de fichier invalide. Seuls les fichiers JPG, JPEG, PNG, GIF et WebP sont autorisés.",
+			"error-invalid-file": "Fichier invalide",
+			"success-upload": "Photo de profil téléchargée avec succès"
 		}
 	},
 	"admin": {
@@ -275,10 +283,28 @@
 		"clear_search": "Effacer la recherche",
 		"search_placeholder": "Rechercher des films par titre ou ID TMDB...",
 		"showing_results": "Affichage de {count} sur {total} films",
+		"showing_page": "Page {current} sur {total}",
+		"items_per_page": "Éléments par page",
 		"total_storage": "Stockage total",
 		"confirm_delete_single": "Êtes-vous sûr de vouloir supprimer ce film ? Cette action ne peut pas être annulée.",
 		"confirm_delete_all": "Êtes-vous sûr de vouloir supprimer TOUS les films ? Cette action ne peut pas être annulée et libérera tout l'espace de stockage.",
 		"confirm_delete_selected": "Êtes-vous sûr de vouloir supprimer les {count} films sélectionnés ? Cette action ne peut pas être annulée.",
+		"delete_partial_success": "Certains films n'ont pas pu être supprimés :",
+		"movie_being_converted": "Impossible de supprimer les films en cours de conversion. Veuillez attendre la fin de la conversion.",
+		"cannot_delete_converting": "Impossible de supprimer tous les films car certains sont en cours de conversion :",
+		"unknown_title": "Titre inconnu",
+		"never": "Jamais",
+		"not_available": "N/D",
+		"bytes": "Octets",
+		"errors": {
+			"fetch_failed": "Échec du chargement des films",
+			"unknown_error": "Une erreur inconnue s'est produite",
+			"delete_failed": "Échec de la suppression du film",
+			"delete_all_failed": "Échec de la suppression de tous les films",
+			"delete_unknown": "Erreur inconnue",
+			"delete_selected_failed": "Certains films n'ont pas pu être supprimés :",
+			"http_error": "Erreur HTTP ! statut : {status}"
+		},
 		"stats": {
 			"total_movies": "Films totaux",
 			"storage_used": "Stockage utilisé",

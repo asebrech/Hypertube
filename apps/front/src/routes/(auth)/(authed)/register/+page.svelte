@@ -10,6 +10,7 @@
 		DiscordButton,
 		FortyTwoButton
 	} from '$lib/components/ui/oauth-buttons/index.js';
+	import ProfilePictureUpload from '$lib/components/ProfilePictureUpload.svelte';
 	import { _ } from 'svelte-i18n';
 	import {
 		validatePassword,
@@ -28,6 +29,7 @@
 			password?: string;
 			firstName?: string;
 			lastName?: string;
+			profilePicture?: string;
 			general?: string;
 		};
 	};
@@ -48,6 +50,10 @@
 	let usernameErrors: string[] = $state([]);
 	let firstNameErrors: string[] = $state([]);
 	let lastNameErrors: string[] = $state([]);
+
+	// Profile picture state
+	let selectedProfilePicture = $state<File | null>(null);
+	let username = $state(''); // Track username for avatar display
 
 	// Effect to merge client and server errors
 	$effect(() => {
@@ -74,6 +80,8 @@
 			if (form.errors.lastName) {
 				lastNameErrors.push($_(`validation.server_errors.${form.errors.lastName}`));
 			}
+			// Profile picture upload errors don't need to block registration
+			// They're handled within the ProfilePictureUpload component
 		}
 	});
 
@@ -101,6 +109,14 @@
 		const errorKeys = validateLastName(lastName);
 		return translateValidationErrors(errorKeys, (key) => $_(key));
 	}
+
+	function handleFileSelected(file: File) {
+		selectedProfilePicture = file;
+	}
+
+	function handleImageRemoved() {
+		selectedProfilePicture = null;
+	}
 </script>
 
 <Card.Root class="mx-auto my-16 max-w-sm border-none bg-black/70">
@@ -109,11 +125,34 @@
 	</Card.Header>
 	<Card.Content>
 		<div class="grid gap-4">
-			<form action="?/register" method="POST" use:enhance>
+			<form 
+				action="?/register" 
+				method="POST" 
+				enctype="multipart/form-data"
+				use:enhance={({ formData }) => {
+					// Add the selected profile picture to the form data
+					if (selectedProfilePicture) {
+						formData.append('profilePicture', selectedProfilePicture);
+					}
+				}}
+			>
 				<div class="grid gap-4">
 					{#if form?.invalid && !form?.errors}
 						<p class="error">{$_('auth.form_error')}</p>
 					{/if}
+
+					<!-- Profile Picture Section -->
+					<div class="grid gap-4">
+						<h3 class="text-base font-medium text-white">{$_('auth.profile_picture_optional')}</h3>
+						<div class="flex justify-center">
+							<ProfilePictureUpload
+								selectedFile={selectedProfilePicture}
+								onFileSelected={handleFileSelected}
+								onImageRemoved={handleImageRemoved}
+								{username}
+							/>
+						</div>
+					</div>
 					<div class="grid grid-cols-2 gap-4">
 						<div class="grid gap-2">
 							<Label for="firstName">{$_('auth.first_name')}</Label>
@@ -151,6 +190,7 @@
 							name="username"
 							placeholder="username"
 							required
+							bind:value={username}
 							errors={usernameErrors}
 							onfocusout={(e) => {
 								const target = e.target as HTMLInputElement;

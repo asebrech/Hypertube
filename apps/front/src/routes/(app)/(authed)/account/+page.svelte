@@ -21,12 +21,14 @@
 	type FormData = {
 		invalid?: boolean;
 		success?: boolean;
+		profilePictureMessageKey?: string;
 		user?: {
 			id: number;
 			firstName?: string;
 			lastName?: string;
 			username?: string;
 			email: string;
+			profilePicture?: string;
 		};
 		errors?: {
 			email?: string;
@@ -36,6 +38,7 @@
 			currentPassword?: string;
 			newPassword?: string;
 			general?: string;
+			profilePicture?: string;
 		};
 	};
 
@@ -49,6 +52,7 @@
 	let clientLastNameErrors: string[] = $state([]);
 	let clientCurrentPasswordErrors: string[] = $state([]);
 	let clientConfirmPasswordErrors: string[] = $state([]);
+	let clientProfilePictureErrors: string[] = $state([]);
 
 	// Combined errors (client + server)
 	let passwordErrors: string[] = $state([]);
@@ -58,6 +62,7 @@
 	let lastNameErrors: string[] = $state([]);
 	let currentPasswordErrors: string[] = $state([]);
 	let confirmPasswordErrors: string[] = $state([]);
+	let profilePictureErrors: string[] = $state([]);
 
 	// Form values
 	let firstName = $state('');
@@ -69,9 +74,8 @@
 	let confirmPassword = $state('');
 
 	// Profile picture state
-	let profilePictureSuccess = $state('');
 	let currentProfilePicture = $state('');
-	let imageKey = $state(0); // Key to force image re-render
+	let selectedProfilePicture = $state<File | null>(null);
 
 	// Effect to merge client and server errors
 	$effect(() => {
@@ -82,6 +86,7 @@
 		lastNameErrors = [...clientLastNameErrors];
 		currentPasswordErrors = [...clientCurrentPasswordErrors];
 		confirmPasswordErrors = [...clientConfirmPasswordErrors];
+		profilePictureErrors = [...clientProfilePictureErrors];
 
 		// Add server errors if they exist
 		if (form?.errors) {
@@ -103,6 +108,9 @@
 			if (form.errors.currentPassword) {
 				currentPasswordErrors.push($_('account.error_current_password'));
 			}
+			if (form.errors.profilePicture) {
+				profilePictureErrors.push($_(form.errors.profilePicture));
+			}
 		}
 	});
 
@@ -121,6 +129,13 @@
 			email = form.user.email || '';
 			currentPassword = '';
 			newPassword = '';
+			confirmPassword = '';
+			selectedProfilePicture = null; // Reset selected file after successful submission
+			
+			// Update profile picture if it was updated
+			if (form.user.profilePicture) {
+				currentProfilePicture = form.user.profilePicture;
+			}
 		}
 	});
 
@@ -165,21 +180,12 @@
 		}
 	}
 
-	async function handleUploadSuccess(data: { profilePicture: string; message: string }) {
-		profilePictureSuccess = data.message;
-		currentProfilePicture = data.profilePicture;
-		imageKey++;
-
-		await invalidateAll();
-
-		setTimeout(() => {
-			profilePictureSuccess = '';
-		}, 5000);
+	function handleFileSelected(file: File) {
+		selectedProfilePicture = file;
 	}
 
 	function handleImageRemoved() {
-		currentProfilePicture = '';
-		profilePictureSuccess = '';
+		selectedProfilePicture = null;
 	}
 
 	$effect(() => {
@@ -226,6 +232,9 @@
 					{#if form?.success}
 						<div class="rounded-md border border-green-700 bg-green-900/50 p-4">
 							<p class="text-sm text-green-100">{$_('account.success_message')}</p>
+							{#if form?.profilePictureMessageKey}
+								<p class="text-sm text-green-100 mt-1">{$_(form.profilePictureMessageKey)}</p>
+							{/if}
 						</div>
 					{/if}
 
@@ -235,29 +244,44 @@
 						</div>
 					{/if}
 
-					<!-- Profile Picture Section -->
-					<div class="grid gap-4">
-						<h3 class="text-lg font-medium text-white">{$_('account.profile-picture')}</h3>
-
-						{#if profilePictureSuccess}
-							<div class="rounded-md border border-green-700 bg-green-900/50 p-4">
-								<p class="text-sm text-green-100">{profilePictureSuccess}</p>
-							</div>
-						{/if}
-
-						<div class="flex justify-center">
-							<ProfilePictureUpload
-								{currentProfilePicture}
-								{imageKey}
-								onUploadSuccess={handleUploadSuccess}
-								onImageRemoved={handleImageRemoved}
-								{username}
-							/>
-						</div>
-					</div>
-
-					<form action="?/updateAccount" method="POST" use:enhance>
+					<form
+						action="?/updateAccount"
+						method="POST"
+						enctype="multipart/form-data"
+						use:enhance={({ formData }) => {
+							// Add the selected profile picture to the form data
+							if (selectedProfilePicture) {
+								formData.append('profilePicture', selectedProfilePicture);
+							}
+							
+							return async ({ result, update }) => {
+								await update();
+							};
+						}}
+					>
 						<div class="grid gap-6">
+							<!-- Profile Picture Section -->
+							<div class="grid gap-4">
+								<h3 class="text-lg font-medium text-white">{$_('account.profile-picture')}</h3>
+
+								<div class="flex justify-center">
+									<ProfilePictureUpload
+										{currentProfilePicture}
+										selectedFile={selectedProfilePicture}
+										onFileSelected={handleFileSelected}
+										onImageRemoved={handleImageRemoved}
+										{username}
+									/>
+								</div>
+								
+								{#if profilePictureErrors.length > 0}
+									<div class="flex flex-col gap-1">
+										{#each profilePictureErrors as error}
+											<p class="text-sm text-red-300">{error}</p>
+										{/each}
+									</div>
+								{/if}
+							</div>
 							<!-- Personal Information Section -->
 							<div class="grid gap-4">
 								<h3 class="text-lg font-medium text-white">{$_('account.personal_info')}</h3>

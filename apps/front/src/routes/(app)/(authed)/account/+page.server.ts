@@ -32,11 +32,45 @@ const updateAccount = async ({ request, locals, cookies }: RequestEvent) => {
 	const email = data.get('email');
 	const currentPassword = data.get('currentPassword');
 	const newPassword = data.get('newPassword');
+	const profilePicture = data.get('profilePicture') as File | null;
 
 	if (!locals.user) {
 		return fail(401, { invalid: true, errors: { general: 'unauthorized' } });
 	}
 
+	// Handle profile picture upload first if there's a file
+	let profilePictureResponse: any = null;
+	if (profilePicture && profilePicture.size > 0) {
+		try {
+			const formData = new FormData();
+			formData.append('profilePicture', profilePicture);
+
+			const uploadConfig = {
+				method: 'post',
+				url: `${SECRET_BACK_URL}/users/upload-profile-picture`,
+				headers: {
+					Authorization: `Bearer ${cookies.get('session')}`
+				},
+				data: formData
+			};
+
+			profilePictureResponse = await axios.request(uploadConfig);
+		} catch (error) {
+			if (axios.isAxiosError(error) && error.response) {
+				const messageKey = error.response.data?.messageKey || 'profile.upload.error-upload-failed';
+				return fail(400, {
+					invalid: true,
+					errors: { profilePicture: messageKey }
+				});
+			}
+			return fail(500, {
+				invalid: true,
+				errors: { profilePicture: 'profile.upload.error-upload-failed' }
+			});
+		}
+	}
+
+	// Prepare payload for other user data updates
 	const payload: any = {};
 
 	if (firstName && firstName.toString().trim()) payload.firstName = firstName.toString().trim();
@@ -55,83 +89,112 @@ const updateAccount = async ({ request, locals, cookies }: RequestEvent) => {
 		payload.newPassword = newPassword.toString();
 	}
 
-	const config = {
-		method: 'patch',
-		url: `${SECRET_BACK_URL}/user/${locals.user.id}`,
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${cookies.get('session')}`
-		},
-		data: JSON.stringify(payload)
-	};
-
-	try {
-		const response = await axios.request(config);
-		return {
-			success: true,
-			user: response.data.user
+	// Only make the user update request if there's something to update
+	let userUpdateResponse: any = null;
+	if (Object.keys(payload).length > 0) {
+		const config = {
+			method: 'patch',
+			url: `${SECRET_BACK_URL}/user/${locals.user.id}`,
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${cookies.get('session')}`
+			},
+			data: JSON.stringify(payload)
 		};
-	} catch (error) {
-		if (axios.isAxiosError(error) && error.response) {
-			if (error.response.status === 422) {
-				const backendErrors = error.response.data?.errors || [];
-				const errors: Record<string, string> = {};
 
-				backendErrors.forEach((errorObj: any) => {
-					if (errorObj.field && errorObj.rule) {
-						let errorKey = '';
+		try {
+			userUpdateResponse = await axios.request(config);
+		} catch (error) {
+			if (axios.isAxiosError(error) && error.response) {
+				if (error.response.status === 422) {
+					const backendErrors = error.response.data?.errors || [];
+					const errors: Record<string, string> = {};
 
-						if (errorObj.rule === 'unique') {
-							if (errorObj.field === 'email') {
-								errorKey = 'email_already_used';
-							} else if (errorObj.field === 'username') {
-								errorKey = 'username_already_used';
+					backendErrors.forEach((errorObj: any) => {
+						if (errorObj.field && errorObj.rule) {
+							let errorKey = '';
+
+							if (errorObj.rule === 'unique') {
+								if (errorObj.field === 'email') {
+									errorKey = 'email_already_used';
+								} else if (errorObj.field === 'username') {
+									errorKey = 'username_already_used';
+								} else {
+									errorKey = 'already_used';
+								}
+							} else if (errorObj.rule === 'email') {
+								errorKey = 'email_invalid';
+							} else if (errorObj.rule === 'password') {
+								errorKey = 'password_invalid';
+							} else if (errorObj.rule === 'length') {
+								errorKey = 'length_invalid';
+							} else if (errorObj.rule === 'invalid') {
+								errorKey = 'invalid';
+							} else if (errorObj.rule === 'required') {
+								errorKey = 'required';
 							} else {
-								errorKey = 'already_used';
+								errorKey = 'invalid';
 							}
-						} else if (errorObj.rule === 'email') {
-							errorKey = 'email_invalid';
-						} else if (errorObj.rule === 'password') {
-							errorKey = 'password_invalid';
-						} else if (errorObj.rule === 'length') {
-							errorKey = 'length_invalid';
-						} else if (errorObj.rule === 'invalid') {
-							errorKey = 'invalid';
-						} else if (errorObj.rule === 'required') {
-							errorKey = 'required';
-						} else {
-							errorKey = 'invalid';
+
+							errors[errorObj.field] = errorKey;
 						}
+					});
 
-						errors[errorObj.field] = errorKey;
-					}
-				});
-
-				return fail(422, {
-					invalid: true,
-					errors: errors
-				});
-			} else if (error.response.status === 400) {
-				const message = error.response.data?.message || '';
-				if (message.includes('Current password')) {
-					return fail(400, {
+					return fail(422, {
 						invalid: true,
-						errors: { currentPassword: 'invalid' }
+						errors: errors
+					});
+				} else if (error.response.status === 400) {
+					const message = error.response.data?.message || '';
+					if (message.includes('Current password')) {
+						return fail(400, {
+							invalid: true,
+							errors: { currentPassword: 'invalid' }
+						});
+					}
+				} else if (error.response.status === 403) {
+					return fail(403, {
+						invalid: true,
+						errors: { general: 'forbidden' }
 					});
 				}
-			} else if (error.response.status === 403) {
-				return fail(403, {
-					invalid: true,
-					errors: { general: 'forbidden' }
-				});
 			}
-		}
 
-		return fail(500, {
-			invalid: true,
-			errors: { general: 'server_error' }
-		});
+			return fail(500, {
+				invalid: true,
+				errors: { general: 'server_error' }
+			});
+		}
 	}
+
+	// Return success response with updated user data
+	const updatedUser = userUpdateResponse?.data?.user || locals.user;
+
+	// If we successfully uploaded a profile picture, we need to refresh the user data
+	// to get the updated profile picture URL
+	if (profilePictureResponse && !userUpdateResponse) {
+		try {
+			const token = cookies.get('session');
+			const meResponse = await axios.get(`${SECRET_BACK_URL}/users/me`, {
+				headers: {
+					Authorization: `Bearer ${token}`
+				}
+			});
+			return {
+				success: true,
+				user: meResponse.data,
+				profilePictureMessageKey: profilePictureResponse.data?.messageKey
+			};
+		} catch (error) {
+			// Continue with the profile picture response even if user data fetch fails
+		}
+	}
+
+	return {
+		success: true,
+		user: updatedUser,
+		profilePictureMessageKey: profilePictureResponse?.data?.messageKey
+	};
 };
 
 export const actions = { updateAccount };
