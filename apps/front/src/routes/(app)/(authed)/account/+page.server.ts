@@ -32,6 +32,7 @@ const updateAccount = async ({ request, locals, cookies }: RequestEvent) => {
 	const email = data.get('email');
 	const currentPassword = data.get('currentPassword');
 	const newPassword = data.get('newPassword');
+	const allowAdultContent = data.get('allowAdultContent');
 	const profilePicture = data.get('profilePicture') as File | null;
 
 	if (!locals.user) {
@@ -77,6 +78,11 @@ const updateAccount = async ({ request, locals, cookies }: RequestEvent) => {
 	if (lastName && lastName.toString().trim()) payload.lastName = lastName.toString().trim();
 	if (username && username.toString().trim()) payload.username = username.toString().trim();
 	if (email && email.toString().trim()) payload.email = email.toString().trim();
+	
+	// Handle allowAdultContent - explicitly convert to boolean
+	if (allowAdultContent !== null) {
+		payload.allowAdultContent = allowAdultContent === 'true';
+	}
 
 	if (newPassword && newPassword.toString().trim()) {
 		if (!currentPassword || !currentPassword.toString().trim()) {

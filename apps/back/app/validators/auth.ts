@@ -85,5 +85,6 @@ export const updateUserValidator = vine.compile(
     currentPassword: vine.string().optional(),
     newPassword: passwordRules.optional(),
     profilePicture: vine.string().url().optional(),
+    allowAdultContent: vine.boolean().optional(),
   })
 )
