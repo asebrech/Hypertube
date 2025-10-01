@@ -4,7 +4,7 @@
 	"log_out": "Log out",
 	"navbar": {
 		"home": "Home",
-		"shows": "Shows",
+		"shows": "TV Shows",
 		"movies": "Movies",
 		"news-popular": "News & Popular",
 		"my-list": "My Lists",
@@ -92,7 +92,8 @@
 			"email_invalid": "Please enter a valid email address",
 			"password_invalid": "Password does not meet requirements",
 			"length_invalid": "Length does not meet requirements",
-			"invalid": "This field contains invalid data"
+			"invalid": "This field contains invalid data",
+			"upload_failed": "Failed to upload profile picture"
 		}
 	},
 	"auth": {
@@ -106,6 +107,7 @@
 		"username": "Username",
 		"email": "Email",
 		"password": "Password",
+		"profile_picture_optional": "Profile Picture (Optional)",
 		"already_have_account": "Already have an account?",
 		"register_with_google": "Sign up with Google",
 		"register_with_github": "Sign up with Github",
@@ -247,13 +249,19 @@
 			"drop-here": "Drop image here",
 			"click-or-drag": "Click or drag to upload",
 			"choose-file": "Choose File",
+			"change-file": "Change File",
 			"remove": "Remove",
+			"preview": "Preview",
 			"requirements": "JPG, JPEG, PNG, GIF or WebP. Max 2MB.",
 			"uploading": "Uploading...",
 			"error-image-type": "Please select an image file",
 			"error-file-size": "File must be less than 5MB",
 			"error-login-required": "You must be logged in to upload a profile picture",
-			"error-upload-failed": "Failed to upload profile picture"
+			"error-upload-failed": "Failed to upload profile picture",
+			"error-file-required": "Profile picture file is required",
+			"error-invalid-file-type": "Invalid file type. Only JPG, JPEG, PNG, GIF, and WebP files are allowed.",
+			"error-invalid-file": "Invalid file",
+			"success-upload": "Profile picture uploaded successfully"
 		}
 	},
 	"admin": {

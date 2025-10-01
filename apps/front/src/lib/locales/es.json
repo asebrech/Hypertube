@@ -125,7 +125,8 @@
 			"email_invalid": "Por favor ingresa una dirección de correo electrónico válida",
 			"password_invalid": "La contraseña no cumple con los requisitos",
 			"length_invalid": "La longitud no cumple con los requisitos",
-			"invalid": "Este campo contiene datos inválidos"
+			"invalid": "Este campo contiene datos inválidos",
+			"upload_failed": "Error al subir la foto de perfil"
 		}
 	},
 	"auth": {
@@ -139,6 +140,7 @@
 		"username": "Nombre de usuario",
 		"email": "Correo electrónico",
 		"password": "Contraseña",
+		"profile_picture_optional": "Foto de Perfil (Opcional)",
 		"already_have_account": "¿Ya tienes una cuenta?",
 		"register_with_google": "Registrarse con Google",
 		"register_with_github": "Registrarse con Github",
@@ -247,13 +249,19 @@
 			"drop-here": "Soltar imagen aquí",
 			"click-or-drag": "Hacer clic o arrastrar para subir",
 			"choose-file": "Elegir Archivo",
+			"change-file": "Cambiar Archivo",
 			"remove": "Eliminar",
+			"preview": "Vista Previa",
 			"requirements": "JPG, JPEG, PNG, GIF o WebP. Máx. 2MB.",
 			"uploading": "Subiendo...",
 			"error-image-type": "Por favor selecciona un archivo de imagen",
 			"error-file-size": "El archivo debe ser menor de 5MB",
 			"error-login-required": "Debes iniciar sesión para subir una foto de perfil",
-			"error-upload-failed": "Error al subir la foto de perfil"
+			"error-upload-failed": "Error al subir la foto de perfil",
+			"error-file-required": "El archivo de foto de perfil es requerido",
+			"error-invalid-file-type": "Tipo de archivo inválido. Solo se permiten archivos JPG, JPEG, PNG, GIF y WebP.",
+			"error-invalid-file": "Archivo inválido",
+			"success-upload": "Foto de perfil subida exitosamente"
 		}
 	},
 	"admin": {

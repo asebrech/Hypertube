@@ -103,9 +103,48 @@ export default class AuthController {
 
   async register({ request, response }: HttpContext) {
     try {
-      const payload = await request.validateUsing(registerValidator)
+      // Handle multipart form data for profile picture
+      const profilePicture = request.file('profilePicture', {
+        size: '5mb',
+      })
 
+      // Get other form fields and validate
+      const payload = await registerValidator.validate(
+        request.only(['email', 'password', 'username', 'firstName', 'lastName'])
+      )
+
+      // Create user
       const user = await User.create(payload)
+
+      // Handle profile picture upload if provided
+      if (profilePicture && profilePicture.isValid) {
+        try {
+          const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp']
+          const fileExtension = profilePicture.extname?.toLowerCase()
+
+          if (fileExtension && allowedExtensions.includes(fileExtension)) {
+            const { cuid } = await import('@adonisjs/core/helpers')
+            const ProfilePictureService = (await import('#services/profile_picture_service'))
+              .default
+            const env = (await import('#start/env')).default
+
+            const profilePictureService = new ProfilePictureService()
+            const uploadsPath = profilePictureService.getUploadsPath()
+            const fileName = `${cuid()}.${fileExtension}`
+
+            await profilePicture.move(uploadsPath, { name: fileName })
+
+            const backUrl = env.get('BACK_URL') || 'http://localhost:3333'
+            const profilePictureUrl = `${backUrl}/uploads/profiles/${fileName}`
+
+            user.profilePicture = profilePictureUrl
+            await user.save()
+          }
+        } catch (profileError) {
+          // Log but don't fail registration if profile picture upload fails
+          console.error('Profile picture upload failed during registration:', profileError)
+        }
+      }
 
       return response.created(user)
     } catch (error) {
