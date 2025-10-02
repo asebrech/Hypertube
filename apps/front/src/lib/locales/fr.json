@@ -336,5 +336,19 @@
 			"created": "Créé",
 			"actions": "Actions"
 		}
+	},
+	"mylist": {
+		"title": "Ma Liste",
+		"subtitle": "Films que vous avez mis en favoris et regardés",
+		"bookmarked_movies": "Films en Favoris",
+		"watched_movies": "Films Regardés",
+		"no_bookmarked_movies": "Aucun Film en Favoris",
+		"no_bookmarked_movies_description": "Les films que vous mettez en favoris apparaîtront ici",
+		"no_watched_movies": "Aucun Film Regardé",
+		"no_watched_movies_description": "Les films que vous avez regardés apparaîtront ici"
+	},
+	"common": {
+		"loading": "Chargement...",
+		"refresh": "Actualiser"
 	}
 }

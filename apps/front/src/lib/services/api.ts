@@ -483,6 +483,39 @@ export async function getUserByUsername(username: string) {
 	}
 }
 
+export async function getUserMovies(
+	page: number = 1,
+	limit: number = 20,
+	isWatched?: boolean,
+	isBookmarked?: boolean,
+	token: string | null = null
+) {
+	const params: Record<string, any> = {
+		page,
+		limit
+	};
+
+	if (isWatched !== undefined) params.isWatched = isWatched;
+	if (isBookmarked !== undefined) params.isBookmarked = isBookmarked;
+
+	const config = {
+		method: 'get',
+		url: `${PUBLIC_BACK_URL}/movies/user`,
+		params,
+		headers: {
+			...(token && { Authorization: `Bearer ${token}` })
+		}
+	};
+
+	try {
+		const response = await axios(config);
+		return response.data;
+	} catch (error) {
+		console.error('Error fetching user movies:', error);
+		throw error;
+	}
+}
+
 export async function uploadProfilePicture(file: File, token: string) {
 	const formData = new FormData();
 	formData.append('profilePicture', file);
@@ -502,6 +535,23 @@ export async function uploadProfilePicture(file: File, token: string) {
 		return response.data;
 	} catch (error) {
 		console.error('Error uploading profile picture:', error);
+		throw error;
+	}
+}
+
+export async function getUserMoviess(token: string) {
+	const config = {
+		method: 'get',
+		url: `${PUBLIC_BACK_URL}/movies/user`,
+		headers: {
+			Authorization: `Bearer ${token}`
+		}
+	};
+	try {
+		const response = await axios(config);
+		return response.data;
+	} catch (error) {
+		console.error('Error fetching user movies:', error);
 		throw error;
 	}
 }

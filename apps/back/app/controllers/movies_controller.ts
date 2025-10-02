@@ -708,4 +708,101 @@ export default class MoviesController {
       })
     }
   }
+
+  async getUserMovies({ request, response, auth }: HttpContext) {
+    try {
+      const user = await auth.authenticate()
+      const page = Number.parseInt(request.input('page', '1'))
+      const limit = Number.parseInt(request.input('limit', '20'))
+      const isWatched = request.input('isWatched')
+      const isBookmarked = request.input('isBookmarked')
+
+      // Validate pagination parameters
+      if (isNaN(page) || page < 1) {
+        return response.badRequest({
+          success: false,
+          error: 'Invalid page number. Must be a positive integer.',
+        })
+      }
+
+      if (isNaN(limit) || limit < 1 || limit > 100) {
+        return response.badRequest({
+          success: false,
+          error: 'Invalid limit. Must be between 1 and 100.',
+        })
+      }
+
+      // Build query for user's movies
+      let query = user.related('movies').query()
+
+      // Apply filters based on parameters
+      if (isWatched !== undefined) {
+        const watchedFilter = isWatched === 'true' || isWatched === true
+        query = query.wherePivot('is_watched', watchedFilter)
+      }
+
+      if (isBookmarked !== undefined) {
+        const bookmarkedFilter = isBookmarked === 'true' || isBookmarked === true
+        query = query.wherePivot('is_bookmarked', bookmarkedFilter)
+      }
+
+      // Get total count for pagination
+      const totalQuery = query.clone()
+      const totalCount = await totalQuery.count('* as total')
+      const total = Number(totalCount[0].$extras.total)
+
+      // Apply pagination
+      const offset = (page - 1) * limit
+      const movies = await query
+        .orderBy('movie_user.last_watched_at', 'desc')
+        .offset(offset)
+        .limit(limit)
+
+      console.log("movies",   movies)
+      // Calculate pagination info
+      const totalPages = Math.ceil(total / limit)
+      const hasNextPage = page < totalPages
+      const hasPrevPage = page > 1
+
+      // Format response with movie details and user interaction data
+      const formattedMovies = movies.map((movie) => ({
+        id: movie.id,
+        tmdbId: movie.tmdbId,
+        title: movie.title,
+        createdAt: movie.createdAt,
+        updatedAt: movie.updatedAt,
+        userInteraction: {
+          isWatched: movie.$extras.pivot_is_watched || false,
+          isBookmarked: movie.$extras.pivot_is_bookmarked || false,
+          watchProgressSeconds: movie.$extras.pivot_watch_progress_seconds || 0,
+          lastWatchedAt: movie.$extras.pivot_last_watched_at || null,
+        },
+      }))
+
+      return response.ok({
+        success: true,
+        movies: formattedMovies,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalMovies: total,
+          moviesPerPage: limit,
+          hasNextPage,
+          hasPrevPage,
+        },
+        filters: {
+          isWatched: isWatched !== undefined ? (isWatched === 'true' || isWatched === true) : null,
+          isBookmarked: isBookmarked !== undefined ? (isBookmarked === 'true' || isBookmarked === true) : null,
+        },
+      })
+    } catch (error) {
+      console.error('Error fetching user movies:', error)
+      return response.internalServerError({
+        success: false,
+        error: 'Failed to fetch user movies',
+      })
+    }
+  }
+
+
 }

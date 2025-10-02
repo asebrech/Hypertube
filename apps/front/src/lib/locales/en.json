@@ -336,5 +336,19 @@
 			"created": "Created",
 			"actions": "Actions"
 		}
+	},
+	"mylist": {
+		"title": "My List",
+		"subtitle": "Movies you've bookmarked and watched",
+		"bookmarked_movies": "Bookmarked Movies",
+		"watched_movies": "Watched Movies",
+		"no_bookmarked_movies": "No Bookmarked Movies",
+		"no_bookmarked_movies_description": "Movies you bookmark will appear here",
+		"no_watched_movies": "No Watched Movies",
+		"no_watched_movies_description": "Movies you've watched will appear here"
+	},
+	"common": {
+		"loading": "Loading...",
+		"refresh": "Refresh"
 	}
 }
