@@ -4,10 +4,7 @@
 	import { getUserMovies } from '@/services/api';
 	import { _ } from 'svelte-i18n';
 	import type { Movie, MovieType } from '@hypertube/shared';
-	import { Button } from '@/components/ui/button';
-	import { Bookmark, Eye, RefreshCw } from 'lucide-svelte';
-	import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-	import { Skeleton } from '@/components/ui/skeleton';
+	import { Bookmark, RefreshCw } from 'lucide-svelte';
 
 	const { data } = $props();
 
@@ -182,7 +179,7 @@
 	<title>{$_('mylist.title')} - Datflix</title>
 </svelte:head>
 
-<div class="min-h-screen bg-black text-white">
+<div class="min-h-screen bg-black text-white py-16">
 	<!-- Header -->
 	<div class="py-8">
 		<div class="container mx-auto px-4">
@@ -190,102 +187,65 @@
 			<p class="text-gray-400">{$_('mylist.subtitle')}</p>
 		</div>
 	</div>
-
-	<!-- Bookmarked Movies Section -->
-	<div class="py-8">
-		<Card class="bg-gray-900/50 border-gray-700 backdrop-blur-sm mx-4">
-			<CardHeader>
-				<div class="flex items-center justify-between">
-					<CardTitle class="flex items-center gap-2 text-white">
-						<Bookmark class="h-5 w-5 text-yellow-500" />
-						{$_('mylist.bookmarked_movies')}
-						<span class="text-sm text-gray-400">({bookmarkedMovies.length})</span>
-					</CardTitle>
-					<Button
-						variant="outline"
-						size="sm"
-						onclick={refreshBookmarked}
-						disabled={isLoadingBookmarked}
-						class="border-gray-600 text-white hover:bg-white/10"
-					>
-						<RefreshCw class="h-4 w-4 mr-2 {isLoadingBookmarked ? 'animate-spin' : ''}" />
-						{$_('common.refresh')}
-					</Button>
-				</div>
-			</CardHeader>
-			<CardContent>
-				{#if formattedBookmarkedMovies.length > 0}
-					<MovieList movies={formattedBookmarkedMovies} data={data} />
-					
-					<!-- Loading indicator for bookmarked movies -->
-					{#if isLoadingBookmarked}
-						<div class="flex justify-center py-8">
-							<div class="flex items-center gap-2">
-								<RefreshCw class="h-5 w-5 animate-spin" />
-								<span>{$_('common.loading')}</span>
-							</div>
-						</div>
-					{/if}
-					
-					<!-- Intersection observer sentinel for bookmarked movies -->
-					<div bind:this={bookmarkedSentinel} class="h-1"></div>
-				{:else}
-					<div class="text-center py-16">
-						<Bookmark class="h-16 w-16 mx-auto mb-4 text-gray-500" />
-						<h3 class="text-xl font-medium mb-2">{$_('mylist.no_bookmarked_movies')}</h3>
-						<p class="text-gray-400">{$_('mylist.no_bookmarked_movies_description')}</p>
-					</div>
-				{/if}
-			</CardContent>
-		</Card>
-	</div>
-
-	<!-- Watched Movies Section -->
-	<div class="py-8">
-		<Card class="bg-gray-900/50 border-gray-700 backdrop-blur-sm mx-4">
-			<CardHeader>
-				<div class="flex items-center justify-between">
-					<CardTitle class="flex items-center gap-2 text-white">
-						<Eye class="h-5 w-5 text-green-500" />
-						{$_('mylist.watched_movies')}
-						<span class="text-sm text-gray-400">({watchedMovies.length})</span>
-					</CardTitle>
-					<Button
-						variant="outline"
-						size="sm"
-						onclick={refreshWatched}
-						disabled={isLoadingWatched}
-						class="border-gray-600 text-white hover:bg-white/10"
-					>
-						<RefreshCw class="h-4 w-4 mr-2 {isLoadingWatched ? 'animate-spin' : ''}" />
-						{$_('common.refresh')}
-					</Button>
-				</div>
-			</CardHeader>
-			<CardContent>
-				{#if formattedWatchedMovies.length > 0}
-					<MovieList movies={formattedWatchedMovies} data={data} />
-					
-					<!-- Loading indicator for watched movies -->
-					{#if isLoadingWatched}
-						<div class="flex justify-center py-8">
-							<div class="flex items-center gap-2">
-								<RefreshCw class="h-5 w-5 animate-spin" />
-								<span>{$_('common.loading')}</span>
-							</div>
-						</div>
-					{/if}
-					
-					<!-- Intersection observer sentinel for watched movies -->
-					<div bind:this={watchedSentinel} class="h-1"></div>
-				{:else}
-					<div class="text-center py-16">
-						<Eye class="h-16 w-16 mx-auto mb-4 text-gray-500" />
-						<h3 class="text-xl font-medium mb-2">{$_('mylist.no_watched_movies')}</h3>
-						<p class="text-gray-400">{$_('mylist.no_watched_movies_description')}</p>
-					</div>
-				{/if}
-			</CardContent>
-		</Card>
-	</div>
+<!-- Bookmarked Movies Section -->
+ <div class="flex flex-col gap-8">
+	
+<div class="mx-[10%] sm:mx-[10.714%] md:mx-[8.333%] lg:mx-[6.818%] xl:mx-[5.769%]">
+	<div>{$_('mylist.bookmarked_movies')}</div>
 </div>
+{#if formattedBookmarkedMovies.length > 0}
+	<div class="flex flex-col gap-8">
+		<MovieList movies={formattedBookmarkedMovies} data={data} />
+	</div>
+	
+	<!-- Loading indicator for bookmarked movies -->
+	{#if isLoadingBookmarked}
+		<div class="flex justify-center py-8">
+			<div class="flex items-center gap-2">
+				<RefreshCw class="h-5 w-5 animate-spin" />
+				<span>{$_('common.loading')}</span>
+			</div>
+		</div>
+	{/if}
+	
+	<!-- Intersection observer sentinel for bookmarked movies -->
+	<div bind:this={bookmarkedSentinel} class="h-1"></div>
+{:else if formattedBookmarkedMovies.length === 0}
+	<div class="text-center py-2">
+		<Bookmark class="h-16 w-16 mx-auto mb-4 text-gray-500" />
+		<h3 class="text-xl font-medium mb-2">{$_('mylist.no_bookmarked_movies')}</h3>
+		<p class="text-gray-400">{$_('mylist.no_bookmarked_movies_description')}</p>
+	</div>
+{/if}
+
+<!-- Watched Movies Section -->
+<div class="mx-[10%] sm:mx-[10.714%] md:mx-[8.333%] lg:mx-[6.818%] xl:mx-[5.769%]">
+	<div>{$_('mylist.watched_movies')}</div>
+</div>
+{#if formattedWatchedMovies.length > 0}
+	<div class="flex flex-col gap-8">
+		<MovieList movies={formattedWatchedMovies} data={data} />
+	</div>
+	
+	<!-- Loading indicator for watched movies -->
+	{#if isLoadingWatched}
+		<div class="flex justify-center py-8">
+			<div class="flex items-center gap-2">
+				<RefreshCw class="h-5 w-5 animate-spin" />
+				<span>{$_('common.loading')}</span>
+			</div>
+		</div>
+	{/if}
+	
+	<!-- Intersection observer sentinel for watched movies -->
+	<div bind:this={watchedSentinel} class="h-1"></div>
+{:else if formattedWatchedMovies.length === 0}
+	<div class="text-center py-2">
+		<Bookmark class="h-16 w-16 mx-auto mb-4 text-gray-500" />
+		<h3 class="text-xl font-medium mb-2">{$_('mylist.no_watched_movies')}</h3>
+		<p class="text-gray-400">{$_('mylist.no_watched_movies_description')}</p>
+	</div>
+{/if}
+</div>
+
+ </div>

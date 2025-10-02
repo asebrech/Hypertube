@@ -732,33 +732,34 @@ export default class MoviesController {
         })
       }
 
-      // Build query for user's movies
-      let query = user.related('movies').query()
+      // Build base query for user's movies
+      let countQuery = user.related('movies').query()
+      let dataQuery = user.related('movies').query()
 
-      // Apply filters based on parameters
+      // Apply filters to both queries
       if (isWatched !== undefined) {
         const watchedFilter = isWatched === 'true' || isWatched === true
-        query = query.wherePivot('is_watched', watchedFilter)
+        countQuery = countQuery.wherePivot('is_watched', watchedFilter)
+        dataQuery = dataQuery.wherePivot('is_watched', watchedFilter)
       }
 
       if (isBookmarked !== undefined) {
         const bookmarkedFilter = isBookmarked === 'true' || isBookmarked === true
-        query = query.wherePivot('is_bookmarked', bookmarkedFilter)
+        countQuery = countQuery.wherePivot('is_bookmarked', bookmarkedFilter)
+        dataQuery = dataQuery.wherePivot('is_bookmarked', bookmarkedFilter)
       }
 
-      // Get total count for pagination
-      const totalQuery = query.clone()
-      const totalCount = await totalQuery.count('* as total')
-      const total = Number(totalCount[0].$extras.total)
+      // Get total count using a simpler count query
+      const totalCountResult = await countQuery.count('movies.id as total')
+      const total = Number(totalCountResult[0].$extras.total)
 
-      // Apply pagination
+      // Apply pagination and get the actual data
       const offset = (page - 1) * limit
-      const movies = await query
+      const movies = await dataQuery
         .orderBy('movie_user.last_watched_at', 'desc')
         .offset(offset)
         .limit(limit)
 
-      console.log("movies",   movies)
       // Calculate pagination info
       const totalPages = Math.ceil(total / limit)
       const hasNextPage = page < totalPages
