@@ -35,6 +35,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare isAdmin: boolean
 
+  @column({ columnName: 'allow_adult_content' })
+  declare allowAdultContent: boolean
+
   @column({ columnName: 'profile_picture' })
   declare profilePicture: string | null
 

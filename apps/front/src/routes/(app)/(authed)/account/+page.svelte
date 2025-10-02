@@ -3,6 +3,7 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
+	import { Switch } from '$lib/components/ui/switch/index.js';
 	import ProfilePictureUpload from '$lib/components/ProfilePictureUpload.svelte';
 	import { _ } from 'svelte-i18n';
 	import { goto, invalidateAll } from '$app/navigation';
@@ -28,6 +29,7 @@
 			lastName?: string;
 			username?: string;
 			email: string;
+			allowAdultContent?: boolean;
 			profilePicture?: string;
 		};
 		errors?: {
@@ -72,6 +74,7 @@
 	let currentPassword = $state('');
 	let newPassword = $state('');
 	let confirmPassword = $state('');
+	let allowAdultContent = $state(false);
 
 	// Profile picture state
 	let currentProfilePicture = $state('');
@@ -115,11 +118,12 @@
 	});
 
 	$effect(() => {
-		if (data.user) {
+		if (data?.user) {
 			firstName = data.user.firstName || '';
 			lastName = data.user.lastName || '';
 			username = data.user.username || '';
 			email = data.user.email || '';
+			allowAdultContent = data.user.allowAdultContent || false;
 		}
 
 		if (form?.success && form.user) {
@@ -127,6 +131,7 @@
 			lastName = form.user.lastName || '';
 			username = form.user.username || '';
 			email = form.user.email || '';
+			allowAdultContent = form.user.allowAdultContent || false;
 			currentPassword = '';
 			newPassword = '';
 			confirmPassword = '';
@@ -408,6 +413,28 @@
 									</div>
 								</div>
 							{/if}
+
+							<!-- Content Preferences Section -->
+							<div class="grid gap-4">
+								<h3 class="text-lg font-medium text-white">{$_('account.content_preferences')}</h3>
+								
+								<div class="flex items-center justify-between space-x-3">
+									<div class="flex-1">
+										<Label for="allowAdultContent" class="text-sm font-medium text-white">
+											{$_('account.allow_adult_content')}
+										</Label>
+										<p class="text-xs text-gray-400 mt-1">
+											{$_('account.allow_adult_content_description')}
+										</p>
+									</div>
+									<Switch 
+										checked={allowAdultContent}
+										name="allowAdultContent"
+										value={allowAdultContent ? 'true' : 'false'}
+										onchange={(checked) => allowAdultContent = checked}
+									/>
+								</div>
+							</div>
 
 							<Button type="submit" class="w-full">{$_('account.save_changes')}</Button>
 						</div>
