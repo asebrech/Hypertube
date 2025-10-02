@@ -23,8 +23,6 @@ export const GET: RequestHandler = async ({ cookies, fetch, url }) => {
 			}
 		});
 
-        console.log('Response status from backend:', response.status);
-        console.log('Response from backend:', response);
 		if (!response.ok) {
 			if (response.status === 401) {
 				throw error(401, 'Unauthorized');

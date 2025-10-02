@@ -46,6 +46,16 @@ export default class SearchTorrentService {
     else throw new Error('No suitable torrent found')
   }
 
+  /**
+   * Checks if a suitable torrent is available for the given TMDB movie ID.
+   * Searches for torrents matching the specified category and limit, and determines
+   * if a torrent with at least 480p, 720p, or 1080p resolution exists.
+   *
+   * @param {number} tmdbId - The TMDB movie ID to search for.
+   * @param {string} [category='All'] - The category to filter torrents by (default is 'All').
+   * @param {number} [limit=100] - The maximum number of torrents to search (default is 100).
+   * @returns {Promise<boolean>} - Resolves to true if a suitable torrent is found, otherwise false.
+   */
   async isAvailable(tmdbId: number, category: string = 'All', limit: number = 100) {
     TorrentSearchApi.disableAllProviders()
     TorrentSearchApi.enableProvider('Yts')
