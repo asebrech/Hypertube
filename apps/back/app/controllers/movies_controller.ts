@@ -7,6 +7,7 @@ import { BackDropImage } from '@hypertube/shared'
 import MovieService from '#services/movie_service'
 import { OpenSubtitleService } from '#services/opensubtitle_service'
 import SubtitleService from '#services/subtitle_service'
+import SearchTorrentService from '#services/search_torrent_service'
 import { SUPPORTED_LANGUAGES } from '../validators/subtitle.js'
 import { isValidTmdbId } from '../utils/format.js'
 
@@ -16,7 +17,8 @@ export default class MoviesController {
     private tmdbService: TMDBService,
     private movieService: MovieService,
     private openSubtitleService: OpenSubtitleService,
-    private subtitleService: SubtitleService
+    private subtitleService: SubtitleService,
+    private searchTorrentService: SearchTorrentService
   ) {}
 
   async index({ request, auth }: HttpContext) {
@@ -78,6 +80,9 @@ export default class MoviesController {
               movie.is_watched = false
               movie.is_bookmarked = false
               movie.watch_progress_seconds = 0
+
+              // Check and update torrent availability in database
+              movie.torrent_available = await this.movieService.checkAndUpdateTorrentAvailability(movie.id)
 
               if (user) {
                 const movieTable = await user
@@ -204,6 +209,11 @@ export default class MoviesController {
     }
 
     for (const result of searchResults.results) {
+      // Filter out TV shows - only process movies and actors
+      if (result.media_type === 'tv') {
+        continue
+      }
+
       if (result.media_type === 'person' && result.known_for_department === 'Acting') {
         const movieActor = await this.tmdbService.getMovieListByGenre(
           undefined,
@@ -224,6 +234,9 @@ export default class MoviesController {
               watch_progress_seconds: 0,
             }
 
+            // Check and update torrent availability in database
+            movieWithDefaults.torrent_available = await this.movieService.checkAndUpdateTorrentAvailability(movie.id)
+
             if (user) {
               const movieTable = await user
                 .related('movies')
@@ -243,8 +256,8 @@ export default class MoviesController {
         )
 
         media.push(...movies)
-      } else {
-        // Handle non-person results (movies, tv shows)
+      } else if (result.media_type === 'movie') {
+        // Handle movie results only (no TV shows)
         const movieWithDefaults = {
           ...result,
           is_watched: false,
@@ -252,7 +265,10 @@ export default class MoviesController {
           watch_progress_seconds: 0,
         }
 
-        if (user && (result.media_type === 'movie' || result.media_type === 'tv')) {
+        // Check and update torrent availability in database
+        movieWithDefaults.torrent_available = await this.movieService.checkAndUpdateTorrentAvailability(result.id)
+
+        if (user) {
           const movieTable = await user
             .related('movies')
             .query()
@@ -319,6 +335,13 @@ export default class MoviesController {
             is_watched: false,
             is_bookmarked: false,
             watch_progress_seconds: 0,
+          }
+
+          // Check and update torrent availability in database
+          try {
+            movieWithType.torrent_available = await this.movieService.checkAndUpdateTorrentAvailability(movie.id)
+          } catch (error) {
+            console.error(`Error checking torrent availability for movie ${movie.id}:`, error)
           }
 
           if (user) {

@@ -69,7 +69,8 @@
 	"movie-action": {
 		"bookmarked": "قائمة المشاهدة",
 		"watched": "تم المشاهدة",
-		"resume": "استئناف"
+		"resume": "استئناف",
+		"not-available": "قريباً"
 	},
 	"browse": {
 		"explore": "استكشاف الكل"
@@ -331,7 +332,10 @@
 			"size": "الحجم",
 			"last_accessed": "آخر وصول",
 			"created": "تاريخ الإنشاء",
-			"actions": "الإجراءات"
-		}
+			"actions": "الإجراءات",
+			"torrent_status": "حالة التورنت"
+		},
+		"torrent_available": "التورنت متوفر",
+		"torrent_unavailable": "التورنت غير متوفر"
 	}
 }

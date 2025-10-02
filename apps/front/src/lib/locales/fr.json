@@ -69,7 +69,8 @@
 	"movie-action": {
 		"bookmarked": "Watchlist",
 		"watched": "déjà vu",
-		"resume": "reprendre"
+		"resume": "reprendre",
+		"not-available": "Bientôt disponible"
 	},
 	"browse": {
 		"explore": "Tout explorer"
@@ -276,8 +277,11 @@
 		"delete_selected": "Supprimer la sélection ({count})",
 		"delete_all": "Supprimer tous les films",
 		"downloaded_movies": "Films téléchargés",
+		"indexed_movies": "Films indexés",
 		"no_movies": "Aucun film téléchargé",
 		"no_movies_description": "Aucun film n'a encore été téléchargé sur le serveur.",
+		"no_indexed_movies": "Aucun film indexé",
+		"no_indexed_movies_description": "Aucun film n'a encore été indexé dans la base de données.",
 		"no_search_results": "Aucun résultat trouvé",
 		"try_different_search": "Essayez d'ajuster vos termes de recherche",
 		"clear_search": "Effacer la recherche",
@@ -331,7 +335,10 @@
 			"size": "Taille",
 			"last_accessed": "Dernier accès",
 			"created": "Créé",
-			"actions": "Actions"
-		}
+			"actions": "Actions",
+			"torrent_status": "Statut du torrent"
+		},
+		"torrent_available": "Torrent disponible",
+		"torrent_unavailable": "Torrent non disponible"
 	}
 }

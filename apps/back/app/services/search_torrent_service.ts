@@ -45,4 +45,36 @@ export default class SearchTorrentService {
       }
     else throw new Error('No suitable torrent found')
   }
+
+  async isAvailable(tmdbId: number, category: string = 'All', limit: number = 100) {
+    TorrentSearchApi.disableAllProviders()
+    TorrentSearchApi.enableProvider('Yts')
+    TorrentSearchApi.enableProvider('ThePirateBay')
+
+    const imdbId = await this.tmdbService.getMovieExternalIMDBId(tmdbId)
+
+    const torrents = await TorrentSearchApi.search(imdbId, category, limit)
+    let torrentExist = false
+    let currentResolution: VideoQuality = '0'
+    for (const torrent of torrents) {
+      if (torrent.title.includes('1080p')) {
+        currentResolution = '1080p'
+        torrentExist = true
+        break
+      }
+      if (torrent.title.includes('720p') && compareVideoQuality(currentResolution, '720p') > 0) {
+        currentResolution = '720p'
+        torrentExist = true
+        break
+      }
+      if (torrent.title.includes('480p') && compareVideoQuality(currentResolution, '480p') > 0) {
+        currentResolution = '480p'
+        torrentExist = true
+        break
+      }
+    }
+    return torrentExist
+  }
+
+  
 }

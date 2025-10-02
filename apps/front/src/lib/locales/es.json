@@ -69,7 +69,8 @@
 	"movie-action": {
 		"bookmarked": "Lista de seguimiento",
 		"watched": "Ya visto",
-		"resume": "Reanudar"
+		"resume": "Reanudar",
+		"not-available": "Próximamente"
 	},
 	"browse": {
 		"explore": "Explorar todo"
@@ -331,7 +332,10 @@
 			"size": "Tamaño",
 			"last_accessed": "Último Acceso",
 			"created": "Creado",
-			"actions": "Acciones"
-		}
+			"actions": "Acciones",
+			"torrent_status": "Estado del Torrent"
+		},
+		"torrent_available": "Torrent Disponible",
+		"torrent_unavailable": "Torrent No Disponible"
 	}
 }

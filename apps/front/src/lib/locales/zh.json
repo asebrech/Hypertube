@@ -69,7 +69,8 @@
 	"movie-action": {
 		"bookmarked": "收藏夹",
 		"watched": "已观看",
-		"resume": "继续观看"
+		"resume": "继续观看",
+		"not-available": "即将推出"
 	},
 	"browse": {
 		"explore": "探索全部"
@@ -331,7 +332,10 @@
 			"size": "大小",
 			"last_accessed": "最后访问",
 			"created": "创建时间",
-			"actions": "操作"
-		}
+			"actions": "操作",
+			"torrent_status": "种子状态"
+		},
+		"torrent_available": "种子可用",
+		"torrent_unavailable": "种子不可用"
 	}
 }
