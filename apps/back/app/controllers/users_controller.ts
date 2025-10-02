@@ -21,6 +21,7 @@ export default class UsersController {
         firstName: user.firstName,
         lastName: user.lastName,
         isAdmin: user.isAdmin,
+        allowAdultContent: user.allowAdultContent,
         profilePicture: user.profilePicture,
         createdAt: user.createdAt,
         isOAuthUser: !user.password, // Flag to indicate if user signed up via OAuth
@@ -137,6 +138,7 @@ export default class UsersController {
       if (payload.firstName !== undefined) user.firstName = payload.firstName
       if (payload.lastName !== undefined) user.lastName = payload.lastName
       if (payload.newPassword !== undefined) user.password = payload.newPassword
+      if (payload.allowAdultContent !== undefined) user.allowAdultContent = payload.allowAdultContent
 
       if (payload.profilePicture !== undefined) {
         try {
@@ -160,6 +162,7 @@ export default class UsersController {
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
+          allowAdultContent: user.allowAdultContent,
           profilePicture: user.profilePicture,
           createdAt: user.createdAt,
         },
