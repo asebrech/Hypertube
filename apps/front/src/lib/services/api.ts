@@ -539,19 +539,22 @@ export async function uploadProfilePicture(file: File, token: string) {
 	}
 }
 
-export async function getUserMoviess(token: string) {
+export async function setBookmark(movieId: number, bookmarked: boolean, token: string): Promise<void> {
 	const config = {
-		method: 'get',
-		url: `${PUBLIC_BACK_URL}/movies/user`,
+		method: 'post',
+		url: `${PUBLIC_BACK_URL}/movies/${movieId}/bookmark`,
+		data: {
+			bookmarked
+		},
 		headers: {
-			Authorization: `Bearer ${token}`
+			Authorization: `Bearer ${token}`,
+			'Content-Type': 'application/json'
 		}
 	};
 	try {
-		const response = await axios(config);
-		return response.data;
+		await axios(config);
 	} catch (error) {
-		console.error('Error fetching user movies:', error);
+		console.error('Error setting bookmark:', error);
 		throw error;
 	}
 }

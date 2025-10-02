@@ -543,13 +543,18 @@ export default class MoviesController {
     }
   }
 
-  async toggleBookmark({ params, auth, response }: HttpContext) {
+  async setBookmark({ params, auth, request, response }: HttpContext) {
     try {
       const user = await auth.authenticate()
       const tmdbId = Number.parseInt(params.id)
+      const { bookmarked } = request.only(['bookmarked'])
 
       if (isNaN(tmdbId)) {
         return response.badRequest({ error: 'Invalid movie ID' })
+      }
+
+      if (typeof bookmarked !== 'boolean') {
+        return response.badRequest({ error: 'Bookmarked value must be a boolean' })
       }
 
       const movieService = new MovieService()
@@ -566,33 +571,30 @@ export default class MoviesController {
       }
 
       const currentIsWatched = existingRelation?.$extras.pivot_is_watched || false
-      const currentIsBookmarked = existingRelation?.$extras.pivot_is_bookmarked || false
       const currentWatchProgress = existingRelation?.$extras.pivot_watch_progress_seconds || 0
       const currentLastWatchedAt = existingRelation?.$extras.pivot_last_watched_at || null
-
-      const newBookmarkStatus = !currentIsBookmarked
 
       await user.related('movies').attach({
         [movie.id]: {
           is_watched: currentIsWatched,
-          is_bookmarked: newBookmarkStatus,
+          is_bookmarked: bookmarked,
           watch_progress_seconds: currentWatchProgress,
           last_watched_at: currentLastWatchedAt,
         },
       })
 
-      const message = newBookmarkStatus
+      const message = bookmarked
         ? 'Movie bookmarked successfully'
         : 'Bookmark removed successfully'
 
       return response.ok({
         message,
-        bookmarked: newBookmarkStatus,
+        bookmarked: bookmarked,
       })
     } catch (error) {
-      console.error('Error toggling bookmark:', error)
+      console.error('Error setting bookmark:', error)
       return response.internalServerError({
-        error: 'Failed to toggle bookmark',
+        error: 'Failed to set bookmark',
       })
     }
   }

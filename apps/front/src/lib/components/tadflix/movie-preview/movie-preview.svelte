@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { Skeleton } from '@/components/ui/skeleton';
-	import { getMovieDetails, getMovieVideos } from '@/services/api';
+	import { getMovieDetails, getMovieVideos, setBookmark } from '@/services/api';
 	import { movieModalActions } from '@/services/store';
 	import type { MovieDetails, MovieType, MovieVideo } from '@hypertube/shared';
 	import { onMount } from 'svelte';
@@ -136,9 +136,18 @@
 		}
 	}
 
-	function addMovieToWatchlist(options: { movieId: number | undefined; type: MovieType }) {
-		// TODO: Implement watchlist functionality
-		console.log('Add to watchlist:', options);
+	async function addMovieToWatchlist(options: { movieId: number | undefined; type: MovieType }) {
+		if (!options.movieId || !data.token) {
+			console.error('Missing movieId or token');
+			return;
+		}
+
+		try {
+			await setBookmark(options.movieId, true, data.token);
+			console.log('Movie added to watchlist:', options.movieId);
+		} catch (error) {
+			console.error('Error adding movie to watchlist:', error);
+		}
 	}
 </script>
 

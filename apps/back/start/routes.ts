@@ -64,7 +64,7 @@ router
     router.get(':id', [MoviesController, 'movieDetails'])
     router.get(':id/videos', [MoviesController, 'movieVideos'])
     router.post(':id/watched', [MoviesController, 'markAsWatched'])
-    router.post(':id/bookmark', [MoviesController, 'toggleBookmark'])
+    router.post(':id/bookmark', [MoviesController, 'setBookmark'])
     router.post(':id/progress', [MoviesController, 'saveWatchProgress'])
     router.get(':id/progress', [MoviesController, 'getWatchProgress'])
     router.post(':id/subtitles/download', [MoviesController, 'downloadMultipleSubtitles'])
