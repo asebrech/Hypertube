@@ -196,6 +196,31 @@
 			"remember_password": "¿Recuerdas tu contraseña?",
 			"back_to_login": "Volver al inicio de sesión",
 			"error_message": "Por favor verifica tu información e intenta de nuevo."
+		},
+		"oauth": {
+			"error_access_denied": "Inicio de sesión cancelado. Elegiste no autorizar la aplicación.",
+			"error_state_mismatch": "Falló la verificación de seguridad. Por favor intenta iniciar sesión de nuevo.",
+			"error_invalid_request": "Solicitud de inicio de sesión inválida. Por favor intenta de nuevo.",
+			"error_invalid_client": "Error de configuración de la aplicación. Por favor contacta al soporte.",
+			"error_invalid_scope": "Permisos inválidos solicitados. Por favor intenta de nuevo.",
+			"error_server_error": "El servicio de autenticación está temporalmente no disponible. Por favor intenta más tarde.",
+			"error_unauthorized": "Falló la autorización. Por favor intenta de nuevo.",
+			"error_oauth_error": "Falló la autenticación. Por favor intenta de nuevo.",
+			"error_processing_error": "Ocurrió un error al procesar tu inicio de sesión. Por favor intenta de nuevo.",
+			"error_email_error": "Hubo un problema con tu correo durante el inicio de sesión. Por favor intenta de nuevo.",
+			"error_user_error": "Hubo un problema creando o actualizando tu cuenta. Por favor intenta de nuevo.",
+			"error_token_error": "Hubo un problema generando tu token de inicio de sesión. Por favor intenta de nuevo.",
+			"action_try_again": "Intentar iniciar sesión de nuevo",
+			"action_use_different_method": "Usar un método de autenticación diferente",
+			"action_clear_cookies": "Borrar las cookies del navegador",
+			"action_clear_cache": "Borrar la caché del navegador",
+			"action_clear_browser_data": "Borrar los datos del navegador",
+			"action_contact_support": "Contactar al soporte",
+			"action_contact_support_persist": "Contactar al soporte si el problema persiste",
+			"action_try_later": "Intentar de nuevo en unos minutos",
+			"action_check_account": "Verificar el estado de tu cuenta",
+			"action_verify_email": "Verificar tu correo con el proveedor",
+			"try_again": "Por favor intenta iniciar sesión de nuevo o usa un método de autenticación diferente."
 		}
 	},
 	"account": {

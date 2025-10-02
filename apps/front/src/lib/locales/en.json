@@ -163,6 +163,31 @@
 			"remember_password": "Remember your password?",
 			"back_to_login": "Back to Login",
 			"error_message": "Please check your input and try again."
+		},
+		"oauth": {
+			"error_access_denied": "Login was cancelled. You chose not to authorize the application.",
+			"error_state_mismatch": "Security verification failed. Please try logging in again.",
+			"error_invalid_request": "Invalid login request. Please try again.",
+			"error_invalid_client": "Application configuration error. Please contact support.",
+			"error_invalid_scope": "Invalid permissions requested. Please try again.",
+			"error_server_error": "Authentication service is temporarily unavailable. Please try again later.",
+			"error_unauthorized": "Authorization failed. Please try again.",
+			"error_oauth_error": "Authentication failed. Please try again.",
+			"error_processing_error": "An error occurred while processing your login. Please try again.",
+			"error_email_error": "There was an issue with your email during login. Please try again.",
+			"error_user_error": "There was an issue creating or updating your account. Please try again.",
+			"error_token_error": "There was an issue generating your login token. Please try again.",
+			"action_try_again": "Try logging in again",
+			"action_use_different_method": "Use a different authentication method",
+			"action_clear_cookies": "Clear browser cookies",
+			"action_clear_cache": "Clear browser cache",
+			"action_clear_browser_data": "Clear browser data",
+			"action_contact_support": "Contact support",
+			"action_contact_support_persist": "Contact support if the problem persists",
+			"action_try_later": "Try again in a few minutes",
+			"action_check_account": "Check your account status",
+			"action_verify_email": "Verify your email with the provider",
+			"try_again": "Please try logging in again or use a different authentication method."
 		}
 	},
 	"account": {
