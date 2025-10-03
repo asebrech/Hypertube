@@ -12,6 +12,7 @@
 	import { MovieCarousel } from '@/components/tadflix/movie-carousel';
 	import MovieBanner from '@/components/tadflix/movie-banner/MovieBanner.svelte';
 	import { MovieModal } from '@/components/tadflix/movie-modal';
+	import { GenreHeader } from '@/components/tadflix/genre-header';
 	import Skeleton from '@/components/ui/skeleton/skeleton.svelte';
 
 	const { data } = $props();
@@ -73,13 +74,14 @@
 			movie={movieBanner}
 			movieVideo={movieVideoResponse}
 			type="movie"
+			instance="home"
 		/>
 	{:else}
 		<Skeleton class="h-[80vh]" />
 	{/if}
 	{#each movieGenres as genre}
-		<div class="flex w-full flex-col gap-[15px] overflow-hidden">
-			<h2 class="text-l ml-[58px] font-medium">{genre.name}</h2>
+		<div class="flex w-full flex-col gap-[8px] overflow-hidden">
+			<GenreHeader genreId={genre.id} genreName={genre.name} />
 			{#if genre.id == 0}
 				<MovieCarousel movies={genre.movies} genreId={genre.id} variant={'top-ten'} data={data}/>
 			{:else}

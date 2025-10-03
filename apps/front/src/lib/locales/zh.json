@@ -52,7 +52,8 @@
 	},
 	"search": {
 		"placeholder": "电影、电视剧、人物...",
-		"noresults": "未找到结果"
+		"noresults": "未找到结果",
+		"loading": "加载中..."
 	},
 	"filters": {
 		"select_genre": "类别",
@@ -64,7 +65,8 @@
 		"toprated": "评分最高",
 		"originaltitle": "A-Z",
 		"originaltitle_desc": "Z-A",
-		"selected_cast": "选定演员"
+		"selected_cast": "选定演员",
+		"selected_genres": "选定类别"
 	},
 	"movie-action": {
 		"bookmarked": "收藏夹",

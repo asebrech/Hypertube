@@ -19,7 +19,8 @@
 	},
 	"search": {
 		"placeholder": "Movies, Shows, People...",
-		"noresults": "No results found"
+		"noresults": "No results found",
+		"loading": "Loading..."
 	},
 	"filters": {
 		"select_genre": "Genre",
@@ -31,7 +32,8 @@
 		"toprated": "Top Rated",
 		"originaltitle": "A-Z",
 		"originaltitle_desc": "Z-A",
-		"selected_cast": "Selected Cast"
+		"selected_cast": "Selected Cast",
+		"selected_genres": "Selected Genres"
 	},
 	"movie-action": {
 		"bookmarked": "watchlist",

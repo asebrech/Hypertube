@@ -6,7 +6,7 @@
 	import { _ } from 'svelte-i18n';
 	import { Skeleton } from '@/components/ui/skeleton';
 	import ButtonPreview from '../buttons/button-preview/button-preview.svelte';
-	import { movieModalActions } from '@/services/store';
+	import { movieModalActions, videoState } from '@/services/store';
 
 	interface Props {
 		movie: MovieDetails;
@@ -20,12 +20,14 @@
 		maxDescriptionLines?: number;
 		customActions?: Snippet;
 		class?: string;
+		instance?: 'home' | 'modal'; // New prop to identify banner instance
 	}
 
 	let expanded = $state(false);
 	let contentEl = $state<HTMLParagraphElement>();
 	let isClamped = $state(false);
 	let isMuted = $state(true);
+	let isAutoMuted = $state(false); // Track if muting was automatic
 
 	$effect(() => {
 		if (contentEl) {
@@ -45,7 +47,8 @@
 		enableDescriptionExpansion = true,
 		maxDescriptionLines = 6,
 		customActions,
-		class: className = ''
+		class: className = '',
+		instance = 'home'
 	}: Props = $props();
 
 	let player: YT.Player | undefined;
@@ -89,9 +92,32 @@
 				onStateChange: (event) => {
 					if (event.data === YT.PlayerState.ENDED) {
 						videoEnded = true;
+						// Only update store for home banner, modal banner state is managed by modal open/close
+						if (instance === 'home') {
+							videoState.update(state => ({
+								...state,
+								bannerVideoPlaying: false
+							}));
+						}
 					}
 					if (event.data === YT.PlayerState.PLAYING) {
 						playerReady = true;
+						// Only update store for home banner, modal banner state is managed by modal open/close
+						if (instance === 'home') {
+							videoState.update(state => ({
+								...state,
+								bannerVideoPlaying: true
+							}));
+						}
+					}
+					if (event.data === YT.PlayerState.PAUSED) {
+						// Only update store for home banner, modal banner state is managed by modal open/close
+						if (instance === 'home') {
+							videoState.update(state => ({
+								...state,
+								bannerVideoPlaying: false
+							}));
+						}
 					}
 				}
 			},
@@ -110,8 +136,10 @@
 		if (!player) return;
 		if (isMuted) {
 			player.unMute();
+			isAutoMuted = false; // User manually unmuted
 		} else {
 			player.mute();
+			isAutoMuted = false; // User manually muted
 		}
 		isMuted = !isMuted;
 	}
@@ -161,6 +189,43 @@
 	});
 
 	let lastVideoKey = '';
+
+	// Listen to video state changes and auto-mute banner when preview is playing
+	$effect(() => {
+		const state = $videoState;
+		
+		// For home banner: mute when preview or modal banner is playing
+		if (instance === 'home') {
+			if ((state.previewVideoPlaying || state.modalBannerVideoPlaying) && player && !isMuted) {
+				// Auto-mute home banner video when preview or modal banner starts playing
+				player.mute();
+				isMuted = true;
+				isAutoMuted = true;
+			} else if (!state.previewVideoPlaying && !state.modalBannerVideoPlaying && player && isMuted && isAutoMuted) {
+				// Auto-unmute home banner video when no preview or modal banner is playing
+				// But only if it was auto-muted (not manually muted by user)
+				player.unMute();
+				isMuted = false;
+				isAutoMuted = false;
+			}
+		}
+		
+		// For modal banner: mute when preview is playing
+		if (instance === 'modal') {
+			if (state.previewVideoPlaying && player && !isMuted) {
+				// Auto-mute modal banner video when preview starts playing
+				player.mute();
+				isMuted = true;
+				isAutoMuted = true;
+			} else if (!state.previewVideoPlaying && player && isMuted && isAutoMuted) {
+				// Auto-unmute modal banner video when no preview is playing
+				// But only if it was auto-muted (not manually muted by user)
+				player.unMute();
+				isMuted = false;
+				isAutoMuted = false;
+			}
+		}
+	});
 
 	$effect(() => {
 		// Only create player if video key changed to prevent recreation on every effect

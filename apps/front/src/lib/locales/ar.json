@@ -52,7 +52,8 @@
 	},
 	"search": {
 		"placeholder": "أفلام، برامج، أشخاص...",
-		"noresults": "لم يتم العثور على نتائج"
+		"noresults": "لم يتم العثور على نتائج",
+		"loading": "جاري التحميل..."
 	},
 	"filters": {
 		"select_genre": "اختر النوع",
@@ -64,7 +65,8 @@
 		"toprated": "الأعلى تقييماً",
 		"originaltitle": "من الألف إلى الياء",
 		"originaltitle_desc": "من الياء إلى الألف",
-		"selected_cast": "الممثلين المختارين"
+		"selected_cast": "الممثلين المختارين",
+		"selected_genres": "الأنواع المختارة"
 	},
 	"movie-action": {
 		"bookmarked": "قائمة المشاهدة",

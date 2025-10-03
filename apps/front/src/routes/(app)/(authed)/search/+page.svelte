@@ -4,7 +4,7 @@
 	import { searchQuery } from '@/services/store';
 	import { MovieList } from '@/components/tadflix/movie-list';
 	import { MovieModal } from '@/components/tadflix/movie-modal';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { _ } from 'svelte-i18n';
 	import { goto } from '$app/navigation';
 
@@ -62,15 +62,24 @@
 			debounceTimer = setTimeout(() => {
 				lastSearchQuery = $searchQuery;
 				resetResults();
-				loadSearchResults();
+				loadSearchResults().then(() => {
+					// Re-observe sentinel after loading new content
+					setTimeout(() => observeSentinel(), 100);
+				});
 			}, 500);
 		}
 	});
 
 	let sentinel: HTMLDivElement;
+	let observer: IntersectionObserver | null = null;
 
 	const observeSentinel = () => {
-		const observer = new IntersectionObserver(
+		// Disconnect existing observer
+		if (observer) {
+			observer.disconnect();
+		}
+
+		observer = new IntersectionObserver(
 			async (entries) => {
 				if (entries[0].isIntersecting && hasMorePages && !isLoading) {
 					await loadSearchResults();
@@ -78,8 +87,20 @@
 			},
 			{ rootMargin: '200px' }
 		);
+		
 		if (sentinel) {
 			observer.observe(sentinel);
+			
+			// Check if sentinel is already visible and trigger load if needed
+			setTimeout(() => {
+				if (sentinel && hasMorePages && !isLoading) {
+					const rect = sentinel.getBoundingClientRect();
+					const isVisible = rect.top < window.innerHeight + 200; // 200px rootMargin
+					if (isVisible) {
+						loadSearchResults();
+					}
+				}
+			}, 100);
 		}
 	};
 
@@ -88,6 +109,16 @@
 		currentPage = 1;
 		searchResults = [];
 	}
+
+	onDestroy(() => {
+		if (observer) {
+			observer.disconnect();
+		}
+		if (abortController) {
+			abortController.abort();
+		}
+		clearTimeout(debounceTimer);
+	});
 </script>
 
 {#if searchResults.length === 0 && !isLoading}
