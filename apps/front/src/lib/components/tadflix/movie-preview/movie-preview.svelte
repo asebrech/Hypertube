@@ -233,8 +233,8 @@
 			{:else}
 				<div class="flex items-center justify-between">
 					<div class="flex gap-2">
-						<ButtonPreview variant="filled">
-							<Play fill={'black'} />
+						<ButtonPreview variant="filled" class={isAvailable ? '' : 'cursor-not-allowed'}>
+							<Play fill={'black'}  />
 						</ButtonPreview>
 						<ButtonPreview
 							variant="outline"
