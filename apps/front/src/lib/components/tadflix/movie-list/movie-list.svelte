@@ -124,7 +124,6 @@
 									: 'hidden'}
 							>
 								<div style="width: {triggerWidth * 1.5}px;">
-<<<<<<< HEAD
 									<MoviePreview 
 										movieId={movie.id} 
 										type={movie.media_type} 
@@ -133,9 +132,6 @@
 										isBookmarked={movie.is_bookmarked || false}
 										onBookmarkChange={handleBookmarkChange}
 									/>
-=======
-									<MoviePreview movieId={movie.id} type={movie.media_type} data={data} isAvailable={movie.torrent_available || false} />
->>>>>>> staging
 								</div>
 							</div>
 						</HoverCardContent>
