@@ -36,7 +36,8 @@
 			backdrop_image: null,
 			is_watched: movie.userInteraction?.isWatched || false,
 			is_bookmarked: movie.userInteraction?.isBookmarked || false,
-			watch_progress_seconds: movie.userInteraction?.watchProgressSeconds || 0
+			watch_progress_seconds: movie.userInteraction?.watchProgressSeconds || 0,
+			torrent_available: movie.torrent_available || false
 		};
 	}
 

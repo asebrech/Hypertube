@@ -791,19 +791,22 @@ export default class MoviesController {
       const hasPrevPage = page > 1
 
       // Format response with movie details and user interaction data
-      const formattedMovies = movies.map((movie) => ({
-        id: movie.id,
-        tmdbId: movie.tmdbId,
-        title: movie.title,
-        createdAt: movie.createdAt,
-        updatedAt: movie.updatedAt,
-        userInteraction: {
-          isWatched: movie.$extras.pivot_is_watched || false,
-          isBookmarked: movie.$extras.pivot_is_bookmarked || false,
-          watchProgressSeconds: movie.$extras.pivot_watch_progress_seconds || 0,
-          lastWatchedAt: movie.$extras.pivot_last_watched_at || null,
-        },
-      }))
+      const formattedMovies = await Promise.all(
+        movies.map(async (movie) => ({
+          id: movie.id,
+          tmdbId: movie.tmdbId,
+          title: movie.title,
+          createdAt: movie.createdAt,
+          updatedAt: movie.updatedAt,
+          torrent_available: await this.movieService.checkAndUpdateTorrentAvailability(movie.tmdbId),
+          userInteraction: {
+            isWatched: movie.$extras.pivot_is_watched || false,
+            isBookmarked: movie.$extras.pivot_is_bookmarked || false,
+            watchProgressSeconds: movie.$extras.pivot_watch_progress_seconds || 0,
+            lastWatchedAt: movie.$extras.pivot_last_watched_at || null,
+          },
+        }))
+      )
 
       return response.ok({
         success: true,
