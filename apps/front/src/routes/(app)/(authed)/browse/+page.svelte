@@ -7,6 +7,7 @@
 	import { onMount } from 'svelte';
 	import { Select, SelectTrigger, SelectItem, SelectContent } from '@/components/ui/select';
 	import { X } from 'lucide-svelte';
+	import Titlebar from '@/components/tadflix/layout/titlebar/Titlebar.svelte';
 
 
 	const { data } = $props();
@@ -136,17 +137,8 @@
 		loadDiscoverMovies();
 	}
 </script>
-
-<div
-	class="mx-[10%] flex gap-4
-        pb-6
-        pt-[120px]
-        sm:mx-[10.714%]
-        md:mx-[8.333%]
-        lg:mx-[6.818%]
-        xl:mx-[5.769%]
-    "
->
+<Titlebar>
+<div class="flex gap-4 w-full">
 	<!-- Genre -->
 	<Select
 		type="multiple"
@@ -238,33 +230,35 @@
 	</Select>
 </div>
 
-{#if cast}
-	<div class="mx-[10%] mb-4 flex items-center gap-2 text-sm text-gray-500">
-		{$_('filters.selected_cast')}:
-		<span class="flex cursor-pointer items-center gap-1 underline" onclick={handleCastRemove}>
-			{cast.name}
-			<X class="ml-1 h-4 w-4 text-gray-400 underline" />
-		</span>
-	</div>
-{/if}
-
-{#if isLoading}
+	{#if cast}
+		<div class="mx-[10%] mt-8 flex items-center gap-2 text-sm text-gray-500">
+			{$_('filters.selected_cast')}:
+			<span class="flex cursor-pointer items-center gap-1 underline" onclick={handleCastRemove}>
+				{cast.name}
+				<X class="ml-1 h-4 w-4 text-gray-400 underline" />
+			</span>
+		</div>
+	{/if}
+</Titlebar>
+<div class="pt-40">
+	{#if isLoading}
 	<div class="flex h-[80vh] items-center justify-center">
 		<p class="text-lg text-gray-500">{$_('search.loading')}</p>
 	</div>
-{/if}
-
-{#if movies.length === 0 && !isLoading}
+	{/if}
+	
+	{#if movies.length === 0 && !isLoading}
 	<div class="flex h-[80vh] items-center justify-center">
 		<p class="text-lg text-gray-500">{$_('search.noresults')}</p>
 	</div>
-{/if}
-
-{#if movies.length > 0}
+	{/if}
+	
+	{#if movies.length > 0}
 	<div class="flex flex-col gap-8 pb-[150px]">
 		<MovieList {movies} data={data} />
 	</div>
-{/if}
+	{/if}
+</div>
 
 <div bind:this={sentinel}></div>
 

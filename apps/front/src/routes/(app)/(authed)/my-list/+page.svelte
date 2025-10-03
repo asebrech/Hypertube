@@ -5,6 +5,8 @@
 	import { _ } from 'svelte-i18n';
 	import type { Movie, MovieType } from '@hypertube/shared';
 	import { Bookmark, RefreshCw } from 'lucide-svelte';
+	import Titlebar from '@/components/tadflix/layout/titlebar/Titlebar.svelte';
+	import MovieModal from '@/components/tadflix/movie-modal/movie-modal.svelte';
 
 	const { data } = $props();
 
@@ -61,28 +63,6 @@
 		}
 	}
 
-	// Load more watched movies
-	async function loadMoreWatched() {
-		if (!hasMoreWatched || isLoadingWatched) return;
-
-		try {
-			isLoadingWatched = true;
-			const response = await getUserMovies(watchedPage + 1, 20, true, undefined, data.token);
-			
-			if (response.success && response.movies.length > 0) {
-				watchedMovies = [...watchedMovies, ...response.movies];
-				watchedPage = response.pagination.currentPage;
-				hasMoreWatched = response.pagination.hasNextPage;
-			} else {
-				hasMoreWatched = false;
-			}
-		} catch (error) {
-			console.error('Error loading more watched movies:', error);
-			hasMoreWatched = false;
-		} finally {
-			isLoadingWatched = false;
-		}
-	}
 
 	// Refresh bookmarked movies
 	async function refreshBookmarked() {
@@ -102,23 +82,7 @@
 		}
 	}
 
-	// Refresh watched movies
-	async function refreshWatched() {
-		try {
-			isLoadingWatched = true;
-			const response = await getUserMovies(1, 20, true, undefined, data.token);
-			
-			if (response.success) {
-				watchedMovies = response.movies;
-				watchedPage = 1;
-				hasMoreWatched = response.pagination.hasNextPage;
-			}
-		} catch (error) {
-			console.error('Error refreshing watched movies:', error);
-		} finally {
-			isLoadingWatched = false;
-		}
-	}
+
 
 	// Set up intersection observers for infinite scroll
 	let bookmarkedSentinel = $state<HTMLDivElement>();
@@ -146,27 +110,13 @@
 			{ rootMargin: '200px' }
 		);
 
-		// Set up intersection observer for watched movies
-		const watchedObserver = new IntersectionObserver(
-			async (entries) => {
-				if (entries[0].isIntersecting && hasMoreWatched && !isLoadingWatched) {
-					await loadMoreWatched();
-				}
-			},
-			{ rootMargin: '200px' }
-		);
-
 		if (bookmarkedSentinel) {
 			bookmarkedObserver.observe(bookmarkedSentinel);
 		}
 
-		if (watchedSentinel) {
-			watchedObserver.observe(watchedSentinel);
-		}
 
 		return () => {
 			bookmarkedObserver.disconnect();
-			watchedObserver.disconnect();
 		};
 	});
 
@@ -179,73 +129,42 @@
 	<title>{$_('mylist.title')} - Datflix</title>
 </svelte:head>
 
-<div class="min-h-screen bg-black text-white py-16">
+<div class="min-h-screen bg-[#141414] text-white py-32">
 	<!-- Header -->
-	<div class="py-8">
-		<div class="container mx-auto px-4">
-			<h1 class="text-4xl font-bold mb-2">{$_('mylist.title')}</h1>
-			<p class="text-gray-400">{$_('mylist.subtitle')}</p>
+	<Titlebar>
+		<div class="container mx-auto">
+			<h1 class="text-2xl mb-2">{$_('mylist.title')}</h1>
 		</div>
-	</div>
-<!-- Bookmarked Movies Section -->
- <div class="flex flex-col gap-8">
-	
-<div class="mx-[10%] sm:mx-[10.714%] md:mx-[8.333%] lg:mx-[6.818%] xl:mx-[5.769%]">
-	<div>{$_('mylist.bookmarked_movies')}</div>
-</div>
-{#if formattedBookmarkedMovies.length > 0}
-	<div class="flex flex-col gap-8">
-		<MovieList movies={formattedBookmarkedMovies} data={data} />
-	</div>
-	
-	<!-- Loading indicator for bookmarked movies -->
-	{#if isLoadingBookmarked}
-		<div class="flex justify-center py-8">
-			<div class="flex items-center gap-2">
-				<RefreshCw class="h-5 w-5 animate-spin" />
-				<span>{$_('common.loading')}</span>
-			</div>
-		</div>
-	{/if}
-	
-	<!-- Intersection observer sentinel for bookmarked movies -->
-	<div bind:this={bookmarkedSentinel} class="h-1"></div>
-{:else if formattedBookmarkedMovies.length === 0}
-	<div class="text-center py-2">
-		<Bookmark class="h-16 w-16 mx-auto mb-4 text-gray-500" />
-		<h3 class="text-xl font-medium mb-2">{$_('mylist.no_bookmarked_movies')}</h3>
-		<p class="text-gray-400">{$_('mylist.no_bookmarked_movies_description')}</p>
-	</div>
-{/if}
+	</Titlebar>
+	<!-- Bookmarked Movies Section -->
 
-<!-- Watched Movies Section -->
-<div class="mx-[10%] sm:mx-[10.714%] md:mx-[8.333%] lg:mx-[6.818%] xl:mx-[5.769%]">
-	<div>{$_('mylist.watched_movies')}</div>
-</div>
-{#if formattedWatchedMovies.length > 0}
-	<div class="flex flex-col gap-8">
-		<MovieList movies={formattedWatchedMovies} data={data} />
-	</div>
-	
-	<!-- Loading indicator for watched movies -->
-	{#if isLoadingWatched}
-		<div class="flex justify-center py-8">
-			<div class="flex items-center gap-2">
-				<RefreshCw class="h-5 w-5 animate-spin" />
-				<span>{$_('common.loading')}</span>
+	<div class="flex flex-col gap-8 mt-16">	
+		{#if formattedBookmarkedMovies.length > 0}
+			<div class="flex flex-col gap-8">
+				<MovieList movies={formattedBookmarkedMovies} data={data} />
 			</div>
-		</div>
-	{/if}
-	
-	<!-- Intersection observer sentinel for watched movies -->
-	<div bind:this={watchedSentinel} class="h-1"></div>
-{:else if formattedWatchedMovies.length === 0}
-	<div class="text-center py-2">
-		<Bookmark class="h-16 w-16 mx-auto mb-4 text-gray-500" />
-		<h3 class="text-xl font-medium mb-2">{$_('mylist.no_watched_movies')}</h3>
-		<p class="text-gray-400">{$_('mylist.no_watched_movies_description')}</p>
+			
+			<!-- Loading indicator for bookmarked movies -->
+			{#if isLoadingBookmarked}
+				<div class="flex justify-center py-8">
+					<div class="flex items-center gap-2">
+						<RefreshCw class="h-5 w-5 animate-spin" />
+						<span>{$_('common.loading')}</span>
+					</div>
+				</div>
+			{/if}
+			
+			<!-- Intersection observer sentinel for bookmarked movies -->
+			<div bind:this={bookmarkedSentinel} class="h-1"></div>
+		{:else if formattedBookmarkedMovies.length === 0}
+			<div class="text-center py-2">
+				<Bookmark class="h-16 w-16 mx-auto mb-4 text-gray-500" />
+				<h3 class="text-xl font-medium mb-2">{$_('mylist.no_bookmarked_movies')}</h3>
+				<p class="text-gray-400">{$_('mylist.no_bookmarked_movies_description')}</p>
+			</div>
+		{/if}
 	</div>
-{/if}
 </div>
 
- </div>
+<!-- Movie Modal -->
+<MovieModal data={data} />

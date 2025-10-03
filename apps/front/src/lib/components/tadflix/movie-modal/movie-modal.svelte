@@ -324,7 +324,7 @@
 
 <Dialog open={modalData.isOpen} onOpenChange={(open) => !open && closeModal()}>
 	<DialogContent
-		class="fixed inset-0 top-0 left-0 h-screen max-h-none w-screen max-w-none translate-x-0 translate-y-0 gap-0 rounded-none border-none bg-black/70 p-0"
+		class="fixed inset-0 top-0 left-0 h-screen max-h-none w-screen max-w-none translate-x-0 translate-y-0 gap-0 rounded-none border-none bg-[#141414]/10 p-0"
 		showCloseButton={false}
 		data-dialog-content
 	>
@@ -432,17 +432,17 @@
 							{@render topButtons()}
 
 							<!-- Reusable action buttons snippet -->
-							{#snippet actionButtons()}
+							<!-- {#snippet actionButtons()} -->
 								<!-- Add Button -->
-								<ButtonPreview variant="outline">
+								<!-- <ButtonPreview variant="outline">
 									<Plus size={16} />
-								</ButtonPreview>
+								</ButtonPreview> -->
 
 								<!-- Like Button -->
-								<ButtonPreview variant="outline">
+								<!-- <ButtonPreview variant="outline">
 									<ThumbsUp size={16} />
-								</ButtonPreview>
-							{/snippet}
+								</ButtonPreview> -->
+							<!-- {/snippet} -->
 
 							<!-- MovieBanner Component -->
 							{#key `${movie.id}_${modalData.movieId}_${movieVideo?.key || 'no-video'}_${movie.backdrop_path || 'no-backdrop'}_${movie.poster_path || 'no-poster'}_${movieLogo?.url || 'no-logo'}`}
@@ -457,9 +457,9 @@
 										showVoteAverage={false}
 										class="[&>div:first-child]:max-h-[40vh] [&>div:first-child]:rounded-t-lg sm:[&>div:first-child]:max-h-[45vh] md:[&>div:first-child]:max-h-[50vh]"
 									>
-										{#snippet customActions()}
+										<!-- {#snippet customActions()}
 											{@render actionButtons()}
-										{/snippet}
+										{/snippet} -->
 									</MovieBanner>
 								{/if}
 							{/key}

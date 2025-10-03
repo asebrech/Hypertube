@@ -31,7 +31,7 @@
 	<Navbar data={page.data} showSkeleton={$isLoading || !ready} />
 {/if}
 
-<main class="flex h-full min-h-screen w-full flex-col">
+<main class="flex h-full min-h-screen w-full flex-col bg-[#141414]">
 	{#if $isLoading || !ready}
 		<Loader2 class="size-4 animate-spin" />
 	{:else}

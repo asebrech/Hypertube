@@ -97,11 +97,12 @@
 				{$_('movie-action.resume')}
 			</Badge>
 		</div>
-	{:else if isBookmarked}
+	{/if}
+	<!-- {:else if isBookmarked}
 		<div class="absolute bottom-0 flex w-full justify-center">
 			<Badge variant={'red'}>
 				{$_('movie-action.bookmarked')}
 			</Badge>
 		</div>
-	{/if}
+	{/if} -->
 </Card>

@@ -12,11 +12,14 @@
 	import { Dot } from 'lucide-svelte';
 	import { locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
+	import Check from '@lucide/svelte/icons/check';
 
-	const { movieId, type = 'movie', data } = $props<{
+	const { movieId, type = 'movie', data, isBookmarked, onBookmarkChange } = $props<{
 		movieId: number;
 		type?: MovieType;
 		data: any;
+		isBookmarked: boolean;
+		onBookmarkChange?: (movieId: number, isBookmarked: boolean) => void;
 	}>();
 	let isLoading: boolean = $state(true);
 	let movie: MovieDetails | undefined = $state<MovieDetails | undefined>();
@@ -30,6 +33,12 @@
 	let showVideo: boolean = $state(false);
 	let showImage: boolean = $state(false);
 	let showSkeleton: boolean = $state(true);
+	let currentIsBookmarked = $state(isBookmarked);
+
+	// Sync with parent prop changes
+	$effect(() => {
+		currentIsBookmarked = isBookmarked;
+	});
 
 	const loadMovieDetails = async (movieId: number): Promise<MovieDetails> => {
 		const movieDetailsResponse = await getMovieDetails(movieId, type, data.token);
@@ -138,15 +147,31 @@
 
 	async function addMovieToWatchlist(options: { movieId: number | undefined; type: MovieType }) {
 		if (!options.movieId || !data.token) {
-			console.error('Missing movieId or token');
 			return;
 		}
 
 		try {
 			await setBookmark(options.movieId, true, data.token);
-			console.log('Movie added to watchlist:', options.movieId);
+			currentIsBookmarked = true;
+			// Notify parent component of the change
+			onBookmarkChange?.(options.movieId, true);
 		} catch (error) {
 			console.error('Error adding movie to watchlist:', error);
+		}
+	}
+
+	async function removeMovieFromWatchlist(options: { movieId: number | undefined; type: MovieType }) {
+		if (!options.movieId || !data.token) {
+			return;
+		}
+
+		try {
+			await setBookmark(options.movieId, false, data.token);
+			currentIsBookmarked = false;
+			// Notify parent component of the change
+			onBookmarkChange?.(options.movieId, false);
+		} catch (error) {
+			console.error('Error removing movie from watchlist:', error);
 		}
 	}
 </script>
@@ -246,13 +271,26 @@
 							variant="outline"
 							onclick={(e) => {
 								e.stopPropagation();
-								addMovieToWatchlist({
-									movieId: movie?.id,
-									type: type
-								});
+								if (currentIsBookmarked) 
+								{
+									removeMovieFromWatchlist({
+										movieId: movie?.id,
+										type: type
+									});
+								}
+								else {
+									addMovieToWatchlist({
+										movieId: movie?.id,
+										type: type
+									});
+								}
 							}}
 						>
-							<Plus />
+							{#if currentIsBookmarked}
+								<Check />
+							{:else}
+								<Plus />
+							{/if}
 						</ButtonPreview>
 					</div>
 					<ButtonPreview
