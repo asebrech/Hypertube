@@ -26,6 +26,13 @@ export default class MoviesController {
     const offset = (page - 1) * limit
     const lang = request.input('lang', 'en')
 
+    let user = null
+    let allowAdultContent = false
+    if (await auth.check()) {
+      user = await auth.authenticate()
+      allowAdultContent = user.allowAdultContent || false
+    }
+
     const genresList = await this.tmdbService.getGenresList(lang, movieType)
     const popularMovies = await this.tmdbService.getPopularMovies(lang, page, movieType)
 
@@ -35,7 +42,12 @@ export default class MoviesController {
         undefined,
         lang,
         page,
-        movieType
+        movieType,
+        'en',
+        undefined,
+        'popularity.desc',
+        undefined,
+        allowAdultContent
       )
       return {
         id: genre.id,
@@ -63,10 +75,7 @@ export default class MoviesController {
       ...movieListByGenreResults,
     ]
     const slicedResponse = finalMovieListByGenre.slice(offset, offset + limit)
-    let user = null
-    if (await auth.check()) {
-      user = await auth.authenticate()
-    }
+   
 
     const moviesFinalResult = await Promise.all(
       slicedResponse.map(async (genre: any) => {
@@ -194,14 +203,17 @@ export default class MoviesController {
     if (!query) {
       return response.badRequest({ error: 'Query is required' })
     }
-    const searchResults = await this.tmdbService.getMultiSearch(query, lang, page)
-    const hasMorePages = searchResults.total_pages > page
-    const media: any[] = []
 
     let user = null
+    let allowAdultContent = false
     if (await auth.check()) {
       user = await auth.authenticate()
+      allowAdultContent = user.allowAdultContent || false
     }
+
+    const searchResults = await this.tmdbService.getMultiSearch(query, lang, page, allowAdultContent)
+    const hasMorePages = searchResults.total_pages > page
+    const media: any[] = []
 
     for (const result of searchResults.results) {
       if (result.media_type === 'person' && result.known_for_department === 'Acting') {
@@ -211,7 +223,8 @@ export default class MoviesController {
           lang,
           1,
           'movie',
-          'en'
+          'en',
+          allowAdultContent
         )
 
         const movies = await Promise.all(
@@ -293,6 +306,13 @@ export default class MoviesController {
     const sortBy = request.input('sortBy', 'popularity.desc')
     const originalLanguage = request.input('originalLanguage')
 
+    let user = null
+    let allowAdultContent = false
+    if (await auth.check()) {
+      user = await auth.authenticate()
+      allowAdultContent = user.allowAdultContent || false
+    }
+
     const discoverResults = await this.tmdbService.getDiscover(
       genreId,
       castId,
@@ -302,15 +322,11 @@ export default class MoviesController {
       region,
       releaseYear,
       sortBy,
-      originalLanguage
+      originalLanguage,
+      allowAdultContent
     )
     const hasMorePages = discoverResults.total_pages > page
     if (discoverResults) {
-      let user = null
-      if (await auth.check()) {
-        user = await auth.authenticate()
-      }
-
       const moviesWithMediaType = await Promise.all(
         discoverResults.results.map(async (movie: any) => {
           const movieWithType = {
