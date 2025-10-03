@@ -71,7 +71,8 @@
 	"movie-action": {
 		"bookmarked": "Lista de seguimiento",
 		"watched": "Ya visto",
-		"resume": "Reanudar"
+		"resume": "Reanudar",
+		"not-available": "Próximamente"
 	},
 	"browse": {
 		"explore": "Explorar todo"
@@ -206,6 +207,9 @@
 		"profile-picture": "Foto de Perfil",
 		"personal_info": "Información personal",
 		"security": "Seguridad",
+		"content_preferences": "Preferencias de contenido",
+		"allow_adult_content": "Permitir contenido adulto",
+		"allow_adult_content_description": "Activar para mostrar películas y series de TV con contenido adulto en los resultados de búsqueda y recomendaciones",
 		"current_password": "Contraseña actual",
 		"new_password": "Nueva contraseña",
 		"confirm_password": "Confirmar contraseña",
@@ -278,8 +282,11 @@
 		"delete_selected": "Eliminar Seleccionadas ({count})",
 		"delete_all": "Eliminar Todas las Películas",
 		"downloaded_movies": "Películas Descargadas",
+		"indexed_movies": "Películas Indexadas",
 		"no_movies": "No hay películas descargadas",
 		"no_movies_description": "Aún no se han descargado películas en el servidor.",
+		"no_indexed_movies": "No hay películas indexadas",
+		"no_indexed_movies_description": "Aún no se han indexado películas en el servidor.",
 		"no_search_results": "No se encontraron resultados",
 		"try_different_search": "Intenta ajustar tus términos de búsqueda",
 		"clear_search": "Limpiar búsqueda",
@@ -333,7 +340,10 @@
 			"size": "Tamaño",
 			"last_accessed": "Último Acceso",
 			"created": "Creado",
-			"actions": "Acciones"
-		}
+			"actions": "Acciones",
+			"torrent_status": "Estado del Torrent"
+		},
+		"torrent_available": "Torrent Disponible",
+		"torrent_unavailable": "Torrent No Disponible"
 	}
 }

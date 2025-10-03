@@ -58,10 +58,11 @@ export class TMDBService {
     language: string = 'en',
     page: number = 1,
     movieType: MovieType = 'movie',
-    region: string = 'en'
+    region: string = 'en',
+    adultContent: boolean = false
   ) {
 
-    const endpoint = `/discover/${movieType}?with_genres=${genreId || ''}&language=${language}&page=${page}&sort_by=popularity.desc&region=${region}&with_cast=${castId || ''}`
+    const endpoint = `/discover/${movieType}?with_genres=${genreId || ''}&language=${language}&page=${page}&sort_by=popularity.desc&region=${region}&with_cast=${castId || ''}&include_adult=${adultContent}`
     const data = await this.getSomething(endpoint)
     return data
   }
@@ -75,10 +76,11 @@ export class TMDBService {
     region: string = 'en',
     releaseYear: string | undefined = undefined,
     sortBy: string = 'popularity.desc',
-    originalLanguage: string | undefined = undefined
+    originalLanguage: string | undefined = undefined,
+    adultContent: boolean = false
   ) {
 
-    const endpoint = `/discover/${movieType}?with_genres=${genreId ? genreId?.join(',') : ''}&language=${language}&page=${page}&sort_by=${sortBy}&region=${region}&with_cast=${castId || ''}&primary_release_year=${releaseYear || ''}&with_original_language=${originalLanguage || ''}`
+    const endpoint = `/discover/${movieType}?with_genres=${genreId ? genreId?.join(',') : ''}&language=${language}&page=${page}&sort_by=${sortBy}&region=${region}&with_cast=${castId || ''}&primary_release_year=${releaseYear || ''}&with_original_language=${originalLanguage || ''}&include_adult=${adultContent}`
     const data = await this.getSomething(endpoint)
     return data
   }
@@ -206,14 +208,14 @@ export class TMDBService {
     }
   }
 
-  async getMovieSearch(query: string, language: string = 'en', page: number = 1, movieType: MovieType = 'movie') {
-    const endpoint = `/search/${movieType}?query=${encodeURIComponent(query)}&language=${language}&page=${page}`
+  async getMovieSearch(query: string, language: string = 'en', page: number = 1, movieType: MovieType = 'movie', adultContent: boolean = false) {
+    const endpoint = `/search/${movieType}?query=${encodeURIComponent(query)}&language=${language}&page=${page}&include_adult=${adultContent}`
     const data = await this.getSomething(endpoint)
     return data
   }
 
-  async getMultiSearch(query: string, language: string = 'en', page: number = 1) {
-    const endpoint = `/search/multi?query=${encodeURIComponent(query)}&language=${language}&page=${page}`
+  async getMultiSearch(query: string, language: string = 'en', page: number = 1, adultContent: boolean = false) {
+    const endpoint = `/search/multi?query=${encodeURIComponent(query)}&language=${language}&page=${page}&include_adult=${adultContent}`
     const data = await this.getSomething(endpoint)
     return data
   }

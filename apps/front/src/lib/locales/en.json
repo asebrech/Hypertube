@@ -38,7 +38,8 @@
 	"movie-action": {
 		"bookmarked": "watchlist",
 		"watched": "already watched",
-		"resume": "resume"
+		"resume": "resume",
+		"not-available": "Coming Soon"
 	},
 	"browse": {
 		"explore": "Explore All"
@@ -173,6 +174,9 @@
 		"profile-picture": "Profile Picture",
 		"personal_info": "Personal Information",
 		"security": "Security",
+		"content_preferences": "Content Preferences",
+		"allow_adult_content": "Allow adult content",
+		"allow_adult_content_description": "Enable to show movies and TV shows with adult content in search results and recommendations",
 		"current_password": "Current Password",
 		"new_password": "New Password",
 		"confirm_password": "Confirm Password",
@@ -278,8 +282,11 @@
 		"delete_selected": "Delete Selected ({count})",
 		"delete_all": "Delete All Movies",
 		"downloaded_movies": "Downloaded Movies",
+		"indexed_movies": "Indexed Movies",
 		"no_movies": "No movies downloaded",
 		"no_movies_description": "No movies have been downloaded to the server yet.",
+		"no_indexed_movies": "No indexed movies",
+		"no_indexed_movies_description": "No movies have been indexed in the database yet.",
 		"no_search_results": "No results found",
 		"try_different_search": "Try adjusting your search terms",
 		"clear_search": "Clear Search",
@@ -333,7 +340,10 @@
 			"size": "Size",
 			"last_accessed": "Last Accessed",
 			"created": "Created",
-			"actions": "Actions"
-		}
+			"actions": "Actions",
+			"torrent_status": "Torrent Status"
+		},
+		"torrent_available": "Torrent Available",
+		"torrent_unavailable": "Torrent Unavailable"
 	}
 }
