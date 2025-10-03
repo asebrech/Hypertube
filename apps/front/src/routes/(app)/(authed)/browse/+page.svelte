@@ -281,7 +281,7 @@
 		</div>
 	{/if}
 	{#if selectedGenres.length > 0}
-	<div class="mx-[10%] mb-4 flex items-center gap-2 text-sm text-gray-500">
+	<div class="mx-[10%] mt-8 mb-4 flex items-center gap-2 text-sm text-gray-500">
 		{$_('filters.selected_genres')}:
 		<div class="flex flex-wrap gap-2">
 			{#each selectedGenres as genre}
@@ -297,7 +297,7 @@
 	</div>
 {/if}
 </Titlebar>
-<div class="pt-40">
+<div class="{cast && selectedGenres.length > 0 ? 'pt-70' : cast || selectedGenres.length > 0 ? 'pt-56' :  'pt-42'}">
 	{#if isLoading}
 	<div class="flex h-[80vh] items-center justify-center">
 		<p class="text-lg text-gray-500">{$_('search.loading')}</p>
