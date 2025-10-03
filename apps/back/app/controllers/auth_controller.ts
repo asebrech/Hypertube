@@ -576,6 +576,7 @@ export default class AuthController {
       if (payload.username !== undefined) user.username = payload.username
       if (payload.firstName !== undefined) user.firstName = payload.firstName
       if (payload.lastName !== undefined) user.lastName = payload.lastName
+      if (payload.allowAdultContent !== undefined) user.allowAdultContent = payload.allowAdultContent
 
       await user.save()
 

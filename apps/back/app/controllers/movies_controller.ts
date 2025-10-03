@@ -7,6 +7,7 @@ import { BackDropImage } from '@hypertube/shared'
 import MovieService from '#services/movie_service'
 import { OpenSubtitleService } from '#services/opensubtitle_service'
 import SubtitleService from '#services/subtitle_service'
+import SearchTorrentService from '#services/search_torrent_service'
 import { SUPPORTED_LANGUAGES } from '../validators/subtitle.js'
 import { isValidTmdbId } from '../utils/format.js'
 
@@ -16,7 +17,8 @@ export default class MoviesController {
     private tmdbService: TMDBService,
     private movieService: MovieService,
     private openSubtitleService: OpenSubtitleService,
-    private subtitleService: SubtitleService
+    private subtitleService: SubtitleService,
+    private searchTorrentService: SearchTorrentService
   ) {}
 
   async index({ request, auth }: HttpContext) {
@@ -25,6 +27,13 @@ export default class MoviesController {
     const limit = 4
     const offset = (page - 1) * limit
     const lang = request.input('lang', 'en')
+
+    let user = null
+    let allowAdultContent = false
+    if (await auth.check()) {
+      user = await auth.authenticate()
+      allowAdultContent = user.allowAdultContent || false
+    }
 
     const genresList = await this.tmdbService.getGenresList(lang, movieType)
     const popularMovies = await this.tmdbService.getPopularMovies(lang, page, movieType)
@@ -35,7 +44,12 @@ export default class MoviesController {
         undefined,
         lang,
         page,
-        movieType
+        movieType,
+        'en',
+        undefined,
+        'popularity.desc',
+        undefined,
+        allowAdultContent
       )
       return {
         id: genre.id,
@@ -63,10 +77,7 @@ export default class MoviesController {
       ...movieListByGenreResults,
     ]
     const slicedResponse = finalMovieListByGenre.slice(offset, offset + limit)
-    let user = null
-    if (await auth.check()) {
-      user = await auth.authenticate()
-    }
+   
 
     const moviesFinalResult = await Promise.all(
       slicedResponse.map(async (genre: any) => {
@@ -78,6 +89,9 @@ export default class MoviesController {
               movie.is_watched = false
               movie.is_bookmarked = false
               movie.watch_progress_seconds = 0
+
+              // Check and update torrent availability in database
+              movie.torrent_available = await this.movieService.checkAndUpdateTorrentAvailability(movie.id)
 
               if (user) {
                 const movieTable = await user
@@ -194,16 +208,24 @@ export default class MoviesController {
     if (!query) {
       return response.badRequest({ error: 'Query is required' })
     }
-    const searchResults = await this.tmdbService.getMultiSearch(query, lang, page)
+
+    let user = null
+    let allowAdultContent = false
+    if (await auth.check()) {
+      user = await auth.authenticate()
+      allowAdultContent = user.allowAdultContent || false
+    }
+
+    const searchResults = await this.tmdbService.getMultiSearch(query, lang, page, allowAdultContent)
     const hasMorePages = searchResults.total_pages > page
     const media: any[] = []
 
-    let user = null
-    if (await auth.check()) {
-      user = await auth.authenticate()
-    }
-
     for (const result of searchResults.results) {
+      // Filter out TV shows - only process movies and actors
+      if (result.media_type === 'tv') {
+        continue
+      }
+
       if (result.media_type === 'person' && result.known_for_department === 'Acting') {
         const movieActor = await this.tmdbService.getMovieListByGenre(
           undefined,
@@ -211,7 +233,8 @@ export default class MoviesController {
           lang,
           1,
           'movie',
-          'en'
+          'en',
+          allowAdultContent
         )
 
         const movies = await Promise.all(
@@ -223,6 +246,9 @@ export default class MoviesController {
               is_bookmarked: false,
               watch_progress_seconds: 0,
             }
+
+            // Check and update torrent availability in database
+            movieWithDefaults.torrent_available = await this.movieService.checkAndUpdateTorrentAvailability(movie.id)
 
             if (user) {
               const movieTable = await user
@@ -243,8 +269,8 @@ export default class MoviesController {
         )
 
         media.push(...movies)
-      } else {
-        // Handle non-person results (movies, tv shows)
+      } else if (result.media_type === 'movie') {
+        // Handle movie results only (no TV shows)
         const movieWithDefaults = {
           ...result,
           is_watched: false,
@@ -252,7 +278,10 @@ export default class MoviesController {
           watch_progress_seconds: 0,
         }
 
-        if (user && (result.media_type === 'movie' || result.media_type === 'tv')) {
+        // Check and update torrent availability in database
+        movieWithDefaults.torrent_available = await this.movieService.checkAndUpdateTorrentAvailability(result.id)
+
+        if (user) {
           const movieTable = await user
             .related('movies')
             .query()
@@ -293,6 +322,13 @@ export default class MoviesController {
     const sortBy = request.input('sortBy', 'popularity.desc')
     const originalLanguage = request.input('originalLanguage')
 
+    let user = null
+    let allowAdultContent = false
+    if (await auth.check()) {
+      user = await auth.authenticate()
+      allowAdultContent = user.allowAdultContent || false
+    }
+
     const discoverResults = await this.tmdbService.getDiscover(
       genreId,
       castId,
@@ -302,15 +338,11 @@ export default class MoviesController {
       region,
       releaseYear,
       sortBy,
-      originalLanguage
+      originalLanguage,
+      allowAdultContent
     )
     const hasMorePages = discoverResults.total_pages > page
     if (discoverResults) {
-      let user = null
-      if (await auth.check()) {
-        user = await auth.authenticate()
-      }
-
       const moviesWithMediaType = await Promise.all(
         discoverResults.results.map(async (movie: any) => {
           const movieWithType = {
@@ -319,6 +351,13 @@ export default class MoviesController {
             is_watched: false,
             is_bookmarked: false,
             watch_progress_seconds: 0,
+          }
+
+          // Check and update torrent availability in database
+          try {
+            movieWithType.torrent_available = await this.movieService.checkAndUpdateTorrentAvailability(movie.id)
+          } catch (error) {
+            console.error(`Error checking torrent availability for movie ${movie.id}:`, error)
           }
 
           if (user) {

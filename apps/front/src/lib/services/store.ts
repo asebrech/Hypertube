@@ -13,6 +13,17 @@ export const is18Ready = writable<boolean>(false);
 export const searchQuery = writable<string>('');
 export const openHoverCardId = writable<string | null>(null);
 
+// Video state management for auto-muting
+export const videoState = writable<{
+	bannerVideoPlaying: boolean;
+	previewVideoPlaying: boolean;
+	modalBannerVideoPlaying: boolean;
+}>({
+	bannerVideoPlaying: false,
+	previewVideoPlaying: false,
+	modalBannerVideoPlaying: false
+});
+
 // Modal store for movie details with navigation history
 export const movieModal = writable<{
 	isOpen: boolean;

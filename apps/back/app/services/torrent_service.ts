@@ -71,11 +71,23 @@ export default class TorrentService {
 
     await this.movieService.updateLastAccessed(tmdbId)
 
+    // Check if movie is already fully converted
+    const movie = await this.movieService.getByTmdbId(tmdbId)
+    if (movie && movie.conversionStatus === 'completed') {
+      console.log(`Movie ${tmdbId} is already fully converted, skipping download and conversion`)
+      return { message: 'Movie is already fully converted and ready', tmdbId }
+    }
+
+    // If conversion was not completed, clean up any partial HLS files to start fresh
+    if (movie && movie.conversionStatus !== 'completed') {
+      await this.cleanupHLSFiles(tmdbId)
+    }
+
     await this.downloadSubtitlesForMovie(tmdbId)
 
     const torrent = await this.searchTorrentService.search(tmdbId, 'All', 100)
+    
     await this.movieService.updateMagnetLink(tmdbId, torrent.magnetLink)
-
     await this.movieService.updateDownloadStatus(tmdbId, 'downloading')
 
     const cacheDir = `./torrent-cache/${tmdbId}`
@@ -402,6 +414,39 @@ export default class TorrentService {
       } catch (error) {
         console.error(`Error cleaning up torrent cache for movie ${tmdbId}:`, error)
         throw new Error(`Failed to cleanup cache directory ${cacheDir}: ${error}`)
+      }
+    }
+  }
+
+  /**
+   * Clean up HLS files for a movie to start conversion fresh
+   */
+  private async cleanupHLSFiles(tmdbId: number): Promise<void> {
+    const hlsDir = `./hls-output/${tmdbId}`
+
+    if (fs.existsSync(hlsDir)) {
+      try {
+        console.log(`Cleaning up existing HLS files for movie ${tmdbId} to start fresh conversion`)
+        fs.rmSync(hlsDir, { recursive: true })
+        console.log(`Successfully cleaned up HLS files for movie ${tmdbId}`)
+        
+        // Reset resolution status in database
+        await this.movieService.updateResolutionStatus(tmdbId, 480, false)
+        await this.movieService.updateResolutionStatus(tmdbId, 720, false)
+        await this.movieService.updateResolutionStatus(tmdbId, 1080, false)
+        
+        // Clear from ready resolutions set
+        this.readyResolutions.delete(`${tmdbId}-480`)
+        this.readyResolutions.delete(`${tmdbId}-720`)
+        this.readyResolutions.delete(`${tmdbId}-1080`)
+        
+        // Clear segment counts
+        this.lastSegmentCounts.delete(`${tmdbId}-480`)
+        this.lastSegmentCounts.delete(`${tmdbId}-720`)
+        this.lastSegmentCounts.delete(`${tmdbId}-1080`)
+      } catch (error) {
+        console.error(`Error cleaning up HLS files for movie ${tmdbId}:`, error)
+        throw new Error(`Failed to cleanup HLS directory ${hlsDir}: ${error}`)
       }
     }
   }
