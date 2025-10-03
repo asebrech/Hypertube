@@ -118,6 +118,35 @@ export default class TorrentController {
     }
   }
 
+  async listWithoutStatus({ request, response }: HttpContext) {
+    try {
+      const page = Math.max(1, parseInt(request.qs().page || '1', 10))
+      const limit = Math.min(100, Math.max(1, parseInt(request.qs().limit || '10', 10)))
+      const search = request.qs().search?.toString() || ''
+
+      const result = await this.movieService.getMoviesWithoutDownloadStatus(
+        page,
+        limit,
+        search
+      )
+
+      return response.ok({
+        success: true,
+        movies: result.movies,
+        pagination: {
+          currentPage: page,
+          totalPages: result.totalPages,
+          totalMovies: result.totalMovies,
+          limit: limit,
+          hasNextPage: page < result.totalPages,
+          hasPrevPage: page > 1,
+        },
+      })
+    } catch (error) {
+      return this.handleDeleteError(response, error, 'fetching movies without status')
+    }
+  }
+
   async deleteAll({ response }: HttpContext) {
     try {
       const result = await this.movieCleanupService.deleteAllMovies()

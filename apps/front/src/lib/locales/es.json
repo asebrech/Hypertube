@@ -52,7 +52,8 @@
 	},
 	"search": {
 		"placeholder": "Películas, Programas, Personas...",
-		"noresults": "No se encontraron resultados"
+		"noresults": "No se encontraron resultados",
+		"loading": "Cargando..."
 	},
 	"filters": {
 		"select_genre": "Género",
@@ -64,12 +65,14 @@
 		"toprated": "Mejor valorados",
 		"originaltitle": "De la A a la Z",
 		"originaltitle_desc": "De la Z a la A",
-		"selected_cast": "Reparto seleccionado"
+		"selected_cast": "Reparto seleccionado",
+		"selected_genres": "Géneros seleccionados"
 	},
 	"movie-action": {
 		"bookmarked": "Lista de seguimiento",
 		"watched": "Ya visto",
-		"resume": "Reanudar"
+		"resume": "Reanudar",
+		"not-available": "Próximamente"
 	},
 	"browse": {
 		"explore": "Explorar todo"
@@ -279,8 +282,11 @@
 		"delete_selected": "Eliminar Seleccionadas ({count})",
 		"delete_all": "Eliminar Todas las Películas",
 		"downloaded_movies": "Películas Descargadas",
+		"indexed_movies": "Películas Indexadas",
 		"no_movies": "No hay películas descargadas",
 		"no_movies_description": "Aún no se han descargado películas en el servidor.",
+		"no_indexed_movies": "No hay películas indexadas",
+		"no_indexed_movies_description": "Aún no se han indexado películas en el servidor.",
 		"no_search_results": "No se encontraron resultados",
 		"try_different_search": "Intenta ajustar tus términos de búsqueda",
 		"clear_search": "Limpiar búsqueda",
@@ -334,7 +340,10 @@
 			"size": "Tamaño",
 			"last_accessed": "Último Acceso",
 			"created": "Creado",
-			"actions": "Acciones"
-		}
+			"actions": "Acciones",
+			"torrent_status": "Estado del Torrent"
+		},
+		"torrent_available": "Torrent Disponible",
+		"torrent_unavailable": "Torrent No Disponible"
 	}
 }

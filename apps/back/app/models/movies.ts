@@ -38,6 +38,9 @@ export default class Movie extends BaseModel {
   @column({ columnName: 'duration' })
   declare duration: number | null
 
+  @column({ columnName: 'torrent_available' })
+  declare torrentAvailable: boolean
+
   @column.dateTime({ columnName: 'last_accessed_at' })
   declare lastAccessedAt: DateTime | null
 

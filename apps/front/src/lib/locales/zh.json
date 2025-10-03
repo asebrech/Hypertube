@@ -52,7 +52,8 @@
 	},
 	"search": {
 		"placeholder": "电影、电视剧、人物...",
-		"noresults": "未找到结果"
+		"noresults": "未找到结果",
+		"loading": "加载中..."
 	},
 	"filters": {
 		"select_genre": "类别",
@@ -64,12 +65,14 @@
 		"toprated": "评分最高",
 		"originaltitle": "A-Z",
 		"originaltitle_desc": "Z-A",
-		"selected_cast": "选定演员"
+		"selected_cast": "选定演员",
+		"selected_genres": "选定类别"
 	},
 	"movie-action": {
 		"bookmarked": "收藏夹",
 		"watched": "已观看",
-		"resume": "继续观看"
+		"resume": "继续观看",
+		"not-available": "即将推出"
 	},
 	"browse": {
 		"explore": "探索全部"
@@ -279,8 +282,11 @@
 		"delete_selected": "删除选中项 ({count})",
 		"delete_all": "删除所有电影",
 		"downloaded_movies": "已下载电影",
+		"indexed_movies": "已索引电影",
 		"no_movies": "无已下载电影",
 		"no_movies_description": "服务器上尚未下载任何电影。",
+		"no_indexed_movies": "无已索引电影",
+		"no_indexed_movies_description": "服务器上尚未索引任何电影。",
 		"no_search_results": "未找到结果",
 		"try_different_search": "尝试调整搜索词",
 		"clear_search": "清除搜索",
@@ -334,7 +340,10 @@
 			"size": "大小",
 			"last_accessed": "最后访问",
 			"created": "创建时间",
-			"actions": "操作"
-		}
+			"actions": "操作",
+			"torrent_status": "种子状态"
+		},
+		"torrent_available": "种子可用",
+		"torrent_unavailable": "种子不可用"
 	}
 }
