@@ -114,7 +114,7 @@
 									: 'hidden'}
 							>
 								<div style="width: {triggerWidth * 1.5}px;">
-									<MoviePreview movieId={movie.id} type={movie.media_type} data={data} />
+									<MoviePreview movieId={movie.id} type={movie.media_type} data={data} isAvailable={movie.torrent_available || false} />
 								</div>
 							</div>
 						</HoverCardContent>

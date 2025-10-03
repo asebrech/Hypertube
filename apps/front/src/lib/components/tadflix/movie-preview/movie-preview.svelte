@@ -13,10 +13,11 @@
 	import { locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 
-	const { movieId, type = 'movie', data } = $props<{
+	const { movieId, type = 'movie', data, isAvailable } = $props<{
 		movieId: number;
 		type?: MovieType;
 		data: any;
+		isAvailable?: boolean;
 	}>();
 	let isLoading: boolean = $state(true);
 	let movie: MovieDetails | undefined = $state<MovieDetails | undefined>();
@@ -145,9 +146,11 @@
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
-	class="block cursor-pointer"
+	class="block {isAvailable ? 'cursor-pointer' : 'cursor-not-allowed'}"
 	onclick={() => {
-		window.location.href = `/movie/${movieId}`;
+		if (isAvailable) {
+			window.location.href = `/movie/${movieId}`;
+		}
 	}}
 >
 	<div class="bg-secondary flex flex-col items-center gap-2 pb-2">
