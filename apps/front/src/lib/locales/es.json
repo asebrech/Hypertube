@@ -370,5 +370,19 @@
 		},
 		"torrent_available": "Torrent Disponible",
 		"torrent_unavailable": "Torrent No Disponible"
+	},
+	"mylist": {
+		"title": "Mi Lista",
+		"subtitle": "Películas que has marcado como favoritas y visto",
+		"bookmarked_movies": "Películas Favoritas",
+		"watched_movies": "Películas Vistas",
+		"no_bookmarked_movies": "Sin Películas Favoritas",
+		"no_bookmarked_movies_description": "Las películas que marques como favoritas aparecerán aquí",
+		"no_watched_movies": "Sin Películas Vistas",
+		"no_watched_movies_description": "Las películas que hayas visto aparecerán aquí"
+	},
+	"common": {
+		"loading": "Cargando...",
+		"refresh": "Actualizar"
 	}
 }

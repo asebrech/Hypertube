@@ -566,13 +566,18 @@ export default class MoviesController {
     }
   }
 
-  async toggleBookmark({ params, auth, response }: HttpContext) {
+  async setBookmark({ params, auth, request, response }: HttpContext) {
     try {
       const user = await auth.authenticate()
       const tmdbId = Number.parseInt(params.id)
+      const { bookmarked } = request.only(['bookmarked'])
 
       if (isNaN(tmdbId)) {
         return response.badRequest({ error: 'Invalid movie ID' })
+      }
+
+      if (typeof bookmarked !== 'boolean') {
+        return response.badRequest({ error: 'Bookmarked value must be a boolean' })
       }
 
       const movieService = new MovieService()
@@ -589,33 +594,30 @@ export default class MoviesController {
       }
 
       const currentIsWatched = existingRelation?.$extras.pivot_is_watched || false
-      const currentIsBookmarked = existingRelation?.$extras.pivot_is_bookmarked || false
       const currentWatchProgress = existingRelation?.$extras.pivot_watch_progress_seconds || 0
       const currentLastWatchedAt = existingRelation?.$extras.pivot_last_watched_at || null
-
-      const newBookmarkStatus = !currentIsBookmarked
 
       await user.related('movies').attach({
         [movie.id]: {
           is_watched: currentIsWatched,
-          is_bookmarked: newBookmarkStatus,
+          is_bookmarked: bookmarked,
           watch_progress_seconds: currentWatchProgress,
           last_watched_at: currentLastWatchedAt,
         },
       })
 
-      const message = newBookmarkStatus
+      const message = bookmarked
         ? 'Movie bookmarked successfully'
         : 'Bookmark removed successfully'
 
       return response.ok({
         message,
-        bookmarked: newBookmarkStatus,
+        bookmarked: bookmarked,
       })
     } catch (error) {
-      console.error('Error toggling bookmark:', error)
+      console.error('Error setting bookmark:', error)
       return response.internalServerError({
-        error: 'Failed to toggle bookmark',
+        error: 'Failed to set bookmark',
       })
     }
   }
@@ -731,4 +733,105 @@ export default class MoviesController {
       })
     }
   }
+
+  async getUserMovies({ request, response, auth }: HttpContext) {
+    try {
+      const user = await auth.authenticate()
+      const page = Number.parseInt(request.input('page', '1'))
+      const limit = Number.parseInt(request.input('limit', '20'))
+      const isWatched = request.input('isWatched')
+      const isBookmarked = request.input('isBookmarked')
+
+      // Validate pagination parameters
+      if (isNaN(page) || page < 1) {
+        return response.badRequest({
+          success: false,
+          error: 'Invalid page number. Must be a positive integer.',
+        })
+      }
+
+      if (isNaN(limit) || limit < 1 || limit > 100) {
+        return response.badRequest({
+          success: false,
+          error: 'Invalid limit. Must be between 1 and 100.',
+        })
+      }
+
+      // Build base query for user's movies
+      let countQuery = user.related('movies').query()
+      let dataQuery = user.related('movies').query()
+
+      // Apply filters to both queries
+      if (isWatched !== undefined) {
+        const watchedFilter = isWatched === 'true' || isWatched === true
+        countQuery = countQuery.wherePivot('is_watched', watchedFilter)
+        dataQuery = dataQuery.wherePivot('is_watched', watchedFilter)
+      }
+
+      if (isBookmarked !== undefined) {
+        const bookmarkedFilter = isBookmarked === 'true' || isBookmarked === true
+        countQuery = countQuery.wherePivot('is_bookmarked', bookmarkedFilter)
+        dataQuery = dataQuery.wherePivot('is_bookmarked', bookmarkedFilter)
+      }
+
+      // Get total count using a simpler count query
+      const totalCountResult = await countQuery.count('movies.id as total')
+      const total = Number(totalCountResult[0].$extras.total)
+
+      // Apply pagination and get the actual data
+      const offset = (page - 1) * limit
+      const movies = await dataQuery
+        .orderBy('movie_user.last_watched_at', 'desc')
+        .offset(offset)
+        .limit(limit)
+
+      // Calculate pagination info
+      const totalPages = Math.ceil(total / limit)
+      const hasNextPage = page < totalPages
+      const hasPrevPage = page > 1
+
+      // Format response with movie details and user interaction data
+      const formattedMovies = await Promise.all(
+        movies.map(async (movie) => ({
+          id: movie.id,
+          tmdbId: movie.tmdbId,
+          title: movie.title,
+          createdAt: movie.createdAt,
+          updatedAt: movie.updatedAt,
+          torrent_available: await this.movieService.checkAndUpdateTorrentAvailability(movie.tmdbId),
+          userInteraction: {
+            isWatched: movie.$extras.pivot_is_watched || false,
+            isBookmarked: movie.$extras.pivot_is_bookmarked || false,
+            watchProgressSeconds: movie.$extras.pivot_watch_progress_seconds || 0,
+            lastWatchedAt: movie.$extras.pivot_last_watched_at || null,
+          },
+        }))
+      )
+
+      return response.ok({
+        success: true,
+        movies: formattedMovies,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalMovies: total,
+          moviesPerPage: limit,
+          hasNextPage,
+          hasPrevPage,
+        },
+        filters: {
+          isWatched: isWatched !== undefined ? (isWatched === 'true' || isWatched === true) : null,
+          isBookmarked: isBookmarked !== undefined ? (isBookmarked === 'true' || isBookmarked === true) : null,
+        },
+      })
+    } catch (error) {
+      console.error('Error fetching user movies:', error)
+      return response.internalServerError({
+        success: false,
+        error: 'Failed to fetch user movies',
+      })
+    }
+  }
+
+
 }

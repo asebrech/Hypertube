@@ -25,6 +25,12 @@
 		return page.url.pathname === link.href;
 	}
 
+	function animateOnScroll(): boolean {
+		// Don't animate on scroll for specific pages
+		const noAnimatePaths = ['/my-list', '/browse', '/search'];
+		return !noAnimatePaths.includes(page.url.pathname);
+	}
+
 	interface Link {
 		label: string;
 		href: string;
@@ -97,10 +103,14 @@
 <!-- Navbar -->
 <nav
 	class={`fixed top-0 z-50 flex max-h-16 w-full items-center justify-between px-8 py-4 text-white transition-colors duration-[1000ms]
-    ${
-			scrolled
-				? 'bg-black bg-[linear-gradient(to_bottom,_rgba(0,0,0,1),_rgba(0,0,0,0))]'
-				: 'bg-gradient-to-b from-black to-transparent transition-all duration-300'
+	${
+			animateOnScroll()
+				? (
+					scrolled
+						? 'bg-[#141414] bg-[linear-gradient(to_bottom,_rgba(0,0,0,1),_rgba(0,0,0,0))]'
+						: 'bg-gradient-to-b from-[#141414] to-transparent transition-all duration-300'
+				)
+				: 'bg-[#141414]'
 		}
   `}
 >

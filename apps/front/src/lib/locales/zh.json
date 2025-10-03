@@ -370,5 +370,19 @@
 		},
 		"torrent_available": "种子可用",
 		"torrent_unavailable": "种子不可用"
+	},
+	"mylist": {
+		"title": "我的列表",
+		"subtitle": "您收藏和观看的电影",
+		"bookmarked_movies": "收藏的电影",
+		"watched_movies": "已观看的电影",
+		"no_bookmarked_movies": "没有收藏的电影",
+		"no_bookmarked_movies_description": "您还没有收藏任何电影。开始将电影添加到您的列表吧！",
+		"no_watched_movies": "没有已观看的电影",
+		"no_watched_movies_description": "您还没有观看任何电影。开始观看以跟踪您的进度！"
+	},
+	"common": {
+		"loading": "加载中...",
+		"refresh": "刷新"
 	}
 }

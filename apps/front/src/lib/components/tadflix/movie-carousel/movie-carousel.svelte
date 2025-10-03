@@ -28,6 +28,16 @@
 		data: any;
 	} = $props();
 
+	// Handle bookmark changes from child components
+	function handleBookmarkChange(movieId: number, isBookmarked: boolean) {
+		// Update the movie in the movies array
+		movies = movies.map(movie => 
+			movie.id === movieId 
+				? { ...movie, is_bookmarked: isBookmarked }
+				: movie
+		);
+	}
+
 	let visibleSlides = $state<number[]>([]);
 	let loadedSlides = $state<number[]>([]);
 	let triggerWrapper = $state<HTMLElement | null>(null);
@@ -172,7 +182,14 @@
 										: 'hidden'}
 								>
 									<div style="width: {triggerWidth * 1.5}px;">
-										<MoviePreview movieId={movie.id} type={movie.media_type} data={data} isAvailable={movie.torrent_available || false} />
+										<MoviePreview 
+											movieId={movie.id} 
+											type={movie.media_type} 
+											data={data} 
+											isAvailable={movie.torrent_available || false}
+											isBookmarked={movie.is_bookmarked || false}
+											onBookmarkChange={handleBookmarkChange}
+										/>
 									</div>
 								</div>
 							</HoverCardContent>
