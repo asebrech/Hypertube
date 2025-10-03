@@ -1,9 +1,15 @@
 import Movie from '#models/movies'
 import { TMDBService } from './tmdb_service.js'
+import SearchTorrentService from './search_torrent_service.js'
 import { DateTime } from 'luxon'
+import { inject } from '@adonisjs/core'
 
+@inject()
 export default class MovieService {
-  private tmdbService: TMDBService = new TMDBService()
+  constructor(
+    private tmdbService: TMDBService = new TMDBService(),
+    private searchTorrentService: SearchTorrentService
+  ) {}
   async getOrCreate(tmdbId: number, data?: Partial<Movie>): Promise<Movie> {
     let movie = await Movie.query().where('tmdbId', tmdbId).first()
 
@@ -31,6 +37,38 @@ export default class MovieService {
     await movie.save()
 
     return movie
+  }
+
+  /**
+   * Check and update torrent availability for a movie in database
+   * @param movieId TMDB movie ID
+   * @returns torrent availability status
+   */
+  async checkAndUpdateTorrentAvailability(movieId: number): Promise<boolean> {
+    try {
+      // Get or create movie record in database
+      const movieRecord = await this.getOrCreate(movieId)
+      
+      // Check if we need to update torrent availability (only if not set or old data)
+      let torrentAvailable = movieRecord.torrentAvailable
+      if (torrentAvailable === null || torrentAvailable === undefined) {
+        try {
+          torrentAvailable = await this.searchTorrentService.isAvailable(movieId)
+          movieRecord.torrentAvailable = torrentAvailable
+          await movieRecord.save()
+        } catch (error) {
+          console.error(`Error checking torrent availability for movie ${movieId}:`, error)
+          torrentAvailable = false
+          movieRecord.torrentAvailable = false
+          await movieRecord.save()
+        }
+      }
+      
+      return torrentAvailable
+    } catch (error) {
+      console.error(`Error in checkAndUpdateTorrentAvailability for movie ${movieId}:`, error)
+      return false
+    }
   }
 
   async updateMagnetLink(tmdbId: number, magnetLink: string): Promise<Movie> {
@@ -157,7 +195,7 @@ export default class MovieService {
       totalSize: number
     }
   }> {
-    let query = Movie.query().whereNotNull('download_status')
+    let query = Movie.query().whereNotNull('download_status').whereNotNull('last_accessed_at')
 
     // Add search filter if provided
     if (search.trim()) {
@@ -251,9 +289,71 @@ export default class MovieService {
     }
   }
 
+  async getMoviesWithoutDownloadStatus(
+    page: number = 1,
+    limit: number = 10,
+    search: string = ''
+  ): Promise<{
+    movies: Array<{
+      id: number
+      tmdbId: number
+      title: string | null
+      torrentAvailable: boolean | null
+      createdAt: DateTime
+      updatedAt: DateTime
+    }>
+    totalMovies: number
+    totalPages: number
+  }> {
+    let query = Movie.query().where((builder) => {
+      builder.whereNull('last_accessed_at')
+    })
+
+    // Add search filter if provided
+    if (search.trim()) {
+      query = query.where((builder) => {
+        builder.whereILike('title', `%${search}%`)
+
+        // If search term is a number, also search by tmdbId
+        const searchAsNumber = parseInt(search.trim(), 10)
+        if (!isNaN(searchAsNumber)) {
+          builder.orWhere('tmdbId', searchAsNumber)
+        }
+      })
+    }
+
+    // Get total count for pagination
+    const totalMovies = await query.clone().count('* as total')
+    const totalCount = Array.isArray(totalMovies) ? totalMovies[0].$extras.total : totalMovies
+
+    // Apply pagination and ordering (newest first)
+    const movies = await query
+      .orderBy('created_at', 'desc')
+      .offset((page - 1) * limit)
+      .limit(limit)
+
+    const moviesData = movies.map((movie) => ({
+      id: movie.id,
+      tmdbId: movie.tmdbId,
+      title: movie.title,
+      torrentAvailable: movie.torrentAvailable,
+      createdAt: movie.createdAt,
+      updatedAt: movie.updatedAt,
+    }))
+
+    return {
+      movies: moviesData,
+      totalMovies: totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+    }
+  }
+
   async getGlobalMovieStats(): Promise<{ totalMovies: number; totalSize: number }> {
     // Get all downloaded movies (no search filter)
-    const allMovies = await Movie.query().whereNotNull('download_status').select('tmdbId')
+    const allMovies = await Movie.query()
+      .whereNotNull('download_status')
+      .whereNotNull('last_accessed_at')
+      .select('tmdbId')
 
     const fs = await import('node:fs')
     const path = await import('node:path')

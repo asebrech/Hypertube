@@ -74,8 +74,8 @@ export default class TorrentService {
     await this.downloadSubtitlesForMovie(tmdbId)
 
     const torrent = await this.searchTorrentService.search(tmdbId, 'All', 100)
+    
     await this.movieService.updateMagnetLink(tmdbId, torrent.magnetLink)
-
     await this.movieService.updateDownloadStatus(tmdbId, 'downloading')
 
     const cacheDir = `./torrent-cache/${tmdbId}`
