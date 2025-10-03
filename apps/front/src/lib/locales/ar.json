@@ -69,7 +69,8 @@
 	"movie-action": {
 		"bookmarked": "قائمة المشاهدة",
 		"watched": "تم المشاهدة",
-		"resume": "استئناف"
+		"resume": "استئناف",
+		"not-available": "قريباً"
 	},
 	"browse": {
 		"explore": "استكشاف الكل"
@@ -279,8 +280,11 @@
 		"delete_selected": "حذف المحدد ({count})",
 		"delete_all": "حذف جميع الأفلام",
 		"downloaded_movies": "الأفلام المحملة",
+		"indexed_movies": "الأفلام المفهرسة",
 		"no_movies": "لا توجد أفلام محملة",
 		"no_movies_description": "لم يتم تحميل أي أفلام على الخادم بعد.",
+		"no_indexed_movies": "لا توجد أفلام مفهرسة",
+		"no_indexed_movies_description": "لم يتم فهرسة أي أفلام على الخادم بعد.",
 		"no_search_results": "لم يتم العثور على نتائج",
 		"try_different_search": "حاول تعديل مصطلحات البحث",
 		"clear_search": "مسح البحث",
@@ -334,7 +338,10 @@
 			"size": "الحجم",
 			"last_accessed": "آخر وصول",
 			"created": "تاريخ الإنشاء",
-			"actions": "الإجراءات"
-		}
+			"actions": "الإجراءات",
+			"torrent_status": "حالة التورنت"
+		},
+		"torrent_available": "التورنت متوفر",
+		"torrent_unavailable": "التورنت غير متوفر"
 	}
 }

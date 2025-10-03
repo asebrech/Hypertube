@@ -100,6 +100,7 @@ router
 
 router
   .group(() => {
+    router.get('/movies-without-status', [TorrentController, 'listWithoutStatus']).use(middleware.admin())
     router.get('/', [TorrentController, 'list']).use(middleware.admin())
     router.delete('/', [TorrentController, 'deleteAll']).use(middleware.admin())
     router.delete('/:id', [TorrentController, 'delete']).use(middleware.admin())

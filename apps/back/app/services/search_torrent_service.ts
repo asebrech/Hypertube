@@ -45,4 +45,46 @@ export default class SearchTorrentService {
       }
     else throw new Error('No suitable torrent found')
   }
+
+  /**
+   * Checks if a suitable torrent is available for the given TMDB movie ID.
+   * Searches for torrents matching the specified category and limit, and determines
+   * if a torrent with at least 480p, 720p, or 1080p resolution exists.
+   *
+   * @param {number} tmdbId - The TMDB movie ID to search for.
+   * @param {string} [category='All'] - The category to filter torrents by (default is 'All').
+   * @param {number} [limit=100] - The maximum number of torrents to search (default is 100).
+   * @returns {Promise<boolean>} - Resolves to true if a suitable torrent is found, otherwise false.
+   */
+  async isAvailable(tmdbId: number, category: string = 'All', limit: number = 100) {
+    TorrentSearchApi.disableAllProviders()
+    TorrentSearchApi.enableProvider('Yts')
+    TorrentSearchApi.enableProvider('ThePirateBay')
+
+    const imdbId = await this.tmdbService.getMovieExternalIMDBId(tmdbId)
+
+    const torrents = await TorrentSearchApi.search(imdbId, category, limit)
+    let torrentExist = false
+    let currentResolution: VideoQuality = '0'
+    for (const torrent of torrents) {
+      if (torrent.title.includes('1080p')) {
+        currentResolution = '1080p'
+        torrentExist = true
+        break
+      }
+      if (torrent.title.includes('720p') && compareVideoQuality(currentResolution, '720p') > 0) {
+        currentResolution = '720p'
+        torrentExist = true
+        break
+      }
+      if (torrent.title.includes('480p') && compareVideoQuality(currentResolution, '480p') > 0) {
+        currentResolution = '480p'
+        torrentExist = true
+        break
+      }
+    }
+    return torrentExist
+  }
+
+  
 }
