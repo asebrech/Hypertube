@@ -17,6 +17,7 @@
 		type: MovieType | undefined;
 		isWatched?: boolean;
 		isBookmarked?: boolean;
+		isAvailable?: boolean;
 		watchProgressSeconds?: number;
 		data: { token: string };
 	}
@@ -28,6 +29,7 @@
 		type,
 		isWatched = false,
 		isBookmarked = false,
+		isAvailable = true,
 		watchProgressSeconds = 0,
 		data,
 	}: Props = $props();
@@ -85,7 +87,13 @@
 			<CardTitle class="text-white">{title}</CardTitle>
 		</CardHeader>
 	{/if}
-	{#if isWatched}
+	{#if !isAvailable}
+		<div class="absolute bottom-0 flex w-full justify-center">
+			<Badge variant={'red'}>
+				{$_('movie-action.not-available')}
+			</Badge>
+		</div>
+	{:else if isWatched}
 		<div class="absolute bottom-0 flex w-full justify-center">
 			<Badge variant={'red'}>
 				{$_('movie-action.watched')}

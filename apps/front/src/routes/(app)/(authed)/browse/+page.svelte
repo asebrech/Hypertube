@@ -4,7 +4,7 @@
 	import type { Movie, Genre, PersonDetails } from '@hypertube/shared';
 	import { getMovieDiscover, getGenresList, getPeopleDetails } from '@/services/api';
 	import { _ } from 'svelte-i18n';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { Select, SelectTrigger, SelectItem, SelectContent } from '@/components/ui/select';
 	import { X } from 'lucide-svelte';
 	import Titlebar from '@/components/tadflix/layout/titlebar/Titlebar.svelte';
@@ -63,9 +63,15 @@
 	});
 
 	let sentinel: HTMLDivElement;
+	let observer: IntersectionObserver | null = null;
 
 	const observeSentinel = () => {
-		const observer = new IntersectionObserver(
+		// Disconnect existing observer
+		if (observer) {
+			observer.disconnect();
+		}
+
+		observer = new IntersectionObserver(
 			async (entries) => {
 				if (entries[0].isIntersecting && hasMorePages && !isLoading) {
 					await loadDiscoverMovies();
@@ -73,8 +79,20 @@
 			},
 			{ rootMargin: '200px' }
 		);
+		
 		if (sentinel) {
 			observer.observe(sentinel);
+			
+			// Check if sentinel is already visible and trigger load if needed
+			setTimeout(() => {
+				if (sentinel && hasMorePages && !isLoading) {
+					const rect = sentinel.getBoundingClientRect();
+					const isVisible = rect.top < window.innerHeight + 200; // 200px rootMargin
+					if (isVisible) {
+						loadDiscoverMovies();
+					}
+				}
+			}, 100);
 		}
 	};
 
@@ -124,7 +142,10 @@
 		movies = [];
 		currentPage = 1;
 		hasMorePages = true;
-		loadDiscoverMovies();
+		loadDiscoverMovies().then(() => {
+			// Re-observe sentinel after loading new content
+			setTimeout(() => observeSentinel(), 100);
+		});
 	};
 
 	function handleCastRemove(event: MouseEvent & { currentTarget: EventTarget & HTMLSpanElement }) {
@@ -134,8 +155,28 @@
 		movies = [];
 		currentPage = 1;
 		hasMorePages = true;
-		loadDiscoverMovies();
+		loadDiscoverMovies().then(() => {
+			// Re-observe sentinel after loading new content
+			setTimeout(() => observeSentinel(), 100);
+		});
 	}
+
+	function handleGenreRemove(genreId: number) {
+		selectedGenres = selectedGenres.filter(genre => genre.id !== genreId);
+		movies = [];
+		currentPage = 1;
+		hasMorePages = true;
+		loadDiscoverMovies().then(() => {
+			// Re-observe sentinel after loading new content
+			setTimeout(() => observeSentinel(), 100);
+		});
+	}
+
+	onDestroy(() => {
+		if (observer) {
+			observer.disconnect();
+		}
+	});
 </script>
 <Titlebar>
 <div class="flex gap-4 w-full">
@@ -215,7 +256,7 @@
 		onValueChange={(val) => handleChange('language', val)}
 	>
 		<SelectTrigger class="border-outline-1 h-[2rem] rounded-none focus:ring-0 focus:ring-offset-0">
-			{$_('filters.select_language')}
+			{languages.find((lang) => lang.value === originalLanguage)?.label || $_('filters.select_language')}
 		</SelectTrigger>
 		<SelectContent
 			sideOffset={0}
@@ -231,7 +272,7 @@
 </div>
 
 	{#if cast}
-		<div class="mx-[10%] mt-8 flex items-center gap-2 text-sm text-gray-500">
+		<div class="mx-[10%] mt-8 mb-4 flex items-center gap-2 text-sm text-gray-500">
 			{$_('filters.selected_cast')}:
 			<span class="flex cursor-pointer items-center gap-1 underline" onclick={handleCastRemove}>
 				{cast.name}
@@ -239,6 +280,22 @@
 			</span>
 		</div>
 	{/if}
+	{#if selectedGenres.length > 0}
+	<div class="mx-[10%] mb-4 flex items-center gap-2 text-sm text-gray-500">
+		{$_('filters.selected_genres')}:
+		<div class="flex flex-wrap gap-2">
+			{#each selectedGenres as genre}
+				<span 
+					class="flex cursor-pointer items-center gap-1 underline" 
+					onclick={() => handleGenreRemove(genre.id)}
+				>
+					{genre.name}
+					<X class="ml-1 h-4 w-4 text-gray-400 underline" />
+				</span>
+			{/each}
+		</div>
+	</div>
+{/if}
 </Titlebar>
 <div class="pt-40">
 	{#if isLoading}

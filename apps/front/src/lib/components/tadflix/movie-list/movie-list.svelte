@@ -100,6 +100,7 @@
 									type={movie?.media_type} 
 									isWatched={movie.is_watched || false}
 									isBookmarked={movie.is_bookmarked || false}
+									isAvailable={movie.torrent_available || false}
 									watchProgressSeconds={movie.watch_progress_seconds || 0}
 									data={data}
 								/>
@@ -123,13 +124,18 @@
 									: 'hidden'}
 							>
 								<div style="width: {triggerWidth * 1.5}px;">
+<<<<<<< HEAD
 									<MoviePreview 
 										movieId={movie.id} 
 										type={movie.media_type} 
-										data={data} 
+										data={data}
+										isAvailable={movie.torrent_available || false}
 										isBookmarked={movie.is_bookmarked || false}
 										onBookmarkChange={handleBookmarkChange}
 									/>
+=======
+									<MoviePreview movieId={movie.id} type={movie.media_type} data={data} isAvailable={movie.torrent_available || false} />
+>>>>>>> staging
 								</div>
 							</div>
 						</HoverCardContent>

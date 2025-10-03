@@ -2,9 +2,9 @@
 	import { goto } from '$app/navigation';
 	import { Skeleton } from '@/components/ui/skeleton';
 	import { getMovieDetails, getMovieVideos, setBookmark } from '@/services/api';
-	import { movieModalActions } from '@/services/store';
+	import { movieModalActions, videoState } from '@/services/store';
 	import type { MovieDetails, MovieType, MovieVideo } from '@hypertube/shared';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import ButtonPreview from '$lib/components/tadflix/buttons/button-preview/button-preview.svelte';
 	import { MovieBadges } from '$lib/components/tadflix/movie-badges';
 	import { Play, Plus, ChevronDown, Languages, VolumeOff, Volume2, RotateCw } from 'lucide-svelte';
@@ -14,10 +14,11 @@
 	import { get } from 'svelte/store';
 	import Check from '@lucide/svelte/icons/check';
 
-	const { movieId, type = 'movie', data, isBookmarked, onBookmarkChange } = $props<{
+	const { movieId, type = 'movie', data, isAvailable, isBookmarked, onBookmarkChange } = $props<{
 		movieId: number;
 		type?: MovieType;
 		data: any;
+		isAvailable?: boolean;
 		isBookmarked: boolean;
 		onBookmarkChange?: (movieId: number, isBookmarked: boolean) => void;
 	}>();
@@ -79,9 +80,26 @@
 					onStateChange: (event) => {
 						if (event.data === YT.PlayerState.ENDED) {
 							videoEnded = true;
+							// Update store when preview video ends
+							videoState.update(state => ({
+								...state,
+								previewVideoPlaying: false
+							}));
 						}
 						if (event.data === YT.PlayerState.PLAYING) {
 							playerReady = true;
+							// Update store when preview video starts playing
+							videoState.update(state => ({
+								...state,
+								previewVideoPlaying: true
+							}));
+						}
+						if (event.data === YT.PlayerState.PAUSED) {
+							// Update store when preview video is paused
+							videoState.update(state => ({
+								...state,
+								previewVideoPlaying: false
+							}));
 						}
 					}
 				},
@@ -124,6 +142,23 @@
 			// Already loaded
 			isApiLoaded = true;
 			if (movieVideo?.key) createPlayer(movieVideo?.key);
+		}
+	});
+
+	onDestroy(() => {
+		// Reset preview video state when component is destroyed
+		videoState.update(state => ({
+			...state,
+			previewVideoPlaying: false
+		}));
+		
+		// Clean up YouTube player if it exists
+		if (player && typeof player.destroy === 'function') {
+			try {
+				player.destroy();
+			} catch (error) {
+				console.warn('Error destroying YouTube player:', error);
+			}
 		}
 	});
 
@@ -179,9 +214,11 @@
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
-	class="block cursor-pointer"
+	class="block {isAvailable ? 'cursor-pointer' : 'cursor-not-allowed'}"
 	onclick={() => {
-		window.location.href = `/movie/${movieId}`;
+		if (isAvailable) {
+			window.location.href = `/movie/${movieId}`;
+		}
 	}}
 >
 	<div class="bg-secondary flex flex-col items-center gap-2 pb-2">
@@ -264,8 +301,8 @@
 			{:else}
 				<div class="flex items-center justify-between">
 					<div class="flex gap-2">
-						<ButtonPreview variant="filled">
-							<Play fill={'black'} />
+						<ButtonPreview variant="filled" class={isAvailable ? '' : 'cursor-not-allowed'}>
+							<Play fill={'black'}  />
 						</ButtonPreview>
 						<ButtonPreview
 							variant="outline"

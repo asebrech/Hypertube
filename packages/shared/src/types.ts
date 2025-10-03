@@ -31,6 +31,7 @@ export type Movie = {
   is_watched?: boolean;
   is_bookmarked?: boolean;
   watch_progress_seconds?: number;
+  torrent_available?: boolean;
 };
 
 export type Genre = {

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Dialog, DialogContent } from '@/components/ui/dialog';
-	import { movieModal, movieModalActions, movieDataCache } from '@/services/store';
+	import { movieModal, movieModalActions, movieDataCache, videoState } from '@/services/store';
 	import {
 		getMovieDetails,
 		getMovieVideos,
@@ -27,6 +27,8 @@
 	import { _ } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
+	import { browser } from '$app/environment';
 	import { CommentContainer } from '../comments';
 	
 	const { data } = $props();
@@ -65,6 +67,23 @@
 			};
 		});
 		return unsubscribe;
+	});
+
+	// Mute home banner when modal opens, unmute when modal closes
+	$effect(() => {
+		if (modalData.isOpen) {
+			// Modal opened - set modal state to active to mute home banner
+			videoState.update(state => ({
+				...state,
+				modalBannerVideoPlaying: true
+			}));
+		} else {
+			// Modal closed - reset modal state to unmute home banner
+			videoState.update(state => ({
+				...state,
+				modalBannerVideoPlaying: false
+			}));
+		}
 	});
 
 	// Load movie data when modal opens
@@ -288,12 +307,32 @@
 
 	function navigateToGenre(genreId: number) {
 		closeModal(); // Close modal first
-		goto(`/browse?genre=${genreId}`);
+		
+		if (browser) {
+			const currentPath = window.location.pathname;
+			if (currentPath === '/browse') {
+				// If already on browse page, force reload with new genre parameter
+				window.location.href = `/browse?genre=${genreId}`;
+			} else {
+				// If on different page, use normal navigation
+				goto(`/browse?genre=${genreId}`);
+			}
+		}
 	}
 
 	function navigateToCast(castId: number) {
 		closeModal(); // Close modal first
-		goto(`/browse?cast=${castId}`);
+		
+		if (browser) {
+			const currentPath = window.location.pathname;
+			if (currentPath === '/browse') {
+				// If already on browse page, force reload with new cast parameter
+				window.location.href = `/browse?cast=${castId}`;
+			} else {
+				// If on different page, use normal navigation
+				goto(`/browse?cast=${castId}`);
+			}
+		}
 	}
 
 	function goBack() {
@@ -455,6 +494,7 @@
 										showDescription={false}
 										showMoreInfoButton={false}
 										showVoteAverage={false}
+										instance="modal"
 										class="[&>div:first-child]:max-h-[40vh] [&>div:first-child]:rounded-t-lg sm:[&>div:first-child]:max-h-[45vh] md:[&>div:first-child]:max-h-[50vh]"
 									>
 										<!-- {#snippet customActions()}

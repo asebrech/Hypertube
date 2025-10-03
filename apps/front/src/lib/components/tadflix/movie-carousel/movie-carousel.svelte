@@ -144,6 +144,7 @@
 											type={movie.media_type}
 											isWatched={movie.is_watched || false}
 											isBookmarked={movie.is_bookmarked || false}
+											isAvailable={movie.torrent_available || false}
 											watchProgressSeconds={movie.watch_progress_seconds || 0}
 											data={data}
 										/>
@@ -155,6 +156,7 @@
 											type={movie.media_type}
 											isWatched={movie.is_watched || false}
 											isBookmarked={movie.is_bookmarked || false}
+											isAvailable={movie.torrent_available || false}
 											watchProgressSeconds={movie.watch_progress_seconds || 0}
 											data={data}
 										/>
@@ -184,6 +186,7 @@
 											movieId={movie.id} 
 											type={movie.media_type} 
 											data={data} 
+											isAvailable={movie.torrent_available || false}
 											isBookmarked={movie.is_bookmarked || false}
 											onBookmarkChange={handleBookmarkChange}
 										/>
