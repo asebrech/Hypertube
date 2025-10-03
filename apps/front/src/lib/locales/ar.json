@@ -345,5 +345,19 @@
 		},
 		"torrent_available": "التورنت متوفر",
 		"torrent_unavailable": "التورنت غير متوفر"
+	},
+	"mylist": {
+		"title": "قائمتي",
+		"subtitle": "أفلامك المحفوظة والمشاهدة",
+		"bookmarked_movies": "الأفلام المحفوظة",
+		"watched_movies": "الأفلام المشاهدة",
+		"no_bookmarked_movies": "لا توجد أفلام محفوظة",
+		"no_bookmarked_movies_description": "لم تقم بحفظ أي أفلام بعد. ابدأ بإضافة الأفلام إلى قائمتك!",
+		"no_watched_movies": "لا توجد أفلام مشاهدة",
+		"no_watched_movies_description": "لم تشاهد أي أفلام بعد. ابدأ المشاهدة لتتبع تقدمك!"
+	},
+	"common": {
+		"loading": "جاري التحميل...",
+		"refresh": "تحديث"
 	}
 }
