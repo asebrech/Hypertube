@@ -20,6 +20,8 @@
 		validateLastName,
 		translateValidationErrors
 	} from '@hypertube/shared';
+	import { getOAuthErrorInfo, type OAuthError } from '$lib/utils/oauth-error-handler.js';
+	import { ErrorAlert } from '$lib/components/ui/error-alert/index.js';
 
 	type FormData = {
 		invalid?: boolean;
@@ -34,7 +36,10 @@
 		};
 	};
 
-	let { form }: { form: FormData | null } = $props();
+	let { form, data }: { form: FormData | null; data: { oauthError?: OAuthError } } = $props();
+
+	// Get OAuth error information for display
+	const oauthErrorInfo = $derived(data.oauthError ? getOAuthErrorInfo(data.oauthError) : null);
 	import { enhance } from '$app/forms';
 
 	// Client-side validation errors
@@ -125,9 +130,17 @@
 	</Card.Header>
 	<Card.Content>
 		<div class="grid gap-4">
-			<form 
-				action="?/register" 
-				method="POST" 
+			{#if data.oauthError && oauthErrorInfo}
+				<ErrorAlert
+					type="error"
+					messageKey={oauthErrorInfo.messageKey}
+					fallbackMessage={oauthErrorInfo.fallbackMessage}
+				/>
+			{/if}
+
+			<form
+				action="?/register"
+				method="POST"
 				enctype="multipart/form-data"
 				use:enhance={({ formData }) => {
 					// Add the selected profile picture to the form data

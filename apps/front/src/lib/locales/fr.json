@@ -199,6 +199,31 @@
 			"remember_password": "Vous vous souvenez de votre mot de passe ?",
 			"back_to_login": "Retour à la connexion",
 			"error_message": "Veuillez vérifier vos informations et réessayer."
+		},
+		"oauth": {
+			"error_access_denied": "Connexion annulée. Vous avez choisi de ne pas autoriser l'application.",
+			"error_state_mismatch": "Échec de la vérification de sécurité. Veuillez essayer de vous connecter à nouveau.",
+			"error_invalid_request": "Demande de connexion invalide. Veuillez réessayer.",
+			"error_invalid_client": "Erreur de configuration de l'application. Veuillez contacter le support.",
+			"error_invalid_scope": "Permissions invalides demandées. Veuillez réessayer.",
+			"error_server_error": "Le service d'authentification est temporairement indisponible. Veuillez réessayer plus tard.",
+			"error_unauthorized": "Échec de l'autorisation. Veuillez réessayer.",
+			"error_oauth_error": "Échec de l'authentification. Veuillez réessayer.",
+			"error_processing_error": "Une erreur s'est produite lors du traitement de votre connexion. Veuillez réessayer.",
+			"error_email_error": "Il y a eu un problème avec votre email lors de la connexion. Veuillez réessayer.",
+			"error_user_error": "Il y a eu un problème lors de la création ou mise à jour de votre compte. Veuillez réessayer.",
+			"error_token_error": "Il y a eu un problème lors de la génération de votre jeton de connexion. Veuillez réessayer.",
+			"action_try_again": "Essayer de se connecter à nouveau",
+			"action_use_different_method": "Utiliser une méthode d'authentification différente",
+			"action_clear_cookies": "Effacer les cookies du navigateur",
+			"action_clear_cache": "Effacer le cache du navigateur",
+			"action_clear_browser_data": "Effacer les données du navigateur",
+			"action_contact_support": "Contacter le support",
+			"action_contact_support_persist": "Contacter le support si le problème persiste",
+			"action_try_later": "Réessayer dans quelques minutes",
+			"action_check_account": "Vérifier l'état de votre compte",
+			"action_verify_email": "Vérifier votre email auprès du fournisseur",
+			"try_again": "Veuillez essayer de vous connecter à nouveau ou utiliser une méthode d'authentification différente."
 		}
 	},
 	"account": {

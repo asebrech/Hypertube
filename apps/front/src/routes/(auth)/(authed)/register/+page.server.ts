@@ -2,6 +2,24 @@ import { fail, redirect, type RequestEvent } from '@sveltejs/kit';
 import axios from 'axios';
 import { SECRET_BACK_URL } from '$env/static/private';
 
+export const load = async ({ url }: RequestEvent) => {
+	const oauthError = url.searchParams.get('oauth_error');
+	const provider = url.searchParams.get('provider');
+	const details = url.searchParams.get('details');
+
+	if (oauthError) {
+		return {
+			oauthError: {
+				type: oauthError,
+				provider: provider,
+				details: details ? decodeURIComponent(details) : null
+			}
+		};
+	}
+
+	return {};
+};
+
 const register = async ({ request }: RequestEvent) => {
 	const data = await request.formData();
 	const firstName = data.get('firstName');

@@ -199,6 +199,31 @@
 			"remember_password": "记起密码了？",
 			"back_to_login": "返回登录",
 			"error_message": "请检查您的输入并重试。"
+		},
+		"oauth": {
+			"error_access_denied": "登录已取消。您选择不授权应用程序。",
+			"error_state_mismatch": "安全验证失败。请重新尝试登录。",
+			"error_invalid_request": "无效的登录请求。请重试。",
+			"error_invalid_client": "应用程序配置错误。请联系支持团队。",
+			"error_invalid_scope": "请求的权限无效。请重试。",
+			"error_server_error": "认证服务暂时不可用。请稍后重试。",
+			"error_unauthorized": "授权失败。请重试。",
+			"error_oauth_error": "认证失败。请重试。",
+			"error_processing_error": "处理您的登录时发生错误。请重试。",
+			"error_email_error": "登录时您的邮箱出现问题。请重试。",
+			"error_user_error": "创建或更新您的账户时出现问题。请重试。",
+			"error_token_error": "生成您的登录令牌时出现问题。请重试。",
+			"action_try_again": "再次尝试登录",
+			"action_use_different_method": "使用不同的认证方法",
+			"action_clear_cookies": "清除浏览器Cookie",
+			"action_clear_cache": "清除浏览器缓存",
+			"action_clear_browser_data": "清除浏览器数据",
+			"action_contact_support": "联系支持团队",
+			"action_contact_support_persist": "如果问题持续存在，请联系支持团队",
+			"action_try_later": "几分钟后再试",
+			"action_check_account": "检查您的账户状态",
+			"action_verify_email": "通过提供商验证您的邮箱",
+			"try_again": "请重新尝试登录或使用不同的认证方法。"
 		}
 	},
 	"account": {

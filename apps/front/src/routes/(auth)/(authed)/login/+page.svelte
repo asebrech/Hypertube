@@ -14,6 +14,7 @@
 	} from '$lib/components/ui/oauth-buttons/index.js';
 	import { enhance } from '$app/forms';
 	import { _ } from 'svelte-i18n';
+	import { getOAuthErrorInfo, type OAuthError } from '$lib/utils/oauth-error-handler.js';
 
 	interface LoginForm {
 		credentials?: boolean;
@@ -23,7 +24,10 @@
 		identifier?: string;
 	}
 
-	let { form }: { form: LoginForm | null } = $props();
+	let { form, data }: { form: LoginForm | null; data: { oauthError?: OAuthError } } = $props();
+
+	// Get OAuth error information for display
+	const oauthErrorInfo = $derived(data.oauthError ? getOAuthErrorInfo(data.oauthError) : null);
 </script>
 
 <Card.Root class="mx-auto max-w-sm min-w-sm border-none bg-black/70">
@@ -32,7 +36,13 @@
 	</Card.Header>
 	<Card.Content>
 		<div class="grid gap-4">
-			{#if form?.identifierNotFound}
+			{#if data.oauthError && oauthErrorInfo}
+				<ErrorAlert
+					type="error"
+					messageKey={oauthErrorInfo.messageKey}
+					fallbackMessage={oauthErrorInfo.fallbackMessage}
+				/>
+			{:else if form?.identifierNotFound}
 				<ErrorAlert
 					type="warning"
 					messageKey="auth.login.error_account_not_found"

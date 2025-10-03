@@ -5,6 +5,7 @@
 	interface ErrorAlertProps {
 		type: 'warning' | 'error';
 		messageKey: string;
+		fallbackMessage?: string;
 		showCreateAccount?: boolean;
 		createAccountLink?: string;
 		showResetPassword?: boolean;
@@ -15,6 +16,7 @@
 	const {
 		type,
 		messageKey,
+		fallbackMessage,
 		showCreateAccount = false,
 		createAccountLink = '/register',
 		showResetPassword = false,
@@ -30,6 +32,7 @@
 
 	function renderMessage(
 		messageKey: string,
+		fallbackMessage: string | undefined,
 		email: string,
 		showCreateAccount: boolean,
 		showResetPassword: boolean
@@ -52,11 +55,17 @@
 			});
 			return message;
 		}
-		return $_(messageKey);
+
+		const translatedMessage = $_(messageKey);
+		if (translatedMessage === messageKey && fallbackMessage) {
+			return fallbackMessage;
+		}
+		return translatedMessage;
 	}
 
 	function getMessageParts(
 		messageKey: string,
+		fallbackMessage: string | undefined,
 		email: string,
 		showCreateAccount: boolean,
 		showResetPassword: boolean
@@ -104,8 +113,12 @@
 				isResetPassword: false
 			};
 		}
+		const translatedMessage = $_(messageKey);
+		const finalMessage =
+			translatedMessage === messageKey && fallbackMessage ? fallbackMessage : translatedMessage;
+
 		return {
-			beforeLink: $_(messageKey),
+			beforeLink: finalMessage,
 			linkText: '',
 			afterLink: '',
 			isResetPassword: false
@@ -113,7 +126,7 @@
 	}
 
 	const messageParts = $derived(
-		getMessageParts(messageKey, email, showCreateAccount, showResetPassword)
+		getMessageParts(messageKey, fallbackMessage, email, showCreateAccount, showResetPassword)
 	);
 </script>
 
