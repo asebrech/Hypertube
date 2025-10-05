@@ -25,7 +25,7 @@ export default class ProfilePictureService {
   /**
    * Download an external image and save it locally
    */
-  private async downloadExternalImage(url: string): Promise<string> {
+  private async downloadExternalImage(url: string): Promise<string | null> {
     try {
       const uploadsPath = this.getUploadsPath()
       if (!existsSync(uploadsPath)) {
@@ -74,15 +74,14 @@ export default class ProfilePictureService {
         writer.on('error', reject)
       })
     } catch {
-		//TODO CHECK IF WORKS, RETHROW ERROR HERE
-	  return "";
+		return null;
     }
   }
 
   /**
    * Process profile picture URL - download if external, return as-is if local
    */
-  async processProfilePictureUrl(url: string): Promise<string> {
+  async processProfilePictureUrl(url: string): Promise<string | null> {
     if (!url) {
       throw new Error('Profile picture URL is required')
     }
