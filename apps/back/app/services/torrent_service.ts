@@ -80,7 +80,9 @@ export default class TorrentService {
 
     // If conversion was not completed, clean up any partial HLS files to start fresh
     if (movie && movie.conversionStatus !== 'completed') {
-      await this.cleanupHLSFiles(tmdbId)
+      if (!(await this.cleanupHLSFiles(tmdbId))) {
+		return { message: 'Couldnt clean.', tmdbId }
+      }
     }
 
     await this.downloadSubtitlesForMovie(tmdbId)
@@ -309,7 +311,9 @@ export default class TorrentService {
     }
 
     try {
-      await this.movieService.updateResolutionStatus(tmdbId, resolution, true)
+      if (!(await this.movieService.updateResolutionStatus(tmdbId, resolution, true))) {
+        return
+      }
       this.readyResolutions.add(key)
 
       const allResolutions = [480, 720, 1080]
@@ -409,7 +413,7 @@ export default class TorrentService {
   /**
    * Clean up HLS files for a movie to start conversion fresh
    */
-  private async cleanupHLSFiles(tmdbId: number): Promise<void> {
+  private async cleanupHLSFiles(tmdbId: number): Promise<boolean> {
     const hlsDir = `./hls-output/${tmdbId}`
 
     if (fs.existsSync(hlsDir)) {
@@ -419,10 +423,13 @@ export default class TorrentService {
         console.log(`Successfully cleaned up HLS files for movie ${tmdbId}`)
 
         // Reset resolution status in database
-        await this.movieService.updateResolutionStatus(tmdbId, 480, false)
-        await this.movieService.updateResolutionStatus(tmdbId, 720, false)
-        await this.movieService.updateResolutionStatus(tmdbId, 1080, false)
-
+        if (
+          !(await this.movieService.updateResolutionStatus(tmdbId, 480, false)) ||
+          !(await this.movieService.updateResolutionStatus(tmdbId, 720, false)) ||
+          !(await this.movieService.updateResolutionStatus(tmdbId, 1080, false))
+        ) {
+          return false
+        }
         // Clear from ready resolutions set
         this.readyResolutions.delete(`${tmdbId}-480`)
         this.readyResolutions.delete(`${tmdbId}-720`)
@@ -432,9 +439,10 @@ export default class TorrentService {
         this.lastSegmentCounts.delete(`${tmdbId}-480`)
         this.lastSegmentCounts.delete(`${tmdbId}-720`)
         this.lastSegmentCounts.delete(`${tmdbId}-1080`)
-      } catch (error) {
-        throw new Error(`Failed to cleanup HLS directory ${hlsDir}: ${error}`)
+      } catch {
+        return false
       }
     }
+    return true
   }
 }

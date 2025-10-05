@@ -86,31 +86,36 @@ export default class MovieService {
     return !!movie
   }
 
-  async updateResolutionStatus(tmdbId: number, resolution: number, ready: boolean): Promise<void> {
+  async updateResolutionStatus(
+    tmdbId: number,
+    resolution: number,
+    ready: boolean
+  ): Promise<boolean> {
     const movie = await this.getOrCreate(tmdbId)
 
     let currentStatus: boolean
     switch (resolution) {
       case 480:
         currentStatus = movie.resolution480pReady
-        if (currentStatus === ready) return
+        if (currentStatus === ready) return true
         movie.resolution480pReady = ready
         break
       case 720:
         currentStatus = movie.resolution720pReady
-        if (currentStatus === ready) return
+        if (currentStatus === ready) return true
         movie.resolution720pReady = ready
         break
       case 1080:
         currentStatus = movie.resolution1080pReady
-        if (currentStatus === ready) return
+        if (currentStatus === ready) return true
         movie.resolution1080pReady = ready
         break
       default:
-        throw new Error(`Unsupported resolution: ${resolution}`)
+        return false
     }
 
     await movie.save()
+    return true
   }
 
   async updateDownloadStatus(
