@@ -26,16 +26,14 @@ export class TMDBService {
     try {
       const response = await axios(options)
       return response.data
-    } catch (error) {
-      throw new Error('Failed to fetch data from TMDB. Endpoint : ' + endpoint)
-    }
+    } catch {}
   }
 
   public async getMovieExternalIMDBId(movieId: number) {
     const endpoint = `/movie/${movieId}/external_ids`
     const data = await this.getSomething(endpoint)
     if (!data.imdb_id) {
-      throw new Error(`No IMDB ID found for movie with TMDB ID: ${movieId}`)
+      return null
     }
     return data.imdb_id
   }
@@ -61,7 +59,6 @@ export class TMDBService {
     region: string = 'en',
     adultContent: boolean = false
   ) {
-
     const endpoint = `/discover/${movieType}?with_genres=${genreId || ''}&language=${language}&page=${page}&sort_by=popularity.desc&region=${region}&with_cast=${castId || ''}&include_adult=${adultContent}`
     const data = await this.getSomething(endpoint)
     return data
@@ -79,7 +76,6 @@ export class TMDBService {
     originalLanguage: string | undefined = undefined,
     adultContent: boolean = false
   ) {
-
     const endpoint = `/discover/${movieType}?with_genres=${genreId ? genreId?.join(',') : ''}&language=${language}&page=${page}&sort_by=${sortBy}&region=${region}&with_cast=${castId || ''}&primary_release_year=${releaseYear || ''}&with_original_language=${originalLanguage || ''}&include_adult=${adultContent}`
     const data = await this.getSomething(endpoint)
     return data
@@ -127,7 +123,12 @@ export class TMDBService {
     }
   }
 
-  async getBackdropImageUrl(tmdb_movie_id: number, size: ImageSizeType, lang: string = 'en', movieType: MovieType = 'movie') {
+  async getBackdropImageUrl(
+    tmdb_movie_id: number,
+    size: ImageSizeType,
+    lang: string = 'en',
+    movieType: MovieType = 'movie'
+  ) {
     const endpoint = `/${movieType}/${tmdb_movie_id}/images?language=${lang.split('-')[0]}`
     let langFound = true
     let data = await this.getSomething(endpoint)
@@ -151,7 +152,11 @@ export class TMDBService {
     }
   }
 
-  async getMovieDetails(tmdb_movie_id: number, lang: string = 'en', movieType: MovieType = 'movie') {
+  async getMovieDetails(
+    tmdb_movie_id: number,
+    lang: string = 'en',
+    movieType: MovieType = 'movie'
+  ) {
     let movie = await this.getSomething(`/${movieType}/${tmdb_movie_id}?language=${lang}`)
     return movie
   }
@@ -160,7 +165,12 @@ export class TMDBService {
     return this.getSomething(`/${movieType}/${tmdb_movie_id}/videos?language=${lang}`)
   }
 
-  async getPosterImageUrl(tmdb_movie_id: number, size: ImageSizeType, lang: string = 'en', movieType: MovieType = 'movie') {
+  async getPosterImageUrl(
+    tmdb_movie_id: number,
+    size: ImageSizeType,
+    lang: string = 'en',
+    movieType: MovieType = 'movie'
+  ) {
     const endpoint = `/${movieType}/${tmdb_movie_id}/images?language=${lang.split('-')[0]}`
     let langFound = true
     let data = await this.getSomething(endpoint)
@@ -184,7 +194,12 @@ export class TMDBService {
     }
   }
 
-  async getLogoImageUrl(tmdb_movie_id: number, size: ImageSizeType, lang: string = 'en', movieType: MovieType = 'movie') {
+  async getLogoImageUrl(
+    tmdb_movie_id: number,
+    size: ImageSizeType,
+    lang: string = 'en',
+    movieType: MovieType = 'movie'
+  ) {
     const endpoint = `/${movieType}/${tmdb_movie_id}/images?language=${lang.split('-')[0]}`
     let langFound = true
     let data = await this.getSomething(endpoint)
@@ -208,25 +223,45 @@ export class TMDBService {
     }
   }
 
-  async getMovieSearch(query: string, language: string = 'en', page: number = 1, movieType: MovieType = 'movie', adultContent: boolean = false) {
+  async getMovieSearch(
+    query: string,
+    language: string = 'en',
+    page: number = 1,
+    movieType: MovieType = 'movie',
+    adultContent: boolean = false
+  ) {
     const endpoint = `/search/${movieType}?query=${encodeURIComponent(query)}&language=${language}&page=${page}&include_adult=${adultContent}`
     const data = await this.getSomething(endpoint)
     return data
   }
 
-  async getMultiSearch(query: string, language: string = 'en', page: number = 1, adultContent: boolean = false) {
+  async getMultiSearch(
+    query: string,
+    language: string = 'en',
+    page: number = 1,
+    adultContent: boolean = false
+  ) {
     const endpoint = `/search/multi?query=${encodeURIComponent(query)}&language=${language}&page=${page}&include_adult=${adultContent}`
     const data = await this.getSomething(endpoint)
     return data
   }
 
-  async getSimilarMovies(tmdb_movie_id: number, language: string = 'en', page: number = 1, movieType: MovieType = 'movie') {
+  async getSimilarMovies(
+    tmdb_movie_id: number,
+    language: string = 'en',
+    page: number = 1,
+    movieType: MovieType = 'movie'
+  ) {
     const endpoint = `/${movieType}/${tmdb_movie_id}/similar?language=${language}&page=${page}`
     const data = await this.getSomething(endpoint)
     return data
   }
 
-  async getMovieCredits(tmdb_movie_id: number, language: string = 'en', movieType: MovieType = 'movie') {
+  async getMovieCredits(
+    tmdb_movie_id: number,
+    language: string = 'en',
+    movieType: MovieType = 'movie'
+  ) {
     const endpoint = `/${movieType}/${tmdb_movie_id}/credits?language=${language}`
     const data = await this.getSomething(endpoint)
     return data

@@ -15,28 +15,30 @@ export default class SchedulerService {
   private isStarted = false
 
   schedule(task: ScheduledTask): void {
-    if (this.tasks.has(task.name)) {
-      this.stop(task.name)
-    }
+    try {
+      if (this.tasks.has(task.name)) {
+        this.stop(task.name)
+      }
 
-    const scheduledTask = cron.schedule(
-      task.schedule,
-      () => {
-        console.log(`[Scheduler] Running: ${task.name}`)
-        this.executeCommand(task.command)
-          .then(() => console.log(`[Scheduler] Completed: ${task.name}`))
-          .catch(() => {})
-      },
-      { scheduled: false, ...task.options }
-    )
+      const scheduledTask = cron.schedule(
+        task.schedule,
+        () => {
+          console.log(`[Scheduler] Running: ${task.name}`)
+          this.executeCommand(task.command)
+            .then(() => console.log(`[Scheduler] Completed: ${task.name}`))
+            .catch(() => {})
+        },
+        { scheduled: false, ...task.options }
+      )
 
-    this.tasks.set(task.name, scheduledTask)
-    const timeDescription = task.description || this.getScheduleDescription(task.schedule)
-    console.log(`[Scheduler] Scheduled "${task.name}" (${task.schedule}) → ${timeDescription}`)
+      this.tasks.set(task.name, scheduledTask)
+      const timeDescription = task.description || this.getScheduleDescription(task.schedule)
+      console.log(`[Scheduler] Scheduled "${task.name}" (${task.schedule}) → ${timeDescription}`)
 
-    if (this.isStarted) {
-      scheduledTask.start()
-    }
+      if (this.isStarted) {
+        scheduledTask.start()
+      }
+    } catch {}
   }
 
   start(): void {

@@ -81,7 +81,7 @@ export default class TorrentService {
     // If conversion was not completed, clean up any partial HLS files to start fresh
     if (movie && movie.conversionStatus !== 'completed') {
       if (!(await this.cleanupHLSFiles(tmdbId))) {
-		return { message: 'Couldnt clean.', tmdbId }
+        return { message: 'Couldnt clean.', tmdbId }
       }
     }
 
@@ -89,6 +89,9 @@ export default class TorrentService {
 
     const torrent = await this.searchTorrentService.search(tmdbId, 'All', 100)
 
+    if (!torrent) {
+      return { message: 'No torrent file found', tmdbId }
+    }
     await this.movieService.updateMagnetLink(tmdbId, torrent.magnetLink)
     await this.movieService.updateDownloadStatus(tmdbId, 'downloading')
 
@@ -113,7 +116,7 @@ export default class TorrentService {
         .sort((a: any, b: any) => b.length - a.length)[0]
 
       if (!videoFile) {
-        throw new Error('No video file found in torrent')
+        return { message: 'No video file found in torrent', tmdbId }
       }
 
       console.log('Starting conversion for:', videoFile.name)
@@ -270,10 +273,10 @@ export default class TorrentService {
         this.progressLoggingService.logConversionCompletion(videoId, width)
         this.markConversionComplete(videoId, width)
       })
-      .on('error', async (err) => {
+      .on('error', async (_err) => {
         const tmdbId = Number.parseInt(videoId)
         await this.movieService.updateConversionStatus(tmdbId, 'failed')
-        throw new Error(`FFmpeg conversion failed for ${width}p: ${err.message}`)
+        return
       })
       .run()
   }
@@ -299,9 +302,7 @@ export default class TorrentService {
           }
         }
       }
-    } catch (error) {
-      throw new Error(`Failed to update progressive playlist: ${error}`)
-    }
+    } catch {}
   }
 
   private async markProgressiveReady(tmdbId: number, resolution: number) {
@@ -326,24 +327,26 @@ export default class TorrentService {
   }
 
   private async markConversionComplete(videoId: string, resolution: number) {
-    const tmdbId = Number.parseInt(videoId)
+    try {
+      const tmdbId = Number.parseInt(videoId)
 
-    if (!this.completedConversions.has(videoId)) {
-      this.completedConversions.set(videoId, new Set())
-    }
+      if (!this.completedConversions.has(videoId)) {
+        this.completedConversions.set(videoId, new Set())
+      }
 
-    const completedSet = this.completedConversions.get(videoId)!
-    completedSet.add(resolution)
+      const completedSet = this.completedConversions.get(videoId)!
+      completedSet.add(resolution)
 
-    const allResolutions = [480, 720, 1080]
-    const allCompleted = allResolutions.every((res) => completedSet.has(res))
+      const allResolutions = [480, 720, 1080]
+      const allCompleted = allResolutions.every((res) => completedSet.has(res))
 
-    if (allCompleted) {
-      console.log(`All conversions completed for movie ${tmdbId}`)
-      await this.movieService.updateConversionStatus(tmdbId, 'completed')
-      await this.cleanupMovieCache(tmdbId)
-      this.completedConversions.delete(videoId)
-    }
+      if (allCompleted) {
+        console.log(`All conversions completed for movie ${tmdbId}`)
+        await this.movieService.updateConversionStatus(tmdbId, 'completed')
+        await this.cleanupMovieCache(tmdbId)
+        this.completedConversions.delete(videoId)
+      }
+    } catch {}
   }
 
   async ready(tmdbId: number) {

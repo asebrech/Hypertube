@@ -102,7 +102,7 @@ export default class MovieCleanupService {
     } catch (error) {
       const errorMessage = `Cleanup failed: ${error}`
       result.errorMessages.push(errorMessage)
-      throw error
+      return null;
     }
 
     return result
