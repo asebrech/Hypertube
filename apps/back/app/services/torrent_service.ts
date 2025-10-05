@@ -128,7 +128,7 @@ export default class TorrentService {
       this.movieService.updateDownloadStatus(tmdbId, 'completed')
     })
 
-    engine.on('error', (err: Error) => {
+    engine.on('error', (_err: Error) => {
       this.movieService.updateDownloadStatus(tmdbId, 'failed')
     })
 

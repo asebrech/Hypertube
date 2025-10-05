@@ -37,6 +37,11 @@ export default class MovieCleanup extends BaseCommand {
         },
       })
 
+      if (!result) {
+        this.logger.error(`Cleanup failed.`)
+        process.exit(1)
+      }
+
       if (result.errors > 0) {
         this.logger.warning(`Cleanup completed with ${result.errors} errors`)
         result.errorMessages.forEach((error) => this.logger.error(`  - ${error}`))
