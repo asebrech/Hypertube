@@ -32,7 +32,7 @@ export class TMDBService {
   public async getMovieExternalIMDBId(movieId: number) {
     const endpoint = `/movie/${movieId}/external_ids`
     const data = await this.getSomething(endpoint)
-    if (!data.imdb_id) {
+    if (!data || !data.imdb_id) {
       return null
     }
     return data.imdb_id
