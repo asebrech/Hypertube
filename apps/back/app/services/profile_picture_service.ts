@@ -73,9 +73,9 @@ export default class ProfilePictureService {
         })
         writer.on('error', reject)
       })
-    } catch {
-		//TODO CHECK IF WORKS, RETHROW ERROR HERE
-	  return "";
+    } catch (error) {
+      // Rethrow the error so callers can handle it explicitly
+      throw error;
     }
   }
 
