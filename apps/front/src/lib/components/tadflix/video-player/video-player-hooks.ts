@@ -26,7 +26,6 @@ export class VideoPlayerAPI {
 			});
 			return response.ok;
 		} catch (error) {
-			console.error('Error marking movie as watched:', error);
 			return false;
 		}
 	}
@@ -42,7 +41,6 @@ export class VideoPlayerAPI {
 			});
 			return response.ok;
 		} catch (error) {
-			console.error('Error saving watch progress:', error);
 			return false;
 		}
 	}
@@ -60,7 +58,6 @@ export class VideoPlayerAPI {
 			const data = await response.json();
 			return data.progress || 0;
 		} catch (error) {
-			console.error('Error fetching watch progress:', error);
 			return 0;
 		}
 	}
@@ -79,7 +76,6 @@ export class VideoPlayerAPI {
 				return [];
 			}
 		} catch (error) {
-			console.error('Error fetching subtitles:', error);
 			return [];
 		}
 	}

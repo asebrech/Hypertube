@@ -119,8 +119,7 @@ export default class SubtitleService {
               success: true,
               filePath: filePath,
             })
-          } catch (conversionError) {
-            console.error('Error converting subtitle to WebVTT:', conversionError)
+          } catch {
             resolve({
               success: true,
               filePath: filePath,
@@ -135,8 +134,7 @@ export default class SubtitleService {
           })
         })
       })
-    } catch (error: any) {
-      console.error('Error downloading subtitle:', error)
+    } catch (error) {
       return {
         success: false,
         error: error.message || 'Unknown error occurred',
@@ -199,8 +197,7 @@ export default class SubtitleService {
       })
 
       return Array.from(languages)
-    } catch (error) {
-      console.error('Error getting available subtitles:', error)
+    } catch {
       return []
     }
   }
@@ -214,8 +211,7 @@ export default class SubtitleService {
       await Promise.all([fs.rm(srtPath, { force: true }), fs.rm(vttPath, { force: true })])
 
       return true
-    } catch (error) {
-      console.error('Error deleting subtitle:', error)
+    } catch {
       return false
     }
   }
@@ -231,8 +227,7 @@ export default class SubtitleService {
       const fs = await import('node:fs/promises')
       await fs.rm(subtitlesPath, { recursive: true, force: true })
       return true
-    } catch (error) {
-      console.error('Error deleting all subtitles:', error)
+    } catch {
       return false
     }
   }

@@ -55,7 +55,6 @@
 				.catch((error) => {
 					// Don't log aborted requests
 					if (error.name !== 'AbortError') {
-						console.error('Error loading backdrop image:', error);
 						backdropImage = {
 							aspect_ratio: 0,
 							height: 0,

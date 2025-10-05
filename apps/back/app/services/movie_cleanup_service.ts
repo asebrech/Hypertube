@@ -215,7 +215,6 @@ export default class MovieCleanupService {
       }
     } catch (error) {
       const errorMessage = `Failed to delete movie ${tmdbId}: ${error}`
-      console.error(errorMessage)
       return {
         success: false,
         message: 'Failed to delete movie',
@@ -289,7 +288,6 @@ export default class MovieCleanupService {
       console.log(`Deletion completed: ${result.moviesDeleted} deleted, ${result.errors} errors`)
       return result
     } catch (error) {
-      console.error('Failed to delete all movies:', error)
       return {
         success: false,
         message: 'Failed to delete all movies',
@@ -352,7 +350,6 @@ export default class MovieCleanupService {
       }
     } catch (error) {
       const errorMessage = `Error deleting movie ${movie.tmdbId}: ${error}`
-      console.error(errorMessage)
       return {
         success: false,
         spaceFreed: 0,

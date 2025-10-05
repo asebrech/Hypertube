@@ -45,8 +45,7 @@ export async function load({ locals, cookies }: RequestEvent) {
 			watchedPagination: watchedResponse.data.pagination || {},
 			token
 		};
-	} catch (error) {
-		console.error('Error fetching user movies:', error);
+	} catch {
 		return {
 			bookmarkedMovies: [],
 			watchedMovies: [],

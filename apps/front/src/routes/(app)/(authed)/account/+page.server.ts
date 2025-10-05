@@ -14,8 +14,7 @@ export async function load({ locals, cookies }: RequestEvent) {
 				}
 			});
 			fullUserData = meResponse.data;
-		} catch (error) {
-			console.error('Failed to fetch full user profile:', error);
+		} catch {
 		}
 	}
 
@@ -191,8 +190,7 @@ const updateAccount = async ({ request, locals, cookies }: RequestEvent) => {
 				user: meResponse.data,
 				profilePictureMessageKey: profilePictureResponse.data?.messageKey
 			};
-		} catch (error) {
-			// Continue with the profile picture response even if user data fetch fails
+		} catch {
 		}
 	}
 

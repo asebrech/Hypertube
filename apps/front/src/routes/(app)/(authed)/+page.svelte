@@ -29,8 +29,7 @@
 			hasMorePages = getMovieResponse.hasMorePages;
 			currentPage++;
 			isLoading = false;
-		} catch (error) {
-			console.error('Error loading movies', error);
+		} catch {
 		}
 	};
 

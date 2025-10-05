@@ -109,8 +109,7 @@ export const load: PageServerLoad = async ({ params, fetch: fetchFn, cookies }):
 			resolutions: readinessData.resolutions,
 			token
 		};
-	} catch (error) {
-		console.error('Error loading movie data:', error);
+	} catch {
 		return {
 			...defaultResult,
 			error: 'Network error occurred'

@@ -89,7 +89,6 @@ export default class ProgressLoggingService {
     try {
       const parts = timemark.split(':')
       if (parts.length !== 3) {
-        console.error('Invalid timemark format:', timemark)
         return 0
       }
 
@@ -98,8 +97,7 @@ export default class ProgressLoggingService {
       const seconds = Number.parseFloat(parts[2])
 
       return hours * 3600 + minutes * 60 + seconds
-    } catch (error) {
-      console.error('Error parsing timemark:', timemark, error)
+    } catch {
       return 0
     }
   }

@@ -41,7 +41,6 @@ export const DELETE: RequestHandler = async ({ params, cookies, fetch }) => {
 		if (err instanceof Error && 'status' in err) {
 			throw err;
 		}
-		console.error('Error deleting movie:', err);
 		throw error(500, 'Internal server error');
 	}
 };

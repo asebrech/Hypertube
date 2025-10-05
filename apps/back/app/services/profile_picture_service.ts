@@ -73,9 +73,9 @@ export default class ProfilePictureService {
         })
         writer.on('error', reject)
       })
-    } catch (error) {
-      console.error('Failed to download external profile picture:', error)
-      throw new Error('Failed to download external profile picture')
+    } catch {
+		//TODO CHECK IF WORKS
+	  return "";
     }
   }
 

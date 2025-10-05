@@ -56,8 +56,7 @@ export default class MovieService {
           torrentAvailable = await this.searchTorrentService.isAvailable(movieId)
           movieRecord.torrentAvailable = torrentAvailable
           await movieRecord.save()
-        } catch (error) {
-          console.error(`Error checking torrent availability for movie ${movieId}:`, error)
+        } catch {
           torrentAvailable = false
           movieRecord.torrentAvailable = false
           await movieRecord.save()
@@ -65,8 +64,7 @@ export default class MovieService {
       }
       
       return torrentAvailable
-    } catch (error) {
-      console.error(`Error in checkAndUpdateTorrentAvailability for movie ${movieId}:`, error)
+    } catch {
       return false
     }
   }
@@ -161,8 +159,7 @@ export default class MovieService {
       const movie = await this.getOrCreate(tmdbId)
       movie.lastAccessedAt = DateTime.now()
       await movie.save()
-    } catch (error) {
-      console.error(`Error updating last accessed time for movie ${tmdbId}:`, error)
+    } catch {
     }
   }
 
@@ -425,8 +422,7 @@ export default class MovieService {
       if (convertingMovies.length > 0) {
         console.log(`Reset ${convertingMovies.length} interrupted movie conversions to pending`)
       }
-    } catch (error) {
-      console.error('Error resetting interrupted conversions:', error)
+    } catch {
     }
   }
 
@@ -443,8 +439,7 @@ export default class MovieService {
           movie.imdbId = movieDetails.imdb_id
         }
       }
-    } catch (error) {
-      console.error(`Failed to fetch movie details from TMDB for ID ${movie.tmdbId}:`, error)
+    } catch {
     }
   }
 }

@@ -162,9 +162,6 @@
 					}
 				})
 				.catch((error) => {
-					if (!signal.aborted) {
-						console.error('Error fetching movie details:', error);
-					}
 				})
 				.finally(() => {
 					// Only count as loaded if still on same movie and not aborted
@@ -194,7 +191,6 @@
 				})
 				.catch((error) => {
 					if (!signal.aborted) {
-						console.error('Error fetching movie video:', error);
 						if (
 							modalData.movieId === currentMovieForThisEffect &&
 							modalData.movieId === currentMovieId
@@ -226,9 +222,6 @@
 					}
 				})
 				.catch((error) => {
-					if (!signal.aborted) {
-						console.error('Error fetching movie logo:', error);
-					}
 				})
 				.finally(() => {
 					// Only count as loaded if still on same movie and not aborted
@@ -251,9 +244,6 @@
 					}
 				})
 				.catch((error) => {
-					if (!signal.aborted) {
-						console.error('Error fetching movie credits:', error);
-					}
 				})
 				.finally(() => {
 					// Only count as loaded if still on same movie and not aborted
@@ -276,9 +266,6 @@
 					}
 				})
 				.catch((error) => {
-					if (!signal.aborted) {
-						console.error('Error fetching similar movies:', error);
-					}
 				})
 				.finally(() => {
 					// Only count as loaded if still on same movie and not aborted

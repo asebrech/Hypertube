@@ -25,7 +25,7 @@ export default class SchedulerService {
         console.log(`[Scheduler] Running: ${task.name}`)
         this.executeCommand(task.command)
           .then(() => console.log(`[Scheduler] Completed: ${task.name}`))
-          .catch((error) => console.error(`[Scheduler] Failed: ${task.name}`, error))
+          .catch(() => {})
       },
       { scheduled: false, ...task.options }
     )

@@ -33,8 +33,7 @@ export const load: PageServerLoad = async ({ params, locals, cookies }) => {
 			token: token,
 			user: currentUser
 		};
-	} catch (err) {
-		console.error('Error loading user profile:', err);
+	} catch {
 		throw error(404, 'User not found');
 	}
 };

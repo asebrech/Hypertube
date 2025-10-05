@@ -42,8 +42,7 @@ new Ignitor(APP_ROOT, { importer: IMPORTER })
         const movieService = new MovieService()
         await movieService.resetInterruptedConversions()
         console.log('✓ Startup: Reset interrupted movie conversions completed')
-      } catch (error) {
-        console.error('✗ Startup: Failed to reset interrupted conversions:', error)
+      } catch{
       }
     })
     

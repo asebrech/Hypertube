@@ -129,7 +129,6 @@ export default class TorrentService {
     })
 
     engine.on('error', (err: Error) => {
-      console.error('Torrent download error for TMDB ID:', tmdbId, err)
       this.movieService.updateDownloadStatus(tmdbId, 'failed')
     })
 
@@ -168,9 +167,7 @@ export default class TorrentService {
         const failedLanguages = result.results.filter((r) => !r.success).map((r) => r.language)
         console.log(`Failed to download subtitles for: ${failedLanguages.join(', ')}`)
       }
-    } catch (error) {
-      console.error(`Error during subtitle download for movie ${tmdbId}:`, error)
-      // Don't throw the error - subtitle failure shouldn't prevent movie download
+    } catch {
       console.log(`Continuing with movie download despite subtitle download issues`)
     }
   }
@@ -186,7 +183,6 @@ export default class TorrentService {
 
       ffmpeg(stream).ffprobe((err, metadata) => {
         if (err) {
-          console.error('Error probing video duration:', err)
           reject(err)
           return
         }
@@ -195,7 +191,6 @@ export default class TorrentService {
         if (duration) {
           resolve(duration)
         } else {
-          console.error('Could not determine video duration from metadata')
           reject(new Error('Could not determine video duration'))
         }
       })
@@ -213,8 +208,7 @@ export default class TorrentService {
       this.videoDurations.set(videoId, duration)
 
       await this.movieService.updateDuration(tmdbId, duration)
-    } catch (error) {
-      console.error('Failed to probe video duration:', error)
+    } catch {
       await this.movieService.updateConversionStatus(tmdbId, 'failed')
       return
     }
@@ -275,7 +269,6 @@ export default class TorrentService {
         this.markConversionComplete(videoId, width)
       })
       .on('error', async (err) => {
-        console.error(`Error in conversion for ${width}p:`, err.message)
         const tmdbId = Number.parseInt(videoId)
         await this.movieService.updateConversionStatus(tmdbId, 'failed')
         throw new Error(`FFmpeg conversion failed for ${width}p: ${err.message}`)
@@ -305,7 +298,6 @@ export default class TorrentService {
         }
       }
     } catch (error) {
-      console.error('Error updating progressive playlist:', error)
       throw new Error(`Failed to update progressive playlist: ${error}`)
     }
   }
@@ -326,8 +318,7 @@ export default class TorrentService {
       if (allReady) {
         console.log(`All resolutions ready for streaming: 480p, 720p, 1080p`)
       }
-    } catch (error) {
-      console.error('Error marking progressive ready in database:', error)
+    } catch {
     }
   }
 
@@ -397,8 +388,7 @@ export default class TorrentService {
       }
 
       return movie.conversionStatus === 'converting' || movie.conversionStatus === 'completed'
-    } catch (error) {
-      console.error('Error checking movie conversion status:', error)
+    } catch {
       return false
     }
   }
@@ -412,7 +402,6 @@ export default class TorrentService {
         console.log(`Cleaned up torrent cache for movie ${tmdbId}`)
         this.progressLoggingService.cleanupMovieTracking(tmdbId)
       } catch (error) {
-        console.error(`Error cleaning up torrent cache for movie ${tmdbId}:`, error)
         throw new Error(`Failed to cleanup cache directory ${cacheDir}: ${error}`)
       }
     }
@@ -445,7 +434,6 @@ export default class TorrentService {
         this.lastSegmentCounts.delete(`${tmdbId}-720`)
         this.lastSegmentCounts.delete(`${tmdbId}-1080`)
       } catch (error) {
-        console.error(`Error cleaning up HLS files for movie ${tmdbId}:`, error)
         throw new Error(`Failed to cleanup HLS directory ${hlsDir}: ${error}`)
       }
     }

@@ -206,7 +206,6 @@ export default class TorrentController {
   }
 
   private handleDeleteError(response: HttpContext['response'], error: unknown, operation: string) {
-    console.error(`Error ${operation}:`, error)
     return response.internalServerError({
       success: false,
       message: `An unexpected error occurred while ${operation}`,
