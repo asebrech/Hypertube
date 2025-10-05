@@ -72,7 +72,6 @@ export class VideoPlayerAPI {
 				const data = await response.json();
 				return data.availableLanguages || [];
 			} else {
-				console.warn('Failed to fetch subtitles:', response.statusText);
 				return [];
 			}
 		} catch (error) {
@@ -123,12 +122,18 @@ export class VideoPlayerHooks {
 			this.originalXHR.open = XMLHttpRequest.prototype.open;
 			this.originalXHR.send = XMLHttpRequest.prototype.send;
 
-			XMLHttpRequest.prototype.open = function(method: string, url: string | URL, async?: boolean, user?: string | null, password?: string | null) {
+			XMLHttpRequest.prototype.open = function (
+				method: string,
+				url: string | URL,
+				async?: boolean,
+				user?: string | null,
+				password?: string | null
+			) {
 				(this as ExtendedXMLHttpRequest)._requestUrl = url.toString();
 				return VideoPlayerHooks.originalXHR.open!.call(this, method, url, async, user, password);
 			};
 
-			XMLHttpRequest.prototype.send = function(body?: Document | XMLHttpRequestBodyInit | null) {
+			XMLHttpRequest.prototype.send = function (body?: Document | XMLHttpRequestBodyInit | null) {
 				const requestUrl = (this as ExtendedXMLHttpRequest)._requestUrl;
 				if (requestUrl && requestUrl.includes('/subtitles/')) {
 					this.setRequestHeader('Authorization', `Bearer ${token}`);

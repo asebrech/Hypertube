@@ -252,8 +252,7 @@ export default class MovieService {
           if (fs.existsSync(cachePath)) {
             sizeInBytes += await this.calculateDirectorySize(cachePath)
           }
-        } catch (error) {
-          console.warn(`Could not calculate size for movie ${movie.tmdbId}:`, error)
+        } catch {
         }
 
         totalSize += sizeInBytes
@@ -373,8 +372,7 @@ export default class MovieService {
         if (fs.existsSync(cachePath)) {
           totalSize += await this.calculateDirectorySize(cachePath)
         }
-      } catch (error) {
-        console.warn(`Could not calculate size for movie ${movie.tmdbId}:`, error)
+      } catch {
       }
     }
 

@@ -153,8 +153,7 @@ export default class MovieCleanupService {
           totalSize += fs.statSync(filePath).size
         }
       }
-    } catch (error) {
-      console.warn(`Error calculating directory size for ${dirPath}:`, error)
+    } catch {
     }
 
     return totalSize
