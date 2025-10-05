@@ -23,9 +23,6 @@ export default class SearchTorrentService {
     const imdbId = await this.tmdbService.getMovieExternalIMDBId(tmdbId)
 
     const torrents = await TorrentSearchApi.search(imdbId, category, limit)
-	if (!torrents) {
-		return null;
-	}
     let bestTorrent = null
     let currentResolution: VideoQuality = '0'
     for (const torrent of torrents) {
@@ -72,9 +69,6 @@ export default class SearchTorrentService {
       const imdbId = await this.tmdbService.getMovieExternalIMDBId(tmdbId)
 
       const torrents = await TorrentSearchApi.search(imdbId, category, limit)
-	  if (!torrents) {
-		return false;
-	  }
       let torrentExist = false
       let currentResolution: VideoQuality = '0'
       for (const torrent of torrents) {

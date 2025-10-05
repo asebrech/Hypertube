@@ -32,14 +32,21 @@ export default class TorrentController {
     protected movieCleanupService: MovieCleanupService
   ) {}
 
-  async torrent({ request }: HttpContext) {
+  async torrent({ request, response }: HttpContext) {
     const tmdb = request.param('id')
 
     if (await this.torrentService.isMovieProcessing(tmdb)) {
       return { message: 'Movie is currently being processed or already processed' }
     }
 
-    return await this.torrentService.download(tmdb)
+    const result = await this.torrentService.download(tmdb)
+
+    // If no torrent found, return 404 with the message
+    if (result.message === 'No torrent file found') {
+      return response.notFound(result)
+    }
+
+    return result
   }
 
   async ready({ request }: HttpContext) {

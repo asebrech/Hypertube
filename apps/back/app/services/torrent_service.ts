@@ -90,8 +90,12 @@ export default class TorrentService {
     const torrent = await this.searchTorrentService.search(tmdbId, 'All', 100)
 
     if (!torrent) {
+      // Mark as failed so we have it tracked in the database
+      await this.movieService.updateDownloadStatus(tmdbId, 'failed')
+      await this.movieService.updateConversionStatus(tmdbId, 'failed')
       return { message: 'No torrent file found', tmdbId }
     }
+
     await this.movieService.updateMagnetLink(tmdbId, torrent.magnetLink)
     await this.movieService.updateDownloadStatus(tmdbId, 'downloading')
 
