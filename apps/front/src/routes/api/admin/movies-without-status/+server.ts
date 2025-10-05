@@ -38,6 +38,6 @@ export const GET: RequestHandler = async ({ cookies, fetch, url }) => {
 		if (err instanceof Error && 'status' in err) {
 			throw err;
 		}
-		throw error(500, 'Internal server error');
+		throw error(400, 'Bad request');
 	}
 };

@@ -41,6 +41,6 @@ export const DELETE: RequestHandler = async ({ params, cookies, fetch }) => {
 		if (err instanceof Error && 'status' in err) {
 			throw err;
 		}
-		throw error(500, 'Internal server error');
+		throw error(400, 'Bad request');
 	}
 };
