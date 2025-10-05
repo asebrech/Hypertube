@@ -124,11 +124,7 @@ export default class TorrentController {
       const limit = Math.min(100, Math.max(1, parseInt(request.qs().limit || '10', 10)))
       const search = request.qs().search?.toString() || ''
 
-      const result = await this.movieService.getMoviesWithoutDownloadStatus(
-        page,
-        limit,
-        search
-      )
+      const result = await this.movieService.getMoviesWithoutDownloadStatus(page, limit, search)
 
       return response.ok({
         success: true,
@@ -173,7 +169,7 @@ export default class TorrentController {
         })
       }
 
-      return response.internalServerError({
+      return response.notFound({
         success: false,
         message: result.message,
         error: result.error,
@@ -196,7 +192,7 @@ export default class TorrentController {
         errorMessages: result.errorMessages,
       })
     } else {
-      return response.internalServerError({
+      return response.notFound({
         success: false,
         message: result.message,
         errors: result.errors,
@@ -206,7 +202,7 @@ export default class TorrentController {
   }
 
   private handleDeleteError(response: HttpContext['response'], error: unknown, operation: string) {
-    return response.internalServerError({
+    return response.notFound({
       success: false,
       message: `An unexpected error occurred while ${operation}`,
       error: error instanceof Error ? error.message : 'Unknown error',

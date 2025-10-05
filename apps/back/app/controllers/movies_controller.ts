@@ -564,7 +564,7 @@ export default class MoviesController {
         isBookmarked: relation.$extras.pivot_is_bookmarked || false,
       })
     } catch {
-      return response.internalServerError({
+      return response.notFound({
         error: 'Failed to get watch progress',
       })
     }
@@ -617,9 +617,7 @@ export default class MoviesController {
         bookmarked: bookmarked,
       })
     } catch {
-      return response.internalServerError({
-        error: 'Failed to set bookmark',
-      })
+      return response.notFound()
     }
   }
 
@@ -675,9 +673,7 @@ export default class MoviesController {
         results: result.results,
       })
     } catch {
-      return response.internalServerError({
-        error: 'Failed to download subtitles',
-      })
+      return response.notFound()
     }
   }
 
@@ -727,9 +723,7 @@ export default class MoviesController {
         count: availableLanguages.length,
       })
     } catch {
-      return response.internalServerError({
-        error: 'Failed to get subtitles',
-      })
+      return response.notFound()
     }
   }
 
@@ -827,10 +821,7 @@ export default class MoviesController {
         },
       })
     } catch {
-      return response.internalServerError({
-        success: false,
-        error: 'Failed to fetch user movies',
-      })
+      return response.notFound()
     }
   }
 }
