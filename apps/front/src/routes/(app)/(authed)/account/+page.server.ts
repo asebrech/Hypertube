@@ -14,8 +14,7 @@ export async function load({ locals, cookies }: RequestEvent) {
 				}
 			});
 			fullUserData = meResponse.data;
-		} catch {
-		}
+		} catch {}
 	}
 
 	return {
@@ -77,7 +76,7 @@ const updateAccount = async ({ request, locals, cookies }: RequestEvent) => {
 	if (lastName && lastName.toString().trim()) payload.lastName = lastName.toString().trim();
 	if (username && username.toString().trim()) payload.username = username.toString().trim();
 	if (email && email.toString().trim()) payload.email = email.toString().trim();
-	
+
 	// Handle allowAdultContent - explicitly convert to boolean
 	if (allowAdultContent !== null) {
 		payload.allowAdultContent = allowAdultContent === 'true';
@@ -190,8 +189,7 @@ const updateAccount = async ({ request, locals, cookies }: RequestEvent) => {
 				user: meResponse.data,
 				profilePictureMessageKey: profilePictureResponse.data?.messageKey
 			};
-		} catch {
-		}
+		} catch {}
 	}
 
 	return {

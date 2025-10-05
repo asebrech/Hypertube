@@ -86,7 +86,7 @@ export default class TorrentService {
     await this.downloadSubtitlesForMovie(tmdbId)
 
     const torrent = await this.searchTorrentService.search(tmdbId, 'All', 100)
-    
+
     await this.movieService.updateMagnetLink(tmdbId, torrent.magnetLink)
     await this.movieService.updateDownloadStatus(tmdbId, 'downloading')
 
@@ -318,8 +318,7 @@ export default class TorrentService {
       if (allReady) {
         console.log(`All resolutions ready for streaming: 480p, 720p, 1080p`)
       }
-    } catch {
-    }
+    } catch {}
   }
 
   private async markConversionComplete(videoId: string, resolution: number) {
@@ -418,17 +417,17 @@ export default class TorrentService {
         console.log(`Cleaning up existing HLS files for movie ${tmdbId} to start fresh conversion`)
         fs.rmSync(hlsDir, { recursive: true })
         console.log(`Successfully cleaned up HLS files for movie ${tmdbId}`)
-        
+
         // Reset resolution status in database
         await this.movieService.updateResolutionStatus(tmdbId, 480, false)
         await this.movieService.updateResolutionStatus(tmdbId, 720, false)
         await this.movieService.updateResolutionStatus(tmdbId, 1080, false)
-        
+
         // Clear from ready resolutions set
         this.readyResolutions.delete(`${tmdbId}-480`)
         this.readyResolutions.delete(`${tmdbId}-720`)
         this.readyResolutions.delete(`${tmdbId}-1080`)
-        
+
         // Clear segment counts
         this.lastSegmentCounts.delete(`${tmdbId}-480`)
         this.lastSegmentCounts.delete(`${tmdbId}-720`)

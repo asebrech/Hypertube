@@ -48,7 +48,7 @@ export default class MovieService {
     try {
       // Get or create movie record in database
       const movieRecord = await this.getOrCreate(movieId)
-      
+
       // Check if we need to update torrent availability (only if not set or old data)
       let torrentAvailable = movieRecord.torrentAvailable
       if (torrentAvailable === null || torrentAvailable === undefined) {
@@ -62,7 +62,7 @@ export default class MovieService {
           await movieRecord.save()
         }
       }
-      
+
       return torrentAvailable
     } catch {
       return false
@@ -159,8 +159,7 @@ export default class MovieService {
       const movie = await this.getOrCreate(tmdbId)
       movie.lastAccessedAt = DateTime.now()
       await movie.save()
-    } catch {
-    }
+    } catch {}
   }
 
   async getDownloadedMoviesPaginated(
@@ -422,8 +421,7 @@ export default class MovieService {
       if (convertingMovies.length > 0) {
         console.log(`Reset ${convertingMovies.length} interrupted movie conversions to pending`)
       }
-    } catch {
-    }
+    } catch {}
   }
 
   private async fetchAndUpdateMovieDetails(movie: Movie): Promise<void> {
@@ -439,7 +437,6 @@ export default class MovieService {
           movie.imdbId = movieDetails.imdb_id
         }
       }
-    } catch {
-    }
+    } catch {}
   }
 }
