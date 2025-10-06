@@ -247,11 +247,11 @@ export type SubtitleResult = {
       url: string;
       img_url: string;
     }[];
-    files: {
+    files: Array<{
       file_id: number;
       cd_number: number;
       file_name: string;
-    };
+    }>;
   };
 };
 
