@@ -134,7 +134,16 @@
 						</Button>
 					</a>
 				{:else}
-					<form action="/logout" method="POST" use:enhance>
+					<form
+						action="/logout"
+						method="POST"
+						use:enhance={() => {
+							return async ({ update }) => {
+								closeMenu();
+								await update();
+							};
+						}}
+					>
 						<Button type="submit" class="w-full">
 							{$_('log_out')}
 						</Button>
