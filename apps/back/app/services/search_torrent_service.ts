@@ -21,6 +21,11 @@ export default class SearchTorrentService {
     TorrentSearchApi.enableProvider('ThePirateBay')
 
     const imdbId = await this.tmdbService.getMovieExternalIMDBId(tmdbId)
+    
+    // If no IMDB ID, can't search for torrents
+    if (!imdbId) {
+      return null
+    }
 
     const torrents = await TorrentSearchApi.search(imdbId, category, limit)
     let bestTorrent = null
@@ -67,6 +72,11 @@ export default class SearchTorrentService {
       TorrentSearchApi.enableProvider('ThePirateBay')
 
       const imdbId = await this.tmdbService.getMovieExternalIMDBId(tmdbId)
+      
+      // If no IMDB ID, can't search for torrents
+      if (!imdbId) {
+        return false
+      }
 
       const torrents = await TorrentSearchApi.search(imdbId, category, limit)
       let torrentExist = false
