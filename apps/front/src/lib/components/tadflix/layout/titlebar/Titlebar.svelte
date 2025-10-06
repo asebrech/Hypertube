@@ -4,7 +4,7 @@
 
 <!-- TitleBar -->
 <div
-    class={`fixed top-16 z-50 min-h-16 items-center text-white transition-colors duration-[100ms] bg-[#141414] py-6
+    class={`fixed top-16 z-40 min-h-16 items-center text-white transition-colors duration-[100ms] bg-[#141414] py-6
         w-[calc(100%-20%)]
         sm:w-[calc(100%-21.428%)]
         md:w-[calc(100%-16.666%)]
