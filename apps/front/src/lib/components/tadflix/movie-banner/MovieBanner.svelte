@@ -284,8 +284,11 @@
 	{/if}
 
 	<div class="absolute top-0 left-0 h-full w-full transform px-4 pt-16 pb-6 sm:px-8 sm:pt-20 sm:pb-16 md:px-12 md:pt-24 md:pb-24">
-		<div class="flex h-full w-full flex-col justify-end gap-2 text-white sm:gap-4 md:gap-5">
+		<div
+			class="flex h-full w-full flex-col gap-2 text-white sm:justify-end sm:gap-4 md:gap-5 {playerReady && !videoEnded ? 'justify-end' : 'justify-start'}"
+		>
 			<!-- Logo/Title section - always visible -->
+			 
 			<div class="md:block">
 				{#if logo}
 					<img
