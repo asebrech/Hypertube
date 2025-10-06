@@ -238,7 +238,7 @@
 
 <div class="relative max-h-[80vh] w-full {className}">
 	<div
-		class="relative flex aspect-[6/3] w-full items-end overflow-hidden rounded-[2px] bg-black {playerReady &&
+		class="relative flex aspect-[16/9] w-full items-end overflow-hidden rounded-[2px] bg-black sm:aspect-[6/3] {playerReady &&
 		!videoEnded
 			? ''
 			: 'hidden'}"
@@ -264,7 +264,7 @@
 		</div>
 	</div>
 	{#if movie?.backdrop_path && (!playerReady || videoEnded)}
-		<div class="relative h-full w-full" style="min-height: 400px;">
+		<div class="relative h-full w-full" style="min-height: 300px;">
 			<img
 				src={`https://image.tmdb.org/t/p/original/${movie.backdrop_path}`}
 				alt="movie-background"
@@ -280,11 +280,11 @@
 			</div>
 		</div>
 	{:else if !movie?.backdrop_path && !playerReady && !videoEnded}
-		<Skeleton class="h-[80vh] w-full" />
+		<Skeleton class="h-[50vh] w-full sm:h-[80vh]" />
 	{/if}
 
-	<div class="absolute top-0 left-0 h-full w-full transform pt-24 pr-0 pb-24 pl-12">
-		<div class="flex h-full w-full flex-col justify-end gap-5 text-white">
+	<div class="absolute top-0 left-0 h-full w-full transform px-4 pt-16 pb-6 sm:px-8 sm:pt-20 sm:pb-16 md:px-12 md:pt-24 md:pb-24">
+		<div class="flex h-full w-full flex-col justify-end gap-2 text-white sm:gap-4 md:gap-5">
 			<!-- Logo/Title section - always visible -->
 			<div class="md:block">
 				{#if logo}
@@ -293,14 +293,14 @@
 						alt="movie-background"
 						class="object-cover"
 						style="max-width: {logo.aspect_ratio >= 2
-							? '40%'
+							? 'min(60%, 300px)'
 							: logo.aspect_ratio >= 1.5
-								? '33%'
-								: '25%'};"
+								? 'min(50%, 250px)'
+								: 'min(40%, 200px)'};"
 					/>
 				{:else}
 					<span
-						class="text-center text-7xl leading-14 font-extrabold text-wrap uppercase md:max-w-44"
+						class="block text-3xl font-extrabold uppercase leading-tight sm:text-5xl md:text-7xl md:max-w-44"
 					>
 						{movie.title}
 					</span>
@@ -332,20 +332,20 @@
 				</div>
 			{/if}
 
-			<div class="relative flex w-full justify-between gap-2">
-				<div class="flex gap-2">
+			<div class="relative flex w-full items-end justify-between gap-2">
+				<div class="flex flex-wrap gap-2">
 					<Button
-						class="bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer rounded-[4px]"
+						class="bg-primary text-primary-foreground hover:bg-primary/90 h-8 cursor-pointer rounded-[4px] px-3 text-xs sm:h-10 sm:px-4 sm:text-sm"
 						href={`/movie/${movie.id}`}
 					>
-						<Play fill={'black'} />{$_('movie-banner.play')}
+						<Play fill={'black'} class="h-4 w-4 sm:h-5 sm:w-5" />{$_('movie-banner.play')}
 					</Button>
 					{#if showMoreInfoButton}
 						<Button
-							class="text-secondary-foreground bg-secondary hover:bg-secondary hover:text-accent-foreground cursor-pointer rounded-[4px] brightness-150 hover:brightness-100"
+							class="text-secondary-foreground bg-secondary hover:bg-secondary hover:text-accent-foreground h-8 cursor-pointer rounded-[4px] px-3 text-xs brightness-150 hover:brightness-100 sm:h-10 sm:px-4 sm:text-sm"
 							onclick={openModal}
 						>
-							<Info />{$_('movie-banner.more-info')}
+							<Info class="h-4 w-4 sm:h-5 sm:w-5" />{$_('movie-banner.more-info')}
 						</Button>
 					{/if}
 					{#if customActions}
@@ -353,23 +353,23 @@
 					{/if}
 				</div>
 
-				<div class="hidden items-center gap-2 sm:flex sm:gap-3">
+				<div class="flex items-center gap-2 sm:gap-3">
 					{#if movieVideo?.key && movie.vote_average}
-						<div class={`flex items-center gap-5 ${!showVoteAverage || !movie.vote_average ? 'pr-3' : ''}`}>
+						<div class={`flex items-center gap-2 sm:gap-5 ${!showVoteAverage || !movie.vote_average ? 'pr-3' : ''}`}>
 							{#if playerReady && !videoEnded}
 								<button onclick={toggleMute} aria-label={isMuted ? 'Unmute' : 'Mute'}>
 									<ButtonPreview variant="outline" size="default">
 										{#if isMuted}
-											<VolumeOff size={18} />
+											<VolumeOff size={16} class="sm:h-[18px] sm:w-[18px]" />
 										{:else}
-											<Volume2 size={18} />
+											<Volume2 size={16} class="sm:h-[18px] sm:w-[18px]" />
 										{/if}
 									</ButtonPreview>
 								</button>
 							{:else if videoEnded}
 								<button onclick={replayVideo} aria-label="Replay video">
 									<ButtonPreview variant="outline" size="default">
-										<RotateCw size={18} />
+										<RotateCw size={16} class="sm:h-[18px] sm:w-[18px]" />
 									</ButtonPreview>
 								</button>
 							{/if}
@@ -377,9 +377,9 @@
 					{/if}
 					{#if showVoteAverage && movie.vote_average}
 						<div
-							class="bg-secondary/50 flex items-center gap-1 border-l-4 py-1 pr-3 pl-2 text-sm font-light text-nowrap"
+							class="bg-secondary/50 flex items-center gap-1 border-l-4 py-1 pr-2 pl-1.5 text-xs font-light text-nowrap sm:pr-3 sm:pl-2 sm:text-sm"
 						>
-							<TrendingUp size={15} />
+							<TrendingUp size={14} class="sm:h-[15px] sm:w-[15px]" />
 							<span class="text-xs sm:text-sm">{movie.vote_average.toFixed(1)}</span>
 						</div>
 					{/if}
