@@ -179,7 +179,7 @@
 	});
 </script>
 <Titlebar>
-<div class="flex gap-4 w-full">
+<div class="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full">
 	<!-- Genre -->
 	<Select
 		type="multiple"
@@ -187,7 +187,7 @@
 		onValueChange={(val) => handleChange('genre', val)}
 		value={selectedGenres.map((g) => String(g.id))}
 	>
-		<SelectTrigger class="border-outline-1 h-[2rem] rounded-none focus:ring-0 focus:ring-offset-0">
+		<SelectTrigger class="border-outline-1 h-[2rem] w-full rounded-none focus:ring-0 focus:ring-offset-0">
 			{$_('filters.select_genre')}
 		</SelectTrigger>
 		<SelectContent
@@ -210,7 +210,7 @@
 		allowDeselect={true}
 		onValueChange={(val) => handleChange('year', val)}
 	>
-		<SelectTrigger class="border-outline-1 h-[2rem] rounded-none focus:ring-0 focus:ring-offset-0">
+		<SelectTrigger class="border-outline-1 h-[2rem] w-full rounded-none focus:ring-0 focus:ring-offset-0">
 			{releaseYear ? releaseYear : $_('filters.select_year')}
 		</SelectTrigger>
 		<SelectContent
@@ -232,7 +232,7 @@
 		name="sort"
 		onValueChange={(val) => handleChange('sort', val)}
 	>
-		<SelectTrigger class="border-outline-1 h-[2rem] rounded-none focus:ring-0 focus:ring-offset-0">
+		<SelectTrigger class="border-outline-1 h-[2rem] w-full rounded-none focus:ring-0 focus:ring-offset-0">
 			{$_(sortOptions.find((opt) => opt.value === sortBy)?.label || 'filters.select_sort')}
 		</SelectTrigger>
 		<SelectContent
@@ -255,7 +255,7 @@
 		allowDeselect={true}
 		onValueChange={(val) => handleChange('language', val)}
 	>
-		<SelectTrigger class="border-outline-1 h-[2rem] rounded-none focus:ring-0 focus:ring-offset-0">
+		<SelectTrigger class="border-outline-1 h-[2rem] w-full rounded-none focus:ring-0 focus:ring-offset-0">
 			{languages.find((lang) => lang.value === originalLanguage)?.label || $_('filters.select_language')}
 		</SelectTrigger>
 		<SelectContent
@@ -297,7 +297,7 @@
 	</div>
 {/if}
 </Titlebar>
-<div class="{cast && selectedGenres.length > 0 ? 'pt-70' : cast || selectedGenres.length > 0 ? 'pt-56' :  'pt-42'}">
+<div class="sm:{cast && selectedGenres.length > 0 ? 'pt-70' : cast || selectedGenres.length > 0 ? 'pt-56' : 'pt-42'}">
 	{#if isLoading}
 	<div class="flex h-[80vh] items-center justify-center">
 		<p class="text-lg text-gray-500">{$_('search.loading')}</p>
