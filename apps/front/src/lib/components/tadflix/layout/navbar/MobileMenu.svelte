@@ -28,9 +28,11 @@
 		onMenuToggle?.(isOpen);
 	}
 
-	function closeMenu() {
-		isOpen = false;
-		onMenuToggle?.(false);
+	export function closeMenu() {
+		if (isOpen) {
+			isOpen = false;
+			onMenuToggle?.(false);
+		}
 	}
 
 	function isLinkCurrentPage(link: Link): boolean {

@@ -23,6 +23,8 @@
 	let { data, showSkeleton }: Props = $props();
 	let searchOpen: boolean = $state(false);
 	let mobileMenuOpen: boolean = $state(false);
+	let mobileSearchRef: any = $state();
+	let mobileMenuRef: any = $state();
 
 	function isLinkCurrentPage(link: Link): boolean {
 		return page.url.pathname === link.href;
@@ -154,7 +156,14 @@
 			<Skeleton class="h-8 w-20" />
 		{:else}
 			<!-- Mobile Search Button -->
-			<MobileSearch />
+			<MobileSearch
+				bind:this={mobileSearchRef}
+				onSearchToggle={(isOpen) => {
+					if (isOpen && mobileMenuOpen) {
+						mobileMenuRef?.closeMenu();
+					}
+				}}
+			/>
 
 			<!-- Search - Hidden on mobile, visible on tablet+ -->
 			<div class="relative hidden items-center sm:flex">
@@ -247,10 +256,16 @@
 		<!-- Mobile Menu Button -->
 		{#if !showSkeleton}
 			<MobileMenu
+				bind:this={mobileMenuRef}
 				links={links}
 				currentPath={page.url.pathname}
 				user={data?.user}
-				onMenuToggle={(isOpen) => (mobileMenuOpen = isOpen)}
+				onMenuToggle={(isOpen) => {
+					mobileMenuOpen = isOpen;
+					if (isOpen) {
+						mobileSearchRef?.closeSearch();
+					}
+				}}
 			/>
 		{/if}
 	</div>

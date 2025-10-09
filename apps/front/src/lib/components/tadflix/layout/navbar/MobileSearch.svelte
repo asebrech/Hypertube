@@ -5,11 +5,17 @@
 	import { goto } from '$app/navigation';
 	import { fade } from 'svelte/transition';
 
+	interface Props {
+		onSearchToggle?: (isOpen: boolean) => void;
+	}
+
+	let { onSearchToggle }: Props = $props();
 	let isOpen = $state(false);
 	let inputElement = $state<HTMLInputElement>();
 
 	function toggleSearch() {
 		isOpen = !isOpen;
+		onSearchToggle?.(isOpen);
 		if (isOpen) {
 			// Focus the input after a short delay to allow the transition
 			setTimeout(() => {
@@ -39,8 +45,17 @@
 
 	function handleClose() {
 		isOpen = false;
+		onSearchToggle?.(false);
 		searchQuery.set('');
 		goto('/', { replaceState: true, noScroll: true, keepFocus: true });
+	}
+
+	export function closeSearch() {
+		if (isOpen) {
+			isOpen = false;
+			onSearchToggle?.(false);
+			searchQuery.set('');
+		}
 	}
 </script>
 
