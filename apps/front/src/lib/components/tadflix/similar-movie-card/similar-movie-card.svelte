@@ -25,8 +25,7 @@
 	let abortController = $state<AbortController | null>(null);
 
 	// Determine movie type - check if it has 'media_type' or infer from other properties
-	const movieType: MovieType =
-		'media_type' in movie ? movie.media_type || 'movie' : 'title' in movie ? 'movie' : 'tv';
+	const movieType: MovieType = 'media_type' in movie ? movie.media_type || 'movie' : 'movie';
 
 	const loadBackdropImage = async (
 		movieId: number,

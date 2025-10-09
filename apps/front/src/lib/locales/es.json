@@ -51,7 +51,7 @@
 		"see-more": "Ver más"
 	},
 	"search": {
-		"placeholder": "Películas, Programas, Personas...",
+		"placeholder": "Películas, Personas...",
 		"noresults": "No se encontraron resultados",
 		"loading": "Cargando..."
 	},
@@ -234,7 +234,7 @@
 		"security": "Seguridad",
 		"content_preferences": "Preferencias de contenido",
 		"allow_adult_content": "Permitir contenido adulto",
-		"allow_adult_content_description": "Activar para mostrar películas y series de TV con contenido adulto en los resultados de búsqueda y recomendaciones",
+		"allow_adult_content_description": "Activar para mostrar películas con contenido adulto en los resultados de búsqueda y recomendaciones",
 		"current_password": "Contraseña actual",
 		"new_password": "Nueva contraseña",
 		"confirm_password": "Confirmar contraseña",

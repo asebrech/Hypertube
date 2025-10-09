@@ -28,22 +28,21 @@
 		if (!hasMorePages) return;
 		try {
 			isLoading = true;
-			const getMovieResponse = await getMovies(currentPage, 'tv', data.token);
+			const getMovieResponse = await getMovies(currentPage, 'movie', data.token);
 			movieGenres = movieGenres.concat(getMovieResponse.movies);
 			hasMorePages = getMovieResponse.hasMorePages;
 			currentPage++;
 			isLoading = false;
-		} catch {
-		}
+		} catch {}
 	};
 
 	onMount(async () => {
 		isLoading = true;
 		await loadMoviePage();
 		let idx = Math.floor(Math.random() * movieGenres[0].movies.length);
-		movieBanner = await getMovieDetails(movieGenres[0].movies[idx].id, 'tv', data.token);
-		movieLogo = await getLogoImage(movieGenres[0].movies[idx].id, 'small', 'tv', data.token);
-		movieVideoResponse = await getMovieVideos(movieGenres[0].movies[idx].id, 'tv', data.token);
+		movieBanner = await getMovieDetails(movieGenres[0].movies[idx].id, 'movie', data.token);
+		movieLogo = await getLogoImage(movieGenres[0].movies[idx].id, 'small', 'movie', data.token);
+		movieVideoResponse = await getMovieVideos(movieGenres[0].movies[idx].id, 'movie', data.token);
 		isLoading = false;
 		observeSentinel();
 	});
@@ -67,7 +66,13 @@
 
 <div class="flex flex-col gap-8">
 	{#if movieBanner}
-		<MovieBanner logo={movieLogo} movie={movieBanner} movieVideo={movieVideoResponse} type="tv" instance="home" />
+		<MovieBanner
+			logo={movieLogo}
+			movie={movieBanner}
+			movieVideo={movieVideoResponse}
+			type="movie"
+			instance="home"
+		/>
 	{:else}
 		<Skeleton class="h-[80vh]" />
 	{/if}
@@ -75,9 +80,9 @@
 		<div class="flex w-full flex-col gap-[15px] overflow-hidden">
 			<h2 class="text-l ml-[58px] font-medium">{genre.name}</h2>
 			{#if genre.id == 0}
-				<MovieCarousel movies={genre.movies} genreId={genre.id} variant={'top-ten'} data={data} />
+				<MovieCarousel movies={genre.movies} genreId={genre.id} variant={'top-ten'} {data} />
 			{:else}
-				<MovieCarousel movies={genre.movies} genreId={genre.id} data={data}/>
+				<MovieCarousel movies={genre.movies} genreId={genre.id} {data} />
 			{/if}
 		</div>
 	{/each}
@@ -86,4 +91,4 @@
 <div bind:this={sentinel}></div>
 
 <!-- Movie Modal -->
-<MovieModal data={data} />
+<MovieModal {data} />
