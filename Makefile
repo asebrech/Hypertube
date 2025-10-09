@@ -95,11 +95,11 @@ build: ## Build the application for production
 		exit 1; \
 	fi
 	@printf "$(GREEN)  ✓ Environment files found$(RESET)\n"
-	@printf "$(BLUE)�🔨 Building application...$(RESET)\n"
+	@printf "$(BLUE)🔨 Building application...$(RESET)\n"
 	@pnpm build
 	@printf "$(BLUE)📋 Copying environment files to build directories...$(RESET)\n"
-	@cp apps/back/.env apps/back/build/.env 2>/dev/null || true
-	@cp apps/front/.env apps/front/build/.env 2>/dev/null || true
+	@cp apps/back/.env apps/back/build/.env && printf "$(GREEN)  ✓ Backend .env copied$(RESET)\n" || printf "$(YELLOW)  ⚠ Backend .env copy failed$(RESET)\n"
+	@cp apps/front/.env apps/front/build/.env 2>/dev/null && printf "$(GREEN)  ✓ Frontend .env copied$(RESET)\n" || printf "$(YELLOW)  ⚠ Frontend .env copy skipped (not needed)$(RESET)\n"
 	@printf "$(GREEN)  ✓ Build complete$(RESET)\n"
 
 .PHONY: build-back
@@ -114,7 +114,7 @@ build-back: ## Build backend only
 	@printf "$(BLUE)🔨 Building backend...$(RESET)\n"
 	@cd apps/back && pnpm build
 	@printf "$(BLUE)📋 Copying backend .env to build directory...$(RESET)\n"
-	@cp apps/back/.env apps/back/build/.env
+	@cp apps/back/.env apps/back/build/.env && printf "$(GREEN)  ✓ Backend .env copied$(RESET)\n"
 	@printf "$(GREEN)  ✓ Backend build complete$(RESET)\n"
 
 .PHONY: build-front
@@ -148,17 +148,19 @@ prod-start: ## Start production build (after building)
 		printf "$(YELLOW)  Run 'make build' first$(RESET)\n"; \
 		exit 1; \
 	fi
+	@printf "$(GREEN)  ✓ Backend build exists$(RESET)\n"
 	@if [ ! -f "apps/back/build/.env" ]; then \
-		printf "$(RED)✗ Error: Backend .env not found in build directory!$(RESET)\n"; \
-		printf "$(YELLOW)  Run 'make build' first$(RESET)\n"; \
-		exit 1; \
+		printf "$(YELLOW)  ⚠ Backend .env not found in build directory, copying...$(RESET)\n"; \
+		cp apps/back/.env apps/back/build/.env && printf "$(GREEN)  ✓ Backend .env copied$(RESET)\n"; \
+	else \
+		printf "$(GREEN)  ✓ Backend .env exists$(RESET)\n"; \
 	fi
 	@printf "$(GREEN)  ✓ Production build ready$(RESET)\n"
 	@printf "$(BOLD)$(GREEN)🚀 Starting production servers...$(RESET)\n"
-	@printf "$(YELLOW)Starting backend...$(RESET)\n"
+	@printf "$(YELLOW)Starting backend on port 3333...$(RESET)\n"
 	@cd apps/back/build && node bin/server.js &
-	@printf "$(YELLOW)Starting frontend...$(RESET)\n"
-	@cd apps/front && pnpm preview
+	@printf "$(YELLOW)Starting frontend on port 5173...$(RESET)\n"
+	@cd apps/front && pnpm preview --port 5173
 
 .PHONY: prod-deploy
 prod-deploy: ## Full production deployment (build + run)
