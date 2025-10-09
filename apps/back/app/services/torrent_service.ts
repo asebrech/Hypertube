@@ -67,9 +67,14 @@ export default class TorrentService {
 
   async download(tmdbId: number) {
     console.log('Starting torrent download for TMDB ID:', tmdbId)
-    await this.movieService.getOrCreate(tmdbId)
-
-    await this.movieService.updateLastAccessed(tmdbId)
+    try {
+      await this.movieService.getOrCreate(tmdbId)
+      await this.movieService.updateLastAccessed(tmdbId)
+    }
+    catch {
+      console.log('Could not create or access movie record for TMDB ID:', tmdbId)
+      return { message: 'Couldnt create or access movie record.', tmdbId }
+    }
 
     // Check if movie is already fully converted
     const movie = await this.movieService.getByTmdbId(tmdbId)

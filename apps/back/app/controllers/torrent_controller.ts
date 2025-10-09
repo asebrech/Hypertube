@@ -42,7 +42,7 @@ export default class TorrentController {
     const result = await this.torrentService.download(tmdb)
 
     // If the result indicates failure (no torrent, cleanup failed, etc), return 404
-    const failureMessages = ['No torrent file found', 'Couldnt clean']
+    const failureMessages = ['No torrent file found', 'Couldnt clean', 'Couldnt create or access movie record']
     if (failureMessages.some((msg) => result.message.includes(msg))) {
       return response.notFound(result)
     }
