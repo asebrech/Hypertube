@@ -24,10 +24,15 @@
 			slides: "[data-embla-slide]",
 			...emblaCtx.options,
 			axis: emblaCtx.orientation === "horizontal" ? "x" : "y",
+			dragFree: false,
+			watchDrag: true,
+			watchResize: true,
+			watchSlides: true,
 		},
 		plugins: emblaCtx.plugins,
 	}}
 	on:emblaInit={emblaCtx.onInit}
+	style="touch-action: pan-y pinch-zoom;"
 >
 	<div
 		bind:this={ref}

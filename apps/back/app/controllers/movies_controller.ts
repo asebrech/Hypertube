@@ -111,7 +111,7 @@ export default class MoviesController {
     return { movies: moviesFinalResult, hasMorePages }
   }
 
-  async backdropImage({ request, response }: HttpContext): Promise<BackDropImage | void> {
+  async backdropImage({ request, response }: HttpContext): Promise<BackDropImage | null> {
     const tmdb_movie_id = request.input('tmdb_movie_id')
     const lang = request.input('lang', 'en')
     const size = request.input('size', 'original')
@@ -125,11 +125,11 @@ export default class MoviesController {
     if (backdropImageFoundBoolean) {
       return backdropImageFoundBoolean
     } else {
-      return response.notFound({ error: 'Image not found' })
+      return null
     }
   }
 
-  async posterImage({ request, response }: HttpContext): Promise<BackDropImage | void> {
+  async posterImage({ request, response }: HttpContext): Promise<BackDropImage | null> {
     const tmdb_movie_id = request.input('tmdb_movie_id')
     const lang = request.input('lang', 'en')
     const size = request.input('size', 'original')
@@ -143,11 +143,11 @@ export default class MoviesController {
     if (backdropImageFoundBoolean) {
       return backdropImageFoundBoolean
     } else {
-      return response.notFound({ error: 'Image not found' })
+      return null
     }
   }
 
-  async logoImage({ request, response }: HttpContext): Promise<BackDropImage | void> {
+  async logoImage({ request }: HttpContext): Promise<BackDropImage | null> {
     const tmdb_movie_id = request.input('tmdb_movie_id')
     const lang = request.input('lang', 'en')
     const size = request.input('size', 'original')
@@ -161,11 +161,11 @@ export default class MoviesController {
     if (logoImageFoundBoolean) {
       return logoImageFoundBoolean
     } else {
-      return response.notFound({ error: 'Image not found' })
+      return null
     }
   }
 
-  async movieDetails({ request, response }: HttpContext) {
+  async movieDetails({ request }: HttpContext) {
     const tmdb_movie_id = request.param('id')
     const lang = request.input('lang', 'en')
     const movieType = request.input('type', 'movie')
@@ -173,17 +173,17 @@ export default class MoviesController {
     if (movieDetails) {
       return movieDetails
     } else {
-      return response.notFound({ error: 'Movie not found' })
+      return null
     }
   }
 
-  async movieVideos({ request, response }: HttpContext) {
+  async movieVideos({ request }: HttpContext) {
     const tmdb_movie_id = request.param('id')
     const lang = request.input('lang', 'en')
     const movieType = request.input('type', 'movie')
     const movieVideos = await this.tmdbService.getMovieVideos(tmdb_movie_id, lang, movieType)
     if (!movieVideos) {
-      return response.notFound({ error: 'Movie videos not found' })
+      return null
     }
     let movieVideo = movieVideos.results.find(
       (video: any) => video.site === 'YouTube' && video.type === 'Clip'
@@ -303,11 +303,11 @@ export default class MoviesController {
     if (searchResults) {
       return { movies: media, hasMorePages }
     } else {
-      return response.notFound({ error: 'Search results not found' })
+      return null
     }
   }
 
-  async MovieDiscover({ request, response, auth }: HttpContext) {
+  async MovieDiscover({ request, auth }: HttpContext) {
     let genreId = request.input('genreId')
     if (typeof genreId === 'string') {
       genreId = [genreId]
@@ -380,22 +380,22 @@ export default class MoviesController {
       )
       return { movies: moviesWithMediaType, hasMorePages }
     } else {
-      return response.notFound({ error: 'Discover results not found' })
+      return null
     }
   }
 
-  async movieGenres({ request, response }: HttpContext) {
+  async movieGenres({ request }: HttpContext) {
     const lang = request.input('lang', 'en')
     const movieType = request.input('type', 'movie')
     const genresList = await this.tmdbService.getGenresList(lang, movieType)
     if (genresList) {
       return genresList.genres
     } else {
-      return response.notFound({ error: 'Genres not found' })
+      return null
     }
   }
 
-  async MovieSimilar({ request, response }: HttpContext) {
+  async MovieSimilar({ request }: HttpContext) {
     const tmdb_movie_id = request.input('tmdb_movie_id')
     const lang = request.input('lang', 'en')
     const page = request.input('page', 1)
@@ -414,11 +414,11 @@ export default class MoviesController {
       }))
       return { movies: moviesWithMediaType, hasMorePages }
     } else {
-      return response.notFound({ error: 'Similar movies not found' })
+      return null
     }
   }
 
-  async MovieCredits({ request, response }: HttpContext) {
+  async MovieCredits({ request }: HttpContext) {
     const tmdb_movie_id = request.input('tmdb_movie_id')
     const lang = request.input('lang', 'en')
     const movieType = request.input('type', 'movie')
@@ -426,18 +426,18 @@ export default class MoviesController {
     if (movieCredits) {
       return movieCredits
     } else {
-      return response.notFound({ error: 'Movie credits not found' })
+      return null
     }
   }
 
-  async PeopleDetails({ request, response }: HttpContext) {
+  async PeopleDetails({ request }: HttpContext) {
     const tmdb_person_id = request.input('tmdb_people_id')
     const lang = request.input('lang', 'en')
     const personDetails = await this.tmdbService.getPeopleDetails(tmdb_person_id, lang)
     if (personDetails) {
       return personDetails
     } else {
-      return response.notFound({ error: 'Person details not found' })
+      return null
     }
   }
 
@@ -558,9 +558,7 @@ export default class MoviesController {
         isBookmarked: relation.$extras.pivot_is_bookmarked || false,
       })
     } catch {
-      return response.notFound({
-        error: 'Failed to get watch progress',
-      })
+      return null
     }
   }
 
@@ -610,7 +608,7 @@ export default class MoviesController {
         bookmarked: bookmarked,
       })
     } catch {
-      return response.notFound()
+      return null
     }
   }
 
@@ -666,7 +664,7 @@ export default class MoviesController {
         results: result.results,
       })
     } catch {
-      return response.notFound()
+      return null
     }
   }
 
@@ -693,9 +691,7 @@ export default class MoviesController {
         const webVttContent = await this.subtitleService.getSubtitleAsWebVtt(tmdbId, language)
 
         if (!webVttContent) {
-          return response.notFound({
-            error: `Subtitle not found for language: ${language}`,
-          })
+          return null
         }
 
         return response
@@ -716,7 +712,7 @@ export default class MoviesController {
         count: availableLanguages.length,
       })
     } catch {
-      return response.notFound()
+      return null
     }
   }
 
@@ -814,7 +810,7 @@ export default class MoviesController {
         },
       })
     } catch {
-      return response.notFound()
+      return null
     }
   }
 }
