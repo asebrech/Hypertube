@@ -177,23 +177,32 @@ export default class MoviesController {
     }
   }
 
-  async movieVideos({ request }: HttpContext) {
-    const tmdb_movie_id = request.param('id')
-    const lang = request.input('lang', 'en')
-    const movieType = request.input('type', 'movie')
-    const movieVideos = await this.tmdbService.getMovieVideos(tmdb_movie_id, lang, movieType)
-    if (!movieVideos) {
-      return null
-    }
-    let movieVideo = movieVideos.results.find(
-      (video: any) => video.site === 'YouTube' && video.type === 'Clip'
-    )
-    if (!movieVideo) {
-      movieVideo = movieVideos.results.find(
-        (video: any) => video.site === 'YouTube' && video.type === 'Trailer'
+  async movieVideos({ request, response }: HttpContext) {
+    try {
+      const tmdb_movie_id = request.param('id')
+      const lang = request.input('lang', 'en')
+      const movieType = request.input('type', 'movie')
+
+      const movieVideos = await this.tmdbService.getMovieVideos(tmdb_movie_id, lang, movieType)
+
+      if (!movieVideos || !movieVideos.results || movieVideos.results.length === 0) {
+        return response.ok({ video: null })
+      }
+
+      let movieVideo = movieVideos.results.find(
+        (video: any) => video.site === 'YouTube' && video.type === 'Clip'
       )
+
+      if (!movieVideo) {
+        movieVideo = movieVideos.results.find(
+          (video: any) => video.site === 'YouTube' && video.type === 'Trailer'
+        )
+      }
+
+      return response.ok({ video: movieVideo || null })
+    } catch (error) {
+      return response.ok({ video: null })
     }
-    return movieVideo
   }
 
   async movieSearch({ request, response, auth }: HttpContext) {
