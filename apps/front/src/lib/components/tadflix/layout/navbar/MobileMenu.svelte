@@ -43,7 +43,7 @@
 <!-- Mobile Menu Button -->
 <button
 	onclick={toggleMenu}
-	class="flex items-center justify-center p-2 text-white md:hidden"
+	class="flex items-center justify-center p-2 text-white lg:hidden"
 	aria-label="Toggle menu"
 >
 	{#if isOpen}
@@ -62,7 +62,7 @@
 		aria-modal="true"
 		tabindex="-1"
 		transition:fade={{ duration: 200 }}
-		class="fixed inset-0 top-16 z-40 bg-black/95 md:hidden"
+		class="fixed inset-0 top-16 z-40 bg-black/95 lg:hidden"
 		onclick={closeMenu}
 	>
 		<!-- svelte-ignore a11y_click_events_have_key_events -->

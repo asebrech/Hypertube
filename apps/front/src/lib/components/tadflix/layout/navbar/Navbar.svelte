@@ -130,9 +130,9 @@
 
 		<!-- Navigation Links - Desktop Only -->
 		{#if showSkeleton}
-			<Skeleton class="hidden h-8 w-32 md:flex" />
+			<Skeleton class="hidden h-8 w-32 lg:flex" />
 		{:else}
-			<div class="hidden gap-4 md:flex lg:gap-6">
+			<div class="hidden gap-4 lg:flex lg:gap-6">
 				{#each links as link}
 					<a
 						href={link.href}
@@ -141,7 +141,7 @@
 							isLinkCurrentPage(link) ? 'font-bold' : 'font-light'
 						)}
 					>
-						<p class="text-[12px] lg:text-sm">
+						<p class="text-sm">
 							{$_(link.label)}
 						</p>
 					</a>
@@ -201,7 +201,7 @@
 			</div>
 
 			<!-- Language Selector - Hidden on mobile -->
-			<div class="hidden md:block">
+			<div class="hidden lg:block">
 				<LanguageSelector />
 			</div>
 		{/if}
@@ -211,7 +211,7 @@
 				<Skeleton class="h-8 w-20" />
 			{:else}
 				<!-- Sign In Button - Hidden on mobile -->
-				<a href="/login" class="hidden sm:block">
+				<a href="/login" class="hidden lg:block">
 					<Button
 						variant="outline"
 						class="border-white bg-transparent text-white hover:bg-white/10"
@@ -229,7 +229,7 @@
 				<a
 					href="/{data?.user?.username ? encodeURIComponent(data.user.username) : 'profile'}"
 					title="View Profile"
-					class="hidden sm:block"
+					class="hidden lg:block"
 				>
 					<UserProfilePicture
 						profilePicture={data?.user?.profilePicture}
@@ -246,7 +246,7 @@
 					<Skeleton class="h-8 w-16" />
 				{:else}
 					<!-- Logout Button - Hidden on mobile -->
-					<form action="/logout" method="POST" use:enhance class="hidden md:block">
+					<form action="/logout" method="POST" use:enhance class="hidden lg:block">
 						<Button type="submit" size="sm">{$_('log_out')}</Button>
 					</form>
 				{/if}
