@@ -359,9 +359,7 @@ export default class MoviesController {
           try {
             movieWithType.torrent_available =
               await this.movieService.checkAndUpdateTorrentAvailability(movie.id)
-          } catch (error) {
-            console.error(`Error checking torrent availability for movie ${movie.id}:`, error)
-          }
+          } catch {}
 
           if (user) {
             const movieTable = await user
@@ -475,9 +473,8 @@ export default class MoviesController {
       })
 
       return response.ok({ message: 'Movie marked as watched successfully' })
-    } catch (error) {
-      console.error('Error marking movie as watched:', error)
-      return response.internalServerError({
+    } catch {
+      return response.badRequest({
         error: 'Failed to mark movie as watched',
       })
     }
@@ -527,9 +524,8 @@ export default class MoviesController {
         message: 'Watch progress saved successfully',
         progress: progressSeconds,
       })
-    } catch (error) {
-      console.error('Error saving watch progress:', error)
-      return response.internalServerError({
+    } catch {
+      return response.badRequest({
         error: 'Failed to save watch progress',
       })
     }
@@ -561,9 +557,8 @@ export default class MoviesController {
         isWatched: relation.$extras.pivot_is_watched || false,
         isBookmarked: relation.$extras.pivot_is_bookmarked || false,
       })
-    } catch (error) {
-      console.error('Error getting watch progress:', error)
-      return response.internalServerError({
+    } catch {
+      return response.notFound({
         error: 'Failed to get watch progress',
       })
     }
@@ -614,11 +609,8 @@ export default class MoviesController {
         message,
         bookmarked: bookmarked,
       })
-    } catch (error) {
-      console.error('Error setting bookmark:', error)
-      return response.internalServerError({
-        error: 'Failed to set bookmark',
-      })
+    } catch {
+      return response.notFound()
     }
   }
 
@@ -673,11 +665,8 @@ export default class MoviesController {
         message: `Downloaded subtitles for ${result.results.filter((r) => r.success).length} language(s)`,
         results: result.results,
       })
-    } catch (error) {
-      console.error('Error downloading multiple subtitles:', error)
-      return response.internalServerError({
-        error: 'Failed to download subtitles',
-      })
+    } catch {
+      return response.notFound()
     }
   }
 
@@ -726,11 +715,8 @@ export default class MoviesController {
         availableLanguages,
         count: availableLanguages.length,
       })
-    } catch (error) {
-      console.error('Error getting subtitles:', error)
-      return response.internalServerError({
-        error: 'Failed to get subtitles',
-      })
+    } catch {
+      return response.notFound()
     }
   }
 
@@ -827,12 +813,8 @@ export default class MoviesController {
             isBookmarked !== undefined ? isBookmarked === 'true' || isBookmarked === true : null,
         },
       })
-    } catch (error) {
-      console.error('Error fetching user movies:', error)
-      return response.internalServerError({
-        success: false,
-        error: 'Failed to fetch user movies',
-      })
+    } catch {
+      return response.notFound()
     }
   }
 }

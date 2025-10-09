@@ -40,8 +40,7 @@
 			movies = movies.concat(response.movies);
 			hasMorePages = response.hasMorePages;
 			currentPage++;
-		} catch (error) {
-			console.error('Error loading discover movies:', error);
+		} catch {
 		} finally {
 			isLoading = false;
 		}

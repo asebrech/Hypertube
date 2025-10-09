@@ -48,7 +48,7 @@ export default class MovieService {
     try {
       // Get or create movie record in database
       const movieRecord = await this.getOrCreate(movieId)
-      
+
       // Check if we need to update torrent availability (only if not set or old data)
       let torrentAvailable = movieRecord.torrentAvailable
       if (torrentAvailable === null || torrentAvailable === undefined) {
@@ -56,17 +56,15 @@ export default class MovieService {
           torrentAvailable = await this.searchTorrentService.isAvailable(movieId)
           movieRecord.torrentAvailable = torrentAvailable
           await movieRecord.save()
-        } catch (error) {
-          console.error(`Error checking torrent availability for movie ${movieId}:`, error)
+        } catch {
           torrentAvailable = false
           movieRecord.torrentAvailable = false
           await movieRecord.save()
         }
       }
-      
+
       return torrentAvailable
-    } catch (error) {
-      console.error(`Error in checkAndUpdateTorrentAvailability for movie ${movieId}:`, error)
+    } catch {
       return false
     }
   }
@@ -88,31 +86,36 @@ export default class MovieService {
     return !!movie
   }
 
-  async updateResolutionStatus(tmdbId: number, resolution: number, ready: boolean): Promise<void> {
+  async updateResolutionStatus(
+    tmdbId: number,
+    resolution: number,
+    ready: boolean
+  ): Promise<boolean> {
     const movie = await this.getOrCreate(tmdbId)
 
     let currentStatus: boolean
     switch (resolution) {
       case 480:
         currentStatus = movie.resolution480pReady
-        if (currentStatus === ready) return
+        if (currentStatus === ready) return true
         movie.resolution480pReady = ready
         break
       case 720:
         currentStatus = movie.resolution720pReady
-        if (currentStatus === ready) return
+        if (currentStatus === ready) return true
         movie.resolution720pReady = ready
         break
       case 1080:
         currentStatus = movie.resolution1080pReady
-        if (currentStatus === ready) return
+        if (currentStatus === ready) return true
         movie.resolution1080pReady = ready
         break
       default:
-        throw new Error(`Unsupported resolution: ${resolution}`)
+        return false
     }
 
     await movie.save()
+    return true
   }
 
   async updateDownloadStatus(
@@ -161,9 +164,7 @@ export default class MovieService {
       const movie = await this.getOrCreate(tmdbId)
       movie.lastAccessedAt = DateTime.now()
       await movie.save()
-    } catch (error) {
-      console.error(`Error updating last accessed time for movie ${tmdbId}:`, error)
-    }
+    } catch {}
   }
 
   async getDownloadedMoviesPaginated(
@@ -251,8 +252,7 @@ export default class MovieService {
           if (fs.existsSync(cachePath)) {
             sizeInBytes += await this.calculateDirectorySize(cachePath)
           }
-        } catch (error) {
-          console.warn(`Could not calculate size for movie ${movie.tmdbId}:`, error)
+        } catch {
         }
 
         totalSize += sizeInBytes
@@ -372,8 +372,7 @@ export default class MovieService {
         if (fs.existsSync(cachePath)) {
           totalSize += await this.calculateDirectorySize(cachePath)
         }
-      } catch (error) {
-        console.warn(`Could not calculate size for movie ${movie.tmdbId}:`, error)
+      } catch {
       }
     }
 
@@ -425,9 +424,7 @@ export default class MovieService {
       if (convertingMovies.length > 0) {
         console.log(`Reset ${convertingMovies.length} interrupted movie conversions to pending`)
       }
-    } catch (error) {
-      console.error('Error resetting interrupted conversions:', error)
-    }
+    } catch {}
   }
 
   private async fetchAndUpdateMovieDetails(movie: Movie): Promise<void> {
@@ -443,8 +440,6 @@ export default class MovieService {
           movie.imdbId = movieDetails.imdb_id
         }
       }
-    } catch (error) {
-      console.error(`Failed to fetch movie details from TMDB for ID ${movie.tmdbId}:`, error)
-    }
+    } catch {}
   }
 }

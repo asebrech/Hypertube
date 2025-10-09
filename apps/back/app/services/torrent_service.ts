@@ -67,9 +67,14 @@ export default class TorrentService {
 
   async download(tmdbId: number) {
     console.log('Starting torrent download for TMDB ID:', tmdbId)
-    await this.movieService.getOrCreate(tmdbId)
-
-    await this.movieService.updateLastAccessed(tmdbId)
+    try {
+      await this.movieService.getOrCreate(tmdbId)
+      await this.movieService.updateLastAccessed(tmdbId)
+    }
+    catch {
+      console.log('Could not create or access movie record for TMDB ID:', tmdbId)
+      return { message: 'Couldnt create or access movie record.', tmdbId }
+    }
 
     // Check if movie is already fully converted
     const movie = await this.movieService.getByTmdbId(tmdbId)
@@ -80,13 +85,22 @@ export default class TorrentService {
 
     // If conversion was not completed, clean up any partial HLS files to start fresh
     if (movie && movie.conversionStatus !== 'completed') {
-      await this.cleanupHLSFiles(tmdbId)
+      if (!(await this.cleanupHLSFiles(tmdbId))) {
+        return { message: 'Couldnt clean.', tmdbId }
+      }
     }
 
     await this.downloadSubtitlesForMovie(tmdbId)
 
     const torrent = await this.searchTorrentService.search(tmdbId, 'All', 100)
-    
+
+    if (!torrent) {
+      // Mark as failed so we have it tracked in the database
+      await this.movieService.updateDownloadStatus(tmdbId, 'failed')
+      await this.movieService.updateConversionStatus(tmdbId, 'failed')
+      return { message: 'No torrent file found', tmdbId }
+    }
+
     await this.movieService.updateMagnetLink(tmdbId, torrent.magnetLink)
     await this.movieService.updateDownloadStatus(tmdbId, 'downloading')
 
@@ -111,7 +125,7 @@ export default class TorrentService {
         .sort((a: any, b: any) => b.length - a.length)[0]
 
       if (!videoFile) {
-        throw new Error('No video file found in torrent')
+        return { message: 'No video file found in torrent', tmdbId }
       }
 
       console.log('Starting conversion for:', videoFile.name)
@@ -128,8 +142,7 @@ export default class TorrentService {
       this.movieService.updateDownloadStatus(tmdbId, 'completed')
     })
 
-    engine.on('error', (err: Error) => {
-      console.error('Torrent download error for TMDB ID:', tmdbId, err)
+    engine.on('error', (_err: Error) => {
       this.movieService.updateDownloadStatus(tmdbId, 'failed')
     })
 
@@ -168,9 +181,7 @@ export default class TorrentService {
         const failedLanguages = result.results.filter((r) => !r.success).map((r) => r.language)
         console.log(`Failed to download subtitles for: ${failedLanguages.join(', ')}`)
       }
-    } catch (error) {
-      console.error(`Error during subtitle download for movie ${tmdbId}:`, error)
-      // Don't throw the error - subtitle failure shouldn't prevent movie download
+    } catch {
       console.log(`Continuing with movie download despite subtitle download issues`)
     }
   }
@@ -186,7 +197,6 @@ export default class TorrentService {
 
       ffmpeg(stream).ffprobe((err, metadata) => {
         if (err) {
-          console.error('Error probing video duration:', err)
           reject(err)
           return
         }
@@ -195,7 +205,6 @@ export default class TorrentService {
         if (duration) {
           resolve(duration)
         } else {
-          console.error('Could not determine video duration from metadata')
           reject(new Error('Could not determine video duration'))
         }
       })
@@ -213,8 +222,7 @@ export default class TorrentService {
       this.videoDurations.set(videoId, duration)
 
       await this.movieService.updateDuration(tmdbId, duration)
-    } catch (error) {
-      console.error('Failed to probe video duration:', error)
+    } catch {
       await this.movieService.updateConversionStatus(tmdbId, 'failed')
       return
     }
@@ -274,11 +282,10 @@ export default class TorrentService {
         this.progressLoggingService.logConversionCompletion(videoId, width)
         this.markConversionComplete(videoId, width)
       })
-      .on('error', async (err) => {
-        console.error(`Error in conversion for ${width}p:`, err.message)
+      .on('error', async (_err) => {
         const tmdbId = Number.parseInt(videoId)
         await this.movieService.updateConversionStatus(tmdbId, 'failed')
-        throw new Error(`FFmpeg conversion failed for ${width}p: ${err.message}`)
+        return
       })
       .run()
   }
@@ -304,10 +311,7 @@ export default class TorrentService {
           }
         }
       }
-    } catch (error) {
-      console.error('Error updating progressive playlist:', error)
-      throw new Error(`Failed to update progressive playlist: ${error}`)
-    }
+    } catch {}
   }
 
   private async markProgressiveReady(tmdbId: number, resolution: number) {
@@ -317,7 +321,9 @@ export default class TorrentService {
     }
 
     try {
-      await this.movieService.updateResolutionStatus(tmdbId, resolution, true)
+      if (!(await this.movieService.updateResolutionStatus(tmdbId, resolution, true))) {
+        return
+      }
       this.readyResolutions.add(key)
 
       const allResolutions = [480, 720, 1080]
@@ -326,30 +332,30 @@ export default class TorrentService {
       if (allReady) {
         console.log(`All resolutions ready for streaming: 480p, 720p, 1080p`)
       }
-    } catch (error) {
-      console.error('Error marking progressive ready in database:', error)
-    }
+    } catch {}
   }
 
   private async markConversionComplete(videoId: string, resolution: number) {
-    const tmdbId = Number.parseInt(videoId)
+    try {
+      const tmdbId = Number.parseInt(videoId)
 
-    if (!this.completedConversions.has(videoId)) {
-      this.completedConversions.set(videoId, new Set())
-    }
+      if (!this.completedConversions.has(videoId)) {
+        this.completedConversions.set(videoId, new Set())
+      }
 
-    const completedSet = this.completedConversions.get(videoId)!
-    completedSet.add(resolution)
+      const completedSet = this.completedConversions.get(videoId)!
+      completedSet.add(resolution)
 
-    const allResolutions = [480, 720, 1080]
-    const allCompleted = allResolutions.every((res) => completedSet.has(res))
+      const allResolutions = [480, 720, 1080]
+      const allCompleted = allResolutions.every((res) => completedSet.has(res))
 
-    if (allCompleted) {
-      console.log(`All conversions completed for movie ${tmdbId}`)
-      await this.movieService.updateConversionStatus(tmdbId, 'completed')
-      await this.cleanupMovieCache(tmdbId)
-      this.completedConversions.delete(videoId)
-    }
+      if (allCompleted) {
+        console.log(`All conversions completed for movie ${tmdbId}`)
+        await this.movieService.updateConversionStatus(tmdbId, 'completed')
+        await this.cleanupMovieCache(tmdbId)
+        this.completedConversions.delete(videoId)
+      }
+    } catch {}
   }
 
   async ready(tmdbId: number) {
@@ -397,8 +403,7 @@ export default class TorrentService {
       }
 
       return movie.conversionStatus === 'converting' || movie.conversionStatus === 'completed'
-    } catch (error) {
-      console.error('Error checking movie conversion status:', error)
+    } catch {
       return false
     }
   }
@@ -412,7 +417,6 @@ export default class TorrentService {
         console.log(`Cleaned up torrent cache for movie ${tmdbId}`)
         this.progressLoggingService.cleanupMovieTracking(tmdbId)
       } catch (error) {
-        console.error(`Error cleaning up torrent cache for movie ${tmdbId}:`, error)
         throw new Error(`Failed to cleanup cache directory ${cacheDir}: ${error}`)
       }
     }
@@ -421,7 +425,7 @@ export default class TorrentService {
   /**
    * Clean up HLS files for a movie to start conversion fresh
    */
-  private async cleanupHLSFiles(tmdbId: number): Promise<void> {
+  private async cleanupHLSFiles(tmdbId: number): Promise<boolean> {
     const hlsDir = `./hls-output/${tmdbId}`
 
     if (fs.existsSync(hlsDir)) {
@@ -429,25 +433,28 @@ export default class TorrentService {
         console.log(`Cleaning up existing HLS files for movie ${tmdbId} to start fresh conversion`)
         fs.rmSync(hlsDir, { recursive: true })
         console.log(`Successfully cleaned up HLS files for movie ${tmdbId}`)
-        
+
         // Reset resolution status in database
-        await this.movieService.updateResolutionStatus(tmdbId, 480, false)
-        await this.movieService.updateResolutionStatus(tmdbId, 720, false)
-        await this.movieService.updateResolutionStatus(tmdbId, 1080, false)
-        
+        if (
+          !(await this.movieService.updateResolutionStatus(tmdbId, 480, false)) ||
+          !(await this.movieService.updateResolutionStatus(tmdbId, 720, false)) ||
+          !(await this.movieService.updateResolutionStatus(tmdbId, 1080, false))
+        ) {
+          return false
+        }
         // Clear from ready resolutions set
         this.readyResolutions.delete(`${tmdbId}-480`)
         this.readyResolutions.delete(`${tmdbId}-720`)
         this.readyResolutions.delete(`${tmdbId}-1080`)
-        
+
         // Clear segment counts
         this.lastSegmentCounts.delete(`${tmdbId}-480`)
         this.lastSegmentCounts.delete(`${tmdbId}-720`)
         this.lastSegmentCounts.delete(`${tmdbId}-1080`)
-      } catch (error) {
-        console.error(`Error cleaning up HLS files for movie ${tmdbId}:`, error)
-        throw new Error(`Failed to cleanup HLS directory ${hlsDir}: ${error}`)
+      } catch {
+        return false
       }
     }
+    return true
   }
 }

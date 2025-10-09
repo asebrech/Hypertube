@@ -34,7 +34,6 @@ export async function getMovies(
 		const response = await axios(config);
 		return response.data;
 	} catch (error) {
-		console.error('Error fetching movies:', error);
 		throw error;
 	}
 }
@@ -74,7 +73,6 @@ export async function getMovieDiscover(
 		const response = await axios(config);
 		return response.data;
 	} catch (error) {
-		console.error('Error fetching movie discover:', error);
 		throw error;
 	}
 }
@@ -99,7 +97,6 @@ export async function getMovieDetails(
 		const response = await axios(config);
 		return response.data;
 	} catch (error) {
-		console.error('Error fetching movie details:', error);
 		throw error;
 	}
 }
@@ -127,7 +124,6 @@ export async function getBackdropImage(
 		const response = await axios(config);
 		return response.data;
 	} catch (error) {
-		console.error('Error fetching movies:', error);
 		throw error;
 	}
 }
@@ -154,7 +150,6 @@ export async function getPosterImage(
 		const response = await axios(config);
 		return response.data;
 	} catch (error) {
-		console.error('Error fetching movies:', error);
 		throw error;
 	}
 }
@@ -182,7 +177,6 @@ export async function getLogoImage(
 		const response = await axios(config);
 		return response.data;
 	} catch (error) {
-		console.error('Error fetching movies:', error);
 		throw error;
 	}
 }
@@ -207,7 +201,6 @@ export async function getMovieVideos(
 		const response = await axios(config);
 		return response.data;
 	} catch (error) {
-		console.error('Error fetching movie videos:', error);
 		throw error;
 	}
 }
@@ -237,7 +230,6 @@ export async function getMovieSearch(
 		const response = await axios(config);
 		return response.data;
 	} catch (error) {
-		console.error('Error fetching movie search:', error);
 		throw error;
 	}
 }
@@ -257,7 +249,6 @@ export async function getGenresList(token: string | null = null) {
 		const response = await axios(config);
 		return response.data;
 	} catch (error) {
-		console.error('Error fetching genres:', error);
 		throw error;
 	}
 }
@@ -285,7 +276,6 @@ export async function getSimilarMovies(
 		const response = await axios(config);
 		return response.data;
 	} catch (error) {
-		console.error('Error fetching similar movies:', error);
 		throw error;
 	}
 }
@@ -311,7 +301,6 @@ export async function getMovieCredits(
 		const response = await axios(config);
 		return response.data;
 	} catch (error) {
-		console.error('Error fetching movie credits:', error);
 		throw error;
 	}
 }
@@ -335,7 +324,6 @@ export async function getPeopleDetails(
 		const response = await axios(config);
 		return response.data;
 	} catch (error) {
-		console.error('Error fetching people details:', error);
 		throw error;
 	}
 }
@@ -362,7 +350,6 @@ export async function getMovieComments(
 		const response = await axios(config);
 		return response.data;
 	} catch (error) {
-		console.error('Error fetching movie comments:', error);
 		throw error;
 	}
 }
@@ -388,7 +375,6 @@ export async function getUserComments(
 		const response = await axios(config);
 		return response.data;
 	} catch (error) {
-		console.error('Error fetching user comments:', error);
 		throw error;
 	}
 }
@@ -413,7 +399,6 @@ export async function createMovieComment(
 		const response = await axios(config);
 		return response.data;
 	} catch (error) {
-		console.error('Error creating comment:', error);
 		throw error;
 	}
 }
@@ -430,7 +415,6 @@ export async function deleteComment(commentId: number, token: string): Promise<v
 
 		await axios(config);
 	} catch (error) {
-		console.error('Error deleting comment:', error);
 		throw error;
 	}
 }
@@ -456,7 +440,6 @@ export async function updateComment(
 		const response = await axios(config);
 		return response.data;
 	} catch (error) {
-		console.error('Error updating comment:', error);
 		throw error;
 	}
 }
@@ -475,7 +458,6 @@ export async function getUserByUsername(username: string) {
 		const response = await axios(config);
 		return response.data;
 	} catch (error: any) {
-		console.error('Error fetching user profile:', error);
 		if (error.response?.status === 404) {
 			return null; // User not found
 		}
@@ -511,7 +493,6 @@ export async function getUserMovies(
 		const response = await axios(config);
 		return response.data;
 	} catch (error) {
-		console.error('Error fetching user movies:', error);
 		throw error;
 	}
 }
@@ -534,7 +515,6 @@ export async function uploadProfilePicture(file: File, token: string) {
 		const response = await axios(config);
 		return response.data;
 	} catch (error) {
-		console.error('Error uploading profile picture:', error);
 		throw error;
 	}
 }
@@ -554,7 +534,6 @@ export async function setBookmark(movieId: number, bookmarked: boolean, token: s
 	try {
 		await axios(config);
 	} catch (error) {
-		console.error('Error setting bookmark:', error);
 		throw error;
 	}
 }

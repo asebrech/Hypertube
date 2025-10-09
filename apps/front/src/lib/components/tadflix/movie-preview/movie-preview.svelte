@@ -57,10 +57,8 @@
 		if (movieId) {
 			isLoading = true;
 			loadMovieDetails(movieId).catch((error) => {
-				console.error('Error loading movie details:', error);
 			});
 			loadMovieVideo(movieId).catch((error) => {
-				console.error('Error loading movie video:', error);
 			});
 			isLoading = false;
 		}
@@ -156,8 +154,7 @@
 		if (player && typeof player.destroy === 'function') {
 			try {
 				player.destroy();
-			} catch (error) {
-				console.warn('Error destroying YouTube player:', error);
+			} catch {
 			}
 		}
 	});
@@ -191,7 +188,6 @@
 			// Notify parent component of the change
 			onBookmarkChange?.(options.movieId, true);
 		} catch (error) {
-			console.error('Error adding movie to watchlist:', error);
 		}
 	}
 
@@ -206,7 +202,6 @@
 			// Notify parent component of the change
 			onBookmarkChange?.(options.movieId, false);
 		} catch (error) {
-			console.error('Error removing movie from watchlist:', error);
 		}
 	}
 </script>

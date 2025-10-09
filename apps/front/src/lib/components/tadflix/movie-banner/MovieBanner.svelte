@@ -72,8 +72,7 @@
 				player.destroy();
 				playerReady = false;
 				videoEnded = false;
-			} catch (error) {
-				console.warn('Error destroying existing YouTube player:', error);
+			} catch {
 			}
 		}
 
@@ -179,8 +178,7 @@
 			try {
 				player.destroy();
 				player = undefined;
-			} catch (error) {
-				console.warn('Error destroying YouTube player:', error);
+			} catch {
 			}
 		}
 		// Reset player state
