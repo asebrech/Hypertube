@@ -2,6 +2,8 @@
   "extends": "@adonisjs/tsconfig/tsconfig.app.json",
   "compilerOptions": {
     "rootDir": "./",
-    "outDir": "./build"
-  }
+    "outDir": "./build",
+    "resolveJsonModule": true
+  },
+  "exclude": ["build", "node_modules", "hls-output", "torrent-cache", "public/uploads"]
 }

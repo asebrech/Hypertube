@@ -1,8 +1,8 @@
 import vine from '@vinejs/vine'
 import { isValidTmdbId } from '../utils/format.js'
 
-const tmdbIdRule = vine.createRule((value, options, field) => {
-  const parsed = Number.parseInt(value)
+const tmdbIdRule = vine.createRule((value, _options, field) => {
+  const parsed = Number.parseInt(value as string)
   if (Number.isNaN(parsed)) {
     field.report('Invalid movie ID provided', 'tmdb_id', field)
     return

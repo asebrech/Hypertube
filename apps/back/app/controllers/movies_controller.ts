@@ -1,13 +1,9 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/core'
-import { join } from 'node:path'
-import app from '@adonisjs/core/services/app'
 import { TMDBService } from '#services/tmdb_service'
 import { BackDropImage } from '@hypertube/shared'
 import MovieService from '#services/movie_service'
-import { OpenSubtitleService } from '#services/opensubtitle_service'
 import SubtitleService from '#services/subtitle_service'
-import SearchTorrentService from '#services/search_torrent_service'
 import { SUPPORTED_LANGUAGES } from '../validators/subtitle.js'
 import { isValidTmdbId } from '../utils/format.js'
 
@@ -16,9 +12,7 @@ export default class MoviesController {
   constructor(
     private tmdbService: TMDBService,
     private movieService: MovieService,
-    private openSubtitleService: OpenSubtitleService,
-    private subtitleService: SubtitleService,
-    private searchTorrentService: SearchTorrentService
+    private subtitleService: SubtitleService
   ) {}
 
   async index({ request, auth }: HttpContext) {
@@ -584,8 +578,7 @@ export default class MoviesController {
         return response.badRequest({ error: 'Bookmarked value must be a boolean' })
       }
 
-      const movieService = new MovieService()
-      const movie = await movieService.getOrCreate(tmdbId)
+      const movie = await this.movieService.getOrCreate(tmdbId)
 
       const existingRelation = await user
         .related('movies')
