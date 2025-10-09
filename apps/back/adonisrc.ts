@@ -71,4 +71,34 @@ export default defineConfig({
     ],
     forceExit: false,
   },
+
+  /*
+  |--------------------------------------------------------------------------
+  | Metafiles
+  |--------------------------------------------------------------------------
+  |
+  | A collection of files you want to copy to the build folder when creating
+  | the production build.
+  |
+  */
+  metaFiles: [
+    {
+      pattern: 'resources/views/**/*.edge',
+      reloadServer: false,
+    },
+    {
+      pattern: 'public/**',
+      reloadServer: false,
+    },
+  ],
+
+  /*
+  |--------------------------------------------------------------------------
+  | Exclude directories
+  |--------------------------------------------------------------------------
+  |
+  | Exclude the following directories from being compiled and watched
+  |
+  */
+  assetsBundler: false,
 })

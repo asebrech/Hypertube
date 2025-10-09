@@ -3,6 +3,7 @@ import Comment from '#models/comment'
 import Movie from '#models/movies'
 import MovieService from '#services/movie_service'
 import { createMovieCommentValidator } from '#validators/comment'
+import { inject } from '@adonisjs/core'
 
 declare module '@adonisjs/core/http' {
   interface HttpContext {
@@ -10,7 +11,10 @@ declare module '@adonisjs/core/http' {
   }
 }
 
+@inject()
 class CommentsController {
+  constructor(private movieService: MovieService) {}
+
   /**
    * GET /comments/:id
    * Returns comment, author's username, comment id, date posted
@@ -115,8 +119,7 @@ class CommentsController {
       const user = auth.getUserOrFail()
       const { content } = await request.validateUsing(createMovieCommentValidator)
 
-      const movieService = new MovieService()
-      const movie = await movieService.getOrCreate(parseInt(params.id))
+      const movie = await this.movieService.getOrCreate(parseInt(params.id))
 
       const comment = await Comment.create({
         content,
