@@ -111,7 +111,7 @@ export default class MoviesController {
     return { movies: moviesFinalResult, hasMorePages }
   }
 
-  async backdropImage({ request, response }: HttpContext): Promise<BackDropImage | null> {
+  async backdropImage({ request }: HttpContext): Promise<BackDropImage | null> {
     const tmdb_movie_id = request.input('tmdb_movie_id')
     const lang = request.input('lang', 'en')
     const size = request.input('size', 'original')
@@ -129,7 +129,7 @@ export default class MoviesController {
     }
   }
 
-  async posterImage({ request, response }: HttpContext): Promise<BackDropImage | null> {
+  async posterImage({ request }: HttpContext): Promise<BackDropImage | null> {
     const tmdb_movie_id = request.input('tmdb_movie_id')
     const lang = request.input('lang', 'en')
     const size = request.input('size', 'original')
