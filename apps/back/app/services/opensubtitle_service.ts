@@ -30,7 +30,9 @@ export class OpenSubtitleService {
     const now = Date.now()
     const timeSinceLastRequest = now - this.lastRequestTime
     if (timeSinceLastRequest < this.MIN_REQUEST_INTERVAL) {
-      await new Promise(resolve => setTimeout(resolve, this.MIN_REQUEST_INTERVAL - timeSinceLastRequest))
+      await new Promise((resolve) =>
+        setTimeout(resolve, this.MIN_REQUEST_INTERVAL - timeSinceLastRequest)
+      )
     }
     this.lastRequestTime = Date.now()
   }
@@ -47,29 +49,32 @@ export class OpenSubtitleService {
     if (error.response?.status === 429) {
       const retryAfter = error.response.headers['retry-after']
       const delay = retryAfter ? parseInt(retryAfter) * 1000 : Math.pow(2, attempt) * 2000
-      await new Promise(resolve => setTimeout(resolve, delay))
+      await new Promise((resolve) => setTimeout(resolve, delay))
     } else if (error.response?.status >= 500) {
       const delay = Math.min(Math.pow(2, attempt) * 1000, 30000)
-      await new Promise(resolve => setTimeout(resolve, delay))
+      await new Promise((resolve) => setTimeout(resolve, delay))
     } else {
       const delay = Math.min(Math.pow(2, attempt) * 500, 5000)
-      await new Promise(resolve => setTimeout(resolve, delay))
+      await new Promise((resolve) => setTimeout(resolve, delay))
     }
   }
 
-  private async executeWithRetry<T>(operation: () => Promise<T>, maxRetries: number = 3): Promise<T> {
+  private async executeWithRetry<T>(
+    operation: () => Promise<T>,
+    maxRetries: number = 3
+  ): Promise<T> {
     let lastError: any
-    
+
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
         if (attempt > 0) {
           await this.exponentialBackoff(attempt - 1, lastError)
         }
-        
+
         return await operation()
       } catch (error: any) {
         lastError = error
-        
+
         // Don't retry on authentication errors
         if (error.response?.status === 401 || error.response?.status === 403) {
           if (error.response?.status === 401) {
@@ -78,18 +83,18 @@ export class OpenSubtitleService {
           }
           throw error
         }
-        
+
         // Don't retry on bad requests
         if (error.response?.status === 400 || error.response?.status === 404) {
           throw error
         }
-        
+
         if (attempt === maxRetries) {
           throw error
         }
       }
     }
-    
+
     throw lastError
   }
 
@@ -140,7 +145,7 @@ export class OpenSubtitleService {
           'User-Agent': 'HypertubeApp v1.0',
         },
       }
-      
+
       const response = await axios(options)
       return response.data
     }
@@ -188,7 +193,10 @@ export class OpenSubtitleService {
     return Array.from(uniqueSubtitlesPerLanguage.values())
   }
 
-  public async searchSubtitles(tmdb_id: string, lang: string = 'en'): Promise<SubtitleResult | undefined> {
+  public async searchSubtitles(
+    tmdb_id: string,
+    lang: string = 'en'
+  ): Promise<SubtitleResult | undefined> {
     const languageCodesToTry = LanguageMapper.getLanguageCodesToTry(lang)
     for (const languageCode of languageCodesToTry) {
       try {
@@ -240,12 +248,18 @@ export class OpenSubtitleService {
   }
 
   public async getSubtitleLink(tmdb_id: string, lang: string = 'en'): Promise<string | null> {
-    const subtitle = await this.searchSubtitles(tmdb_id, lang)
-    if (subtitle && subtitle.attributes.files && subtitle.attributes.files.length > 0) {
-      const downloadResponse = await this.downloadSubtitle(subtitle.attributes.files[0].file_id)
-      return downloadResponse.link
+    try {
+      const subtitle = await this.searchSubtitles(tmdb_id, lang)
+      if (subtitle && subtitle.attributes.files && subtitle.attributes.files.length > 0) {
+        const downloadResponse = await this.downloadSubtitle(subtitle.attributes.files[0].file_id)
+        return downloadResponse.link
+      }
+      return null
+    } catch (e) {
+      //log api error from open subtitles, it might help for correction actually.
+      console.log(e)
+      return null
     }
-    return null
   }
 
   public async getSubtitleDownloadInfo(

@@ -56,8 +56,7 @@
 			} else {
 				hasMoreBookmarked = false;
 			}
-		} catch (error) {
-			console.error('Error loading more bookmarked movies:', error);
+		} catch {
 			hasMoreBookmarked = false;
 		} finally {
 			isLoadingBookmarked = false;
@@ -76,8 +75,7 @@
 				bookmarkedPage = 1;
 				hasMoreBookmarked = response.pagination.hasNextPage;
 			}
-		} catch (error) {
-			console.error('Error refreshing bookmarked movies:', error);
+		} catch {
 		} finally {
 			isLoadingBookmarked = false;
 		}

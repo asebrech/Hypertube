@@ -19,7 +19,7 @@ export interface CleanupOptions {
 }
 
 export default class MovieCleanupService {
-  async cleanupOldMovies(options: CleanupOptions = {}): Promise<CleanupResult> {
+  async cleanupOldMovies(options: CleanupOptions = {}): Promise<CleanupResult | null> {
     const { dryRun = false, daysThreshold = 30, logProgress = console.log } = options
     const cutoffDate = DateTime.now().minus({ days: daysThreshold })
 
@@ -50,7 +50,7 @@ export default class MovieCleanupService {
           const movieTitle = movie.title || 'Unknown title'
 
           if (!isValidTmdbId(movieId)) {
-            throw new Error(`Invalid tmdbId: ${movieId}`)
+            return null
           }
 
           const hlsPath = path.join(process.cwd(), 'hls-output', movieId.toString())
@@ -62,14 +62,14 @@ export default class MovieCleanupService {
 
           if (!dryRun) {
             if (!this.isValidCleanupPath(hlsPath) || !this.isValidCleanupPath(cachePath)) {
-              throw new Error(`Invalid cleanup path detected for movie ${movieId}`)
+              return null
             }
 
             if (fs.existsSync(hlsPath)) {
               try {
                 fs.rmSync(hlsPath, { recursive: true })
               } catch (error) {
-                throw new Error(`Failed to remove HLS directory ${hlsPath}: ${error}`)
+                return null
               }
             }
 
@@ -77,7 +77,7 @@ export default class MovieCleanupService {
               try {
                 fs.rmSync(cachePath, { recursive: true })
               } catch (error) {
-                throw new Error(`Failed to remove cache directory ${cachePath}: ${error}`)
+                return null
               }
             }
 
@@ -102,7 +102,7 @@ export default class MovieCleanupService {
     } catch (error) {
       const errorMessage = `Cleanup failed: ${error}`
       result.errorMessages.push(errorMessage)
-      throw error
+      return null;
     }
 
     return result
@@ -153,8 +153,7 @@ export default class MovieCleanupService {
           totalSize += fs.statSync(filePath).size
         }
       }
-    } catch (error) {
-      console.warn(`Error calculating directory size for ${dirPath}:`, error)
+    } catch {
     }
 
     return totalSize
@@ -197,6 +196,15 @@ export default class MovieCleanupService {
       }
 
       const result = await this.deleteSingleMovie(movie)
+      if (!result) {
+        const errorMessage = `Failed to delete movie ${tmdbId}`
+        return {
+          success: false,
+          message: 'Failed to delete movie',
+          spaceFreed: 0,
+          error: errorMessage,
+        }
+      }
       const movieTitle = movie.title || 'Unknown title'
 
       if (result.success) {
@@ -215,7 +223,6 @@ export default class MovieCleanupService {
       }
     } catch (error) {
       const errorMessage = `Failed to delete movie ${tmdbId}: ${error}`
-      console.error(errorMessage)
       return {
         success: false,
         message: 'Failed to delete movie',
@@ -269,6 +276,16 @@ export default class MovieCleanupService {
         }
 
         const deleteResult = await this.deleteSingleMovie(movie)
+        if (!deleteResult) {
+          return {
+            success: false,
+            message: 'Failed to delete all movies',
+            moviesDeleted: 0,
+            spaceFreed: 0,
+            errors: 1,
+            errorMessages: [],
+          }
+        }
 
         if (deleteResult.success) {
           result.moviesDeleted++
@@ -289,7 +306,6 @@ export default class MovieCleanupService {
       console.log(`Deletion completed: ${result.moviesDeleted} deleted, ${result.errors} errors`)
       return result
     } catch (error) {
-      console.error('Failed to delete all movies:', error)
       return {
         success: false,
         message: 'Failed to delete all movies',
@@ -305,16 +321,16 @@ export default class MovieCleanupService {
     success: boolean
     spaceFreed: number
     error?: string
-  }> {
+  } | null> {
     try {
       const tmdbId = movie.tmdbId
 
       if (!isValidTmdbId(tmdbId)) {
-        throw new Error(`Invalid tmdbId: ${tmdbId}`)
+        return null
       }
 
       if (movie.conversionStatus === 'converting') {
-        throw new Error(`Cannot delete movie ${tmdbId} - currently being converted`)
+        return null
       }
 
       const hlsPath = path.join(process.cwd(), 'hls-output', tmdbId.toString())
@@ -325,14 +341,14 @@ export default class MovieCleanupService {
         (await this.calculateDirectorySize(cachePath))
 
       if (!this.isValidCleanupPath(hlsPath) || !this.isValidCleanupPath(cachePath)) {
-        throw new Error(`Invalid cleanup path detected for movie ${tmdbId}`)
+        return null
       }
 
       if (fs.existsSync(hlsPath)) {
         try {
           fs.rmSync(hlsPath, { recursive: true })
         } catch (error) {
-          throw new Error(`Failed to remove HLS directory ${hlsPath}: ${error}`)
+          return null
         }
       }
 
@@ -340,7 +356,7 @@ export default class MovieCleanupService {
         try {
           fs.rmSync(cachePath, { recursive: true })
         } catch (error) {
-          throw new Error(`Failed to remove cache directory ${cachePath}: ${error}`)
+          return null
         }
       }
 
@@ -352,7 +368,6 @@ export default class MovieCleanupService {
       }
     } catch (error) {
       const errorMessage = `Error deleting movie ${movie.tmdbId}: ${error}`
-      console.error(errorMessage)
       return {
         success: false,
         spaceFreed: 0,

@@ -129,7 +129,6 @@
 
 	function setupPlayerEvents() {
 		player.on('error', (error: any) => {
-			console.error('Video.js player error:', error);
 			onError?.('Video player error occurred');
 		});
 
@@ -261,7 +260,6 @@
 				for (let i = 0; i < textTracks.length; i++) {
 					const track = textTracks[i];
 					track.addEventListener('error', (e: Event) => {
-						console.error(`Subtitle error (${track.language}):`, e);
 					});
 				}
 			});
@@ -272,7 +270,6 @@
 				}
 			}, VIDEO_CONFIG.PROGRESS_SAVE_INTERVAL);
 		} catch (error) {
-			console.error('Error initializing video player:', error);
 			onError?.('Failed to initialize video player');
 		}
 	}

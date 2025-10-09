@@ -38,8 +38,7 @@ export const GET: RequestHandler = async ({ cookies, fetch, url }) => {
 		if (err instanceof Error && 'status' in err) {
 			throw err;
 		}
-		console.error('Error fetching movies:', err);
-		throw error(500, 'Internal server error');
+		throw error(400, 'Bad Request');
 	}
 };
 
@@ -75,7 +74,6 @@ export const DELETE: RequestHandler = async ({ cookies, fetch }) => {
 		if (err instanceof Error && 'status' in err) {
 			throw err;
 		}
-		console.error('Error deleting all movies:', err);
-		throw error(500, 'Internal server error');
+		throw error(400, 'Bad request');
 	}
 };

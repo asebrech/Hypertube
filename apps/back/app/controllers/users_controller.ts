@@ -113,8 +113,7 @@ export default class UsersController {
         watchedMoviesData: watchedMovies,
         // Don't expose email, password, or other sensitive data
       })
-    } catch (error) {
-      console.error('Profile lookup error:', error)
+    } catch {
       return response.notFound({ messageKey: 'users.not_found' })
     }
   }
@@ -146,8 +145,7 @@ export default class UsersController {
           user.profilePicture = await profilePictureService.processProfilePictureUrl(
             payload.profilePicture
           )
-        } catch (error) {
-          console.error('Profile picture processing error:', error)
+        } catch {
           user.profilePicture = payload.profilePicture
         }
       }
@@ -302,8 +300,7 @@ export default class UsersController {
         messageKey: 'profile.upload.success-upload',
         profilePicture: profilePictureUrl,
       })
-    } catch (error) {
-      console.error('Profile picture upload error:', error)
+    } catch {
       return response.badRequest({ messageKey: 'profile.upload.error-upload-failed' })
     }
   }

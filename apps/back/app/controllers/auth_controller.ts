@@ -225,10 +225,7 @@ export default class AuthController {
             user.profilePicture = profilePictureUrl
             await user.save()
           }
-        } catch (profileError) {
-          // Log but don't fail registration if profile picture upload fails
-          console.error('Profile picture upload failed during registration:', profileError)
-        }
+        } catch {}
       }
 
       return response.created(user)
@@ -344,8 +341,7 @@ export default class AuthController {
         try {
           const profilePictureService = new ProfilePictureService()
           processedAvatarUrl = await profilePictureService.processProfilePictureUrl(user.avatarUrl)
-        } catch (error) {
-          console.error('Failed to process OAuth avatar URL:', error)
+        } catch {
           processedAvatarUrl = user.avatarUrl
         }
       }
@@ -415,8 +411,6 @@ export default class AuthController {
 
       return response.redirect(frontendUrl)
     } catch (error) {
-      console.error(`OAuth ${params.provider} authentication error:`, error)
-
       // Handle specific error cases
       let errorType = 'processing_error'
       let errorDetails = 'An error occurred during authentication'
@@ -576,7 +570,8 @@ export default class AuthController {
       if (payload.username !== undefined) user.username = payload.username
       if (payload.firstName !== undefined) user.firstName = payload.firstName
       if (payload.lastName !== undefined) user.lastName = payload.lastName
-      if (payload.allowAdultContent !== undefined) user.allowAdultContent = payload.allowAdultContent
+      if (payload.allowAdultContent !== undefined)
+        user.allowAdultContent = payload.allowAdultContent
 
       await user.save()
 

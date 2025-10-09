@@ -31,7 +31,6 @@
 		isLoading = true;
 		loadPosterImage(movieId, 'small')
 			.catch((error) => {
-				console.error('Error loading backdrop image:', error);
 				poster_image = {
 					aspect_ratio: 0,
 					height: 0,

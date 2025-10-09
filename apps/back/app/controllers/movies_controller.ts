@@ -1,13 +1,9 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/core'
-import { join } from 'node:path'
-import app from '@adonisjs/core/services/app'
 import { TMDBService } from '#services/tmdb_service'
 import { BackDropImage } from '@hypertube/shared'
 import MovieService from '#services/movie_service'
-import { OpenSubtitleService } from '#services/opensubtitle_service'
 import SubtitleService from '#services/subtitle_service'
-import SearchTorrentService from '#services/search_torrent_service'
 import { SUPPORTED_LANGUAGES } from '../validators/subtitle.js'
 import { isValidTmdbId } from '../utils/format.js'
 
@@ -16,9 +12,7 @@ export default class MoviesController {
   constructor(
     private tmdbService: TMDBService,
     private movieService: MovieService,
-    private openSubtitleService: OpenSubtitleService,
-    private subtitleService: SubtitleService,
-    private searchTorrentService: SearchTorrentService
+    private subtitleService: SubtitleService
   ) {}
 
   async index({ request, auth }: HttpContext) {
@@ -77,7 +71,6 @@ export default class MoviesController {
       ...movieListByGenreResults,
     ]
     const slicedResponse = finalMovieListByGenre.slice(offset, offset + limit)
-   
 
     const moviesFinalResult = await Promise.all(
       slicedResponse.map(async (genre: any) => {
@@ -91,7 +84,9 @@ export default class MoviesController {
               movie.watch_progress_seconds = 0
 
               // Check and update torrent availability in database
-              movie.torrent_available = await this.movieService.checkAndUpdateTorrentAvailability(movie.id)
+              movie.torrent_available = await this.movieService.checkAndUpdateTorrentAvailability(
+                movie.id
+              )
 
               if (user) {
                 const movieTable = await user
@@ -216,7 +211,12 @@ export default class MoviesController {
       allowAdultContent = user.allowAdultContent || false
     }
 
-    const searchResults = await this.tmdbService.getMultiSearch(query, lang, page, allowAdultContent)
+    const searchResults = await this.tmdbService.getMultiSearch(
+      query,
+      lang,
+      page,
+      allowAdultContent
+    )
     const hasMorePages = searchResults.total_pages > page
     const media: any[] = []
 
@@ -248,7 +248,8 @@ export default class MoviesController {
             }
 
             // Check and update torrent availability in database
-            movieWithDefaults.torrent_available = await this.movieService.checkAndUpdateTorrentAvailability(movie.id)
+            movieWithDefaults.torrent_available =
+              await this.movieService.checkAndUpdateTorrentAvailability(movie.id)
 
             if (user) {
               const movieTable = await user
@@ -279,7 +280,8 @@ export default class MoviesController {
         }
 
         // Check and update torrent availability in database
-        movieWithDefaults.torrent_available = await this.movieService.checkAndUpdateTorrentAvailability(result.id)
+        movieWithDefaults.torrent_available =
+          await this.movieService.checkAndUpdateTorrentAvailability(result.id)
 
         if (user) {
           const movieTable = await user
@@ -355,10 +357,9 @@ export default class MoviesController {
 
           // Check and update torrent availability in database
           try {
-            movieWithType.torrent_available = await this.movieService.checkAndUpdateTorrentAvailability(movie.id)
-          } catch (error) {
-            console.error(`Error checking torrent availability for movie ${movie.id}:`, error)
-          }
+            movieWithType.torrent_available =
+              await this.movieService.checkAndUpdateTorrentAvailability(movie.id)
+          } catch {}
 
           if (user) {
             const movieTable = await user
@@ -472,9 +473,8 @@ export default class MoviesController {
       })
 
       return response.ok({ message: 'Movie marked as watched successfully' })
-    } catch (error) {
-      console.error('Error marking movie as watched:', error)
-      return response.internalServerError({
+    } catch {
+      return response.badRequest({
         error: 'Failed to mark movie as watched',
       })
     }
@@ -524,9 +524,8 @@ export default class MoviesController {
         message: 'Watch progress saved successfully',
         progress: progressSeconds,
       })
-    } catch (error) {
-      console.error('Error saving watch progress:', error)
-      return response.internalServerError({
+    } catch {
+      return response.badRequest({
         error: 'Failed to save watch progress',
       })
     }
@@ -558,9 +557,8 @@ export default class MoviesController {
         isWatched: relation.$extras.pivot_is_watched || false,
         isBookmarked: relation.$extras.pivot_is_bookmarked || false,
       })
-    } catch (error) {
-      console.error('Error getting watch progress:', error)
-      return response.internalServerError({
+    } catch {
+      return response.notFound({
         error: 'Failed to get watch progress',
       })
     }
@@ -580,8 +578,7 @@ export default class MoviesController {
         return response.badRequest({ error: 'Bookmarked value must be a boolean' })
       }
 
-      const movieService = new MovieService()
-      const movie = await movieService.getOrCreate(tmdbId)
+      const movie = await this.movieService.getOrCreate(tmdbId)
 
       const existingRelation = await user
         .related('movies')
@@ -606,19 +603,14 @@ export default class MoviesController {
         },
       })
 
-      const message = bookmarked
-        ? 'Movie bookmarked successfully'
-        : 'Bookmark removed successfully'
+      const message = bookmarked ? 'Movie bookmarked successfully' : 'Bookmark removed successfully'
 
       return response.ok({
         message,
         bookmarked: bookmarked,
       })
-    } catch (error) {
-      console.error('Error setting bookmark:', error)
-      return response.internalServerError({
-        error: 'Failed to set bookmark',
-      })
+    } catch {
+      return response.notFound()
     }
   }
 
@@ -673,11 +665,8 @@ export default class MoviesController {
         message: `Downloaded subtitles for ${result.results.filter((r) => r.success).length} language(s)`,
         results: result.results,
       })
-    } catch (error) {
-      console.error('Error downloading multiple subtitles:', error)
-      return response.internalServerError({
-        error: 'Failed to download subtitles',
-      })
+    } catch {
+      return response.notFound()
     }
   }
 
@@ -726,11 +715,8 @@ export default class MoviesController {
         availableLanguages,
         count: availableLanguages.length,
       })
-    } catch (error) {
-      console.error('Error getting subtitles:', error)
-      return response.internalServerError({
-        error: 'Failed to get subtitles',
-      })
+    } catch {
+      return response.notFound()
     }
   }
 
@@ -798,7 +784,9 @@ export default class MoviesController {
           title: movie.title,
           createdAt: movie.createdAt,
           updatedAt: movie.updatedAt,
-          torrent_available: await this.movieService.checkAndUpdateTorrentAvailability(movie.tmdbId),
+          torrent_available: await this.movieService.checkAndUpdateTorrentAvailability(
+            movie.tmdbId
+          ),
           userInteraction: {
             isWatched: movie.$extras.pivot_is_watched || false,
             isBookmarked: movie.$extras.pivot_is_bookmarked || false,
@@ -820,18 +808,13 @@ export default class MoviesController {
           hasPrevPage,
         },
         filters: {
-          isWatched: isWatched !== undefined ? (isWatched === 'true' || isWatched === true) : null,
-          isBookmarked: isBookmarked !== undefined ? (isBookmarked === 'true' || isBookmarked === true) : null,
+          isWatched: isWatched !== undefined ? isWatched === 'true' || isWatched === true : null,
+          isBookmarked:
+            isBookmarked !== undefined ? isBookmarked === 'true' || isBookmarked === true : null,
         },
       })
-    } catch (error) {
-      console.error('Error fetching user movies:', error)
-      return response.internalServerError({
-        success: false,
-        error: 'Failed to fetch user movies',
-      })
+    } catch {
+      return response.notFound()
     }
   }
-
-
 }

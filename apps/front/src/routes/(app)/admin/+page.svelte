@@ -132,7 +132,6 @@
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : $_('admin.errors.unknown_error');
-			console.error('Error fetching movies:', err);
 		} finally {
 			isLoading = false;
 		}
@@ -177,7 +176,6 @@
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : $_('admin.errors.unknown_error');
-			console.error('Error fetching indexed movies:', err);
 		} finally {
 			isLoadingIndexed = false;
 		}
@@ -211,7 +209,6 @@
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : $_('admin.errors.unknown_error');
-			console.error('Error deleting movie:', err);
 		} finally {
 			isDeleting = false;
 		}
@@ -256,7 +253,6 @@
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : $_('admin.errors.unknown_error');
-			console.error('Error deleting all movies:', err);
 		} finally {
 			isDeleting = false;
 		}
@@ -506,7 +502,6 @@
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : $_('admin.errors.unknown_error');
-			console.error('Error deleting indexed movie:', err);
 		} finally {
 			isDeletingIndexed = false;
 		}

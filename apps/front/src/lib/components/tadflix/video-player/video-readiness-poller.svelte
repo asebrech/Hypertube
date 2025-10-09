@@ -59,8 +59,7 @@
 					cleanup();
 					onReady?.();
 				}
-			} catch (error) {
-				console.error('Error during polling:', error);
+			} catch {
 			}
 		}, VIDEO_CONFIG.POLL_INTERVAL);
 	}

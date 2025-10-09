@@ -32,14 +32,22 @@ export default class TorrentController {
     protected movieCleanupService: MovieCleanupService
   ) {}
 
-  async torrent({ request }: HttpContext) {
+  async torrent({ request, response }: HttpContext) {
     const tmdb = request.param('id')
 
     if (await this.torrentService.isMovieProcessing(tmdb)) {
       return { message: 'Movie is currently being processed or already processed' }
     }
 
-    return await this.torrentService.download(tmdb)
+    const result = await this.torrentService.download(tmdb)
+
+    // If the result indicates failure (no torrent, cleanup failed, etc), return 404
+    const failureMessages = ['No torrent file found', 'Couldnt clean', 'Couldnt create or access movie record']
+    if (failureMessages.some((msg) => result.message.includes(msg))) {
+      return response.notFound(result)
+    }
+
+    return result
   }
 
   async ready({ request }: HttpContext) {
@@ -124,11 +132,7 @@ export default class TorrentController {
       const limit = Math.min(100, Math.max(1, parseInt(request.qs().limit || '10', 10)))
       const search = request.qs().search?.toString() || ''
 
-      const result = await this.movieService.getMoviesWithoutDownloadStatus(
-        page,
-        limit,
-        search
-      )
+      const result = await this.movieService.getMoviesWithoutDownloadStatus(page, limit, search)
 
       return response.ok({
         success: true,
@@ -173,7 +177,7 @@ export default class TorrentController {
         })
       }
 
-      return response.internalServerError({
+      return response.notFound({
         success: false,
         message: result.message,
         error: result.error,
@@ -196,7 +200,7 @@ export default class TorrentController {
         errorMessages: result.errorMessages,
       })
     } else {
-      return response.internalServerError({
+      return response.notFound({
         success: false,
         message: result.message,
         errors: result.errors,
@@ -206,8 +210,7 @@ export default class TorrentController {
   }
 
   private handleDeleteError(response: HttpContext['response'], error: unknown, operation: string) {
-    console.error(`Error ${operation}:`, error)
-    return response.internalServerError({
+    return response.notFound({
       success: false,
       message: `An unexpected error occurred while ${operation}`,
       error: error instanceof Error ? error.message : 'Unknown error',

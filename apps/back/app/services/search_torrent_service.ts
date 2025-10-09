@@ -11,12 +11,21 @@ export function compareVideoQuality(a: VideoQuality, b: VideoQuality): number {
 
 export default class SearchTorrentService {
   private tmdbService: TMDBService = new TMDBService()
-  async search(tmdbId: number, category: string = 'All', limit: number = 100) {
+  async search(
+    tmdbId: number,
+    category: string = 'All',
+    limit: number = 100
+  ): Promise<{ magnetLink: string; resolution: VideoQuality } | null> {
     TorrentSearchApi.disableAllProviders()
     TorrentSearchApi.enableProvider('Yts')
     TorrentSearchApi.enableProvider('ThePirateBay')
 
     const imdbId = await this.tmdbService.getMovieExternalIMDBId(tmdbId)
+
+    // If no IMDB ID, can't search for torrents
+    if (!imdbId) {
+      return null
+    }
 
     const torrents = await TorrentSearchApi.search(imdbId, category, limit)
     let bestTorrent = null
@@ -43,7 +52,7 @@ export default class SearchTorrentService {
         magnetLink: await TorrentSearchApi.getMagnet(bestTorrent),
         resolution: currentResolution,
       }
-    else throw new Error('No suitable torrent found')
+    else return null
   }
 
   /**
@@ -57,34 +66,41 @@ export default class SearchTorrentService {
    * @returns {Promise<boolean>} - Resolves to true if a suitable torrent is found, otherwise false.
    */
   async isAvailable(tmdbId: number, category: string = 'All', limit: number = 100) {
-    TorrentSearchApi.disableAllProviders()
-    TorrentSearchApi.enableProvider('Yts')
-    TorrentSearchApi.enableProvider('ThePirateBay')
+    try {
+      TorrentSearchApi.disableAllProviders()
+      TorrentSearchApi.enableProvider('Yts')
+      TorrentSearchApi.enableProvider('ThePirateBay')
 
-    const imdbId = await this.tmdbService.getMovieExternalIMDBId(tmdbId)
+      const imdbId = await this.tmdbService.getMovieExternalIMDBId(tmdbId)
 
-    const torrents = await TorrentSearchApi.search(imdbId, category, limit)
-    let torrentExist = false
-    let currentResolution: VideoQuality = '0'
-    for (const torrent of torrents) {
-      if (torrent.title.includes('1080p')) {
-        currentResolution = '1080p'
-        torrentExist = true
-        break
+      // If no IMDB ID, can't search for torrents
+      if (!imdbId) {
+        return false
       }
-      if (torrent.title.includes('720p') && compareVideoQuality(currentResolution, '720p') > 0) {
-        currentResolution = '720p'
-        torrentExist = true
-        break
+
+      const torrents = await TorrentSearchApi.search(imdbId, category, limit)
+      let torrentExist = false
+      let currentResolution: VideoQuality = '0'
+      for (const torrent of torrents) {
+        if (torrent.title.includes('1080p')) {
+          currentResolution = '1080p'
+          torrentExist = true
+          break
+        }
+        if (torrent.title.includes('720p') && compareVideoQuality(currentResolution, '720p') > 0) {
+          currentResolution = '720p'
+          torrentExist = true
+          break
+        }
+        if (torrent.title.includes('480p') && compareVideoQuality(currentResolution, '480p') > 0) {
+          currentResolution = '480p'
+          torrentExist = true
+          break
+        }
       }
-      if (torrent.title.includes('480p') && compareVideoQuality(currentResolution, '480p') > 0) {
-        currentResolution = '480p'
-        torrentExist = true
-        break
-      }
+      return torrentExist
+    } catch {
+      return false
     }
-    return torrentExist
   }
-
-  
 }

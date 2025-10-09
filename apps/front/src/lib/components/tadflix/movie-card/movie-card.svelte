@@ -47,7 +47,6 @@
 			isLoading = true;
 			loadBackdropImage(movieId, 'small')
 				.catch((error) => {
-					console.error('Error loading backdrop image:', error);
 					backdropImage = {
 						aspect_ratio: 0,
 						height: 0,
