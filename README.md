@@ -120,7 +120,8 @@ docker compose up -d
 - Backend API: http://localhost:3333
 - Admin Panel: http://localhost:5173/admin
 
-### Environment Configuration
+<details>
+<summary><strong>⚙️ Environment Configuration</strong></summary>
 
 **Backend (`apps/back/.env`)**:
 ```env
@@ -159,7 +160,10 @@ BACK_URL=http://localhost:3333
 ```env
 PUBLIC_BACK_URL=http://localhost:3333
 SECRET_BACK_REDIRECT_URL=http://localhost:3333
+PUBLIC_ENABLE_YOUTUBE=true
 ```
+
+</details>
 
 ---
 
@@ -217,7 +221,8 @@ The streaming engine uses progressive HLS conversion:
 
 ## 🛠️ API Documentation
 
-### Authentication Endpoints
+<details>
+<summary><strong>🔐 Authentication Endpoints</strong></summary>
 
 ```typescript
 POST /auth/login              // Standard login
@@ -229,7 +234,10 @@ POST /auth/forgot-password    // Password reset request
 POST /auth/reset-password     // Password reset confirmation
 ```
 
-### Movie Endpoints
+</details>
+
+<details>
+<summary><strong>🎬 Movie Endpoints</strong></summary>
 
 ```typescript
 GET  /movies/search           // Search movies
@@ -241,7 +249,10 @@ GET  /movies/{id}             // Movie details
 GET  /movies/{id}/credits     // Movie cast & crew
 ```
 
-### Streaming Endpoints
+</details>
+
+<details>
+<summary><strong>🏴‍☠️ Streaming Endpoints</strong></summary>
 
 ```typescript
 POST /torrent/{id}            // Start movie download
@@ -250,7 +261,10 @@ GET  /stream/*                // HLS video streaming
 DELETE /torrent/{id}          // Remove movie
 ```
 
-### User Endpoints
+</details>
+
+<details>
+<summary><strong>👤 User Endpoints</strong></summary>
 
 ```typescript
 GET  /users/{username}        // User profile
@@ -260,11 +274,14 @@ POST /users/{id}/bookmark     // Add to bookmarks
 GET  /users/{id}/progress     // Watch progress
 ```
 
+</details>
+
 ---
 
 ## 🎯 Usage Examples
 
-### Basic Movie Search
+<details>
+<summary><strong>🔍 Basic Movie Search</strong></summary>
 
 ```javascript
 // Search for movies
@@ -276,7 +293,10 @@ const movie = await fetch('/api/movies/550'); // Fight Club
 const details = await movie.json();
 ```
 
-### Starting a Stream
+</details>
+
+<details>
+<summary><strong>🎬 Starting a Stream</strong></summary>
 
 ```javascript
 // Check if movie is available for streaming
@@ -292,7 +312,10 @@ if (availability.ok) {
 }
 ```
 
-### User Authentication
+</details>
+
+<details>
+<summary><strong>🔐 User Authentication</strong></summary>
 
 ```javascript
 // OAuth login
@@ -303,6 +326,9 @@ const user = await fetch('/api/auth/me');
 if (user.ok) {
   const userData = await user.json();
 }
+```
+
+</details>
 ```
 
 ---
@@ -450,9 +476,41 @@ Hypertube/
 
 ## 🐛 Troubleshooting
 
-### Common Issues
+<details>
+<summary><strong>🎥 Video Player Warnings (Video.js)</strong></summary>
 
-**YouTube Player Warnings**
+If you see console warnings related to Video.js player, these are known issues from the Video.js library itself and **cannot be fixed** from our application:
+
+![Video.js Console Warnings](doc/videojs-warnings.png)
+*Common Video.js warnings that appear in browser console*
+
+**Common Video.js warnings include:**
+- `VIDEOJS: WARN: Using the tech directly can be dangerous. I hope you know what you're doing. See https://github.com/videojs/video.js/issues/2617 for more info.`
+- `VIDEOJS: WARN: beforeRequest is deprecated, use onRequest instead`
+- `La lecture automatique n’est autorisée que lorsqu’elle a été approuvée par l’utilisateur, que le site est activé par l’utilisateur, ou que le média est muet.`
+
+**Why these warnings occur:**
+- Video.js internal optimization checks
+- Browser compatibility detection
+- Media format fallback mechanisms
+- Plugin initialization processes
+
+**These warnings are:**
+- ✅ **Normal behavior** - Part of Video.js initialization
+- ✅ **Non-blocking** - Don't affect functionality
+- ✅ **Informational only** - Help Video.js optimize playback
+- ❌ **Not fixable** - Originate from Video.js core library
+
+**What you can do:**
+- Ignore these warnings - they don't impact user experience
+- Filter them out in browser console if needed
+- Update Video.js when new versions are released
+
+</details>
+
+<details>
+<summary><strong>📺 YouTube Player Warnings</strong></summary>
+
 If you see warnings related to YouTube player in the console, you can disable the YouTube player component:
 
 ```env
@@ -462,7 +520,11 @@ PUBLIC_ENABLE_YOUTUBE=false
 
 This will prevent YouTube-related warnings and improve performance if you're not using YouTube integration features.
 
-**Database Connection Errors**
+</details>
+
+<details>
+<summary><strong>🗄️ Database Connection Errors</strong></summary>
+
 ```bash
 # Check PostgreSQL status
 docker-compose ps postgres
@@ -473,15 +535,135 @@ docker-compose up -d postgres
 cd apps/back && node ace migration:run
 ```
 
-**OAuth Login Problems**
-- Verify client IDs and secrets in environment files
-- Check redirect URLs in OAuth provider settings
-- Ensure backend URL is accessible from frontend
+**Common database issues:**
+- Connection timeout - Check if PostgreSQL is running
+- Port conflicts - Ensure port 5432 is available
+- Authentication failures - Verify credentials in .env
+- Migration errors - Reset and re-run migrations
 
-**Port Conflicts**
-- Backend default: 3333
-- Frontend default: 5173
-- PostgreSQL default: 5432
+</details>
+
+<details>
+<summary><strong>🎬 Video Conversion Issues</strong></summary>
+
+```bash
+# Check FFmpeg installation
+ffmpeg -version
+
+# Clear conversion cache
+rm -rf apps/back/hls-output/*
+rm -rf apps/back/torrent-cache/*
+```
+
+**Common conversion problems:**
+- FFmpeg not found - Install FFmpeg properly
+- Conversion stuck - Clear cache and restart
+- Quality issues - Check video encoding settings
+- Storage full - Free up disk space
+
+</details>
+
+<details>
+<summary><strong>🔐 OAuth Login Problems</strong></summary>
+
+**Configuration checklist:**
+- ✅ Verify client IDs and secrets in environment files
+- ✅ Check redirect URLs in OAuth provider settings  
+- ✅ Ensure backend URL is accessible from frontend
+- ✅ Confirm provider-specific settings (scopes, permissions)
+
+**Provider-specific issues:**
+- **GitHub**: Check repository access permissions
+- **Google**: Verify OAuth consent screen configuration
+- **Discord**: Ensure bot permissions if applicable
+- **42 School**: Confirm campus and coalition settings
+
+</details>
+
+<details>
+<summary><strong>🌐 Port Conflicts</strong></summary>
+
+**Default ports used:**
+- **Backend**: 3333
+- **Frontend**: 5173  
+- **PostgreSQL**: 5432
+
+**Resolving conflicts:**
+```bash
+# Check what's using a port
+lsof -i :3333
+
+# Kill process on port
+kill -9 $(lsof -t -i:3333)
+
+# Use different ports in .env
+BACKEND_PORT=3334
+FRONTEND_PORT=5174
+```
+
+</details>
+
+<details>
+<summary><strong>🔨 Build Errors</strong></summary>
+
+```bash
+# Clean and rebuild
+make clean
+make prod-deploy
+```
+
+**Common build issues:**
+- Node version mismatch - Use Node.js 18+
+- Package conflicts - Clear node_modules and reinstall
+- TypeScript errors - Check type definitions
+- Memory issues - Increase Node.js memory limit
+
+```bash
+# Increase memory for builds
+export NODE_OPTIONS="--max-old-space-size=8192"
+```
+
+</details>
+
+<details>
+<summary><strong>🚀 Performance Issues</strong></summary>
+
+**Frontend performance:**
+- Clear browser cache and cookies
+- Disable browser extensions
+- Check network throttling in DevTools
+- Verify touch-action CSS optimizations
+
+**Backend performance:**
+- Monitor database query performance
+- Check available disk space
+- Verify FFmpeg encoding settings
+- Monitor memory and CPU usage
+
+</details>
+
+<details>
+<summary><strong>🔍 Debug Mode</strong></summary>
+
+Enable comprehensive debugging:
+
+```env
+# Backend (.env)
+LOG_LEVEL=debug
+NODE_DEBUG=*
+
+# Frontend (.env)
+PUBLIC_DEBUG=true
+PUBLIC_ENABLE_YOUTUBE=false  # Disable YouTube warnings
+```
+
+**Debug tools:**
+- Browser DevTools Console
+- Network tab for API calls
+- Application tab for localStorage
+- Backend logs in terminal
+
+</details>
 
 
 ---
