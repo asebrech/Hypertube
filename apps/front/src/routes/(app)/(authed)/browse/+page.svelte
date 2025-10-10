@@ -9,7 +9,6 @@
 	import { X } from 'lucide-svelte';
 	import Titlebar from '@/components/tadflix/layout/titlebar/Titlebar.svelte';
 
-
 	const { data } = $props();
 
 	let isLoading: boolean = $state(false);
@@ -78,10 +77,10 @@
 			},
 			{ rootMargin: '200px' }
 		);
-		
+
 		if (sentinel) {
 			observer.observe(sentinel);
-			
+
 			// Check if sentinel is already visible and trigger load if needed
 			setTimeout(() => {
 				if (sentinel && hasMorePages && !isLoading) {
@@ -161,7 +160,7 @@
 	}
 
 	function handleGenreRemove(genreId: number) {
-		selectedGenres = selectedGenres.filter(genre => genre.id !== genreId);
+		selectedGenres = selectedGenres.filter((genre) => genre.id !== genreId);
 		movies = [];
 		currentPage = 1;
 		hasMorePages = true;
@@ -177,98 +176,108 @@
 		}
 	});
 </script>
+
 <Titlebar>
-<div class="flex gap-4 w-full">
-	<!-- Genre -->
-	<Select
-		type="multiple"
-		name="genre"
-		onValueChange={(val) => handleChange('genre', val)}
-		value={selectedGenres.map((g) => String(g.id))}
-	>
-		<SelectTrigger class="border-outline-1 h-[2rem] rounded-none focus:ring-0 focus:ring-offset-0">
-			{$_('filters.select_genre')}
-		</SelectTrigger>
-		<SelectContent
-			sideOffset={0}
-			class="border-outline-1 m-0 rounded-none border-gray-500 p-0 focus:ring-0 focus:ring-offset-0"
+	<div class="flex w-full flex-col gap-2 sm:flex-row sm:gap-4">
+		<!-- Genre -->
+		<Select
+			type="multiple"
+			name="genre"
+			onValueChange={(val) => handleChange('genre', val)}
+			value={selectedGenres.map((g) => String(g.id))}
 		>
-			{#each genres as genre}
-				<SelectItem value={String(genre.id)} label={genre.name}>
-					{genre.name}
-				</SelectItem>
-			{/each}
-		</SelectContent>
-	</Select>
+			<SelectTrigger
+				class="border-outline-1 h-[2rem] w-full rounded-none focus:ring-0 focus:ring-offset-0"
+			>
+				{$_('filters.select_genre')}
+			</SelectTrigger>
+			<SelectContent
+				sideOffset={0}
+				class="border-outline-1 m-0 rounded-none border-gray-500 p-0 focus:ring-0 focus:ring-offset-0"
+			>
+				{#each genres as genre}
+					<SelectItem value={String(genre.id)} label={genre.name}>
+						{genre.name}
+					</SelectItem>
+				{/each}
+			</SelectContent>
+		</Select>
 
-	<!-- Year -->
-	<Select
-		type="single"
-		bind:value={releaseYear}
-		name="year"
-		allowDeselect={true}
-		onValueChange={(val) => handleChange('year', val)}
-	>
-		<SelectTrigger class="border-outline-1 h-[2rem] rounded-none focus:ring-0 focus:ring-offset-0">
-			{releaseYear ? releaseYear : $_('filters.select_year')}
-		</SelectTrigger>
-		<SelectContent
-			sideOffset={0}
-			class="border-outline-1 m-0 rounded-none border-gray-500 p-0 focus:ring-0 focus:ring-offset-0"
+		<!-- Year -->
+		<Select
+			type="single"
+			bind:value={releaseYear}
+			name="year"
+			allowDeselect={true}
+			onValueChange={(val) => handleChange('year', val)}
 		>
-			{#each years as year}
-				<SelectItem value={year} label={year}>
-					{year}
-				</SelectItem>
-			{/each}
-		</SelectContent>
-	</Select>
+			<SelectTrigger
+				class="border-outline-1 h-[2rem] w-full rounded-none focus:ring-0 focus:ring-offset-0"
+			>
+				{releaseYear ? releaseYear : $_('filters.select_year')}
+			</SelectTrigger>
+			<SelectContent
+				sideOffset={0}
+				class="border-outline-1 m-0 rounded-none border-gray-500 p-0 focus:ring-0 focus:ring-offset-0"
+			>
+				{#each years as year}
+					<SelectItem value={year} label={year}>
+						{year}
+					</SelectItem>
+				{/each}
+			</SelectContent>
+		</Select>
 
-	<!-- Sort -->
-	<Select
-		type="single"
-		bind:value={sortBy}
-		name="sort"
-		onValueChange={(val) => handleChange('sort', val)}
-	>
-		<SelectTrigger class="border-outline-1 h-[2rem] rounded-none focus:ring-0 focus:ring-offset-0">
-			{$_(sortOptions.find((opt) => opt.value === sortBy)?.label || 'filters.select_sort')}
-		</SelectTrigger>
-		<SelectContent
-			sideOffset={0}
-			class="border-outline-1 m-0 rounded-none border-gray-500 p-0 focus:ring-0 focus:ring-offset-0"
+		<!-- Sort -->
+		<Select
+			type="single"
+			bind:value={sortBy}
+			name="sort"
+			onValueChange={(val) => handleChange('sort', val)}
 		>
-			{#each sortOptions as option}
-				<SelectItem value={option.value} label={option.label}>
-					{$_(option.label)}
-				</SelectItem>
-			{/each}
-		</SelectContent>
-	</Select>
+			<SelectTrigger
+				class="border-outline-1 h-[2rem] w-full rounded-none focus:ring-0 focus:ring-offset-0"
+			>
+				{$_(sortOptions.find((opt) => opt.value === sortBy)?.label || 'filters.select_sort')}
+			</SelectTrigger>
+			<SelectContent
+				sideOffset={0}
+				class="border-outline-1 m-0 rounded-none border-gray-500 p-0 focus:ring-0 focus:ring-offset-0"
+			>
+				{#each sortOptions as option}
+					<SelectItem value={option.value} label={option.label}>
+						{$_(option.label)}
+					</SelectItem>
+				{/each}
+			</SelectContent>
+		</Select>
 
-	<!-- Language -->
-	<Select
-		type="single"
-		bind:value={originalLanguage}
-		name="language"
-		allowDeselect={true}
-		onValueChange={(val) => handleChange('language', val)}
-	>
-		<SelectTrigger class="border-outline-1 h-[2rem] rounded-none focus:ring-0 focus:ring-offset-0">
-			{languages.find((lang) => lang.value === originalLanguage)?.label || $_('filters.select_language')}
-		</SelectTrigger>
-		<SelectContent
-			sideOffset={0}
-			class="border-outline-1 m-0 rounded-none border-gray-500 p-0 focus:ring-0 focus:ring-offset-0"
+		<!-- Language -->
+		<Select
+			type="single"
+			bind:value={originalLanguage}
+			name="language"
+			allowDeselect={true}
+			onValueChange={(val) => handleChange('language', val)}
 		>
-			{#each languages as lang}
-				<SelectItem value={lang.value} label={lang.label}>
-					{lang.label}
-				</SelectItem>
-			{/each}
-		</SelectContent>
-	</Select>
-</div>
+			<SelectTrigger
+				class="border-outline-1 h-[2rem] w-full rounded-none focus:ring-0 focus:ring-offset-0"
+			>
+				{languages.find((lang) => lang.value === originalLanguage)?.label ||
+					$_('filters.select_language')}
+			</SelectTrigger>
+			<SelectContent
+				sideOffset={0}
+				class="border-outline-1 m-0 rounded-none border-gray-500 p-0 focus:ring-0 focus:ring-offset-0"
+			>
+				{#each languages as lang}
+					<SelectItem value={lang.value} label={lang.label}>
+						{lang.label}
+					</SelectItem>
+				{/each}
+			</SelectContent>
+		</Select>
+	</div>
 
 	{#if cast}
 		<div class="mx-[10%] mt-8 mb-4 flex items-center gap-2 text-sm text-gray-500">
@@ -280,33 +289,37 @@
 		</div>
 	{/if}
 	{#if selectedGenres.length > 0}
-	<div class="mx-[10%] mt-8 mb-4 flex items-center gap-2 text-sm text-gray-500">
-		{$_('filters.selected_genres')}:
-		<div class="flex flex-wrap gap-2">
-			{#each selectedGenres as genre}
-				<span 
-					class="flex cursor-pointer items-center gap-1 underline" 
-					onclick={() => handleGenreRemove(genre.id)}
-				>
-					{genre.name}
-					<X class="ml-1 h-4 w-4 text-gray-400 underline" />
-				</span>
-			{/each}
+		<div class="mx-[10%] mt-8 mb-4 flex items-center gap-2 text-sm text-gray-500">
+			{$_('filters.selected_genres')}:
+			<div class="flex flex-wrap gap-2">
+				{#each selectedGenres as genre}
+					<span
+						class="flex cursor-pointer items-center gap-1 underline"
+						onclick={() => handleGenreRemove(genre.id)}
+					>
+						{genre.name}
+						<X class="ml-1 h-4 w-4 text-gray-400 underline" />
+					</span>
+				{/each}
+			</div>
 		</div>
-	</div>
-{/if}
-</Titlebar>
-<div class="{cast && selectedGenres.length > 0 ? 'pt-70' : cast || selectedGenres.length > 0 ? 'pt-56' :  'pt-42'}">
-	{#if movies.length === 0 && !isLoading}
-	<div class="flex h-[80vh] items-center justify-center">
-		<p class="text-lg text-gray-500">{$_('search.noresults')}</p>
-	</div>
 	{/if}
-	
+</Titlebar>
+<div
+	class={`
+	${cast && selectedGenres.length > 0 ? 'sm:pt-[17.5rem]' : cast || selectedGenres.length > 0 ? 'sm:pt-56' : 'sm:pt-42'}
+`}
+>
+	{#if movies.length === 0 && !isLoading}
+		<div class="flex h-[80vh] items-center justify-center">
+			<p class="text-lg text-gray-500">{$_('search.noresults')}</p>
+		</div>
+	{/if}
+
 	{#if movies.length > 0}
-	<div class="flex flex-col gap-8 pb-[150px]">
-		<MovieList {movies} data={data} />
-	</div>
+		<div class="flex flex-col gap-8 pb-[150px]">
+			<MovieList {movies} {data} />
+		</div>
 	{/if}
 	
 	{#if isLoading && currentPage === 1}
@@ -319,4 +332,4 @@
 <div bind:this={sentinel}></div>
 
 <!-- Movie Modal -->
-<MovieModal data={data} />
+<MovieModal {data} />

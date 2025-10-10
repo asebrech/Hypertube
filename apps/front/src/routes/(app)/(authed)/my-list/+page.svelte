@@ -128,7 +128,7 @@
 	<title>{$_('mylist.title')} - Datflix</title>
 </svelte:head>
 
-<div class="min-h-screen bg-[#141414] text-white py-32">
+<div class="min-h-screen bg-[#141414] text-white pb-8 pt-0 sm:pt-32">
 	<!-- Header -->
 	<Titlebar>
 		<div class="container mx-auto">
