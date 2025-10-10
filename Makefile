@@ -221,15 +221,8 @@ clean: ## Clean build artifacts and dependencies
 
 .PHONY: clean-db
 clean-db: ## Remove database volumes (WARNING: deletes all data!)
-	@printf "$(RED)⚠️  WARNING: This will delete all database data!$(RESET)\n"
-	@read -p "Are you sure? [y/N] " -n 1 -r; \
-	echo; \
-	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
-		docker compose down -v; \
-		printf "$(GREEN)  ✓ Database volumes removed$(RESET)\n"; \
-	else \
-		printf "$(YELLOW)  Cancelled$(RESET)\n"; \
-	fi
+	@docker-compose down -v;
+	@printf "$(GREEN)  ✓ Database volumes removed$(RESET)\n"; \
 
 .PHONY: reset
 reset: clean clean-db setup ## Full reset (clean everything and setup again)
