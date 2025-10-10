@@ -7,6 +7,7 @@
 	import { Skeleton } from '@/components/ui/skeleton';
 	import ButtonPreview from '../buttons/button-preview/button-preview.svelte';
 	import { movieModalActions, videoState } from '@/services/store';
+	import { PUBLIC_ENABLE_YOUTUBE } from '$env/static/public';
 
 	interface Props {
 		movie: MovieDetails;
@@ -51,14 +52,17 @@
 		instance = 'home'
 	}: Props = $props();
 
+	// Check if YouTube is enabled via environment variable
+	const isYouTubeEnabled = PUBLIC_ENABLE_YOUTUBE === 'true';
+
 	let player: YT.Player | undefined;
 	let isApiLoaded = false;
 	let playerReady = $state(false);
 	let videoEnded = $state(false);
-	let playerElement: HTMLDivElement;
+	let playerElement = $state<HTMLDivElement>();
 
 	function createPlayer(id: string) {
-		if (!id || !isApiLoaded) return;
+		if (!id || !isApiLoaded || !isYouTubeEnabled) return;
 
 		// Wait for playerElement to be available
 		if (!playerElement) {
@@ -72,8 +76,7 @@
 				player.destroy();
 				playerReady = false;
 				videoEnded = false;
-			} catch {
-			}
+			} catch {}
 		}
 
 		// Clear the player element before creating new player
@@ -93,7 +96,7 @@
 						videoEnded = true;
 						// Only update store for home banner, modal banner state is managed by modal open/close
 						if (instance === 'home') {
-							videoState.update(state => ({
+							videoState.update((state) => ({
 								...state,
 								bannerVideoPlaying: false
 							}));
@@ -103,7 +106,7 @@
 						playerReady = true;
 						// Only update store for home banner, modal banner state is managed by modal open/close
 						if (instance === 'home') {
-							videoState.update(state => ({
+							videoState.update((state) => ({
 								...state,
 								bannerVideoPlaying: true
 							}));
@@ -112,7 +115,7 @@
 					if (event.data === YT.PlayerState.PAUSED) {
 						// Only update store for home banner, modal banner state is managed by modal open/close
 						if (instance === 'home') {
-							videoState.update(state => ({
+							videoState.update((state) => ({
 								...state,
 								bannerVideoPlaying: false
 							}));
@@ -155,6 +158,8 @@
 	}
 
 	onMount(() => {
+		if (!isYouTubeEnabled) return;
+
 		// @ts-ignore
 		window.onYouTubeIframeAPIReady = () => {
 			isApiLoaded = true;
@@ -178,8 +183,7 @@
 			try {
 				player.destroy();
 				player = undefined;
-			} catch {
-			}
+			} catch {}
 		}
 		// Reset player state
 		playerReady = false;
@@ -191,7 +195,7 @@
 	// Listen to video state changes and auto-mute banner when preview is playing
 	$effect(() => {
 		const state = $videoState;
-		
+
 		// For home banner: mute when preview or modal banner is playing
 		if (instance === 'home') {
 			if ((state.previewVideoPlaying || state.modalBannerVideoPlaying) && player && !isMuted) {
@@ -199,7 +203,13 @@
 				player.mute();
 				isMuted = true;
 				isAutoMuted = true;
-			} else if (!state.previewVideoPlaying && !state.modalBannerVideoPlaying && player && isMuted && isAutoMuted) {
+			} else if (
+				!state.previewVideoPlaying &&
+				!state.modalBannerVideoPlaying &&
+				player &&
+				isMuted &&
+				isAutoMuted
+			) {
 				// Auto-unmute home banner video when no preview or modal banner is playing
 				// But only if it was auto-muted (not manually muted by user)
 				player.unMute();
@@ -207,7 +217,7 @@
 				isAutoMuted = false;
 			}
 		}
-		
+
 		// For modal banner: mute when preview is playing
 		if (instance === 'modal') {
 			if (state.previewVideoPlaying && player && !isMuted) {
@@ -227,7 +237,7 @@
 
 	$effect(() => {
 		// Only create player if video key changed to prevent recreation on every effect
-		if (movieVideo?.key && movieVideo.key !== lastVideoKey) {
+		if (movieVideo?.key && movieVideo.key !== lastVideoKey && isYouTubeEnabled) {
 			lastVideoKey = movieVideo.key;
 			createPlayer(movieVideo.key);
 		}
@@ -235,34 +245,38 @@
 </script>
 
 <div class="relative max-h-[80vh] w-full {className}">
-	<div
-		class="relative flex aspect-[16/9] w-full items-end overflow-hidden rounded-[2px] bg-black sm:aspect-[6/3] {playerReady &&
-		!videoEnded
-			? ''
-			: 'hidden'}"
-	>
-		<div class="absolute h-full w-full">
-			<div
-				class="absolute top-1/2 left-1/2 min-h-[155%] min-w-[155%] -translate-x-1/2 -translate-y-1/2"
-			>
+	{#if isYouTubeEnabled}
+		<div
+			class="relative flex aspect-[16/9] w-full items-end overflow-hidden rounded-[2px] bg-black sm:aspect-[6/3] {playerReady &&
+			!videoEnded
+				? ''
+				: 'hidden'}"
+		>
+			<div class="absolute h-full w-full">
 				<div
-					id="player"
-					bind:this={playerElement}
-					class="absolute top-0 left-0 h-full w-full overflow-hidden"
+					class="absolute top-1/2 left-1/2 min-h-[155%] min-w-[155%] -translate-x-1/2 -translate-y-1/2"
+				>
+					<div
+						id="player"
+						bind:this={playerElement}
+						class="absolute top-0 left-0 h-full w-full overflow-hidden"
+					></div>
+				</div>
+			</div>
+			<!-- Fade effect: bottom gradient overlay -->
+			<div class="pointer-events-none absolute inset-0">
+				<div
+					class="absolute bottom-0 left-0 w-full"
+					style="height: 30%; background: linear-gradient(to top, #121212, transparent);"
 				></div>
 			</div>
 		</div>
-		<div class="bg-red relative top-0 left-0 h-full w-full"></div>
-		<!-- Fade effect: bottom gradient overlay -->
-		<div class="pointer-events-none absolute inset-0">
-			<div
-				class="absolute bottom-0 left-0 w-full"
-				style="height: 30%; background: linear-gradient(to top, #121212, transparent);"
-			></div>
-		</div>
-	</div>
-	{#if movie?.backdrop_path && (!playerReady || videoEnded)}
-		<div class="relative h-full w-full" style="min-height: 300px;">
+	{/if}
+	{#if movie?.backdrop_path && (isYouTubeEnabled ? !playerReady || videoEnded : true)}
+		<div 
+			class="relative w-full {instance === 'modal' ? 'aspect-[6/3]' : 'h-full'}" 
+			style={instance === 'modal' ? '' : 'min-height: 250px;'}
+		>
 			<img
 				src={`https://image.tmdb.org/t/p/original/${movie.backdrop_path}`}
 				alt="movie-background"
@@ -277,8 +291,8 @@
 				></div>
 			</div>
 		</div>
-	{:else if !movie?.backdrop_path && !playerReady && !videoEnded}
-		<Skeleton class="h-[50vh] w-full sm:h-[80vh]" />
+	{:else if !movie?.backdrop_path && (isYouTubeEnabled ? !playerReady && !videoEnded : true)}
+		<Skeleton class="h-[40vh] w-full sm:h-[50vh] md:h-[80vh]" />
 	{/if}
 
 	<div class="absolute top-0 left-0 h-full w-full transform px-4 pt-16 pb-6 sm:px-8 sm:pt-20 sm:pb-16 md:px-12 md:pt-24 md:pb-24">
@@ -355,7 +369,7 @@
 				</div>
 
 				<div class="flex items-center gap-2 sm:gap-3">
-					{#if movieVideo?.key && movie.vote_average}
+					{#if isYouTubeEnabled && movieVideo?.key && movie.vote_average}
 						<div class={`flex items-center gap-2 sm:gap-5 ${!showVoteAverage || !movie.vote_average ? 'pr-3' : ''}`}>
 							{#if playerReady && !videoEnded}
 								<button onclick={toggleMute} aria-label={isMuted ? 'Unmute' : 'Mute'}>
