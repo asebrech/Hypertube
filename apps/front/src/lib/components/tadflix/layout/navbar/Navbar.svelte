@@ -3,6 +3,8 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { cn } from '@/utils';
 	import LanguageSelector from '../LanguageSelector.svelte';
+	import MobileMenu from './MobileMenu.svelte';
+	import MobileSearch from './MobileSearch.svelte';
 	import { page } from '$app/state';
 	import { enhance } from '$app/forms';
 	import { _ } from 'svelte-i18n';
@@ -20,6 +22,9 @@
 
 	let { data, showSkeleton }: Props = $props();
 	let searchOpen: boolean = $state(false);
+	let mobileMenuOpen: boolean = $state(false);
+	let mobileSearchRef: any = $state();
+	let mobileMenuRef: any = $state();
 
 	function isLinkCurrentPage(link: Link): boolean {
 		return page.url.pathname === link.href;
@@ -98,28 +103,32 @@
 
 <!-- Navbar -->
 <nav
-	class={`fixed top-0 z-50 flex max-h-16 w-full items-center justify-between px-8 py-4 text-white transition-colors duration-[1000ms]
+	class={`fixed top-0 z-50 flex max-h-16 w-full items-center justify-between px-4 py-4 text-white transition-colors duration-[1000ms] sm:px-6 lg:px-8
 	${
-		animateOnScroll()
-			? scrolled
-				? 'bg-[#141414] bg-[linear-gradient(to_bottom,_rgba(0,0,0,1),_rgba(0,0,0,0))]'
-				: 'bg-gradient-to-b from-[#141414] to-transparent transition-all duration-300'
-			: 'bg-[#141414]'
-	}
+			mobileMenuOpen
+				? 'bg-[#141414]'
+				: animateOnScroll()
+					? (
+						scrolled
+							? 'bg-[#141414] bg-[linear-gradient(to_bottom,_rgba(0,0,0,1),_rgba(0,0,0,0))]'
+							: 'bg-gradient-to-b from-[#141414] to-transparent transition-all duration-300'
+					)
+					: 'bg-[#141414]'
+		}
   `}
 >
-	<div class="flex items-center space-x-10">
+	<div class="flex items-center space-x-4 sm:space-x-6 lg:space-x-10">
 		<!-- Logo -->
-		<a href="/" class="mr-8 text-3xl font-bold text-red-600">
+		<a href="/" class="text-3xl font-bold text-red-600">
 			<span class="sr-only">DatFlix</span>
 			<Datflix size="sm" />
 		</a>
 
-		<!-- Navigation Links -->
+		<!-- Navigation Links - Desktop Only -->
 		{#if showSkeleton}
-			<Skeleton class="flex h-8 w-32" />
+			<Skeleton class="hidden h-8 w-32 lg:flex" />
 		{:else}
-			<div class="hidden gap-6 md:flex">
+			<div class="hidden gap-4 lg:flex lg:gap-6">
 				{#each links as link}
 					<a
 						href={link.href}
@@ -128,7 +137,7 @@
 							isLinkCurrentPage(link) ? 'font-bold' : 'font-light'
 						)}
 					>
-						<p class="text-[12px]">
+						<p class="text-sm">
 							{$_(link.label)}
 						</p>
 					</a>
@@ -138,14 +147,25 @@
 	</div>
 
 	<!-- Right Side Controls -->
-	<div class="flex items-center gap-4">
+	<div class="flex items-center gap-2 sm:gap-3 lg:gap-4">
 		{#if showSkeleton}
 			<Skeleton class="h-8 w-20" />
 		{:else}
-			<div class="relative flex items-center">
+			<!-- Mobile Search Button -->
+			<MobileSearch
+				bind:this={mobileSearchRef}
+				onSearchToggle={(isOpen) => {
+					if (isOpen && mobileMenuOpen) {
+						mobileMenuRef?.closeMenu();
+					}
+				}}
+			/>
+
+			<!-- Search - Hidden on mobile, visible on tablet+ -->
+			<div class="relative hidden items-center sm:flex">
 				<div class="overflow-hidden">
 					<div
-						class="relative flex w-[250px] items-center transition-all duration-500"
+						class="relative flex w-[200px] items-center transition-all duration-500 lg:w-[250px]"
 						style="left: {searchOpen ? '0' : '100%'};"
 					>
 						<span class="pointer-events-none absolute left-3 text-gray-400">
@@ -175,7 +195,9 @@
 					</div>
 				{/if}
 			</div>
-			<div>
+
+			<!-- Language Selector - Hidden on mobile -->
+			<div class="hidden lg:block">
 				<LanguageSelector />
 			</div>
 		{/if}
@@ -184,10 +206,12 @@
 			{#if showSkeleton}
 				<Skeleton class="h-8 w-20" />
 			{:else}
-				<a href="/login">
+				<!-- Sign In Button - Hidden on mobile -->
+				<a href="/login" class="hidden lg:block">
 					<Button
 						variant="outline"
 						class="border-white bg-transparent text-white hover:bg-white/10"
+						size="sm"
 					>
 						{$_('auth.sign_in')}
 					</Button>
@@ -197,9 +221,11 @@
 			{#if showSkeleton}
 				<Skeleton class="h-8 w-8 rounded" />
 			{:else}
+				<!-- User Profile - Hidden on mobile -->
 				<a
 					href="/{data?.user?.username ? encodeURIComponent(data.user.username) : 'profile'}"
 					title="View Profile"
+					class="hidden lg:block"
 				>
 					<UserProfilePicture
 						profilePicture={data?.user?.profilePicture}
@@ -215,11 +241,28 @@
 				{#if showSkeleton}
 					<Skeleton class="h-8 w-16" />
 				{:else}
-					<form action="/logout" method="POST" use:enhance>
-						<Button type="submit">{$_('log_out')}</Button>
+					<!-- Logout Button - Hidden on mobile -->
+					<form action="/logout" method="POST" use:enhance class="hidden lg:block">
+						<Button type="submit" size="sm">{$_('log_out')}</Button>
 					</form>
 				{/if}
 			{/if}
+		{/if}
+
+		<!-- Mobile Menu Button -->
+		{#if !showSkeleton}
+			<MobileMenu
+				bind:this={mobileMenuRef}
+				links={links}
+				currentPath={page.url.pathname}
+				user={data?.user}
+				onMenuToggle={(isOpen) => {
+					mobileMenuOpen = isOpen;
+					if (isOpen) {
+						mobileSearchRef?.closeSearch();
+					}
+				}}
+			/>
 		{/if}
 	</div>
 </nav>
