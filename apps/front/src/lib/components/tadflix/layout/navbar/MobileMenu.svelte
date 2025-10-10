@@ -141,12 +141,12 @@
 						method="POST"
 						use:enhance={() => {
 							return async ({ update }) => {
-								closeMenu();
 								await update();
+								closeMenu();
 							};
 						}}
 					>
-						<Button type="submit" class="w-full">
+						<Button type="submit" class="w-full" onclick={(e) => e.preventDefault()}>
 							{$_('log_out')}
 						</Button>
 					</form>
