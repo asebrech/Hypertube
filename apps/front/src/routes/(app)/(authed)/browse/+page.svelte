@@ -310,12 +310,6 @@
 	${cast && selectedGenres.length > 0 ? 'sm:pt-[17.5rem]' : cast || selectedGenres.length > 0 ? 'sm:pt-56' : 'sm:pt-42'}
 `}
 >
-	{#if isLoading}
-		<div class="flex h-[80vh] items-center justify-center">
-			<p class="text-lg text-gray-500">{$_('search.loading')}</p>
-		</div>
-	{/if}
-
 	{#if movies.length === 0 && !isLoading}
 		<div class="flex h-[80vh] items-center justify-center">
 			<p class="text-lg text-gray-500">{$_('search.noresults')}</p>
@@ -326,6 +320,12 @@
 		<div class="flex flex-col gap-8 pb-[150px]">
 			<MovieList {movies} {data} />
 		</div>
+	{/if}
+	
+	{#if isLoading && currentPage === 1}
+	<div class="flex h-[10vh] items-center justify-center">
+		<p class="text-lg text-gray-500">{$_('search.loading')}</p>
+	</div>
 	{/if}
 </div>
 
