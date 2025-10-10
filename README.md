@@ -12,8 +12,8 @@
 
 Hypertube is a comprehensive streaming platform that combines the user experience of modern streaming services with the versatility of torrent technology. Built with cutting-edge web technologies, it offers seamless movie streaming, intelligent torrent integration, and a rich set of features for both users and administrators.
 
-<!-- **🖼️ INSERT HERO IMAGE/GIF HERE** -->
-*Screenshot placeholder: Main interface showing movie carousel and featured content*
+![Hypertube Main Interface](doc/homePage1.png)
+*Modern Netflix-like interface with movie carousel and featured content*
 
 ---
 
@@ -31,7 +31,6 @@ Hypertube is a comprehensive streaming platform that combines the user experienc
 - **Advanced Search**: Multi-language movie search with TMDB integration
 - **Personal Library**: Bookmarks, watch history, and personalized recommendations
 - **Multi-language Support**: Available in English, French, Spanish, Arabic, and Chinese
-- **Dark Theme**: Elegant dark UI optimized for movie watching
 
 ### 🔐 Authentication & Social Features
 - **Multi-provider OAuth**: Login with Google, GitHub, Discord, or 42 School
@@ -44,6 +43,9 @@ Hypertube is a comprehensive streaming platform that combines the user experienc
 - **Real-time Processing**: FFmpeg integration for on-the-fly video conversion
 - **Smart Caching**: Intelligent content caching and cleanup systems
 - **Performance Optimized**: Touch-optimized mobile experience with passive event listeners
+
+![Movie Carousel](doc/homePageCarousel.png)
+*Responsive movie carousel with smooth animations and intuitive navigation*
 
 ---
 
@@ -84,36 +86,40 @@ Hypertube is a comprehensive streaming platform that combines the user experienc
 
 ### Quick Start (Recommended)
 
-1. **Clone and setup environment**
-   ```bash
-   git clone <repository-url>
-   cd Hypertube
-   
-   # Copy environment files
-   cp ./apps/back/.env.example ./apps/back/.env
-   cp ./apps/front/.env.example ./apps/front/.env
-   ```
+**🚀 One-command deployment:**
 
-2. **Docker deployment (Full setup)**
-   ```bash
-   # Start all services including database
-   docker compose up -d
-   ```
+```bash
+git clone <repository-url>
+cd Hypertube
+make prod-deploy
+```
 
-3. **Development with Turbo (Faster)**
-   ```bash
-   # Start only database
-   docker compose up db -d
-   
-   # Install dependencies and start dev servers
-   pnpm install
-   pnpm run dev
-   ```
+That's it! The Makefile handles everything:
+- ✅ Environment setup
+- ✅ Dependencies installation  
+- ✅ Database startup
+- ✅ Migrations
+- ✅ Production build
+- ✅ Server startup
 
-4. **Access the application**
-   - Frontend: http://localhost:5173
-   - Backend API: http://localhost:3333
-   - Admin Panel: http://localhost:5173/admin
+**Alternative deployment methods:**
+
+**Development mode (faster startup):**
+```bash
+make deploy  # For development with hot-reload
+```
+
+**Docker-only deployment:**
+```bash
+cp ./apps/back/.env.example ./apps/back/.env
+cp ./apps/front/.env.example ./apps/front/.env
+docker compose up -d
+```
+
+**Access the application:**
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:3333
+- Admin Panel: http://localhost:5173/admin
 
 ### Environment Configuration
 
@@ -162,8 +168,8 @@ SECRET_BACK_REDIRECT_URL=http://localhost:3333
 
 ### 🎬 Video Streaming Engine
 
-<!-- **🎥 INSERT VIDEO PLAYER SCREENSHOT HERE** -->
-*Screenshot placeholder: Video player interface with quality selector and subtitles*
+![Movie Details & Video Player](doc/movieDetails.png)
+*Movie details page with video player interface and quality selector*
 
 The streaming engine uses progressive HLS conversion:
 
@@ -172,10 +178,13 @@ The streaming engine uses progressive HLS conversion:
 - **Multiple Qualities**: Simultaneous encoding to 480p, 720p, and 1080p
 - **Smart Buffering**: Progressive loading allows immediate playback
 
+![Complete Homepage Interface](doc/homePageCarousel.png)
+*Full homepage view showing trending movies, categories, and responsive design*
+
 ### 🔍 Advanced Search & Discovery
 
-<!-- **🔎 INSERT SEARCH INTERFACE HERE** -->
-*Screenshot placeholder: Search results with filters and movie cards*
+![Browse & Search Interface](doc/BrowsePage.png)
+*Advanced search and discovery with filters, genres, and movie cards*
 
 - **TMDB Integration**: Access to millions of movies and TV shows
 - **Multi-language Results**: Localized content and metadata
@@ -184,18 +193,21 @@ The streaming engine uses progressive HLS conversion:
 
 ### 👤 User Management
 
-<!-- **👥 INSERT USER PROFILE PAGE HERE** -->
-*Screenshot placeholder: User profile with watch history and preferences*
+![User Profile Page](doc/profilPage.png)
+*User profile with watch history, preferences, and personal collections*
 
 - **OAuth Integration**: Seamless login with major providers
 - **Profile Customization**: Avatar upload, preferences, settings
 - **Watch History**: Comprehensive tracking with resume functionality
 - **Personal Collections**: Bookmarks and custom lists
 
+![Bookmarked Movies](doc/BookmarkedList.png)
+*Personal movie collection with bookmarks and custom lists management*
+
 ### 🛡️ Admin Dashboard
 
-<!-- **⚙️ INSERT ADMIN PANEL HERE** -->
-*Screenshot placeholder: Admin interface showing movie management and statistics*
+![Admin Dashboard](doc/AdminPage.png)
+*Comprehensive admin interface with movie management and system statistics*
 
 - **Content Management**: Movie database administration
 - **User Management**: User accounts and permissions
@@ -331,57 +343,6 @@ Automatic cleanup of old content:
 
 ---
 
-## 🚀 Deployment
-
-### Production Docker Setup
-
-1. **Prepare environment**
-   ```bash
-   # Copy production environment files
-   cp apps/back/.env.example apps/back/.env.production
-   cp apps/front/.env.example apps/front/.env.production
-   ```
-
-2. **Build and deploy**
-   ```bash
-   # Build production images
-   docker-compose -f compose.yaml -f compose.prod.yaml build
-
-   # Deploy
-   docker-compose -f compose.yaml -f compose.prod.yaml up -d
-   ```
-
-### Manual Production Deployment
-
-1. **Build applications**
-   ```bash
-   # Build backend
-   cd apps/back
-   pnpm build
-
-   # Build frontend
-   cd ../front
-   pnpm build
-   ```
-
-2. **Database setup**
-   ```bash
-   # Run migrations
-   cd apps/back
-   node build/bin/console.js migration:run --force
-   ```
-
-3. **Start services**
-   ```bash
-   # Start backend (PM2 recommended)
-   pm2 start build/bin/server.js --name hypertube-api
-
-   # Serve frontend (nginx recommended)
-   nginx -c /path/to/nginx.conf
-   ```
-
----
-
 ## 📚 Technology Stack
 
 ### Frontend Technologies
@@ -492,6 +453,16 @@ Hypertube/
 
 ### Common Issues
 
+**YouTube Player Warnings**
+If you see warnings related to YouTube player in the console, you can disable the YouTube player component:
+
+```env
+# Frontend (.env)
+Enable-Youtube_player=false
+```
+
+This will prevent YouTube-related warnings and improve performance if you're not using YouTube integration features.
+
 **Database Connection Errors**
 ```bash
 # Check PostgreSQL status
@@ -501,16 +472,6 @@ docker-compose ps postgres
 docker-compose down -v
 docker-compose up -d postgres
 cd apps/back && node ace migration:run
-```
-
-**Video Conversion Issues**
-```bash
-# Check FFmpeg installation
-ffmpeg -version
-
-# Clear conversion cache
-rm -rf apps/back/hls-output/*
-rm -rf apps/back/torrent-cache/*
 ```
 
 **OAuth Login Problems**
@@ -523,36 +484,6 @@ rm -rf apps/back/torrent-cache/*
 - Frontend default: 5173
 - PostgreSQL default: 5432
 
-### Debug Mode
-
-Enable debug logging:
-
-```env
-# Backend
-LOG_LEVEL=debug
-NODE_DEBUG=*
-
-# Frontend
-PUBLIC_DEBUG=true
-```
-
----
-
-## 📈 Roadmap
-
-### Version 2.0 (Planned)
-- [ ] **Real-time Chat**: Live chat during movie watching
-- [ ] **Watch Parties**: Synchronized viewing with friends
-- [ ] **Recommendation Engine**: AI-powered movie suggestions
-- [ ] **Mobile App**: React Native companion app
-- [ ] **Chromecast Support**: Cast to TV functionality
-
-### Version 2.1 (Future)
-- [ ] **4K Support**: Ultra HD streaming
-- [ ] **Offline Mode**: Download for offline viewing
-- [ ] **Subscription Model**: Premium features
-- [ ] **Content Creator Tools**: Upload and monetization
-- [ ] **Advanced Analytics**: Viewing statistics and insights
 
 ---
 
@@ -591,5 +522,6 @@ For enterprise support and custom implementations, contact: [support@hypertube.d
 
 **Made with ❤️ and lots of ☕ by the Hypertube team**
 
-<!-- **🎬 INSERT FOOTER IMAGE/LOGO HERE** -->
+![Hypertube Team](doc/Capture%20d'écran%202025-10-10%20à%2010.38.48.png)
+*The passionate team behind Hypertube streaming platform*
 *Footer placeholder: Hypertube logo or team photo*
