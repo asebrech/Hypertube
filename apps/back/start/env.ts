@@ -62,4 +62,11 @@ export default await Env.create(new URL('../', import.meta.url), {
   SMTP_PASSWORD: Env.schema.string.optional(),
   FRONT_URL: Env.schema.string(),
   BACK_URL: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring FFmpeg
+  |----------------------------------------------------------
+  */
+  USE_STATIC_FFMPEG: Env.schema.string.optional(),
 })

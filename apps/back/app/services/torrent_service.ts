@@ -4,13 +4,16 @@ import ffmpeg from 'fluent-ffmpeg'
 import path from 'node:path'
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg'
 import { inject } from '@adonisjs/core'
+import env from '#start/env'
 import SearchTorrentService from './search_torrent_service.js'
 import MovieService from './movie_service.js'
 import ProgressLoggingService from './progress_logging_service.js'
 import SubtitleService from './subtitle_service.js'
 import { SUPPORTED_LANGUAGES } from '../validators/subtitle.js'
 
-ffmpeg.setFfmpegPath(ffmpegInstaller.path)
+if (env.get('USE_STATIC_FFMPEG') === 'true') {
+  ffmpeg.setFfmpegPath(ffmpegInstaller.path)
+}
 
 @inject()
 export default class TorrentService {
