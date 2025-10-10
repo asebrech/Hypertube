@@ -297,12 +297,6 @@
 {/if}
 </Titlebar>
 <div class="{cast && selectedGenres.length > 0 ? 'pt-70' : cast || selectedGenres.length > 0 ? 'pt-56' :  'pt-42'}">
-	{#if isLoading}
-	<div class="flex h-[80vh] items-center justify-center">
-		<p class="text-lg text-gray-500">{$_('search.loading')}</p>
-	</div>
-	{/if}
-	
 	{#if movies.length === 0 && !isLoading}
 	<div class="flex h-[80vh] items-center justify-center">
 		<p class="text-lg text-gray-500">{$_('search.noresults')}</p>
@@ -312,6 +306,12 @@
 	{#if movies.length > 0}
 	<div class="flex flex-col gap-8 pb-[150px]">
 		<MovieList {movies} data={data} />
+	</div>
+	{/if}
+	
+	{#if isLoading && currentPage === 1}
+	<div class="flex h-[10vh] items-center justify-center">
+		<p class="text-lg text-gray-500">{$_('search.loading')}</p>
 	</div>
 	{/if}
 </div>
