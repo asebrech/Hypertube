@@ -11,7 +11,6 @@
 	export let isVisible: boolean;
 	export let orderNumber: number;
 	export let isWatched: boolean = false;
-	export let isBookmarked: boolean = false;
 	export let isAvailable: boolean = true;
 	export let watchProgressSeconds: number = 0;
 	export let type: MovieType = 'movie';
@@ -21,7 +20,20 @@
 	let isLoading = true;
 
 	const loadPosterImage = async (movieId: any, size: ImageSizeType): Promise<BackDropImage> => {
-		const poster_image_data = await getPosterImage(movieId, size, type, data.token);
+		let poster_image_data = await getPosterImage(movieId, size, type, data.token);
+		if (!poster_image_data) {
+			poster_image_data = {
+				aspect_ratio: 0,
+				height: 0,
+				width: 0,
+				iso_639_1: '',
+				file_path: '',
+				vote_average: 0,
+				vote_count: 0,
+				url: '/img/default-backdrop2.png',
+				langFound: false
+			};
+		}
 		poster_image = poster_image_data;
 		return poster_image_data;
 	};
@@ -80,13 +92,6 @@
 						</Badge>
 					</div>
 				{/if}
-				<!-- {:else if isBookmarked}
-					<div class="absolute bottom-0 flex w-full justify-center">
-						<Badge variant={'red'}>
-							{$_('movie-action.bookmarked')}
-					</Badge>
-				</div>
-				{/if} -->
 			</div>
 		{/if}
 	</div>

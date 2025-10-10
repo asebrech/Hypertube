@@ -16,7 +16,6 @@
 		title: string;
 		type: MovieType | undefined;
 		isWatched?: boolean;
-		isBookmarked?: boolean;
 		isAvailable?: boolean;
 		watchProgressSeconds?: number;
 		data: { token: string };
@@ -28,14 +27,26 @@
 		title,
 		type,
 		isWatched = false,
-		isBookmarked = false,
 		isAvailable = true,
 		watchProgressSeconds = 0,
 		data,
 	}: Props = $props();
 
 	const loadBackdropImage = async (movieId: any, size: ImageSizeType): Promise<BackDropImage> => {
-		const backdrop_image_data = await getBackdropImage(movieId, size, type, data.token);
+		let backdrop_image_data = await getBackdropImage(movieId, size, type, data.token);
+		if (!backdrop_image_data) {
+			backdrop_image_data = {
+				aspect_ratio: 0,
+				height: 0,
+				width: 0,
+				iso_639_1: '',
+				file_path: '',
+				vote_average: 0,
+				vote_count: 0,
+				url: '/img/default-backdrop2.png',
+				langFound: false
+			};
+		}
 		backdropImage = backdrop_image_data;
 		return backdrop_image_data;
 	};
@@ -105,11 +116,4 @@
 			</Badge>
 		</div>
 	{/if}
-	<!-- {:else if isBookmarked}
-		<div class="absolute bottom-0 flex w-full justify-center">
-			<Badge variant={'red'}>
-				{$_('movie-action.bookmarked')}
-			</Badge>
-		</div>
-	{/if} -->
 </Card>

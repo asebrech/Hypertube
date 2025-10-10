@@ -199,9 +199,9 @@ export async function getMovieVideos(
 	};
 	try {
 		const response = await axios(config);
-		return response.data;
+		return response.data?.video || null;
 	} catch (error) {
-		throw error;
+		return null;
 	}
 }
 
@@ -210,7 +210,7 @@ export async function getMovieSearch(
 	page: number,
 	type: MovieType = 'movie',
 	token: string | null = null,
-	options?: { signal?: AbortSignal },
+	options?: { signal?: AbortSignal }
 ) {
 	const config = {
 		method: 'get',
@@ -519,7 +519,11 @@ export async function uploadProfilePicture(file: File, token: string) {
 	}
 }
 
-export async function setBookmark(movieId: number, bookmarked: boolean, token: string): Promise<void> {
+export async function setBookmark(
+	movieId: number,
+	bookmarked: boolean,
+	token: string
+): Promise<void> {
 	const config = {
 		method: 'post',
 		url: `${PUBLIC_BACK_URL}/movies/${movieId}/bookmark`,

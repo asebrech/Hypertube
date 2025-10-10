@@ -40,7 +40,20 @@
 
 		abortController = new AbortController();
 
-		const backdrop_image_data = await getBackdropImage(movieId, size, movieType, data.token);
+		let backdrop_image_data = await getBackdropImage(movieId, size, movieType, data.token);
+		if (!backdrop_image_data) {
+			backdrop_image_data = {
+				aspect_ratio: 0,
+				height: 0,
+				width: 0,
+				iso_639_1: '',
+				file_path: '',
+				vote_average: 0,
+				vote_count: 0,
+				url: '/img/default-backdrop2.png',
+				langFound: false
+			};
+		}
 		backdropImage = backdrop_image_data;
 		return backdrop_image_data;
 	};
