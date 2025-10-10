@@ -37,7 +37,6 @@
 	},
 	"navbar": {
 		"home": "首页",
-		"shows": "电视剧",
 		"movies": "电影",
 		"news-popular": "新闻与热门",
 		"my-list": "我的列表",
@@ -51,7 +50,7 @@
 		"see-more": "查看更多"
 	},
 	"search": {
-		"placeholder": "电影、电视剧、人物...",
+		"placeholder": "电影、人物...",
 		"noresults": "未找到结果",
 		"loading": "加载中..."
 	},
@@ -234,7 +233,7 @@
 		"security": "安全",
 		"content_preferences": "内容偏好",
 		"allow_adult_content": "允许成人内容",
-		"allow_adult_content_description": "启用以在搜索结果和推荐中显示包含成人内容的电影和电视剧",
+		"allow_adult_content_description": "启用以在搜索结果和推荐中显示包含成人内容的电影",
 		"current_password": "当前密码",
 		"new_password": "新密码",
 		"confirm_password": "确认密码",

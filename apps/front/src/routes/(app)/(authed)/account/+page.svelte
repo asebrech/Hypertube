@@ -18,6 +18,7 @@
 	} from '@hypertube/shared';
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
+	import { untrack } from 'svelte';
 
 	type FormData = {
 		invalid?: boolean;
@@ -80,67 +81,91 @@
 	let currentProfilePicture = $state('');
 	let selectedProfilePicture = $state<File | null>(null);
 
-	// Effect to merge client and server errors
+	// Effect to merge client and server errors - use untrack to prevent loops
 	$effect(() => {
-		passwordErrors = [...clientPasswordErrors];
-		emailErrors = [...clientEmailErrors];
-		usernameErrors = [...clientUsernameErrors];
-		firstNameErrors = [...clientFirstNameErrors];
-		lastNameErrors = [...clientLastNameErrors];
-		currentPasswordErrors = [...clientCurrentPasswordErrors];
-		confirmPasswordErrors = [...clientConfirmPasswordErrors];
-		profilePictureErrors = [...clientProfilePictureErrors];
+		// Track only the specific dependencies we care about
+		const clientPasswordErrorsSnapshot = clientPasswordErrors;
+		const clientEmailErrorsSnapshot = clientEmailErrors;
+		const clientUsernameErrorsSnapshot = clientUsernameErrors;
+		const clientFirstNameErrorsSnapshot = clientFirstNameErrors;
+		const clientLastNameErrorsSnapshot = clientLastNameErrors;
+		const clientCurrentPasswordErrorsSnapshot = clientCurrentPasswordErrors;
+		const clientConfirmPasswordErrorsSnapshot = clientConfirmPasswordErrors;
+		const clientProfilePictureErrorsSnapshot = clientProfilePictureErrors;
+		const serverErrors = form?.errors;
+		
+		// Use untrack when updating the error arrays to prevent reactive loops
+		untrack(() => {
+			passwordErrors = [...clientPasswordErrorsSnapshot];
+			emailErrors = [...clientEmailErrorsSnapshot];
+			usernameErrors = [...clientUsernameErrorsSnapshot];
+			firstNameErrors = [...clientFirstNameErrorsSnapshot];
+			lastNameErrors = [...clientLastNameErrorsSnapshot];
+			currentPasswordErrors = [...clientCurrentPasswordErrorsSnapshot];
+			confirmPasswordErrors = [...clientConfirmPasswordErrorsSnapshot];
+			profilePictureErrors = [...clientProfilePictureErrorsSnapshot];
 
-		// Add server errors if they exist
-		if (form?.errors) {
-			if (form.errors.newPassword) {
-				passwordErrors.push($_(`validation.server_errors.${form.errors.newPassword}`));
+			// Add server errors if they exist
+			if (serverErrors) {
+				if (serverErrors.newPassword) {
+					passwordErrors.push($_(`validation.server_errors.${serverErrors.newPassword}`));
+				}
+				if (serverErrors.email) {
+					emailErrors.push($_(`validation.server_errors.${serverErrors.email}`));
+				}
+				if (serverErrors.username) {
+					usernameErrors.push($_(`validation.server_errors.${serverErrors.username}`));
+				}
+				if (serverErrors.firstName) {
+					firstNameErrors.push($_(`validation.server_errors.${serverErrors.firstName}`));
+				}
+				if (serverErrors.lastName) {
+					lastNameErrors.push($_(`validation.server_errors.${serverErrors.lastName}`));
+				}
+				if (serverErrors.currentPassword) {
+					currentPasswordErrors.push($_('account.error_current_password'));
+				}
+				if (serverErrors.profilePicture) {
+					profilePictureErrors.push($_(serverErrors.profilePicture));
+				}
 			}
-			if (form.errors.email) {
-				emailErrors.push($_(`validation.server_errors.${form.errors.email}`));
-			}
-			if (form.errors.username) {
-				usernameErrors.push($_(`validation.server_errors.${form.errors.username}`));
-			}
-			if (form.errors.firstName) {
-				firstNameErrors.push($_(`validation.server_errors.${form.errors.firstName}`));
-			}
-			if (form.errors.lastName) {
-				lastNameErrors.push($_(`validation.server_errors.${form.errors.lastName}`));
-			}
-			if (form.errors.currentPassword) {
-				currentPasswordErrors.push($_('account.error_current_password'));
-			}
-			if (form.errors.profilePicture) {
-				profilePictureErrors.push($_(form.errors.profilePicture));
-			}
+		});
+	});
+
+	// Separate effects to avoid cross-dependencies - use untrack to prevent loops
+	$effect(() => {
+		const user = data?.user;
+		if (user) {
+			untrack(() => {
+				firstName = user.firstName || '';
+				lastName = user.lastName || '';
+				username = user.username || '';
+				email = user.email || '';
+				allowAdultContent = user.allowAdultContent || false;
+			});
 		}
 	});
 
 	$effect(() => {
-		if (data?.user) {
-			firstName = data.user.firstName || '';
-			lastName = data.user.lastName || '';
-			username = data.user.username || '';
-			email = data.user.email || '';
-			allowAdultContent = data.user.allowAdultContent || false;
-		}
-
-		if (form?.success && form.user) {
-			firstName = form.user.firstName || '';
-			lastName = form.user.lastName || '';
-			username = form.user.username || '';
-			email = form.user.email || '';
-			allowAdultContent = form.user.allowAdultContent || false;
-			currentPassword = '';
-			newPassword = '';
-			confirmPassword = '';
-			selectedProfilePicture = null; // Reset selected file after successful submission
-			
-			// Update profile picture if it was updated
-			if (form.user.profilePicture) {
-				currentProfilePicture = form.user.profilePicture;
-			}
+		const success = form?.success;
+		const formUser = form?.user;
+		if (success && formUser) {
+			untrack(() => {
+				firstName = formUser.firstName || '';
+				lastName = formUser.lastName || '';
+				username = formUser.username || '';
+				email = formUser.email || '';
+				allowAdultContent = formUser.allowAdultContent || false;
+				currentPassword = '';
+				newPassword = '';
+				confirmPassword = '';
+				selectedProfilePicture = null; // Reset selected file after successful submission
+				
+				// Update profile picture if it was updated
+				if (formUser.profilePicture) {
+					currentProfilePicture = formUser.profilePicture;
+				}
+			});
 		}
 	});
 
@@ -194,8 +219,11 @@
 	}
 
 	$effect(() => {
-		if (data?.user?.profilePicture) {
-			currentProfilePicture = data.user.profilePicture;
+		const userProfilePicture = data?.user?.profilePicture;
+		if (userProfilePicture) {
+			untrack(() => {
+				currentProfilePicture = userProfilePicture;
+			});
 		}
 	});
 

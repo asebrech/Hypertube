@@ -10,7 +10,8 @@
 	import { MovieBadges } from '../movie-badges';
 	import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 	import { Skeleton } from '@/components/ui/skeleton';
-	import { getBackdropImage } from '@/services/api';
+	import { getBackdropImage, setBookmark } from '@/services/api';
+	import { Check } from 'lucide-svelte';
 
 	interface Props {
 		movie: MovieDetails | Movie;
@@ -23,10 +24,10 @@
 	let isLoading = $state(true);
 	let currentMovieId = $state<number | null>(null);
 	let abortController = $state<AbortController | null>(null);
+	let isBookmarked = $state('is_bookmarked' in movie ? movie.is_bookmarked || false : false);
 
 	// Determine movie type - check if it has 'media_type' or infer from other properties
-	const movieType: MovieType =
-		'media_type' in movie ? movie.media_type || 'movie' : 'title' in movie ? 'movie' : 'tv';
+	const movieType: MovieType = 'media_type' in movie ? movie.media_type || 'movie' : 'movie';
 
 	const loadBackdropImage = async (
 		movieId: number,
@@ -94,6 +95,22 @@
 		};
 	});
 
+	async function toggleBookmark(e: MouseEvent) {
+		e.stopPropagation();
+		
+		if (!data.token) {
+			return;
+		}
+
+		try {
+			const newBookmarkState = !isBookmarked;
+			await setBookmark(movie.id, newBookmarkState, data.token);
+			isBookmarked = newBookmarkState;
+		} catch (error) {
+			console.error('Error toggling bookmark:', error);
+		}
+	}
+
 	function openMovie() {
 		// Navigate to the new movie (this will add current movie to history)
 		movieModalActions.navigateTo(movie.id, movieType);
@@ -153,21 +170,26 @@
 
 			<!-- Add Button -->
 			<button
-				aria-label="Add to watchlist"
-				class="flex h-6 w-6 items-center justify-center rounded-full border border-gray-500 text-gray-400 transition-colors hover:border-white hover:text-white"
-				onclick={(e) => {
-					e.stopPropagation();
-					// Add to watchlist logic here
-				}}
+				aria-label={isBookmarked ? 'Remove from watchlist' : 'Add to watchlist'}
+				class="flex h-6 w-6 items-center justify-center rounded-full border transition-colors
+					{isBookmarked 
+						? 'border-white bg-white text-black hover:bg-gray-200' 
+						: 'border-gray-500 text-gray-400 hover:border-white hover:text-white'
+					}"
+				onclick={toggleBookmark}
 			>
-				<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-					/>
-				</svg>
+				{#if isBookmarked}
+					<Check class="h-3 w-3" strokeWidth={3} />
+				{:else}
+					<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+						/>
+					</svg>
+				{/if}
 			</button>
 		</div>
 

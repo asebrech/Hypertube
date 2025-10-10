@@ -1,0 +1,1069 @@
+{
+  "info": {
+    "name": "Hypertube API",
+    "description": "Complete API collection for Hypertube streaming platform",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3333",
+      "type": "string",
+      "description": "Base URL for the Hypertube API"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string",
+      "description": "JWT token for authentication (auto-populated after login)"
+    },
+    {
+      "key": "user_id",
+      "value": "1",
+      "type": "string",
+      "description": "Current user ID (auto-populated after login)"
+    },
+    {
+      "key": "movie_id",
+      "value": "550",
+      "type": "string",
+      "description": "Sample movie ID (Fight Club) for testing"
+    },
+    {
+      "key": "comment_id",
+      "value": "1",
+      "type": "string",
+      "description": "Sample comment ID for testing"
+    },
+    {
+      "key": "username",
+      "value": "testuser",
+      "type": "string",
+      "description": "Sample username for testing"
+    },
+    {
+      "key": "person_id",
+      "value": "287",
+      "type": "string",
+      "description": "Sample person ID (Brad Pitt) for testing"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"username\": \"testuser\",\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\",\n  \"password\": \"password123\",\n  \"confirmPassword\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/user/register",
+              "host": ["{{base_url}}"],
+              "path": ["user", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.token) {",
+                  "        pm.collectionVariables.set('auth_token', response.token);",
+                  "        if (response.user && response.user.id) {",
+                  "            pm.collectionVariables.set('user_id', response.user.id);",
+                  "        }",
+                  "        if (response.user && response.user.username) {",
+                  "            pm.collectionVariables.set('username', response.user.username);",
+                  "        }",
+                  "        console.log('✅ Login successful! Token and user info saved.');",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Login failed with status:', pm.response.code);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/user/login",
+              "host": ["{{base_url}}"],
+              "path": ["user", "login"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user/logout",
+              "host": ["{{base_url}}"],
+              "path": ["user", "logout"]
+            }
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/user/forgot-password",
+              "host": ["{{base_url}}"],
+              "path": ["user", "forgot-password"]
+            }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"reset-token-here\",\n  \"password\": \"newpassword123\",\n  \"confirmPassword\": \"newpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/user/reset-password",
+              "host": ["{{base_url}}"],
+              "path": ["user", "reset-password"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 Users",
+      "item": [
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/me",
+              "host": ["{{base_url}}"],
+              "path": ["users", "me"]
+            }
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/{{user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{user_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get User Profile by Username",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/profile/{{username}}",
+              "host": ["{{base_url}}"],
+              "path": ["users", "profile", "{{username}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Multiple Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users?ids=1,2,3",
+              "host": ["{{base_url}}"],
+              "path": ["users"],
+              "query": [
+                {
+                  "key": "ids",
+                  "value": "1,2,3"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update User Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Updated\",\n  \"lastName\": \"Name\",\n  \"allowAdultContent\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/{{user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{user_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Upload Profile Picture",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "profilePicture",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/users/upload-profile-picture",
+              "host": ["{{base_url}}"],
+              "path": ["users", "upload-profile-picture"]
+            }
+          }
+        },
+        {
+          "name": "Get User Comments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/{{user_id}}/comments",
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{user_id}}", "comments"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🎬 Movies",
+      "item": [
+        {
+          "name": "Get Popular Movies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/movies?page=1&lang=en",
+              "host": ["{{base_url}}"],
+              "path": ["movies"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "lang",
+                  "value": "en"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Movies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/movies/search?query=fight club&page=1&lang=en",
+              "host": ["{{base_url}}"],
+              "path": ["movies", "search"],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "fight club"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "lang",
+                  "value": "en"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Discover Movies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/movies/discover?page=1&lang=en&genre=28&sortBy=popularity.desc",
+              "host": ["{{base_url}}"],
+              "path": ["movies", "discover"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "lang",
+                  "value": "en"
+                },
+                {
+                  "key": "genre",
+                  "value": "28"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "popularity.desc"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Movie Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/movies/{{movie_id}}?lang=en&type=movie",
+              "host": ["{{base_url}}"],
+              "path": ["movies", "{{movie_id}}"],
+              "query": [
+                {
+                  "key": "lang",
+                  "value": "en"
+                },
+                {
+                  "key": "type",
+                  "value": "movie"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Movie Videos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/movies/{{movie_id}}/videos?lang=en&type=movie",
+              "host": ["{{base_url}}"],
+              "path": ["movies", "{{movie_id}}", "videos"],
+              "query": [
+                {
+                  "key": "lang",
+                  "value": "en"
+                },
+                {
+                  "key": "type",
+                  "value": "movie"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Similar Movies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/movies/similar?tmdb_movie_id={{movie_id}}&page=1&lang=en&type=movie",
+              "host": ["{{base_url}}"],
+              "path": ["movies", "similar"],
+              "query": [
+                {
+                  "key": "tmdb_movie_id",
+                  "value": "{{movie_id}}"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "lang",
+                  "value": "en"
+                },
+                {
+                  "key": "type",
+                  "value": "movie"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Movie Credits",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/movies/credits?tmdb_movie_id={{movie_id}}&lang=en&type=movie",
+              "host": ["{{base_url}}"],
+              "path": ["movies", "credits"],
+              "query": [
+                {
+                  "key": "tmdb_movie_id",
+                  "value": "{{movie_id}}"
+                },
+                {
+                  "key": "lang",
+                  "value": "en"
+                },
+                {
+                  "key": "type",
+                  "value": "movie"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Movie Genres",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/movies/genres?lang=en&type=movie",
+              "host": ["{{base_url}}"],
+              "path": ["movies", "genres"],
+              "query": [
+                {
+                  "key": "lang",
+                  "value": "en"
+                },
+                {
+                  "key": "type",
+                  "value": "movie"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User Movies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/movies/user",
+              "host": ["{{base_url}}"],
+              "path": ["movies", "user"]
+            }
+          }
+        },
+        {
+          "name": "Mark Movie as Watched",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_watched\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/movies/{{movie_id}}/watched",
+              "host": ["{{base_url}}"],
+              "path": ["movies", "{{movie_id}}", "watched"]
+            }
+          }
+        },
+        {
+          "name": "Bookmark Movie",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_bookmarked\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/movies/{{movie_id}}/bookmark",
+              "host": ["{{base_url}}"],
+              "path": ["movies", "{{movie_id}}", "bookmark"]
+            }
+          }
+        },
+        {
+          "name": "Save Watch Progress",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"watch_progress_seconds\": 1800\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/movies/{{movie_id}}/progress",
+              "host": ["{{base_url}}"],
+              "path": ["movies", "{{movie_id}}", "progress"]
+            }
+          }
+        },
+        {
+          "name": "Get Watch Progress",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/movies/{{movie_id}}/progress",
+              "host": ["{{base_url}}"],
+              "path": ["movies", "{{movie_id}}", "progress"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🎞️ Subtitles",
+      "item": [
+        {
+          "name": "Download Multiple Subtitles",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"languages\": [\"en\", \"fr\", \"es\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/movies/{{movie_id}}/subtitles/download",
+              "host": ["{{base_url}}"],
+              "path": ["movies", "{{movie_id}}", "subtitles", "download"]
+            }
+          }
+        },
+        {
+          "name": "Get Subtitles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/movies/{{movie_id}}/subtitles/en",
+              "host": ["{{base_url}}"],
+              "path": ["movies", "{{movie_id}}", "subtitles", "en"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🎥 Images",
+      "item": [
+        {
+          "name": "Get Backdrop Image",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/movies/backdropImage?tmdb_movie_id={{movie_id}}&size=large&lang=en&type=movie",
+              "host": ["{{base_url}}"],
+              "path": ["movies", "backdropImage"],
+              "query": [
+                {
+                  "key": "tmdb_movie_id",
+                  "value": "{{movie_id}}"
+                },
+                {
+                  "key": "size",
+                  "value": "large"
+                },
+                {
+                  "key": "lang",
+                  "value": "en"
+                },
+                {
+                  "key": "type",
+                  "value": "movie"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Poster Image",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/movies/posterImage?tmdb_movie_id={{movie_id}}&size=large&lang=en&type=movie",
+              "host": ["{{base_url}}"],
+              "path": ["movies", "posterImage"],
+              "query": [
+                {
+                  "key": "tmdb_movie_id",
+                  "value": "{{movie_id}}"
+                },
+                {
+                  "key": "size",
+                  "value": "large"
+                },
+                {
+                  "key": "lang",
+                  "value": "en"
+                },
+                {
+                  "key": "type",
+                  "value": "movie"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Logo Image",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/movies/logoImage?tmdb_movie_id={{movie_id}}&size=large&lang=en&type=movie",
+              "host": ["{{base_url}}"],
+              "path": ["movies", "logoImage"],
+              "query": [
+                {
+                  "key": "tmdb_movie_id",
+                  "value": "{{movie_id}}"
+                },
+                {
+                  "key": "size",
+                  "value": "large"
+                },
+                {
+                  "key": "lang",
+                  "value": "en"
+                },
+                {
+                  "key": "type",
+                  "value": "movie"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🎭 People",
+      "item": [
+        {
+          "name": "Get People Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/movies/people?tmdb_people_id={{person_id}}&lang=en",
+              "host": ["{{base_url}}"],
+              "path": ["movies", "people"],
+              "query": [
+                {
+                  "key": "tmdb_people_id",
+                  "value": "{{person_id}}"
+                },
+                {
+                  "key": "lang",
+                  "value": "en"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💬 Comments",
+      "item": [
+        {
+          "name": "Get Movie Comments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/movie/{{movie_id}}/comments?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["movie", "{{movie_id}}", "comments"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add Movie Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Great movie! Loved it.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/movie/{{movie_id}}/comments",
+              "host": ["{{base_url}}"],
+              "path": ["movie", "{{movie_id}}", "comments"]
+            }
+          }
+        },
+        {
+          "name": "Update Comment",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Updated comment content\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/comments/{{comment_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["comments", "{{comment_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Comment",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/comments/{{comment_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["comments", "{{comment_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏴‍☠️ Torrents & Streaming",
+      "item": [
+        {
+          "name": "Start Movie Download",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/torrent/{{movie_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["torrent", "{{movie_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Check Movie Ready Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/torrent/720/{{movie_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["torrent", "720", "{{movie_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Stream Movie File",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/stream/{{movie_id}}/720p/output.m3u8",
+              "host": ["{{base_url}}"],
+              "path": ["stream", "{{movie_id}}", "720p", "output.m3u8"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "⚙️ Admin",
+      "item": [
+        {
+          "name": "Get Downloaded Movies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/movies?page=1&limit=10&search=&sortBy=createdAt&sortDirection=desc",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "movies"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": ""
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt"
+                },
+                {
+                  "key": "sortDirection",
+                  "value": "desc"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Movies Without Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/movies/movies-without-status?page=1&limit=10&search=",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "movies", "movies-without-status"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Single Movie",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/movies/{{movie_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "movies", "{{movie_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete All Movies",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/movies",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "movies"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🌐 OAuth",
+      "item": [
+        {
+          "name": "GitHub OAuth Redirect",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/github/redirect",
+              "host": ["{{base_url}}"],
+              "path": ["github", "redirect"]
+            }
+          }
+        },
+        {
+          "name": "Google OAuth Redirect",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/google/redirect",
+              "host": ["{{base_url}}"],
+              "path": ["google", "redirect"]
+            }
+          }
+        },
+        {
+          "name": "Discord OAuth Redirect",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/discord/redirect",
+              "host": ["{{base_url}}"],
+              "path": ["discord", "redirect"]
+            }
+          }
+        },
+        {
+          "name": "42 OAuth Redirect",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/fortyTwo/redirect",
+              "host": ["{{base_url}}"],
+              "path": ["fortyTwo", "redirect"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🗄️ Public Assets",
+      "item": [
+        {
+          "name": "Get Profile Picture",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/uploads/profiles/filename.jpg",
+              "host": ["{{base_url}}"],
+              "path": ["uploads", "profiles", "filename.jpg"]
+            }
+          }
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": ["{{base_url}}"],
+              "path": [""]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
