@@ -4,7 +4,6 @@
 	"log_out": "Log out",
 	"navbar": {
 		"home": "Home",
-		"shows": "TV Shows",
 		"movies": "Movies",
 		"news-popular": "News & Popular",
 		"my-list": "My Lists",
@@ -18,7 +17,7 @@
 		"see-more": "See More"
 	},
 	"search": {
-		"placeholder": "Movies, Shows, People...",
+		"placeholder": "Movies, People...",
 		"noresults": "No results found",
 		"loading": "Loading..."
 	},
@@ -201,7 +200,7 @@
 		"security": "Security",
 		"content_preferences": "Content Preferences",
 		"allow_adult_content": "Allow adult content",
-		"allow_adult_content_description": "Enable to show movies and TV shows with adult content in search results and recommendations",
+		"allow_adult_content_description": "Enable to show movies with adult content in search results and recommendations",
 		"current_password": "Current Password",
 		"new_password": "New Password",
 		"confirm_password": "Confirm Password",
