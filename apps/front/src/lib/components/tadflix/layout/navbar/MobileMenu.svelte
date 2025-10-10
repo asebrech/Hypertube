@@ -140,13 +140,21 @@
 						action="/logout"
 						method="POST"
 						use:enhance={() => {
+							// Disable all pointer events on the document to prevent background clicks
+							document.body.style.pointerEvents = 'none';
+							
 							return async ({ update }) => {
 								await update();
-								closeMenu();
+								// Re-enable pointer events after logout
+								document.body.style.pointerEvents = '';
 							};
 						}}
 					>
-						<Button type="submit" class="w-full" onclick={(e) => e.preventDefault()}>
+						<Button 
+							type="submit" 
+							class="w-full"
+							onclick={(e) => e.stopPropagation()}
+						>
 							{$_('log_out')}
 						</Button>
 					</form>
