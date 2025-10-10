@@ -13,8 +13,16 @@
 	import { locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	import Check from '@lucide/svelte/icons/check';
+	import { PUBLIC_ENABLE_YOUTUBE } from '$env/static/public';
 
-	const { movieId, type = 'movie', data, isAvailable, isBookmarked, onBookmarkChange } = $props<{
+	const {
+		movieId,
+		type = 'movie',
+		data,
+		isAvailable,
+		isBookmarked,
+		onBookmarkChange
+	} = $props<{
 		movieId: number;
 		type?: MovieType;
 		data: any;
@@ -22,6 +30,10 @@
 		isBookmarked: boolean;
 		onBookmarkChange?: (movieId: number, isBookmarked: boolean) => void;
 	}>();
+
+	// Check if YouTube is enabled via environment variable
+	const isYouTubeEnabled = PUBLIC_ENABLE_YOUTUBE === 'true';
+
 	let isLoading: boolean = $state(true);
 	let movie: MovieDetails | undefined = $state<MovieDetails | undefined>();
 	let movieVideo: MovieVideo | undefined = $state<MovieVideo | undefined>();
@@ -56,16 +68,16 @@
 	onMount(() => {
 		if (movieId) {
 			isLoading = true;
-			loadMovieDetails(movieId).catch((error) => {
-			});
-			loadMovieVideo(movieId).catch((error) => {
-			});
+			loadMovieDetails(movieId).catch((error) => {});
+			if (isYouTubeEnabled) {
+				loadMovieVideo(movieId).catch((error) => {});
+			}
 			isLoading = false;
 		}
 	});
 
 	function createPlayer(id: string) {
-		if (!id || !isApiLoaded || !playerElement) return;
+		if (!id || !isApiLoaded || !playerElement || !isYouTubeEnabled) return;
 
 		if (!player) {
 			player = new YT.Player(playerElement, {
@@ -79,7 +91,7 @@
 						if (event.data === YT.PlayerState.ENDED) {
 							videoEnded = true;
 							// Update store when preview video ends
-							videoState.update(state => ({
+							videoState.update((state) => ({
 								...state,
 								previewVideoPlaying: false
 							}));
@@ -87,14 +99,14 @@
 						if (event.data === YT.PlayerState.PLAYING) {
 							playerReady = true;
 							// Update store when preview video starts playing
-							videoState.update(state => ({
+							videoState.update((state) => ({
 								...state,
 								previewVideoPlaying: true
 							}));
 						}
 						if (event.data === YT.PlayerState.PAUSED) {
 							// Update store when preview video is paused
-							videoState.update(state => ({
+							videoState.update((state) => ({
 								...state,
 								previewVideoPlaying: false
 							}));
@@ -126,6 +138,8 @@
 	}
 
 	onMount(() => {
+		if (!isYouTubeEnabled) return;
+
 		// @ts-ignore
 		window.onYouTubeIframeAPIReady = () => {
 			isApiLoaded = true;
@@ -145,30 +159,29 @@
 
 	onDestroy(() => {
 		// Reset preview video state when component is destroyed
-		videoState.update(state => ({
+		videoState.update((state) => ({
 			...state,
 			previewVideoPlaying: false
 		}));
-		
+
 		// Clean up YouTube player if it exists
-		if (player && typeof player.destroy === 'function') {
+		if (player && typeof player.destroy === 'function' && isYouTubeEnabled) {
 			try {
 				player.destroy();
-			} catch {
-			}
+			} catch {}
 		}
 	});
 
 	$effect(() => {
-		if (movieVideo?.key) {
+		if (movieVideo?.key && isYouTubeEnabled) {
 			createPlayer(movieVideo?.key);
 		}
 	});
 
 	$effect(() => {
-		showVideo = playerReady && !videoEnded;
-		showImage = !!movie && (!playerReady || videoEnded);
-		showSkeleton = !movie?.backdrop_path && (!playerReady || videoEnded);
+		showVideo = playerReady && !videoEnded && isYouTubeEnabled;
+		showImage = !!movie && (isYouTubeEnabled ? !playerReady || videoEnded : true);
+		showSkeleton = !movie?.backdrop_path && (isYouTubeEnabled ? !playerReady || videoEnded : true);
 	});
 
 	function toggleModalMovie(options: { movieId: number | undefined; type: MovieType }) {
@@ -187,11 +200,13 @@
 			currentIsBookmarked = true;
 			// Notify parent component of the change
 			onBookmarkChange?.(options.movieId, true);
-		} catch (error) {
-		}
+		} catch (error) {}
 	}
 
-	async function removeMovieFromWatchlist(options: { movieId: number | undefined; type: MovieType }) {
+	async function removeMovieFromWatchlist(options: {
+		movieId: number | undefined;
+		type: MovieType;
+	}) {
 		if (!options.movieId || !data.token) {
 			return;
 		}
@@ -201,8 +216,7 @@
 			currentIsBookmarked = false;
 			// Notify parent component of the change
 			onBookmarkChange?.(options.movieId, false);
-		} catch (error) {
-		}
+		} catch (error) {}
 	}
 </script>
 
@@ -244,49 +258,51 @@
 			</div>
 
 			<!-- ▶️ YouTube Player -->
-			<div
-				class="absolute inset-0 z-30 flex items-end bg-black transition-opacity duration-1000"
-				style="opacity: {showVideo ? 1 : 0};"
-			>
-				<div class="absolute h-full w-full">
-					<div
-						class="absolute top-1/2 left-1/2 min-h-[155%] min-w-[155%] -translate-x-1/2 -translate-y-1/2"
-					>
+			{#if isYouTubeEnabled}
+				<div
+					class="absolute inset-0 z-30 flex items-end bg-black transition-opacity duration-1000"
+					style="opacity: {showVideo ? 1 : 0};"
+				>
+					<div class="absolute h-full w-full">
 						<div
-							id="player"
-							bind:this={playerElement}
-							class="absolute top-0 left-0 h-full w-full overflow-hidden"
-						></div>
-					</div>
-					<div
-						class="absolute bottom-0 z-10 w-full rounded-b-[2px] bg-gradient-to-t from-black/60 to-transparent p-4"
-					>
-						<Icon />
-						<h3 class="line-clamp-1 font-medium">
-							{type === 'movie' ? movie?.title : movie?.name}
-						</h3>
-					</div>
-
-					{#if showVideo}
-						<ButtonPreview
-							variant="outline"
-							size="default"
-							onclick={(e) => {
-								e.stopPropagation();
-								toggleMute();
-							}}
-							class="absolute right-0 bottom-0 z-20 m-4"
+							class="absolute top-1/2 left-1/2 min-h-[155%] min-w-[155%] -translate-x-1/2 -translate-y-1/2"
 						>
-							{#if isMuted}
-								<VolumeOff />
-							{:else}
-								<Volume2 />
-							{/if}
-						</ButtonPreview>
-					{/if}
+							<div
+								id="player"
+								bind:this={playerElement}
+								class="absolute top-0 left-0 h-full w-full overflow-hidden"
+							></div>
+						</div>
+						<div
+							class="absolute bottom-0 z-10 w-full rounded-b-[2px] bg-gradient-to-t from-black/60 to-transparent p-4"
+						>
+							<Icon />
+							<h3 class="line-clamp-1 font-medium">
+								{type === 'movie' ? movie?.title : movie?.name}
+							</h3>
+						</div>
+
+						{#if showVideo}
+							<ButtonPreview
+								variant="outline"
+								size="default"
+								onclick={(e) => {
+									e.stopPropagation();
+									toggleMute();
+								}}
+								class="absolute right-0 bottom-0 z-20 m-4"
+							>
+								{#if isMuted}
+									<VolumeOff />
+								{:else}
+									<Volume2 />
+								{/if}
+							</ButtonPreview>
+						{/if}
+					</div>
+					<div class="bg-red relative top-0 left-0 h-full w-full"></div>
 				</div>
-				<div class="bg-red relative top-0 left-0 h-full w-full"></div>
-			</div>
+			{/if}
 		</div>
 		<div class="flex w-full flex-col gap-2 p-4">
 			{#if isLoading}
@@ -297,20 +313,18 @@
 				<div class="flex items-center justify-between">
 					<div class="flex gap-2">
 						<ButtonPreview variant="filled" class={isAvailable ? '' : 'cursor-not-allowed'}>
-							<Play fill={'black'}  />
+							<Play fill={'black'} />
 						</ButtonPreview>
 						<ButtonPreview
 							variant="outline"
 							onclick={(e) => {
 								e.stopPropagation();
-								if (currentIsBookmarked) 
-								{
+								if (currentIsBookmarked) {
 									removeMovieFromWatchlist({
 										movieId: movie?.id,
 										type: type
 									});
-								}
-								else {
+								} else {
 									addMovieToWatchlist({
 										movieId: movie?.id,
 										type: type
