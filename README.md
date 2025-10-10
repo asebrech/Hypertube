@@ -488,7 +488,7 @@ cd apps/back && node ace migration:run
 
 ## 📄 License
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE) file for details.
+This project is licensed under the WTFPL (Do What The F*ck You Want To Public License). See [LICENSE](LICENSE) file for details.
 
 ---
 
