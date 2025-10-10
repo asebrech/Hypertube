@@ -52,7 +52,6 @@ Hypertube is a comprehensive streaming platform that combines the user experienc
 ## 🏗️ Architecture
 
 <!-- **📊 INSERT ARCHITECTURE DIAGRAM HERE** -->
-*Diagram placeholder: System architecture showing frontend, backend, database, and external services*
 
 ### Frontend (SvelteKit)
 - **Framework**: SvelteKit 5.0 with TypeScript
@@ -168,7 +167,7 @@ SECRET_BACK_REDIRECT_URL=http://localhost:3333
 
 ### 🎬 Video Streaming Engine
 
-![Movie Details & Video Player](doc/movieDetails.png)
+![Movie Details & Video Player](doc/videoPlayer.png)
 *Movie details page with video player interface and quality selector*
 
 The streaming engine uses progressive HLS conversion:
@@ -458,7 +457,7 @@ If you see warnings related to YouTube player in the console, you can disable th
 
 ```env
 # Frontend (.env)
-Enable-Youtube_player=false
+PUBLIC_ENABLE_YOUTUBE=false
 ```
 
 This will prevent YouTube-related warnings and improve performance if you're not using YouTube integration features.
@@ -513,15 +512,12 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) file for 
 ### Community
 - **Issues**: GitHub Issues for bug reports
 - **Discussions**: GitHub Discussions for questions
-- **Discord**: [Community Server](discord-link) *(placeholder)*
 
 ### Professional Support
-For enterprise support and custom implementations, contact: [support@hypertube.dev](mailto:support@hypertube.dev) *(placeholder)*
+For enterprise support and custom implementations, contact: [support@hypertube.dev](mailto:support@hypertube.dev)
 
 ---
 
 **Made with ❤️ and lots of ☕ by the Hypertube team**
 
 ![Hypertube Team](doc/Capture%20d'écran%202025-10-10%20à%2010.38.48.png)
-*The passionate team behind Hypertube streaming platform*
-*Footer placeholder: Hypertube logo or team photo*
