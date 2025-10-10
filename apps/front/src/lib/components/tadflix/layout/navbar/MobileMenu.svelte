@@ -144,7 +144,6 @@
 							document.body.style.pointerEvents = 'none';
 							
 							return async ({ update }) => {
-								closeMenu();
 								await update();
 								// Re-enable pointer events after logout
 								document.body.style.pointerEvents = '';
