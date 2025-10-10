@@ -520,4 +520,4 @@ For enterprise support and custom implementations, contact: [support@hypertube.d
 
 **Made with ❤️ and lots of ☕ by the Hypertube team**
 
-![Hypertube Team](doc/Capture%20d'écran%202025-10-10%20à%2010.38.48.png)
+![Hypertube Team](doc/HypertubeTeam.heic)
