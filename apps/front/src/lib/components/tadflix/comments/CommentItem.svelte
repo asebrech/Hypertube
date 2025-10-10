@@ -55,14 +55,12 @@
 	};
 </script>
 
-<div class={`flex w-full gap-2 rounded-none`}>
-	<div
-		class={`flex w-full gap-6 bg-[#141414] p-4 md:max-w-[80%] md:p-6 ${isOwner ? 'ml-auto' : ''}`}
-	>
+<div class={`flex w-full rounded-none ${isOwner ? 'flex-row-reverse' : 'flex-row'}`}>
+	<div class={`flex w-full gap-6 bg-[#141414] p-4 md:max-w-[80%] md:p-6`}>
 		<!-- User Avatar -->
 		<button
 			onclick={navigateToProfile}
-			class="cursor-pointer transition-all hover:ring-2 hover:ring-white/20 rounded-lg"
+			class="cursor-pointer rounded-lg transition-all hover:ring-2 hover:ring-white/20"
 			aria-label={`View ${comment.username}'s profile`}
 		>
 			<UserProfilePicture
@@ -81,7 +79,7 @@
 				<CommentInput
 					token={token || ''}
 					username={comment.username}
-					data={data}
+					{data}
 					isEditMode={true}
 					existingComment={comment}
 					onCommentUpdated={handleCommentUpdated}
@@ -104,7 +102,11 @@
 						<span>{formatDate(comment.createdAt)}</span>
 						{#if comment.updatedAt && comment.updatedAt !== comment.createdAt}
 							<span>•</span>
-							<span class="italic">{$_('comments.edited')} {formatDate(comment.updatedAt)}</span>
+							<span class="italic">
+								<span class="hidden sm:inline">{$_('comments.edited')}</span>
+								<span class="sm:hidden">*</span>
+								<span class="xs:inline hidden sm:inline">{formatDate(comment.updatedAt)}</span>
+							</span>
 						{/if}
 					</div>
 					<!-- Comment Content -->
@@ -112,25 +114,51 @@
 						{comment.content}
 					</p>
 				</div>
+
+				<!-- Action Buttons Below - Only on smallest screens (< 400px) -->
+				{#if isOwner}
+					<div
+						class="flex items-center justify-end gap-4 border-t border-gray-700 pt-2 min-[400px]:hidden"
+					>
+						<!-- Edit Button -->
+						<button
+							onclick={startEdit}
+							class="flex h-8 items-center gap-2 rounded px-3 py-1 text-sm transition-colors hover:bg-gray-700"
+							aria-label={$_('comments.edit')}
+						>
+							<EditIcon class="h-4 w-4" />
+						</button>
+
+						<!-- Delete Button -->
+						{#if onDelete}
+							<button
+								onclick={() => onDelete?.(comment.id)}
+								class="flex h-8 items-center gap-2 rounded px-3 py-1 text-sm transition-colors hover:bg-red-700"
+								aria-label={$_('comments.delete')}
+							>
+								<XIcon class="h-4 w-4" />
+							</button>
+						{/if}
+					</div>
+				{/if}
 			{/if}
 		</div>
 	</div>
-	<!-- Action Buttons (Only show for comment owner) -->
-	{#if isOwner}
-		<div class="flex flex-col items-center gap-4">
+
+	<!-- Action Buttons on Side - Hidden on smallest screens (< 400px), shown on larger screens -->
+	{#if isOwner && !isEditing}
+		<div class="hidden flex-col items-center gap-4 min-[400px]:flex">
 			<!-- Edit Button -->
-			{#if !isEditing}
-				<button
-					onclick={startEdit}
-					class="flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-gray-700"
-					aria-label={$_('comments.edit')}
-				>
-					<EditIcon />
-				</button>
-			{/if}
+			<button
+				onclick={startEdit}
+				class="flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-gray-700"
+				aria-label={$_('comments.edit')}
+			>
+				<EditIcon />
+			</button>
 
 			<!-- Delete Button -->
-			{#if onDelete && !isEditing}
+			{#if onDelete}
 				<button
 					onclick={() => onDelete?.(comment.id)}
 					class="flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-red-700"
