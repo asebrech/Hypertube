@@ -160,7 +160,14 @@
 					<h2 class="mb-8 text-2xl font-bold text-white">
 						{$_('profile.recently-watched-movies')}
 					</h2>
-					<MovieList movies={data.profileUser.watchedMoviesData.map((movie: any) => ({ id: movie.tmdbId, title: movie.title, type: movie.type }))} data={data} />
+					<MovieList movies={data.profileUser.watchedMoviesData.map((movie: any) => ({
+						id: movie.tmdbId,
+						title: movie.title,
+						type: movie.type,
+						torrent_available: movie.torrent_available,
+						is_watched: true,
+						watch_progress_seconds: movie.watch_progress_seconds || 0
+					}))} data={data} />
 				</div>
 			</div>
 		{/if}
