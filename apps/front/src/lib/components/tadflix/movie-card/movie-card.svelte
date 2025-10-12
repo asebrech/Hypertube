@@ -93,8 +93,8 @@
 			<Skeleton class="h-full w-full rounded-[2px]" />
 		</div>
 	{:else if !backdropImage?.langFound}
-		<CardHeader class="relative z-10 flex h-full items-end p-4">
-			<CardTitle class="text-white">{title}</CardTitle>
+		<CardHeader class="relative z-10 flex h-full items-end p-2 sm:p-4">
+			<CardTitle class="text-white text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl">{title}</CardTitle>
 		</CardHeader>
 	{/if}
 	{#if !isAvailable}
