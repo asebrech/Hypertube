@@ -55,8 +55,52 @@
 	};
 </script>
 
+<style>
+	/* Target CommentInput only when wrapped in comment-edit-mode */
+	.comment-edit-mode :global(.flex.w-full.justify-end.gap-2) {
+		@media (max-width: 767px) {
+			flex-direction: column;
+		}
+	}
+	
+	.comment-edit-mode :global(.flex.flex-col.justify-end) {
+		@media (max-width: 767px) {
+			flex-direction: row;
+			justify-content: flex-end;
+			border-top: 1px solid rgb(55 65 81);
+			padding-top: 0.5rem;
+			margin-top: 0.5rem;
+		}
+	}
+</style>
+
 <div class={`flex w-full rounded-none ${isOwner ? 'flex-row-reverse' : 'flex-row'}`}>
-	<div class={`flex w-full gap-6 bg-[#141414] p-4 md:max-w-[80%] md:p-6`}>
+	<!-- Action Buttons on Side - Desktop only -->
+	{#if isOwner && !isEditing}
+		<div class="hidden flex-col items-center gap-4 md:flex">
+			<!-- Edit Button -->
+			<button
+				onclick={startEdit}
+				class="flex items-center justify-center rounded p-2 transition-colors hover:bg-gray-700"
+				aria-label={$_('comments.edit')}
+			>
+				<EditIcon size={20} />
+			</button>
+
+			<!-- Delete Button -->
+			{#if onDelete}
+				<button
+					onclick={() => onDelete?.(comment.id)}
+					class="flex items-center justify-center rounded p-2 transition-colors hover:bg-red-700"
+					aria-label={$_('comments.delete')}
+				>
+					<XIcon size={20} />
+				</button>
+			{/if}
+		</div>
+	{/if}
+
+	<div class={`flex w-full gap-6 bg-[#141414] p-4 md:max-w-[80%] md:p-6 items-start`}>
 		<!-- User Avatar -->
 		<button
 			onclick={navigateToProfile}
@@ -76,17 +120,19 @@
 		<div class="flex flex-1 flex-col gap-2">
 			{#if isEditing}
 				<!-- Edit Mode using CommentInput -->
-				<CommentInput
-					token={token || ''}
-					username={comment.username}
-					{data}
-					isEditMode={true}
-					existingComment={comment}
-					onCommentUpdated={handleCommentUpdated}
-					onCancel={cancelEdit}
-					showAvatar={false}
-					fullWidth={true}
-				/>
+				<div class="comment-edit-mode">
+					<CommentInput
+						token={token || ''}
+						username={comment.username}
+						{data}
+						isEditMode={true}
+						existingComment={comment}
+						onCommentUpdated={handleCommentUpdated}
+						onCancel={cancelEdit}
+						showAvatar={false}
+						fullWidth={true}
+					/>
+				</div>
 			{:else}
 				<!-- Display Mode -->
 				<div class="flex flex-col gap-2">
@@ -114,59 +160,34 @@
 						{comment.content}
 					</p>
 				</div>
+			{/if}
 
-				<!-- Action Buttons Below - Only on smallest screens (< 400px) -->
-				{#if isOwner}
-					<div
-						class="flex items-center justify-end gap-4 border-t border-gray-700 pt-2 min-[400px]:hidden"
+			<!-- Action Buttons Below - Mobile only, not when editing -->
+			{#if isOwner && !isEditing}
+				<div
+					class="flex items-center justify-end gap-4 border-t border-gray-700 pt-2 md:hidden"
+				>
+					<!-- Edit Button -->
+					<button
+						onclick={startEdit}
+						class="flex items-center justify-center rounded p-2 transition-colors hover:bg-gray-700"
+						aria-label={$_('comments.edit')}
 					>
-						<!-- Edit Button -->
-						<button
-							onclick={startEdit}
-							class="flex h-8 items-center gap-2 rounded px-3 py-1 text-sm transition-colors hover:bg-gray-700"
-							aria-label={$_('comments.edit')}
-						>
-							<EditIcon class="h-4 w-4" />
-						</button>
+						<EditIcon size={20} />
+					</button>
 
-						<!-- Delete Button -->
-						{#if onDelete}
-							<button
-								onclick={() => onDelete?.(comment.id)}
-								class="flex h-8 items-center gap-2 rounded px-3 py-1 text-sm transition-colors hover:bg-red-700"
-								aria-label={$_('comments.delete')}
-							>
-								<XIcon class="h-4 w-4" />
-							</button>
-						{/if}
-					</div>
-				{/if}
+					<!-- Delete Button -->
+					{#if onDelete}
+						<button
+							onclick={() => onDelete?.(comment.id)}
+							class="flex items-center justify-center rounded p-2 transition-colors hover:bg-red-700"
+							aria-label={$_('comments.delete')}
+						>
+							<XIcon size={20} />
+						</button>
+					{/if}
+				</div>
 			{/if}
 		</div>
 	</div>
-
-	<!-- Action Buttons on Side - Hidden on smallest screens (< 400px), shown on larger screens -->
-	{#if isOwner && !isEditing}
-		<div class="hidden flex-col items-center gap-4 min-[400px]:flex">
-			<!-- Edit Button -->
-			<button
-				onclick={startEdit}
-				class="flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-gray-700"
-				aria-label={$_('comments.edit')}
-			>
-				<EditIcon />
-			</button>
-
-			<!-- Delete Button -->
-			{#if onDelete}
-				<button
-					onclick={() => onDelete?.(comment.id)}
-					class="flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-red-700"
-					aria-label={$_('comments.delete')}
-				>
-					<XIcon />
-				</button>
-			{/if}
-		</div>
-	{/if}
 </div>
