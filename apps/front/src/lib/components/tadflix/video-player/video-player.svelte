@@ -168,12 +168,11 @@
 			}
 		});
 
-		player.on('pause', handleProgressSave);
-		player.on('seeked', handleProgressSave);
-
 		player.on('pause', () => {
+			handleProgressSave();
 			isPaused = true;
 		});
+		player.on('seeked', handleProgressSave);
 
 		player.on('play', () => {
 			isPaused = false;
