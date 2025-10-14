@@ -25,6 +25,7 @@
 	let mobileMenuOpen: boolean = $state(false);
 	let mobileSearchRef: any = $state();
 	let mobileMenuRef: any = $state();
+	let searchInputRef: HTMLInputElement | undefined = $state();
 
 	function isLinkCurrentPage(link: Link): boolean {
 		return page.url.pathname === link.href;
@@ -172,6 +173,7 @@
 							<Search size={18} />
 						</span>
 						<input
+							bind:this={searchInputRef}
 							type="search"
 							placeholder={$_('search.placeholder')}
 							class="h-[32px] w-full bg-black/80 pl-10"
@@ -187,7 +189,14 @@
 				{#if !searchOpen}
 					<div class="relative top-0">
 						<button
-							onclick={() => (searchOpen = !searchOpen)}
+							onclick={() => {
+								searchOpen = !searchOpen;
+								if (searchOpen) {
+									setTimeout(() => {
+										searchInputRef?.focus();
+									}, 500);
+								}
+							}}
 							class="flex cursor-pointer items-center justify-center bg-none p-2 text-white"
 						>
 							<Search size={20} />
