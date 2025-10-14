@@ -88,6 +88,7 @@ export default class UsersController {
           'movies.title',
           'movies.imdbId',
           'movies.tmdbId',
+          'movies.torrent_available',
           'movie_user.last_watched_at',
           'movie_user.watch_progress_seconds'
         )
