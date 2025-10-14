@@ -4,9 +4,12 @@
 	import { searchQuery } from '@/services/store';
 	import { MovieList } from '@/components/tadflix/movie-list';
 	import { MovieModal } from '@/components/tadflix/movie-modal';
+	import { SearchSkeleton } from '@/components/tadflix/search-skeleton';
 	import { onMount, onDestroy } from 'svelte';
 	import { _ } from 'svelte-i18n';
 	import { goto } from '$app/navigation';
+	import { fade } from 'svelte/transition';
+	import { Loader2 } from 'lucide-svelte';
 
 	const { data } = $props();
 
@@ -121,15 +124,24 @@
 	});
 </script>
 
-{#if searchResults.length === 0 && !isLoading}
-	<div class="flex h-[80vh] items-center justify-center">
+{#if isLoading && searchResults.length === 0}
+	<div class="flex flex-col gap-8 py-[150px]">
+		<SearchSkeleton />
+	</div>
+{:else if searchResults.length === 0 && !isLoading}
+	<div class="flex h-[80vh] items-center justify-center" transition:fade={{ duration: 200 }}>
 		<p class="text-lg text-gray-500">{$_('search.noresults')}</p>
 	</div>
-{/if}
-
-{#if searchResults.length > 0}
+{:else if searchResults.length > 0}
 	<div class="flex flex-col gap-8 py-[150px]">
-		<MovieList movies={searchResults} data={data} />
+		<div transition:fade={{ duration: 200 }}>
+			<MovieList movies={searchResults} data={data} />
+		</div>
+		{#if isLoading}
+			<div class="mt-4">
+				<Loader2 class="mx-auto h-8 w-8 animate-spin text-red-500" />
+			</div>
+		{/if}
 	</div>
 {/if}
 

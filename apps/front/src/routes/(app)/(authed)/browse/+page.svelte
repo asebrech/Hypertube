@@ -1,12 +1,13 @@
 <script lang="ts">
 	import MovieList from '@/components/tadflix/movie-list/movie-list.svelte';
 	import { MovieModal } from '@/components/tadflix/movie-modal';
+	import { SearchSkeleton } from '@/components/tadflix/search-skeleton';
 	import type { Movie, Genre, PersonDetails } from '@hypertube/shared';
 	import { getMovieDiscover, getGenresList, getPeopleDetails } from '@/services/api';
 	import { _ } from 'svelte-i18n';
 	import { onMount, onDestroy } from 'svelte';
 	import { Select, SelectTrigger, SelectItem, SelectContent } from '@/components/ui/select';
-	import { X } from 'lucide-svelte';
+	import { Loader2, X } from 'lucide-svelte';
 	import Titlebar from '@/components/tadflix/layout/titlebar/Titlebar.svelte';
 
 	const { data } = $props();
@@ -310,22 +311,23 @@
 	${cast && selectedGenres.length > 0 ? 'sm:pt-[17.5rem]' : cast || selectedGenres.length > 0 ? 'sm:pt-56' : 'sm:pt-42'}
 `}
 >
-	{#if movies.length === 0 && !isLoading}
+	{#if isLoading && movies.length === 0}
+		<div class="flex flex-col gap-8 pb-[150px]">
+			<SearchSkeleton />
+		</div>
+	{:else if movies.length === 0 && !isLoading}
 		<div class="flex h-[80vh] items-center justify-center">
 			<p class="text-lg text-gray-500">{$_('search.noresults')}</p>
 		</div>
-	{/if}
-
-	{#if movies.length > 0}
+	{:else if movies.length > 0}
 		<div class="flex flex-col gap-8 pb-[150px]">
 			<MovieList {movies} {data} />
+			{#if isLoading}
+				<div class="mt-4">
+					<Loader2 class="mx-auto h-8 w-8 animate-spin text-red-500" />
+				</div>
+			{/if}
 		</div>
-	{/if}
-	
-	{#if isLoading && currentPage === 1}
-	<div class="flex h-[10vh] items-center justify-center">
-		<p class="text-lg text-gray-500">{$_('search.loading')}</p>
-	</div>
 	{/if}
 </div>
 

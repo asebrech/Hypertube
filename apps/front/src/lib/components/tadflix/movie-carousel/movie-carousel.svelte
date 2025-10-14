@@ -143,7 +143,6 @@
 											orderNumber={index ? index : 10}
 											type={movie.media_type}
 											isWatched={movie.is_watched || false}
-											isBookmarked={movie.is_bookmarked || false}
 											isAvailable={movie.torrent_available || false}
 											watchProgressSeconds={movie.watch_progress_seconds || 0}
 											data={data}
@@ -155,7 +154,6 @@
 											title={movie.media_type === 'movie' ? movie.title : movie.name}
 											type={movie.media_type}
 											isWatched={movie.is_watched || false}
-											isBookmarked={movie.is_bookmarked || false}
 											isAvailable={movie.torrent_available || false}
 											watchProgressSeconds={movie.watch_progress_seconds || 0}
 											data={data}
