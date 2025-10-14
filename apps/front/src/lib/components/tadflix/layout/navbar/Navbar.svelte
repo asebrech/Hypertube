@@ -194,7 +194,7 @@
 								if (searchOpen) {
 									setTimeout(() => {
 										searchInputRef?.focus();
-									}, 600);
+									}, 500);
 								}
 							}}
 							class="flex cursor-pointer items-center justify-center bg-none p-2 text-white"
