@@ -226,7 +226,7 @@
 	class="block {isAvailable ? 'cursor-pointer' : 'cursor-not-allowed'}"
 	onclick={() => {
 		if (isAvailable) {
-			window.location.href = `/movie/${movieId}`;
+			window.location.href = `/movie/waiting-room?id=${movieId}`;
 		}
 	}}
 >

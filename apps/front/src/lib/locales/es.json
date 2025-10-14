@@ -95,7 +95,8 @@
 		"error-title": "¡Ups! Algo salió mal",
 		"timeout-error": "El procesamiento de video expiró. Por favor, inténtalo de nuevo más tarde.",
 		"show-details": "Mostrar detalles",
-		"hide-details": "Ocultar detalles"
+		"hide-details": "Ocultar detalles",
+		"server-loading": "Esperando al servidor de streaming..."
 	},
 	"validation": {
 		"password": {

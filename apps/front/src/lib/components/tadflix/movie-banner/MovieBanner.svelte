@@ -351,7 +351,7 @@
 				<div class="flex flex-wrap gap-2">
 					<Button
 						class="bg-primary text-primary-foreground hover:bg-primary/90 h-8 cursor-pointer rounded-[4px] px-3 text-xs sm:h-10 sm:px-4 sm:text-sm"
-						href={`/movie/${movie.id}`}
+						href={`/movie/waiting-room?id=${movie.id}`}
 					>
 						<Play fill={'black'} class="h-4 w-4 sm:h-5 sm:w-5" />{$_('movie-banner.play')}
 					</Button>

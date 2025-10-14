@@ -95,7 +95,8 @@
 		"error-title": "عذراً! حدث خطأ ما",
 		"timeout-error": "انتهت مهلة معالجة الفيديو. يرجى المحاولة مرة أخرى لاحقاً.",
 		"show-details": "إظهار التفاصيل",
-		"hide-details": "إخفاء التفاصيل"
+		"hide-details": "إخفاء التفاصيل",
+		"server-loading": "في انتظار خادم البث..."
 	},
 	"validation": {
 		"password": {
