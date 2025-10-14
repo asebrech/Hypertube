@@ -7,6 +7,7 @@
 	import VideoError from '$lib/components/tadflix/error/video-error.svelte';
 	import VideoPlayer from '$lib/components/tadflix/video-player/video-player.svelte';
 	import VideoReadinessPoller from '$lib/components/tadflix/video-player/video-readiness-poller.svelte';
+	import { getMovieDetails } from '@/services/api';
 
 	interface Props {
 		data: {
@@ -32,6 +33,17 @@
 	const shouldShowPlayer = $derived(data.isAllVideoReady && !isLoading && !error && isPlayerReady);
 	const shouldShowLoading = $derived(isLoading && !error);
 	const shouldShowError = $derived(!!error);
+	$effect(() => {
+		getMovieDetails(parseInt(data.movieId), 'movie', data.token)
+			.then((details) => {
+				data.title = details.title;
+				data.overview = details.overview;
+			})
+			.catch(() => {
+				data.title = 'Unknown Title';
+				data.overview = 'No overview available.';
+			});
+	})
 
 	onMount(() => {
 		if (data.isAllVideoReady) {
