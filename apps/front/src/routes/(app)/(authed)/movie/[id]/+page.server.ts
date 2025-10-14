@@ -103,7 +103,6 @@ export const load: PageServerLoad = async ({ params, fetch: fetchFn, cookies }):
 		}
 
 		const movieDetails = await getMovieDetails(parseInt(movieId), 'movie', token);
-		console.log('Fetched movie details:', movieDetails);
 
 		const readinessData = await readinessResponse.json();
 		const availableResolutions = getAvailableResolutions(readinessData.resolutions);
