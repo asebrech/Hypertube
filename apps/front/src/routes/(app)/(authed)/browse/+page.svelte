@@ -7,7 +7,7 @@
 	import { _ } from 'svelte-i18n';
 	import { onMount, onDestroy } from 'svelte';
 	import { Select, SelectTrigger, SelectItem, SelectContent } from '@/components/ui/select';
-	import { X } from 'lucide-svelte';
+	import { Loader2, X } from 'lucide-svelte';
 	import Titlebar from '@/components/tadflix/layout/titlebar/Titlebar.svelte';
 
 	const { data } = $props();
@@ -322,6 +322,11 @@
 	{:else if movies.length > 0}
 		<div class="flex flex-col gap-8 pb-[150px]">
 			<MovieList {movies} {data} />
+			{#if isLoading}
+				<div class="mt-4">
+					<Loader2 class="mx-auto h-8 w-8 animate-spin text-red-500" />
+				</div>
+			{/if}
 		</div>
 	{/if}
 </div>

@@ -9,6 +9,7 @@
 	import { _ } from 'svelte-i18n';
 	import { goto } from '$app/navigation';
 	import { fade } from 'svelte/transition';
+	import { Loader2 } from 'lucide-svelte';
 
 	const { data } = $props();
 
@@ -137,7 +138,9 @@
 			<MovieList movies={searchResults} data={data} />
 		</div>
 		{#if isLoading}
-			<SearchSkeleton />
+			<div class="mt-4">
+				<Loader2 class="mx-auto h-8 w-8 animate-spin text-red-500" />
+			</div>
 		{/if}
 	</div>
 {/if}
