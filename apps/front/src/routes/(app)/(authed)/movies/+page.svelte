@@ -88,6 +88,11 @@
 			{/if}
 		</div>
 	{/each}
+	{#if isLoading}
+		<div class="mt-4">
+			<Loader2 class="mx-auto h-8 w-8 animate-spin text-red-500" />
+		</div>
+	{/if}
 </div>
 
 <div bind:this={sentinel}></div>

@@ -13,6 +13,7 @@
 	import MovieBanner from '@/components/tadflix/movie-banner/MovieBanner.svelte';
 	import { MovieModal } from '@/components/tadflix/movie-modal';
 	import Skeleton from '@/components/ui/skeleton/skeleton.svelte';
+	import { Loader2 } from 'lucide-svelte';
 
 	const { data } = $props();
 
@@ -81,6 +82,11 @@
 			{/if}
 		</div>
 	{/each}
+	{#if isLoading}
+		<div class="mt-4">
+			<Loader2 class="mx-auto h-8 w-8 animate-spin text-red-500" />
+		</div>
+	{/if}
 </div>
 
 <div bind:this={sentinel}></div>
