@@ -11,6 +11,8 @@
 	interface Props {
 		data: {
 			movieId: string;
+			title: string;
+			overview: string;
 			isAllVideoReady: boolean;
 			error?: string;
 			availableResolutions: string[];
@@ -78,6 +80,8 @@
 {:else if shouldShowPlayer}
 	<VideoPlayer
 		movieId={data.movieId}
+		title={data.title}
+		overview={data.overview}
 		token={data.token}
 		baseUrl={BASE_URL}
 		availableResolutions={data.availableResolutions}

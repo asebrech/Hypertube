@@ -11,6 +11,8 @@
 
 	interface Props {
 		movieId: string;
+		title: string;
+		overview: string;
 		token?: string;
 		baseUrl: string;
 		availableResolutions: string[];
@@ -21,6 +23,8 @@
 
 	let {
 		movieId,
+		title,
+		overview,
 		token,
 		baseUrl,
 		availableResolutions,
@@ -36,6 +40,7 @@
 	let progressSaveInterval: ReturnType<typeof setInterval>;
 	let api: VideoPlayerAPI;
 	let availableSubtitles: string[] = [];
+	let isPaused = $state(false);
 
 	const readyResolutions = $derived(new Set(availableResolutions));
 	const resolutionSources = $derived(VideoPlayerUtils.getResolutionSources(baseUrl, movieId));
@@ -166,6 +171,14 @@
 		player.on('pause', handleProgressSave);
 		player.on('seeked', handleProgressSave);
 
+		player.on('pause', () => {
+			isPaused = true;
+		});
+
+		player.on('play', () => {
+			isPaused = false;
+		});
+
 		if (token && typeof player.tech === 'function' && player.tech() && player.tech().vhs) {
 			player.tech().vhs.xhr.onRequest(VideoPlayerHooks.createAuthHook(token));
 		}
@@ -276,6 +289,13 @@
 </script>
 
 <div class="video-container" data-vjs-player bind:this={container}></div>
+
+{#if isPaused}
+	<div class="fixed inset-0 z-[10000] pointer-events-none flex flex-col items-start justify-start pt-[20vh] pl-16 bg-black/60">
+		<h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white m-0 p-4 px-6 rounded-lg animate-in fade-in duration-3000">{title}</h1>
+		<p class="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white mt-2 mx-0 mb-0 p-2 px-6 rounded-lg animate-in fade-in duration-3000 max-w-[60vw]">{overview}</p>
+	</div>
+{/if}
 
 <style>
 	.video-container {
