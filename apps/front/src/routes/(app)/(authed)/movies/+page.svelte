@@ -14,6 +14,7 @@
 	import { MovieModal } from '@/components/tadflix/movie-modal';
 	import { GenreHeader } from '@/components/tadflix/genre-header';
 	import Skeleton from '@/components/ui/skeleton/skeleton.svelte';
+	import { Loader2 } from 'lucide-svelte';
 
 	const { data } = $props();
 
