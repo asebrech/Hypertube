@@ -50,9 +50,14 @@
 		backdropImage = backdrop_image_data;
 		return backdrop_image_data;
 	};
+	
+	// Function to replace non-breaking spaces with regular spaces
+	const normalizeSpaces = (text: string): string => {
+		// Replace both HTML entity and actual non-breaking space character
+		return text.replace(/&nbsp;/g, ' ').replace(/\u00A0/g, ' ');
+	};
 
 	//add on change to isVisible
-
 	$effect(() => {
 		if (isVisible) {
 			isLoading = true;
@@ -94,7 +99,7 @@
 		</div>
 	{:else if !backdropImage?.langFound}
 		<CardHeader class="relative z-10 flex h-full items-end p-2 sm:p-4">
-			<CardTitle class="text-white text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl">{title}</CardTitle>
+			<CardTitle class="text-white text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl">{normalizeSpaces(title)}</CardTitle>
 		</CardHeader>
 	{/if}
 	{#if !isAvailable}
