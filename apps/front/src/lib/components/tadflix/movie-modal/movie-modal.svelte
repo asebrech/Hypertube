@@ -124,6 +124,7 @@
 				movieLogo = cachedData.logo;
 				movieCredits = cachedData.credits;
 				similarMovies = cachedData.similarMovies || [];
+				isAvailable = cachedData.isAvailable || false;
 
 				// Set loading to false immediately since we have cached data
 				setTimeout(() => movieModalActions.setLoading(false), 0);
