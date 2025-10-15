@@ -8,7 +8,6 @@
 		getSimilarMovies,
 		getPosterImage,
 		getMovieCredits,
-
 		getMovieAvailable
 
 	} from '@/services/api';
@@ -256,26 +255,7 @@
 					}
 				});
 
-			getMovieAvailable(modalData.movieId, 'movie', data.token)
-				.then((data) => {
-					// Only update if we're still on the same movie and not aborted
-					if (
-						!signal.aborted &&
-						modalData.movieId === currentMovieForThisEffect &&
-						modalData.movieId === currentMovieId
-					) {
-						isAvailable = data.isAvailable;
-						// We don't cache availability currently
-					}
-				})
-				.catch((error) => {
-				})
-				.finally(() => {
-					// Only count as loaded if still on same movie and not aborted
-					if (!signal.aborted && modalData.movieId === currentMovieForThisEffect) {
-						checkAllLoaded();
-					}
-				});
+			
 
 			getSimilarMovies(modalData.movieId, 1, modalData.type, data.token)
 				.then((data) => {
@@ -299,6 +279,27 @@
 					}
 				});
 
+			getMovieAvailable(modalData.movieId, 'movie', data.token)
+				.then((data) => {
+					// Only update if we're still on the same movie and not aborted
+					if (
+						!signal.aborted &&
+						modalData.movieId === currentMovieForThisEffect &&
+						modalData.movieId === currentMovieId
+					) {
+						isAvailable = data.isAvailable;
+						dataToCache.available = data.isAvailable;
+						updateCache(cacheKey, dataToCache);
+					}
+				})
+				.catch((error) => {
+				})
+				.finally(() => {
+					// Only count as loaded if still on same movie and not aborted
+					if (!signal.aborted && modalData.movieId === currentMovieForThisEffect) {
+						checkAllLoaded();
+					}
+				});
 			// Return cleanup function to abort requests when effect re-runs
 			return () => {
 				abortController.abort();
