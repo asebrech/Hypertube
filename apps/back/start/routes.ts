@@ -62,6 +62,7 @@ router
     router.get('credits', [MoviesController, 'MovieCredits'])
     router.get('people', [MoviesController, 'PeopleDetails'])
     router.get(':id', [MoviesController, 'movieDetails'])
+    router.get(':id/available', [MoviesController, 'getMovieAvailable'])
     router.get(':id/videos', [MoviesController, 'movieVideos'])
     router.post(':id/watched', [MoviesController, 'markAsWatched'])
     router.post(':id/bookmark', [MoviesController, 'setBookmark'])
