@@ -21,7 +21,7 @@
 		ready = true;
 	});
 
-	let isMoviePlayerRoute = $derived(page.route?.id?.includes('/movie/[id]') ?? false);
+	let isMoviePlayerRoute = $derived(page.route?.id?.includes('/movie/') ?? false);
 	let isAuthRoute = $derived(page.route?.id?.includes('/(auth)/') ?? false);
 </script>
 
@@ -33,7 +33,9 @@
 
 <main class="flex h-full min-h-screen w-full flex-col bg-[#141414]">
 	{#if $isLoading || !ready}
-		<Loader2 class="size-4 animate-spin" />
+		<div class="mt-20 flex w-full">
+			<Loader2 class="mx-auto h-8 w-8 animate-spin text-red-500" />
+		</div>
 	{:else}
 		{@render children?.()}
 	{/if}

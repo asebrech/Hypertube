@@ -14,7 +14,7 @@
 	});
 </script>
 
-<div class="flex min-h-screen items-center justify-center bg-black">
+<div class="flex min-h-screen items-center justify-center bg-[#141414]">
 	<div class="flex flex-col items-center space-y-6">
 		<div class="relative">
 			<div class="h-16 w-16 rounded-full border-4 border-zinc-800"></div>
