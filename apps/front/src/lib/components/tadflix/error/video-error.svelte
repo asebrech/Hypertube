@@ -24,7 +24,7 @@
 	});
 </script>
 
-<div class="flex min-h-screen flex-col items-center justify-center bg-black p-8 text-white">
+<div class="flex min-h-screen flex-col items-center justify-center bg-[#141414] p-8 text-white">
 	<div class="max-w-md text-center">
 		<div class="mb-8">
 			<div class="text-8xl font-bold text-red-600 {mounted ? 'animate-bounce' : ''}">!</div>

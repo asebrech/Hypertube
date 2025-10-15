@@ -14,6 +14,7 @@
 	import { MovieModal } from '@/components/tadflix/movie-modal';
 	import { GenreHeader } from '@/components/tadflix/genre-header';
 	import Skeleton from '@/components/ui/skeleton/skeleton.svelte';
+	import { Loader2 } from 'lucide-svelte';
 
 	const { data } = $props();
 
@@ -82,7 +83,7 @@
 		<div class="flex w-full flex-col gap-[8px] overflow-hidden">
 			<GenreHeader genreId={genre.id} genreName={genre.name} />
 			{#if genre.id == 0}
-				<MovieCarousel movies={genre.movies} genreId={genre.id} variant={'top-ten'} data={data}/>
+				<MovieCarousel movies={[...genre.movies.slice(-1), ...genre.movies.slice(0, -1)]} genreId={genre.id} variant={'top-ten'} data={data}/>
 			{:else}
 				<MovieCarousel movies={genre.movies} genreId={genre.id} data={data}/>
 			{/if}

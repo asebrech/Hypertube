@@ -95,7 +95,8 @@
 		"error-title": "Oups ! Une erreur s'est produite",
 		"timeout-error": "Le traitement vidéo a expiré. Veuillez réessayer plus tard.",
 		"show-details": "Afficher les détails",
-		"hide-details": "Masquer les détails"
+		"hide-details": "Masquer les détails",
+		"server-loading": "En attente du serveur de streaming..."
 	},
 	"validation": {
 		"password": {

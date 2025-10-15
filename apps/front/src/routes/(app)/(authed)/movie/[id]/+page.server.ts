@@ -1,8 +1,11 @@
 import { PUBLIC_BACK_URL } from '$env/static/public';
+import { getMovieDetails } from '@/services/api';
 import type { PageServerLoad } from './$types';
 
 interface LoadResult {
 	movieId: string;
+	title: string;
+	overview: string;
 	isAllVideoReady: boolean;
 	preferredResolution: string | null;
 	availableResolutions: string[];
@@ -69,6 +72,8 @@ export const load: PageServerLoad = async ({ params, fetch: fetchFn, cookies }):
 
 	const defaultResult: LoadResult = {
 		movieId,
+		title: '',
+		overview: '',
 		isAllVideoReady: false,
 		preferredResolution: null,
 		availableResolutions: [],
@@ -97,12 +102,16 @@ export const load: PageServerLoad = async ({ params, fetch: fetchFn, cookies }):
 			};
 		}
 
+		const movieDetails = await getMovieDetails(parseInt(movieId), 'movie', token);
+
 		const readinessData = await readinessResponse.json();
 		const availableResolutions = getAvailableResolutions(readinessData.resolutions);
 		const preferredResolution = getPreferredResolution(readinessData.resolutions);
 
 		return {
 			movieId,
+			title: movieDetails.title,
+			overview: movieDetails.overview,
 			isAllVideoReady: readinessData.allReady,
 			preferredResolution,
 			availableResolutions,

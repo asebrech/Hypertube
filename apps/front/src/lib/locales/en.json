@@ -62,7 +62,8 @@
 		"error-title": "Oops! Something went wrong",
 		"timeout-error": "Video processing timed out. Please try again later.",
 		"show-details": "Show details",
-		"hide-details": "Hide details"
+		"hide-details": "Hide details",
+		"server-loading": "Waiting for streaming server..."
 	},
 	"validation": {
 		"password": {
