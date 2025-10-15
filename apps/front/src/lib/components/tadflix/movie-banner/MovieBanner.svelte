@@ -353,7 +353,7 @@
 				<div class="flex flex-wrap gap-2">
 					<Button
 						class="bg-primary text-primary-foreground hover:bg-primary/90 h-8 cursor-pointer rounded-[4px] px-3 text-xs sm:h-10 sm:px-4 sm:text-sm {isAvailable ? '' : 'cursor-not-allowed'}"
-						href={isAvailable ? `/movie/waiting-room?${movie.id}` : undefined}
+						href={isAvailable ? `/movie/waiting-room?id=${movie.id}` : undefined}
 					>
 						<Play fill={'black'} class="h-4 w-4 sm:h-5 sm:w-5" />{isAvailable ? $_('movie-banner.play') : $_('movie-action.not-available')}
 					</Button>
