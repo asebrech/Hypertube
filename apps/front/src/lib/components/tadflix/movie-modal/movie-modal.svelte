@@ -152,6 +152,28 @@
 				}
 			};
 
+			getSimilarMovies(modalData.movieId, 1, modalData.type, data.token)
+				.then((data) => {
+					// Only update if we're still on the same movie and not aborted
+					if (
+						!signal.aborted &&
+						modalData.movieId === currentMovieForThisEffect &&
+						modalData.movieId === currentMovieId
+					) {
+						similarMovies = data.movies;
+						dataToCache.similarMovies = data.movies;
+						updateCache(cacheKey, dataToCache);
+					}
+				})
+				.catch((error) => {
+				})
+				.finally(() => {
+					// Only count as loaded if still on same movie and not aborted
+					if (!signal.aborted && modalData.movieId === currentMovieForThisEffect) {
+						checkAllLoaded();
+					}
+				});
+
 			getMovieDetails(modalData.movieId, modalData.type, data.token)
 				.then((data) => {
 					// Only update if we're still on the same movie and not aborted
@@ -244,30 +266,6 @@
 					) {
 						movieCredits = data;
 						dataToCache.credits = data;
-						updateCache(cacheKey, dataToCache);
-					}
-				})
-				.catch((error) => {
-				})
-				.finally(() => {
-					// Only count as loaded if still on same movie and not aborted
-					if (!signal.aborted && modalData.movieId === currentMovieForThisEffect) {
-						checkAllLoaded();
-					}
-				});
-
-			
-
-			getSimilarMovies(modalData.movieId, 1, modalData.type, data.token)
-				.then((data) => {
-					// Only update if we're still on the same movie and not aborted
-					if (
-						!signal.aborted &&
-						modalData.movieId === currentMovieForThisEffect &&
-						modalData.movieId === currentMovieId
-					) {
-						similarMovies = data.movies;
-						dataToCache.similarMovies = data.movies;
 						updateCache(cacheKey, dataToCache);
 					}
 				})
