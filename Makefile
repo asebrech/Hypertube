@@ -68,7 +68,7 @@ db-start: ## Start the PostgreSQL database
 .PHONY: db-stop
 db-stop: ## Stop the PostgreSQL database
 	@printf "$(BLUE)🗄️  Stopping database...$(RESET)\n"
-	@docker compose down
+	@docker compose stop db
 	@printf "$(GREEN)  ✓ Database stopped$(RESET)\n"
 
 .PHONY: db-logs
@@ -188,6 +188,13 @@ prod-deploy: ## Full production deployment (build + run)
 	@echo ""
 	@$(MAKE) -s prod-start
 
+.PHONY: prod-stop
+prod-stop: ## Stop production servers  
+	@printf "$(YELLOW)🛑 Stopping production servers...$(RESET)\n"
+	@pkill -f "node bin/server.js" || true
+	@pkill -f "pnpm preview" || true
+	@printf "$(GREEN)  ✓ Production servers stopped$(RESET)\n"
+
 .PHONY: deploy
 deploy: ## Complete local deployment (setup + start)
 	@echo ""
@@ -220,9 +227,11 @@ clean: ## Clean build artifacts and dependencies
 	@printf "$(GREEN)  ✓ Cleaned$(RESET)\n"
 
 .PHONY: clean-db
-clean-db: ## Remove database volumes (WARNING: deletes all data!)
-	@docker-compose down -v;
-	@printf "$(GREEN)  ✓ Database volumes removed$(RESET)\n"; \
+clean-db: ## Remove database containers and volumes (deletes all data!)
+	@printf "$(RED)🗑️  Removing database containers and volumes...$(RESET)\n"
+	@docker compose down -v --remove-orphans
+	@docker volume prune -f
+	@printf "$(GREEN)  ✓ Database completely removed$(RESET)\n"
 
 .PHONY: reset
 reset: clean clean-db setup ## Full reset (clean everything and setup again)
