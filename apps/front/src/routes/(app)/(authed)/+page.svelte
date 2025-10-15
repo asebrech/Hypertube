@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { BackDropImage, MovieDetails, MovieGenre, MovieVideo } from '@hypertube/shared';
+	import type { BackDropImage, Movie, MovieDetails, MovieGenre, MovieVideo } from '@hypertube/shared';
 	import { getLogoImage, getMovieDetails, getMovies, getMovieVideos } from '@/services/api';
 
 	import { MovieCarousel } from '@/components/tadflix/movie-carousel';
@@ -18,6 +18,7 @@
 	let isLoading: boolean = $state(false);
 	let movieGenres: MovieGenre[] = $state([]);
 	let movieBanner: MovieDetails | undefined = $state();
+	let movieBannerMovie: Movie | undefined = $state();
 	let movieLogo: BackDropImage | undefined = $state();
 	let movieVideoResponse: MovieVideo | undefined = $state();
 
@@ -39,6 +40,7 @@
 		await loadMoviePage();
 		let idx = Math.floor(Math.random() * movieGenres[0].movies.length);
 		movieBanner = await getMovieDetails(movieGenres[0].movies[idx].id, 'movie', data.token);
+		movieBannerMovie = movieGenres[0].movies[idx];
 		movieLogo = await getLogoImage(movieGenres[0].movies[idx].id, 'small', 'movie', data.token);
 		movieVideoResponse = await getMovieVideos(movieGenres[0].movies[idx].id, 'movie', data.token);
 		isLoading = false;
@@ -67,6 +69,7 @@
 		<MovieBanner
 			logo={movieLogo}
 			movie={movieBanner}
+			isAvailable={movieBannerMovie?.torrent_available || false}
 			movieVideo={movieVideoResponse}
 			type="movie"
 			instance="home"

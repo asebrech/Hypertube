@@ -101,6 +101,26 @@ export async function getMovieDetails(
 	}
 }
 
+export async function getMovieAvailable(movieId: number, type: MovieType = 'movie', token: string | null = null) {
+	const config = {
+		method: 'get',
+		url: `${PUBLIC_BACK_URL}/movies/${movieId}/available`,
+		params: {
+			lang: get(locale),
+			type: type
+		},
+		headers: {
+			...(token && { Authorization: `Bearer ${token}` })
+		}
+	};
+	try {
+		const response = await axios(config);
+		return response.data;
+	} catch (error) {
+		throw error;
+	}
+}
+
 export async function getBackdropImage(
 	movieId: any,
 	size: ImageSizeType,

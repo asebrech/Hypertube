@@ -822,4 +822,22 @@ export default class MoviesController {
       return null
     }
   }
+
+  async getMovieAvailable({ params, response }: HttpContext) {
+    try {
+      const movieId = Number(params.id)
+
+      const isAvailable = await this.movieService.checkAndUpdateTorrentAvailability(movieId)
+
+      return response.ok({
+        success: true,
+        isAvailable: isAvailable,
+      })
+    } catch {
+      return response.ok({
+        success: true,
+        isAvailable: false,
+      })
+    }
+  }
 }

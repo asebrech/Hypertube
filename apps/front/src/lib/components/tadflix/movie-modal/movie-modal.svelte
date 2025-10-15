@@ -7,7 +7,10 @@
 		getLogoImage,
 		getSimilarMovies,
 		getPosterImage,
-		getMovieCredits
+		getMovieCredits,
+
+		getMovieAvailable
+
 	} from '@/services/api';
 	import type {
 		BackDropImage,
@@ -47,6 +50,7 @@
 	let movieVideo: MovieVideo | undefined = $state(undefined);
 	let movieLogo: BackDropImage | undefined = $state(undefined);
 	let movieCredits: MovieCredits | undefined = $state(undefined);
+	let isAvailable: boolean = $state(false);
 	let similarMovies: Movie[] = $state([]);
 	let currentMovieId: number | undefined = $state(undefined);
 	let showAllSimilarMovies = $state(false);
@@ -241,6 +245,27 @@
 						movieCredits = data;
 						dataToCache.credits = data;
 						updateCache(cacheKey, dataToCache);
+					}
+				})
+				.catch((error) => {
+				})
+				.finally(() => {
+					// Only count as loaded if still on same movie and not aborted
+					if (!signal.aborted && modalData.movieId === currentMovieForThisEffect) {
+						checkAllLoaded();
+					}
+				});
+
+			getMovieAvailable(modalData.movieId, 'movie', data.token)
+				.then((data) => {
+					// Only update if we're still on the same movie and not aborted
+					if (
+						!signal.aborted &&
+						modalData.movieId === currentMovieForThisEffect &&
+						modalData.movieId === currentMovieId
+					) {
+						isAvailable = data.isAvailable;
+						// We don't cache availability currently
 					}
 				})
 				.catch((error) => {
@@ -475,6 +500,7 @@
 								{#if modalData.type}
 									<MovieBanner
 										{movie}
+										isAvailable={isAvailable}
 										type={modalData.type}
 										logo={movieLogo}
 										{movieVideo}
