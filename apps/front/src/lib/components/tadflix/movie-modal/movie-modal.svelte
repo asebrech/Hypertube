@@ -19,7 +19,7 @@
 		Movie,
 		MovieCredits
 	} from '@hypertube/shared';
-	import { X, Plus, ThumbsUp, ArrowLeft, Play, TrendingUpDownIcon } from 'lucide-svelte';
+	import { X, Plus, ThumbsUp, ArrowLeft, Play } from 'lucide-svelte';
 	import { SimilarMovieCard } from '../similar-movie-card';
 	import { MovieBadges } from '../movie-badges';
 	import MovieBanner from '../movie-banner/MovieBanner.svelte';
