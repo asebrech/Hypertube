@@ -19,7 +19,7 @@
 		Movie,
 		MovieCredits
 	} from '@hypertube/shared';
-	import { X, Plus, ThumbsUp, ArrowLeft, Play } from 'lucide-svelte';
+	import { X, Plus, ThumbsUp, ArrowLeft, Play, TrendingUpDownIcon } from 'lucide-svelte';
 	import { SimilarMovieCard } from '../similar-movie-card';
 	import { MovieBadges } from '../movie-badges';
 	import MovieBanner from '../movie-banner/MovieBanner.svelte';
@@ -49,7 +49,7 @@
 	let movieVideo: MovieVideo | undefined = $state(undefined);
 	let movieLogo: BackDropImage | undefined = $state(undefined);
 	let movieCredits: MovieCredits | undefined = $state(undefined);
-	let isAvailable: boolean = $state(false);
+	let isAvailable: boolean = $state(true);
 	let similarMovies: Movie[] = $state([]);
 	let currentMovieId: number | undefined = $state(undefined);
 	let showAllSimilarMovies = $state(false);
@@ -124,7 +124,7 @@
 				movieLogo = cachedData.logo;
 				movieCredits = cachedData.credits;
 				similarMovies = cachedData.similarMovies || [];
-				isAvailable = cachedData.isAvailable || false;
+				isAvailable = cachedData.isAvailable;
 
 				// Set loading to false immediately since we have cached data
 				setTimeout(() => movieModalActions.setLoading(false), 0);
@@ -287,7 +287,7 @@
 						modalData.movieId === currentMovieId
 					) {
 						isAvailable = data.isAvailable;
-						dataToCache.available = data.isAvailable;
+						dataToCache.isAvailable = data.isAvailable;
 						updateCache(cacheKey, dataToCache);
 					}
 				})
