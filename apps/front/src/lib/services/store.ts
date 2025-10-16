@@ -42,7 +42,7 @@ export const movieModal = writable<{
 // Cache for movie data to avoid reloading
 export const movieDataCache = writable<{
 	[key: string]: {
-		isAvailable: boolean;
+		isAvailable?: boolean;
 		details?: MovieDetails;
 		video?: MovieVideo;
 		logo?: BackDropImage;
